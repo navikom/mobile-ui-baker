@@ -30,31 +30,26 @@ const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: "100%",
-      minHeight: "100%"
+      minHeight: "100%",
     }
   })
 );
 
 interface ContentProps {
   items: IControl[],
-  moveControl:
-    (parent: IControl, source: IControl, dropAction: DropEnum, newItem: boolean, dropIndex: number, hoverIndex: number)
-      => void;
-  handleDrop: (item: DragAndDropItem) => void;
-  hoverCanvas: (item: DragAndDropItem) => void;
+  moveControl: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
+  handleDropCanvas: (item: DragAndDropItem) => void;
+  handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
 }
 
-const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDrop, hoverCanvas }) => {
+const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDropCanvas, handleDropElement }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.CONTROL,
-    hover: (item: DragAndDropItem, monitor) => {
-      if(monitor.isOver({shallow: true})) {
-        console.log('Over canvas %s', item.control.name);
-        hoverCanvas(item);
+    drop: (props: DragAndDropItem, monitor: any) => {
+      if(!monitor.isOver({shallow: true})) {
+        return;
       }
-    },
-    drop: (item: DragAndDropItem) => {
-      handleDrop(item);
+      handleDropCanvas(props);
     },
     collect: monitor => ({
       isOver: monitor.isOver(),
@@ -74,7 +69,7 @@ const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDr
     <div ref={drop} className={classes.root} style={{ backgroundColor: backgroundColor }}>
       {
         items.map((control, i) => {
-          return <ControlItem key={control.id} index={i} control={control} moveControl={moveControl} />
+          return <ControlItem key={control.id} control={control} moveControl={moveControl} handleDropElement={handleDropElement} />
         })
       }
     </div>
@@ -198,8 +193,9 @@ function Editor() {
                       <Content
                         items={store.document}
                         moveControl={store.moveControl}
-                        handleDrop={store.handleDrop}
-                        hoverCanvas={store.hoverCanvas} />
+                        handleDropCanvas={store.handleDropCanvas}
+                        handleDropElement={store.handleDropElement}
+                        />
                     </DeviceComponent>
                   </div>
                 </div>

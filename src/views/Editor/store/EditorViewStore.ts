@@ -51,8 +51,8 @@ class EditorViewStore {
   @observable tabToolsIndex: number = 0;
   @observable ios: boolean = true;
 
-  currentDropAction?: DropEnum;
-  currentDropParent?: IControl;
+  moveOpened: boolean = true;
+  debug: boolean = false;
 
   constructor(newData?: typeof data & IObject) {
     newData && this.dictionary.setData(newData);
@@ -61,6 +61,22 @@ class EditorViewStore {
   @action createControl(type: ControlEnum) {
     this.document.push(ControlStores[type].create());
   }
+
+  @action moveControl = (
+    parent: IControl,
+    source: IControl,
+    dropAction: DropEnum,
+  ) => {
+    if(!this.moveOpened) {
+      return;
+    }
+    this.moveOpened = false;
+    setTimeout(() => {
+      parent && parent.setTarget(dropAction);
+      this.moveOpened = true;
+    }, 100)
+
+  };
 
   // 1. source.parent is null and parent.parent is null
   //  1.1 dropAction === Inside && parent.allowChildren -> drop source inside parent  (1.1 and 4.1)
@@ -83,53 +99,40 @@ class EditorViewStore {
   //  4.1 dropAction === Inside && parent.allowChildren -> drop source inside parent (1.1 and 4.1)
   //  4.2 dropAction === Above -> drop source inside parent.parent above parent \ / sort items inside the same parent \
   //  4.3 dropAction === Below -> drop source inside parent.parent below parent / \  which equal parent.parent        /
-  @action moveControl = (
-    parent: IControl,
-    source: IControl,
-    dropAction: DropEnum,
-    newItem: boolean,
-    dropIndex: number,
-    hoverIndex: number
-  ) => {
-    parent && parent.setTarget(dropAction);
-    if (newItem) {
-      this.currentDropParent = parent;
-      this.currentDropAction = dropAction;
-      return false;
-    }
+  @action handleDropElement = (parent: IControl, source: IControl, dropAction: DropEnum) => {
 
     const sParent = source.parent;
     const pParent = parent.parent;
 
     if(!sParent && !pParent) { // 1.
-      if(dropAction === DropEnum.Inside) { // 1.1.
 
+      const index = this.document.indexOf(source);
+      index > -1 && this.document.splice(index, 1);
+
+      if(dropAction === DropEnum.Inside) { // 1.1.
+        this.debug && console.log('1.1 DropEnum.Inside', parent.name, source.name);
         if(parent.allowChildren) {
-          this.document.splice(this.document.indexOf(source), 1);
           parent.addChild(source);
           source.setParent(parent);
         }
 
       } else if(dropAction === DropEnum.Above) { // 1.2
-
-        const sourceCurrentIndex = this.document.indexOf(source);
-        this.document.splice(sourceCurrentIndex, 1);
-        const sourceNewIndex = this.document.indexOf(parent);
-        this.document.splice(sourceNewIndex, 0, source);
+        this.debug && console.log('1.2 DropEnum.Above', parent.name, source.name);
+        const sourceIndex = this.document.indexOf(parent);
+        this.document.splice(sourceIndex, 0, source);
 
       } else { // 1.3.
         // dropAction === DropEnum.Below
-
-        const sourceCurrentIndex = this.document.indexOf(source);
-        this.document.splice(sourceCurrentIndex, 1);
-        const sourceNewIndex = this.document.indexOf(parent);
-        this.document.splice(sourceNewIndex + 1, 0, source);
+        this.debug && console.log('1.3 DropEnum.Below', parent.name, source.name)
+        const sourceIndex = this.document.indexOf(parent);
+        this.document.splice(sourceIndex + 1, 0, source);
 
       }
     } else if (sParent && pParent) { // 2
       if(sParent === pParent) { // 2.1.
-        if(dropAction === DropEnum.Inside) { // 2.1.1.
 
+        if(dropAction === DropEnum.Inside) { // 2.1.1.
+          this.debug && console.log('2.1.1 DropEnum.Inside', parent.name, source.name)
           if(parent.allowChildren) {
             sParent.removeChild(source);
             parent.addChild(source);
@@ -137,41 +140,41 @@ class EditorViewStore {
           }
 
         } else if(dropAction === DropEnum.Above) { // 2.1.2.
-
+          this.debug && console.log('2.1.2 DropEnum.Above', parent.name, source.name)
           const sourceCurrentIndex = sParent.children.indexOf(source);
-          sParent.children.splice(sourceCurrentIndex, 1);
           const sourceNewIndex = pParent.children.indexOf(parent);
-          pParent.children.splice(sourceNewIndex, 0, source);
+          pParent.moveChildren(sourceCurrentIndex, sourceNewIndex);
 
         } else { // 2.1.3.
           // dropAction === DropEnum.Below
-
+          this.debug && console.log('2.1.3 DropEnum.Below', parent.name, source.name)
           const sourceCurrentIndex = sParent.children.indexOf(source);
-          sParent.children.splice(sourceCurrentIndex, 1);
           const sourceNewIndex = pParent.children.indexOf(parent);
-          pParent.children.splice(sourceNewIndex + 1, 0, source);
+          pParent.moveChildren(sourceCurrentIndex, sourceNewIndex);
 
         }
       } else { // 2.2.
         // source.parent !== parent.parent
+
+        sParent.removeChild(source);
+
         if(dropAction === DropEnum.Inside) { // 2.2.1.
+          this.debug && console.log('2.2.1 DropEnum.Inside', parent.name, source.name)
           if(parent.allowChildren) {
-            sParent.removeChild(source);
+
             parent.addChild(source);
             source.setParent(parent);
           }
 
         } else if(dropAction === DropEnum.Above) { // 2.2.2.
-
-          sParent.removeChild(source);
+          this.debug && console.log('2.2.2 DropEnum.Above', parent.name, source.name)
           source.setParent(pParent);
           const newSourceIndex = pParent.children.indexOf(parent);
           pParent.spliceChild(newSourceIndex, source);
 
         } else { // 2.2.3
           //dropAction === DropEnum.Below
-
-          sParent.removeChild(source);
+          this.debug && console.log('2.2.3 DropEnum.Below', parent.name, source.name)
           source.setParent(pParent);
           const newSourceIndex = pParent.children.indexOf(parent);
           pParent.spliceChild(newSourceIndex + 1, source);
@@ -180,162 +183,74 @@ class EditorViewStore {
       }
 
     } else if (sParent && !pParent) { // 3.
+
+      sParent.removeChild(source);
+
       if(dropAction === DropEnum.Inside) { // 3.1.
+        this.debug && console.log('3.1 DropEnum.Inside', parent.name, source.name)
         if(parent.allowChildren) {
-          sParent.removeChild(source);
+
           parent.addChild(source);
           source.setParent(parent);
         }
 
       } else if(dropAction === DropEnum.Above) { // 3.2.
-
-        sParent.removeChild(source);
+        this.debug && console.log('3.2 DropEnum.Above', parent.name, source.name)
+        source.setParent();
         const newSourceIndex = this.document.indexOf(parent);
         this.document.splice(newSourceIndex, 0, source);
-        console.log(111111111, newSourceIndex, this.document.length);
 
       } else { // 3.3.
         //dropAction === DropEnum.Below
-
-        sParent.removeChild(source);
+        this.debug && console.log('3.3 DropEnum.Below', parent.name, source.name)
+        source.setParent();
         const newSourceIndex = this.document.indexOf(parent);
         this.document.splice(newSourceIndex + 1, 0, source);
 
       }
     } else if(!sParent && pParent) { // 4.
-      if(dropAction === DropEnum.Inside) { // 4.1.
 
+      const sourceCurrentIndex = this.document.indexOf(source);
+      sourceCurrentIndex > -1 && this.document.splice(sourceCurrentIndex, 1);
+
+      if(dropAction === DropEnum.Inside) { // 4.1.
+        this.debug && console.log('4.1 DropEnum.Inside', parent.name, source.name)
         if(parent.allowChildren) {
           parent.addChild(source);
           source.setParent(parent);
         }
 
       } else if(dropAction === DropEnum.Above) { // 4.2.
-
+        this.debug && console.log('4.2 DropEnum.Above', parent.name, source.name)
         source.setParent(pParent);
         const newSourceIndex = pParent.children.indexOf(parent);
         pParent.spliceChild(newSourceIndex, source);
 
       } else { // 4.3.
+        this.debug && console.log('4.3 DropEnum.Below', parent.name, source.name)
         //dropAction === DropEnum.Below
         source.setParent(pParent);
         const newSourceIndex = pParent.children.indexOf(parent);
-        pParent.spliceChild(newSourceIndex, source);
+        pParent.spliceChild(newSourceIndex + 1, source);
       }
     }
+    this.debug && console.log('document state', this.document.length, sParent && sParent.children.length, pParent && pParent.children.length);
   };
 
-  @action moveControl1 = (
-    parent: IControl,
-    source: IControl,
-    dropAction: DropEnum,
-    newItem: boolean,
-    dropIndex: number,
-    hoverIndex: number) => {
-    parent && parent.setTarget(dropAction);
-    console.log(111111, dropAction, dropIndex, hoverIndex, parent, source,
-      source.parent !== undefined, parent.parent !== undefined);
-    if (newItem) {
-      this.currentDropParent = parent;
-      this.currentDropAction = dropAction;
-      return false;
-    }
-    if (source.parent || parent.parent) {
-      if (source.parent === parent.parent) {
-        if (dropAction === DropEnum.Inside) {
-          source.parent!.removeChild(source);
-          source.setParent(parent);
-          parent.addChild(source);
-        } else {
-          source.parent!.moveChildren(dropIndex, hoverIndex);
-        }
-        return false;
-      }
-    }
-    if (this.handleChangeParent(dropAction, source, parent, dropIndex)) {
-      return false;
-    }
-    console.log(32323233232, dropIndex, this.document.length, source.name, parent.name);
-    const droppedItem = this.document[dropIndex];
-    this.document.splice(dropIndex, 1);
-    this.document.splice(hoverIndex, 0, droppedItem);
-
-    return true;
-  };
-
-  @action handleChangeParent(dropAction: DropEnum, source: IControl, parent: IControl, dropIndex: number) {
-    if (dropAction === DropEnum.Inside && parent.allowChildren) {
-      if (!source.parent) {
-        const droppedItem = this.document[dropIndex];
-        this.document.splice(dropIndex, 1);
-        parent.addChild(droppedItem);
-        droppedItem.setParent(parent);
-      } else if (source.parent !== parent) {
-        source.parent!.removeChild(source);
-        parent.addChild(source);
-        source.setParent(parent);
-      } else {
-        console.log("Did not handle 111", dropAction, source.name, parent.name, source.parent === parent)
-      }
-      return true;
-    }
-    if (dropAction !== DropEnum.Inside && source.parent) {
-      console.log("Did not handle 222", dropAction, source.name, parent.name, source.parent === parent);
-      return true;
-    }
-    return false;
-  }
-
-  @action handleDrop = (item: DragAndDropItem) => {
+  @action handleDropCanvas = (item: DragAndDropItem) => {
     const control = item.control;
     if (!control) return;
-    if (item.typeControl === undefined) {
-      console.log(32323223, item);
+    const parent = control.parent;
+    if(parent) {
+      parent.removeChild(control);
+      control.setParent();
     } else {
-      this.dropNewItem(control);
-    }
-  };
-
-  @action dropNewItem(control: IControl) {
-    console.log("Dropped %s", control.id, control.type, this.currentDropAction, this.currentDropParent);
-    const index = this.currentDropParent ? this.document.indexOf(this.currentDropParent) : -1;
-    if (this.currentDropAction === DropEnum.Above) {
-      this.document.splice(index, 0, control);
-      this.clearCurrent();
-      return;
-    } else if (this.currentDropAction === DropEnum.Below) {
-      this.document.splice(index + 1, 0, control);
-      this.clearCurrent();
-      return;
-    } else {
-      if (this.currentDropParent) {
-        this.currentDropParent.addChild(control);
-        control.setParent(this.currentDropParent);
-        this.clearCurrent();
-        return;
-      }
+      const index = this.document.indexOf(control);
+      index > -1 && this.document.splice(index, 1);
     }
     this.document.push(control);
-  }
 
-  hoverCanvas = (item: DragAndDropItem) => {
-    this.clearCurrent();
-    if (item.typeControl !== undefined) {
-      return;
-    }
-    const control = item.control;
-    if (control.parent) {
-      console.log("Control %s remove parent %s", control.name, control.parent.name);
-      control.parent.removeChild(control);
-      control.setParent();
-      this.document.push(control);
-    }
   };
-
-  clearCurrent() {
-    this.currentDropParent = undefined;
-    this.currentDropAction = undefined;
-  }
 
   @action handleTabTool = (_: any, index: number) => {
     this.tabToolsIndex = index;

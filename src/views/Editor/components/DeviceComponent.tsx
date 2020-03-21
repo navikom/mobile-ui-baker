@@ -15,17 +15,17 @@ import { Mode } from "views/Editor/store/EditorViewStore";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      padding: theme.spacing(3)
+      padding: theme.spacing(3),
     },
     wrapper: {
       position: "relative",
       width: theme.typography.pxToRem(303),
       backgroundRepeat: "no-repeat",
-      backgroundSize: "100%"
+      backgroundSize: "100%",
     },
     inner: {
       position: "absolute",
-      top: theme.typography.pxToRem(61),
+      top: theme.typography.pxToRem(59),
       left: theme.typography.pxToRem(14),
       width: "calc(100% - 30px)",
       backgroundRepeat: "no-repeat",
