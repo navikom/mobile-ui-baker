@@ -1,4 +1,4 @@
-import { action, IObservableArray, observable } from "mobx";
+import { action, computed, IObservableArray, IObservableObject, observable } from "mobx";
 import { whiteColor } from "assets/jss/material-dashboard-react";
 import EditorDictionary, { data } from "views/Editor/store/EditorDictionary";
 import { IObject } from "services/Dictionary/AbstractDictionary";
@@ -9,6 +9,8 @@ import TextStore from "models/Control/TextStore";
 import ButtonStore from "models/Control/ButtonStore";
 import DrawerStore from "models/Control/DrawerStore";
 import { DropEnum } from "models/DropEnum";
+import { IScreen } from "interfaces/IScreen";
+import ScreenStore from "models/Screen/Screen";
 
 export interface IBackgroundColor {
   backgroundColor: string;
@@ -44,7 +46,8 @@ export const ControlStores = {
 class EditorViewStore {
   static TABS = [EditorDictionary.keys.controls, EditorDictionary.keys.settings];
   static CONTROLS = ControlEnum;
-  @observable document: IObservableArray<IControl> = observable([GridStore.create()]);
+  @observable screens: IObservableArray<IScreen>;
+  @observable currentScreen: IScreen;
   @observable dictionary = new EditorDictionary();
   @observable background: BackgroundType = { backgroundColor: whiteColor };
   @observable mode: Mode = Mode.WHITE;
@@ -52,14 +55,20 @@ class EditorViewStore {
   @observable ios: boolean = true;
 
   moveOpened: boolean = true;
-  debug: boolean = false;
+  debug: boolean = true;
+
+  isCurrent = (screen: IScreen) => {
+    return computed(() => this.currentScreen === screen).get();
+  };
 
   constructor(newData?: typeof data & IObject) {
     newData && this.dictionary.setData(newData);
+    this.screens = observable([new ScreenStore()]);
+    this.currentScreen = this.screens[0];
   }
 
   @action createControl(type: ControlEnum) {
-    this.document.push(ControlStores[type].create());
+    this.currentScreen.addChild(ControlStores[type].create(this.currentScreen));
   }
 
   @action moveControl = (
@@ -72,6 +81,9 @@ class EditorViewStore {
     }
     this.moveOpened = false;
     setTimeout(() => {
+      if(dropAction === DropEnum.Inside && source.hasChild(parent)) {
+        return;
+      }
       parent && parent.setTarget(dropAction);
       this.moveOpened = true;
     }, 100)
@@ -106,33 +118,40 @@ class EditorViewStore {
 
     if(!sParent && !pParent) { // 1.
 
-      const index = this.document.indexOf(source);
-      index > -1 && this.document.splice(index, 1);
+      source.screen && source.screen.removeChild(source);
 
       if(dropAction === DropEnum.Inside) { // 1.1.
-        this.debug && console.log('1.1 DropEnum.Inside', parent.name, source.name);
+        this.debug && console.log('1.1 DropEnum.Inside', parent.title, source.title);
         if(parent.allowChildren) {
           parent.addChild(source);
           source.setParent(parent);
         }
 
       } else if(dropAction === DropEnum.Above) { // 1.2
-        this.debug && console.log('1.2 DropEnum.Above', parent.name, source.name);
-        const sourceIndex = this.document.indexOf(parent);
-        this.document.splice(sourceIndex, 0, source);
+        this.debug && console.log('1.2 DropEnum.Above', parent.title, source.title);
+        if(parent.screen) {
+          const sourceIndex = parent.screen.children.indexOf(parent);
+          parent.screen.spliceChild(sourceIndex, source);
+        }
+
 
       } else { // 1.3.
         // dropAction === DropEnum.Below
-        this.debug && console.log('1.3 DropEnum.Below', parent.name, source.name)
-        const sourceIndex = this.document.indexOf(parent);
-        this.document.splice(sourceIndex + 1, 0, source);
+        this.debug && console.log('1.3 DropEnum.Below', parent.title, source.title);
+        if(parent.screen) {
+          const sourceIndex = parent.screen.children.indexOf(parent);
+          parent.screen.spliceChild(sourceIndex + 1, source);
+        }
 
       }
+
+      parent.screen && source.setScreen(parent.screen);
+
     } else if (sParent && pParent) { // 2
       if(sParent === pParent) { // 2.1.
 
         if(dropAction === DropEnum.Inside) { // 2.1.1.
-          this.debug && console.log('2.1.1 DropEnum.Inside', parent.name, source.name)
+          this.debug && console.log('2.1.1 DropEnum.Inside', parent.title, source.title);
           if(parent.allowChildren) {
             sParent.removeChild(source);
             parent.addChild(source);
@@ -140,14 +159,14 @@ class EditorViewStore {
           }
 
         } else if(dropAction === DropEnum.Above) { // 2.1.2.
-          this.debug && console.log('2.1.2 DropEnum.Above', parent.name, source.name)
+          this.debug && console.log('2.1.2 DropEnum.Above', parent.title, source.title);
           const sourceCurrentIndex = sParent.children.indexOf(source);
           const sourceNewIndex = pParent.children.indexOf(parent);
           pParent.moveChildren(sourceCurrentIndex, sourceNewIndex);
 
         } else { // 2.1.3.
           // dropAction === DropEnum.Below
-          this.debug && console.log('2.1.3 DropEnum.Below', parent.name, source.name)
+          this.debug && console.log('2.1.3 DropEnum.Below', parent.title, source.title);
           const sourceCurrentIndex = sParent.children.indexOf(source);
           const sourceNewIndex = pParent.children.indexOf(parent);
           pParent.moveChildren(sourceCurrentIndex, sourceNewIndex);
@@ -159,7 +178,7 @@ class EditorViewStore {
         sParent.removeChild(source);
 
         if(dropAction === DropEnum.Inside) { // 2.2.1.
-          this.debug && console.log('2.2.1 DropEnum.Inside', parent.name, source.name)
+          this.debug && console.log('2.2.1 DropEnum.Inside', parent.title, source.title);
           if(parent.allowChildren) {
 
             parent.addChild(source);
@@ -167,14 +186,14 @@ class EditorViewStore {
           }
 
         } else if(dropAction === DropEnum.Above) { // 2.2.2.
-          this.debug && console.log('2.2.2 DropEnum.Above', parent.name, source.name)
+          this.debug && console.log('2.2.2 DropEnum.Above', parent.title, source.title);
           source.setParent(pParent);
           const newSourceIndex = pParent.children.indexOf(parent);
           pParent.spliceChild(newSourceIndex, source);
 
         } else { // 2.2.3
           //dropAction === DropEnum.Below
-          this.debug && console.log('2.2.3 DropEnum.Below', parent.name, source.name)
+          this.debug && console.log('2.2.3 DropEnum.Below', parent.title, source.title);
           source.setParent(pParent);
           const newSourceIndex = pParent.children.indexOf(parent);
           pParent.spliceChild(newSourceIndex + 1, source);
@@ -182,12 +201,14 @@ class EditorViewStore {
         }
       }
 
+      parent.screen && source.setScreen(parent.screen);
+
     } else if (sParent && !pParent) { // 3.
 
       sParent.removeChild(source);
 
       if(dropAction === DropEnum.Inside) { // 3.1.
-        this.debug && console.log('3.1 DropEnum.Inside', parent.name, source.name)
+        this.debug && console.log('3.1 DropEnum.Inside', parent.title, source.title);
         if(parent.allowChildren) {
 
           parent.addChild(source);
@@ -195,46 +216,52 @@ class EditorViewStore {
         }
 
       } else if(dropAction === DropEnum.Above) { // 3.2.
-        this.debug && console.log('3.2 DropEnum.Above', parent.name, source.name)
+        this.debug && console.log('3.2 DropEnum.Above', parent.title, source.title);
         source.setParent();
-        const newSourceIndex = this.document.indexOf(parent);
-        this.document.splice(newSourceIndex, 0, source);
+        if(parent.screen) {
+          const sourceIndex = parent.screen.children.indexOf(parent);
+          parent.screen.spliceChild(sourceIndex, source);
+        }
 
       } else { // 3.3.
         //dropAction === DropEnum.Below
-        this.debug && console.log('3.3 DropEnum.Below', parent.name, source.name)
+        this.debug && console.log('3.3 DropEnum.Below', parent.title, source.title)
         source.setParent();
-        const newSourceIndex = this.document.indexOf(parent);
-        this.document.splice(newSourceIndex + 1, 0, source);
-
+        if(parent.screen) {
+          const sourceIndex = parent.screen.children.indexOf(parent);
+          parent.screen.spliceChild(sourceIndex + 1, source);
+        }
       }
-    } else if(!sParent && pParent) { // 4.
 
-      const sourceCurrentIndex = this.document.indexOf(source);
-      sourceCurrentIndex > -1 && this.document.splice(sourceCurrentIndex, 1);
+      parent.screen && source.setScreen(parent.screen);
+
+    } else if(!sParent && pParent && !source.hasChild(parent)) { // 4.
+
+      source.screen && source.screen.removeChild(source);
 
       if(dropAction === DropEnum.Inside) { // 4.1.
-        this.debug && console.log('4.1 DropEnum.Inside', parent.name, source.name)
+        this.debug && console.log('4.1 DropEnum.Inside', parent.title, source.title)
         if(parent.allowChildren) {
           parent.addChild(source);
           source.setParent(parent);
         }
 
       } else if(dropAction === DropEnum.Above) { // 4.2.
-        this.debug && console.log('4.2 DropEnum.Above', parent.name, source.name)
+        this.debug && console.log('4.2 DropEnum.Above', parent.title, source.title)
         source.setParent(pParent);
         const newSourceIndex = pParent.children.indexOf(parent);
         pParent.spliceChild(newSourceIndex, source);
 
       } else { // 4.3.
-        this.debug && console.log('4.3 DropEnum.Below', parent.name, source.name)
+        this.debug && console.log('4.3 DropEnum.Below', parent.title, source.title)
         //dropAction === DropEnum.Below
         source.setParent(pParent);
         const newSourceIndex = pParent.children.indexOf(parent);
         pParent.spliceChild(newSourceIndex + 1, source);
       }
+      parent.screen && source.setScreen(parent.screen);
     }
-    this.debug && console.log('document state', this.document.length, sParent && sParent.children.length, pParent && pParent.children.length);
+    this.debug && console.log('document state', source.screen!.title, sParent && sParent.children.length, pParent && pParent.children.length);
   };
 
   @action handleDropCanvas = (item: DragAndDropItem) => {
@@ -245,15 +272,32 @@ class EditorViewStore {
       parent.removeChild(control);
       control.setParent();
     } else {
-      const index = this.document.indexOf(control);
-      index > -1 && this.document.splice(index, 1);
+      this.currentScreen.removeChild(control);
     }
-    this.document.push(control);
+    this.currentScreen.addChild(control);
+    control.setScreen(this.currentScreen);
+  };
 
+  @action setCurrentScreen = (screen: IScreen) => {
+    this.currentScreen = screen;
+  };
+
+  @action addScreen = () => {
+    const screen = new ScreenStore();
+    this.screens.push(screen);
+    this.currentScreen = screen;
+    return screen;
+  };
+
+  @action removeScreen = (screen: IScreen) => {
+    this.screens.splice(this.screens.indexOf(screen), 1);
+    if(this.currentScreen === screen) {
+      this.currentScreen = this.screens[0];
+    }
   };
 
   @action addItem(control: IControl) {
-    this.document.push(control);
+    this.currentScreen.addChild(control);
   }
 
   @action handleTabTool = (_: any, index: number) => {

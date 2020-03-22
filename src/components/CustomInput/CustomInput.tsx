@@ -91,4 +91,8 @@ CustomInput.propTypes = {
   success: PropTypes.bool
 };
 
+CustomInput.defaultProps = {
+  formControlProps: {}
+};
+
 export default withStyles(customInputStyle)(CustomInput);

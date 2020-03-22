@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createStyles, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { DndProvider, useDrop } from "react-dnd";
@@ -25,12 +25,12 @@ import ControlItem from "views/Editor/components/control/ControlItem";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
 import IControl from "interfaces/IControl";
 import { DropEnum } from "models/DropEnum";
+import TreeComponent from "views/Editor/components/TreeComponent";
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: "100%",
-      minHeight: "100%",
     }
   })
 );
@@ -46,7 +46,7 @@ const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDr
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.CONTROL,
     drop: (props: DragAndDropItem, monitor: any) => {
-      if(!monitor.isOver({shallow: true})) {
+      if (!monitor.isOver({ shallow: true })) {
         return;
       }
       handleDropCanvas(props);
@@ -69,7 +69,8 @@ const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDr
     <div ref={drop} className={classes.root} style={{ backgroundColor: backgroundColor }}>
       {
         items.map((control, i) => {
-          return <ControlItem key={control.id} control={control} moveControl={moveControl} handleDropElement={handleDropElement} />
+          return <ControlItem key={control.id} control={control} moveControl={moveControl}
+                              handleDropElement={handleDropElement} />
         })
       }
     </div>
@@ -79,7 +80,7 @@ const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDr
 const editorStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      minWidth: theme.typography.pxToRem(1000)
+      minWidth: theme.typography.pxToRem(1000),
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -114,8 +115,20 @@ const TabContent = [ControlTab];
 function Editor() {
   const classes = editorStyles();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [height, setHeight] = React.useState(window.innerHeight - 65);
   const [store] = React.useState(new EditorViewStore());
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    const resize = () => {
+      setHeight(window.innerHeight - 65);
+      console.log(99999, height);
+    };
+    window.addEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("resize", resize);
+    }
+  }, [height]);
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
@@ -128,7 +141,7 @@ function Editor() {
   const tabsStyle = classNames(classes.tabs);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ height }}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
@@ -179,23 +192,35 @@ function Editor() {
           </div>
         </Toolbar>
       </AppBar>
-      <div>
+      <div style={{ height: "100%" }}>
         <DndProvider debugMode={true} backend={Backend}>
-          <Grid container>
-            <Grid item xs={2} sm={2} md={2}>
-              <div className={classes.bordered} style={{ padding: 5, marginTop: 5 }}></div>
+          <Grid container style={{ height: "100%" }}>
+            <Grid item xs={2} sm={2} md={2} style={{ padding: 5 }}>
+              <div className={classes.bordered} style={{ overflow: "auto", height: "100%" }}>
+                <TreeComponent
+                  screens={store.screens}
+                  moveControl={store.moveControl}
+                  handleDropCanvas={store.handleDropCanvas}
+                  handleDropElement={store.handleDropElement}
+                  isCurrent={store.isCurrent}
+                  setCurrentScreen={store.setCurrentScreen}
+                  addScreen={store.addScreen}
+                  removeScreen={store.removeScreen}
+                  dictionary={store.dictionary}
+                />
+              </div>
             </Grid>
             <Grid item xs={7} sm={7} md={7} style={{ padding: 5 }}>
-              <div className={classes.bordered}>
+              <div className={classes.bordered} style={{ minHeight: "100%" }}>
                 <div style={{ transform: "translate3d(0, 0, 0)" }}>
                   <div style={{ transform: "scale(1)" }}>
                     <DeviceComponent ios={store.ios} mode={store.mode}>
                       <Content
-                        items={store.document}
+                        items={store.currentScreen.children}
                         moveControl={store.moveControl}
                         handleDropCanvas={store.handleDropCanvas}
                         handleDropElement={store.handleDropElement}
-                        />
+                      />
                     </DeviceComponent>
                   </div>
                 </div>
@@ -218,7 +243,7 @@ function Editor() {
                   }
                 </Tabs>
               </Paper>
-              <div className={classes.bordered} style={{ padding: 5, marginTop: 5 }}>
+              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: "calc(100% - 64px)" }}>
                 {React.createElement(TabContent[0])}
               </div>
             </Grid>

@@ -1,26 +1,22 @@
 import React from "react";
 import { ControlEnum } from "models/ControlEnum";
 import { DropEnum } from "models/DropEnum";
+import IMovable from "interfaces/IMovable";
+import { IScreen } from "interfaces/IScreen";
 
-export default interface IControl {
+export default interface IControl extends IMovable {
   type: ControlEnum;
   id: string;
-  name: string;
   allowChildren: boolean;
-  children: IControl[];
   parent?: IControl;
+  screen?: IScreen;
   styles: React.CSSProperties;
   dropTarget?: DropEnum;
 
-  setName(value: string): void;
-  addChild(child: IControl): void;
-  removeChild(child: IControl): void;
   setParent(parent?: IControl): void;
   setStyle<K extends keyof React.CSSProperties>(key: K, value: string | number): void;
   setTarget(target: DropEnum): void;
-  hasChild(control: IControl): boolean;
-  moveChildren(dropIndex: number, hoverIndex: number): void;
-  spliceChild(index: number, child: IControl): void;
+  setScreen(screen: IScreen): void;
 }
 
 export interface IGrid extends IControl {}

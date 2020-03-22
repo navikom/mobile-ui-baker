@@ -5,24 +5,38 @@ import { DropEnum } from "models/DropEnum";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
 import { makeStyles } from "@material-ui/core/styles";
 import { createStyles, Theme } from "@material-ui/core";
-import { blackOpacity } from "assets/jss/material-dashboard-react";
 import { ControlProps } from "interfaces/IControlProps";
 import hover from "utils/hover";
+import TextInput from "components/CustomInput/TextInput";
+import { Add, DragIndicator, Remove } from "@material-ui/icons";
+import IconButton from "@material-ui/core/IconButton";
+import classNames from "classnames";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    placeholder: {
-      position: "absolute",
-      color: blackOpacity(0.3),
-      left: "50%",
-      top: "50%",
-      transform: "translate(-50%, -50%)",
+    root: {},
+    container: {
+      flexWrap: "nowrap",
     },
     hover: {
-      "&:hover": {
-        border: "1px dotted " + blackOpacity(0.1),
-        backgroundColor: blackOpacity(0.1)
-      }
+      cursor: "move",
+    },
+    list: {
+      margin: "0 .1em",
+      padding: ".1em"
+    },
+    closed: {
+      fontSize: 0,
+      margin: 0,
+      opacity: 0,
+      padding: 0,
+      height: 0,
+      overflow: "hidden",
+      transition: "opacity .25s,font-size .1s,margin .1s,padding .1s,height .1s"
+    },
+    opened: {
+      transition: "font-size .1s,margin .1s,height .1s,padding .1s,opacity .1s"
     }
   })
 );
@@ -52,47 +66,62 @@ const borders = {
 };
 
 interface ElementProps extends ControlProps {
-  elementRef: RefObject<HTMLDivElement>
+  elementRef: RefObject<HTMLDivElement>;
+  level: number;
 }
 
 const ElementComponent: React.FC<ElementProps> =
   observer(
-    ({ control, isOverCurrent, isDragging, elementRef, moveControl, handleDropElement }) => {
-      const { id, title, styles, dropTarget, allowChildren, children } = control;
+    ({ control, isOverCurrent, isDragging, elementRef, moveControl, handleDropElement, level }) => {
+      const { id, title, dropTarget, allowChildren, children, changeTitle, opened, switchOpened } = control;
       const classes = useStyles();
-      let backgroundColor = isOverCurrent ? "rgba(0,0,0,0.05)" : styles.backgroundColor;
       let borderStyles = {};
       if (isOverCurrent) {
         borderStyles = dropTarget !== undefined ? borders[dropTarget] : {};
         if (dropTarget === DropEnum.Inside && !allowChildren) {
           borderStyles = {};
-          backgroundColor = styles.backgroundColor
         }
       }
-      let position = {};
-      if (!children.length) {
-        position = { position: "relative" };
-      }
+      const list = classNames({
+        [classes.list]: true,
+        [classes.opened]: opened,
+        [classes.closed]: !opened
+      });
+
       return (
         <div
           data-testid="control"
           ref={elementRef}
           style={{
-            ...styles, backgroundColor, ...borderStyles, ...position, ...(isDragging ? {
+            ...borderStyles,
+            ...(isDragging ? {
               position: "absolute",
               top: -1000
             } : {})
           }}
-          className={classes.hover}>
-          {!children.length && (<span className={classes.placeholder}>{title}</span>)}
-          {children && children.map((child, i) =>
-            <Item key={child.id} control={child} moveControl={moveControl} handleDropElement={handleDropElement} />)}
+          className={classes.root}
+        >
+          <Grid container direction="row" className={classes.container} alignItems="center"
+                style={{ marginLeft: `${level * 10 - 10}px` }}>
+            {children && children.length > 0 ? (
+              <IconButton onClick={switchOpened} size="small">
+                {opened ? <Remove /> : <Add />}
+              </IconButton>
+            ) : <span style={{marginLeft: 30}}/>}
+            <DragIndicator className={classes.hover} />
+            <TextInput value={title} onChange={(e) => changeTitle(e.currentTarget.value)} />
+          </Grid>
+          <div className={list}>
+            {children && children.map((child, i) =>
+              <TreeItem key={child.id} control={child} moveControl={moveControl} handleDropElement={handleDropElement}
+                        level={level + 1} />)}
+          </div>
         </div>
       )
     });
 
-const ControlItem: React.FC<ControlProps> = React.forwardRef(
-  ({ control, isDragging, isOver, isOverCurrent, connectDragSource, connectDropTarget, moveControl, handleDropElement }, ref) => {
+const ControlItem: React.FC<ControlProps & { level: number }> = React.forwardRef(
+  ({ control, isDragging, isOver, isOverCurrent, connectDragSource, connectDropTarget, moveControl, handleDropElement, level }, ref) => {
     const elementRef = React.useRef<HTMLDivElement>(null);
     connectDragSource && connectDragSource(elementRef);
     connectDropTarget && connectDropTarget(elementRef);
@@ -102,6 +131,7 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
 
     return (
       <ElementComponent
+        level={level}
         elementRef={elementRef}
         control={control}
         isDragging={isDragging}
@@ -111,7 +141,7 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
     )
   });
 
-const Item = DropTarget(
+const TreeItem = DropTarget(
   ItemTypes.CONTROL,
   {
     hover(props: ControlProps, monitor, component) {
@@ -165,4 +195,4 @@ const Item = DropTarget(
   )(ControlItem),
 );
 
-export default Item;
+export default TreeItem;

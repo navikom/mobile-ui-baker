@@ -3,6 +3,7 @@ import { XYCoord, useDragLayer } from 'react-dnd'
 import BoxDragPreview from './BoxDragPreview'
 import { ItemTypes } from "views/Editor/store/ItemTypes";
 import { ControlTabItemPreview } from "views/Editor/components/tabs/ControlTabItem";
+import { IScreen } from "interfaces/IScreen";
 
 const layerStyles: React.CSSProperties = {
   position: 'fixed',
@@ -49,7 +50,7 @@ const CustomDragLayer: React.FC = () => {
   function renderItem() {
     switch (itemType) {
       case ItemTypes.CONTROL:
-        return <BoxDragPreview><ControlTabItemPreview type={item.typeControl}/></BoxDragPreview>;
+        return <BoxDragPreview><ControlTabItemPreview type={item.typeControl} /></BoxDragPreview>;
       default:
         return null
     }

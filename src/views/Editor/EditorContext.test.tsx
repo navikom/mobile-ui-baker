@@ -10,7 +10,7 @@ describe('EditorContext.js', () => {
   it('Control rendered', () => {
     editor = render(<EditorContext />);
     const controls = editor.getAllByTestId('control');
-    expect(controls.length).toBe(1);
+    expect(controls.length).toBe(2);
   });
 
 });

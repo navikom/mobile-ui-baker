@@ -4,6 +4,7 @@ import { action } from "mobx";
 export const data = {
   controls: 'controls',
   settings: 'settings',
+  screen: 'screen',
 };
 
 class EditorDictionary extends AbstractDictionary {

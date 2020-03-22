@@ -79,6 +79,7 @@ const blackColor = "#000";
 const whiteColor = "#FFF";
 const blackOpacity = (opacity: number) => `rgba(0,0,0,${opacity})`;
 const whiteOpacity = (opacity: number) => `rgba(255,255,255,${opacity})`;
+const primaryOpacity = (opacity: number) => `rgba(156,39,176,${opacity})`;
 
 const boxShadow = {
   boxShadow:
@@ -307,5 +308,6 @@ export {
   cardLink,
   inheritPlainCardHeader,
   blackOpacity,
-  whiteOpacity
+  whiteOpacity,
+  primaryOpacity
 };
