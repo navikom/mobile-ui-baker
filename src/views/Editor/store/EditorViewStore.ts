@@ -252,6 +252,10 @@ class EditorViewStore {
 
   };
 
+  @action addItem(control: IControl) {
+    this.document.push(control);
+  }
+
   @action handleTabTool = (_: any, index: number) => {
     this.tabToolsIndex = index;
   };

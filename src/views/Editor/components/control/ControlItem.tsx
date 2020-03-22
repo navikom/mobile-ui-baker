@@ -74,7 +74,10 @@ const ElementComponent: React.FC<ElementProps> =
       position = { position: "relative" };
     }
     return (
-      <div ref={elementRef} style={{ ...styles, backgroundColor, ...borderStyles, ...position, ...(isDragging ? {position: "absolute", top: -1000} : {}) }}
+      <div
+        data-testid="control"
+        ref={elementRef}
+        style={{ ...styles, backgroundColor, ...borderStyles, ...position, ...(isDragging ? {position: "absolute", top: -1000} : {}) }}
            className={classes.hover}>
         {!children.length && (<span className={classes.placeholder}>{name}</span>)}
         {children && children.map((child, i) =>
