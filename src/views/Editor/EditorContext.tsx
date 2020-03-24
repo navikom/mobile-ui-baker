@@ -26,6 +26,7 @@ import { ItemTypes } from "views/Editor/store/ItemTypes";
 import IControl from "interfaces/IControl";
 import { DropEnum } from "models/DropEnum";
 import TreeComponent from "views/Editor/components/TreeComponent";
+import SettingsTab from "views/Editor/components/tabs/SettingsTab";
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -110,7 +111,7 @@ function a11yProps(index: number) {
   };
 }
 
-const TabContent = [ControlTab];
+const TabContent = [ControlTab, SettingsTab];
 
 function Editor() {
   const classes = editorStyles();
@@ -207,6 +208,10 @@ function Editor() {
                   addScreen={store.addScreen}
                   removeScreen={store.removeScreen}
                   dictionary={store.dictionary}
+                  cloneControl={store.cloneControl}
+                  cloneScreen={store.cloneScreen}
+                  selectControl={store.selectControl}
+                  isSelected={store.isSelected}
                 />
               </div>
             </Grid>
@@ -244,7 +249,7 @@ function Editor() {
                 </Tabs>
               </Paper>
               <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: "calc(100% - 64px)" }}>
-                {React.createElement(TabContent[0])}
+                {React.createElement(TabContent[store.tabToolsIndex], store.tabProps)}
               </div>
             </Grid>
           </Grid>

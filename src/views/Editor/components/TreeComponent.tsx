@@ -1,7 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import TextInput from "components/CustomInput/TextInput";
-import { IScreen } from "interfaces/IScreen";
 import { createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import { Add, AddCircleOutline, Delete, FilterNone, Remove } from "@material-ui/icons";
@@ -46,10 +45,13 @@ interface ScreenComponentProps {
   moveControl: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   handleDropCanvas: (item: DragAndDropItem) => void;
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
+  cloneControl: (control: IControl) => void;
+  selectControl: (control: IControl) => void;
+  isSelected: (control: IControl) => boolean;
 }
 
 const ScreenComponent: React.FC<ScreenComponentProps> = observer(
-  ({ opened, controls, moveControl, handleDropElement, handleDropCanvas }) => {
+  ({ opened, controls, moveControl, handleDropElement, handleDropCanvas, cloneControl, selectControl, isSelected }) => {
     const classes = useStyles();
     const list = classNames({
       [classes.list]: true,
@@ -58,21 +60,34 @@ const ScreenComponent: React.FC<ScreenComponentProps> = observer(
     });
     return <div className={list}>
       {controls.map((control, i) =>
-        <TreeItem key={control.id} control={control} moveControl={moveControl} handleDropElement={handleDropElement}
-                  level={0} />)}
+        <TreeItem
+          key={control.id}
+          control={control}
+          moveControl={moveControl}
+          handleDropElement={handleDropElement}
+          level={0}
+          cloneControl={cloneControl}
+          selectControl={selectControl}
+          isSelected={isSelected}
+        />)
+      }
     </div>
   });
 
 interface TreeComponentProps {
-  screens: IScreen[];
+  screens: IControl[];
   moveControl: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   handleDropCanvas: (item: DragAndDropItem) => void;
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
-  isCurrent: (screen: IScreen) => boolean;
-  setCurrentScreen: (screen: IScreen) => void;
+  isCurrent: (screen: IControl) => boolean;
+  setCurrentScreen: (screen: IControl) => void;
   addScreen: () => void;
-  removeScreen: (screen: IScreen) => void;
+  removeScreen: (screen: IControl) => void;
   dictionary: EditorDictionary;
+  cloneScreen: (screen: IControl) => void;
+  cloneControl: (control: IControl) => void;
+  selectControl: (control: IControl) => void;
+  isSelected: (control: IControl) => boolean;
 }
 
 const TreeComponent: React.FC<TreeComponentProps> = (
@@ -85,7 +100,11 @@ const TreeComponent: React.FC<TreeComponentProps> = (
     setCurrentScreen,
     addScreen,
     dictionary,
-    removeScreen
+    removeScreen,
+    cloneScreen,
+    cloneControl,
+    selectControl,
+    isSelected
   }) => {
   const classes = useStyles();
   return (
@@ -97,7 +116,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
         {dictionary.defValue(EditorDictionary.keys.screen).toUpperCase()}
       </Grid>
       {screens.map((screen, i) => (
-        <div key={i.toString()} style={{marginTop: 17}}>
+        <div key={i.toString()} style={{marginTop: 25}}>
           <Grid container className={isCurrent(screen) ? classes.selected : undefined}>
             <IconButton onClick={screen.switchOpened} size="small">
               {screen.opened ? <Remove /> : <Add />}
@@ -108,7 +127,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
               onChange={(e) => screen.changeTitle(e.currentTarget.value)}
               onClick={() => setCurrentScreen(screen)}
             />
-            <IconButton size="small">
+            <IconButton size="small" onClick={() => cloneScreen(screen)}>
               <FilterNone />
             </IconButton>
             {
@@ -124,7 +143,11 @@ const TreeComponent: React.FC<TreeComponentProps> = (
             controls={screen.children}
             moveControl={moveControl}
             handleDropElement={handleDropElement}
-            handleDropCanvas={handleDropCanvas} />
+            handleDropCanvas={handleDropCanvas}
+            cloneControl={cloneControl}
+            selectControl={selectControl}
+            isSelected={isSelected}
+          />
         </div>
       ))}
     </>

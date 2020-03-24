@@ -63,6 +63,7 @@ const androidStyles = makeStyles((theme: Theme) =>
       width: '100%',
       marginTop: '6%',
       height: '90%',
+      marginLeft: theme.typography.pxToRem(1)
     }
   })
 );
@@ -113,7 +114,11 @@ const IOSDevice: React.FC<IDevice> = ({children, background= whiteColor, mode = 
 const AndroidDevice: React.FC<IDevice> = ({children, background= whiteColor, mode = Mode.WHITE}) => {
   const classes = useStyles();
   const extraClasses = androidStyles();
-  const inner = classNames(classes.inner, extraClasses.inner, mode === Mode.DARK && extraClasses.innerBlack);
+  const inner = classNames({
+    [classes.inner]: true,
+    [extraClasses.inner]: true,
+    [extraClasses.innerBlack]: mode === Mode.DARK
+  });
   const time = moment().format("HH:mm");
   const timeStyle = classNames(mode === Mode.DARK ? classes.text : classes.textBlack, extraClasses.time);
   return (

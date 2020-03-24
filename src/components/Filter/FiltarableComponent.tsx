@@ -70,7 +70,7 @@ function FilterGrid(props: FormItemType) {
     {
      props.value !== undefined && !props.options && (
        <FormControl fullWidth>
-        <LabeledInput type={props.type} value={props.value} onChange={(e: string) => props.onChange(e, "value")} />
+        <LabeledInput type={props.type} value={props.value} onChange={(e: string | number) => props.onChange(e as string, "value")} />
        </FormControl>
      )
     }
@@ -155,14 +155,14 @@ function FilterGrid(props: FormItemType) {
          <FormControl fullWidth>
           <LabeledInput
             label={Dictionary.defValue(DictionaryService.keys.min)}
-            value={props.min} onChange={(e: string) => props.onChange(e, "min")} />
+            value={props.min} onChange={(e: string | number) => props.onChange(e as string, "min")} />
          </FormControl>
         </Grid>
         <Grid item xs={6} sm={6} md={6} className={containerInner}>
          <FormControl fullWidth>
           <LabeledInput
             label={Dictionary.defValue(DictionaryService.keys.max)}
-            value={props.max} onChange={(e: string) => props.onChange(e, "max")} />
+            value={props.max} onChange={(e: string | number) => props.onChange(e as string, "max")} />
          </FormControl>
         </Grid>
        </Grid>
@@ -173,7 +173,7 @@ function FilterGrid(props: FormItemType) {
        <FormControl fullWidth>
         <LabeledInput
           label={Dictionary.defValue(DictionaryService.keys.min)}
-          value={props.min} onChange={(e: string) => props.onChange(e, "min")} />
+          value={props.min} onChange={(e: string | number) => props.onChange(e as string, "min")} />
        </FormControl>
      )
     }
@@ -182,7 +182,7 @@ function FilterGrid(props: FormItemType) {
        <FormControl fullWidth>
         <LabeledInput
           label={Dictionary.defValue(DictionaryService.keys.max)}
-          value={props.max} onChange={(e: string) => props.onChange(e, "max")} />
+          value={props.max} onChange={(e: string | number) => props.onChange(e as string, "max")} />
        </FormControl>
      )
     }

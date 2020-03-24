@@ -125,9 +125,9 @@ const EmailFormDialog = (props: {
   );
   const { open, handleClose, onSend } = props;
 
-  const onChange = (email: string) => {
+  const onChange = (email: string | number) => {
     setErrors(validate({ email }, constraints));
-    setEmail(email);
+    setEmail(email as string);
   };
 
   const onSendHandler = () => {

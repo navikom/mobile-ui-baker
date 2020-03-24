@@ -1,25 +1,30 @@
 import React from "react";
+import { IObservableArray } from "mobx";
 import { ControlEnum } from "models/ControlEnum";
 import { DropEnum } from "models/DropEnum";
 import IMovable from "interfaces/IMovable";
-import { IScreen } from "interfaces/IScreen";
+import ICSSProperty from "interfaces/ICSSProperty";
 
 export default interface IControl extends IMovable {
   type: ControlEnum;
   id: string;
   allowChildren: boolean;
-  parent?: IControl;
-  screen?: IScreen;
+  parentId?: string;
+  cssProperties: IObservableArray<ICSSProperty>;
   styles: React.CSSProperties;
   dropTarget?: DropEnum;
+  visible: boolean;
+  toJSON: {[key: string]: any};
 
-  setParent(parent?: IControl): void;
-  setStyle<K extends keyof React.CSSProperties>(key: K, value: string | number): void;
+  setParent(parentId?: string): void;
   setTarget(target: DropEnum): void;
-  setScreen(screen: IScreen): void;
+  switchVisibility(): void;
+  deleteSelf(): void;
+  clone(): IControl;
 }
 
-export interface IGrid extends IControl {}
+export interface IGrid extends IControl {
+}
 
 export interface IButton extends IControl {}
 

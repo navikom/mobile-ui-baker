@@ -75,11 +75,12 @@ const grayColor = [
   "#eee",
   "#e7e7e7"
 ];
-const blackColor = "#000";
-const whiteColor = "#FFF";
+const blackColor = "#000000";
+const whiteColor = "#FFFFFF";
 const blackOpacity = (opacity: number) => `rgba(0,0,0,${opacity})`;
 const whiteOpacity = (opacity: number) => `rgba(255,255,255,${opacity})`;
 const primaryOpacity = (opacity: number) => `rgba(156,39,176,${opacity})`;
+const warningOpacity = (opacity: number) => `rgba(255,152,0,${opacity})`;
 
 const boxShadow = {
   boxShadow:
@@ -309,5 +310,6 @@ export {
   inheritPlainCardHeader,
   blackOpacity,
   whiteOpacity,
-  primaryOpacity
+  primaryOpacity,
+  warningOpacity
 };

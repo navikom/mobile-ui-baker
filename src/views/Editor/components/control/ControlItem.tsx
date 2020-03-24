@@ -8,9 +8,13 @@ import { createStyles, Theme } from "@material-ui/core";
 import { blackOpacity } from "assets/jss/material-dashboard-react";
 import { ControlProps } from "interfaces/IControlProps";
 import hover from "utils/hover";
+import classNames from "classnames";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    root: {
+      transition: "all 0.1s",
+    },
     placeholder: {
       position: "absolute",
       color: blackOpacity(0.3),
@@ -20,9 +24,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     hover: {
       "&:hover": {
+        cursor: "move",
         border: "1px dotted " + blackOpacity(0.1),
-        backgroundColor: blackOpacity(0.1)
+        backgroundColor: blackOpacity(0.05)
       }
+    },
+    invisible: {
+      opacity: 0
     }
   })
 );
@@ -73,6 +81,12 @@ const ElementComponent: React.FC<ElementProps> =
       if (!children.length) {
         position = { position: "relative" };
       }
+
+      const controlClass = classNames({
+        [classes.hover]: true,
+        [classes.invisible]: !control.visible
+      });
+
       return (
         <div
           data-testid="control"
@@ -81,9 +95,9 @@ const ElementComponent: React.FC<ElementProps> =
             ...styles, backgroundColor, ...borderStyles, ...position, ...(isDragging ? {
               position: "absolute",
               top: -1000
-            } : {})
+            } : {}),
           }}
-          className={classes.hover}>
+          className={controlClass}>
           {!children.length && (<span className={classes.placeholder}>{title}</span>)}
           {children && children.map((child, i) =>
             <Item key={child.id} control={child} moveControl={moveControl} handleDropElement={handleDropElement} />)}

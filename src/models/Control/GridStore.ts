@@ -1,17 +1,24 @@
 import { v4 as uuidv4 } from "uuid";
+import { action } from "mobx";
 import Control from "models/Control/Control";
-import { IGrid } from "interfaces/IControl";
+import IControl, { IGrid } from "interfaces/IControl";
 import { ControlEnum } from "models/ControlEnum";
-import { observable } from "mobx";
-import { IScreen } from "interfaces/IScreen";
+import CreateControl from "models/Control/ControlStores";
 
 class GridStore extends Control implements IGrid {
-  constructor(id: string, screen?: IScreen) {
-    super(ControlEnum.Grid, id, "Grid", true, screen);
+  constructor(id: string) {
+    super(ControlEnum.Grid, id, "Grid", true);
   }
 
-  static create(screen?: IScreen) {
-    return new GridStore(uuidv4(), screen);
+  @action clone(): IGrid {
+    const clone = CreateControl(ControlEnum.Grid);
+    this.children.forEach(child => clone.addChild(child.clone() as IControl));
+    super.cloneProps(clone);
+    return clone;
+  }
+
+  static create() {
+    return new GridStore(uuidv4());
   }
 }
 

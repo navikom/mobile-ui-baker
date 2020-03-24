@@ -8,14 +8,21 @@ import { createStyles, Theme } from "@material-ui/core";
 import { ControlProps } from "interfaces/IControlProps";
 import hover from "utils/hover";
 import TextInput from "components/CustomInput/TextInput";
-import { Add, DragIndicator, Remove } from "@material-ui/icons";
+import { Add, Delete, DragIndicator, FilterNone, Remove, Visibility, VisibilityOff } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import classNames from "classnames";
 import Grid from "@material-ui/core/Grid";
+import IControl from "interfaces/IControl";
+import { warningOpacity } from "assets/jss/material-dashboard-react";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
+    root: {
+      transition: "all 0.1s",
+    },
+    input: {
+      width: theme.typography.pxToRem(80)
+    },
     container: {
       flexWrap: "nowrap",
     },
@@ -37,6 +44,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     opened: {
       transition: "font-size .1s,margin .1s,height .1s,padding .1s,opacity .1s"
+    },
+    selected: {
+      backgroundColor: warningOpacity(0.1)
+    },
+    selectedInput: {
+      backgroundColor: warningOpacity(0.01),
     }
   })
 );
@@ -68,11 +81,25 @@ const borders = {
 interface ElementProps extends ControlProps {
   elementRef: RefObject<HTMLDivElement>;
   level: number;
+  cloneControl: (control: IControl) => void;
+  selectControl: (control: IControl) => void;
+  isSelected: (control: IControl) => boolean;
 }
 
 const ElementComponent: React.FC<ElementProps> =
   observer(
-    ({ control, isOverCurrent, isDragging, elementRef, moveControl, handleDropElement, level }) => {
+    ({
+       control,
+       isOverCurrent,
+       isDragging,
+       elementRef,
+       moveControl,
+       handleDropElement,
+       level,
+       cloneControl,
+       selectControl,
+       isSelected
+     }) => {
       const { id, title, dropTarget, allowChildren, children, changeTitle, opened, switchOpened } = control;
       const classes = useStyles();
       let borderStyles = {};
@@ -88,6 +115,17 @@ const ElementComponent: React.FC<ElementProps> =
         [classes.closed]: !opened
       });
 
+      const selected = isSelected(control);
+
+      const itemClass = classNames({
+        [classes.container]: true,
+        [classes.selected]: selected
+      });
+      const inputClass = classNames({
+        [classes.input]: true,
+        [classes.selectedInput]: selected
+      });
+
       return (
         <div
           data-testid="control"
@@ -101,27 +139,70 @@ const ElementComponent: React.FC<ElementProps> =
           }}
           className={classes.root}
         >
-          <Grid container direction="row" className={classes.container} alignItems="center"
+          <Grid container direction="row" className={itemClass} alignItems="center"
                 style={{ marginLeft: `${level * 10 - 10}px` }}>
             {children && children.length > 0 ? (
               <IconButton onClick={switchOpened} size="small">
                 {opened ? <Remove /> : <Add />}
               </IconButton>
-            ) : <span style={{marginLeft: 30}}/>}
+            ) : <span style={{ marginLeft: 30 }} />}
             <DragIndicator className={classes.hover} />
-            <TextInput value={title} onChange={(e) => changeTitle(e.currentTarget.value)} />
+            <TextInput
+              className={inputClass}
+              value={title}
+              onChange={(e) => changeTitle(e.currentTarget.value)}
+              onClick={() => selectControl(control)}
+            />
+            <IconButton size="small" onClick={control.switchVisibility}>
+              {control.visible ? <Visibility /> : <VisibilityOff color="disabled" />}
+            </IconButton>
+            <IconButton size="small" onClick={() => cloneControl(control)}>
+              <FilterNone />
+            </IconButton>
+            <IconButton size="small" onClick={control.deleteSelf}>
+              <Delete />
+            </IconButton>
           </Grid>
           <div className={list}>
             {children && children.map((child, i) =>
-              <TreeItem key={child.id} control={child} moveControl={moveControl} handleDropElement={handleDropElement}
-                        level={level + 1} />)}
+              <TreeItem
+                key={child.id}
+                control={child}
+                moveControl={moveControl}
+                handleDropElement={handleDropElement}
+                level={level + 1}
+                cloneControl={cloneControl}
+                selectControl={selectControl}
+                isSelected={isSelected}
+              />)
+            }
           </div>
         </div>
       )
     });
 
-const ControlItem: React.FC<ControlProps & { level: number }> = React.forwardRef(
-  ({ control, isDragging, isOver, isOverCurrent, connectDragSource, connectDropTarget, moveControl, handleDropElement, level }, ref) => {
+interface ControlItemProps extends ControlProps {
+  level: number;
+  cloneControl: (control: IControl) => void;
+  selectControl: (control: IControl) => void;
+  isSelected: (control: IControl) => boolean;
+}
+
+const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
+  ({
+     control,
+     isDragging,
+     isOver,
+     isOverCurrent,
+     connectDragSource,
+     connectDropTarget,
+     moveControl,
+     handleDropElement,
+     level,
+     cloneControl,
+     selectControl,
+     isSelected
+   }, ref) => {
     const elementRef = React.useRef<HTMLDivElement>(null);
     connectDragSource && connectDragSource(elementRef);
     connectDropTarget && connectDropTarget(elementRef);
@@ -137,12 +218,16 @@ const ControlItem: React.FC<ControlProps & { level: number }> = React.forwardRef
         isDragging={isDragging}
         isOverCurrent={isOverCurrent}
         handleDropElement={handleDropElement}
-        moveControl={moveControl} />
+        moveControl={moveControl}
+        cloneControl={cloneControl}
+        selectControl={selectControl}
+        isSelected={isSelected}
+      />
     )
   });
 
 const TreeItem = DropTarget(
-  ItemTypes.CONTROL,
+  ItemTypes.TREE_CONTROL,
   {
     hover(props: ControlProps, monitor, component) {
 
@@ -151,6 +236,9 @@ const TreeItem = DropTarget(
       }
 
       const monitorItem = monitor.getItem();
+      if (!monitorItem.treeItem) {
+        return;
+      }
 
       const dropAction = hover(props, monitor, component);
 
@@ -169,6 +257,9 @@ const TreeItem = DropTarget(
         return;
       }
       const dragItem = monitor.getItem();
+      if (!dragItem.treeItem) {
+        return;
+      }
       const dropAction = hover(props, monitor, component.decoratedRef.current);
       props.handleDropElement(props.control, dragItem.control, dropAction);
     }
@@ -180,11 +271,12 @@ const TreeItem = DropTarget(
   }),
 )(
   DragSource(
-    ItemTypes.CONTROL,
+    ItemTypes.TREE_CONTROL,
     {
       beginDrag: (props: ControlProps) => {
         return {
           control: props.control,
+          treeItem: true,
         }
       }
     },

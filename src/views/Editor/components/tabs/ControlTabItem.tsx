@@ -6,7 +6,7 @@ import { createStyles, Theme } from "@material-ui/core";
 import { ControlEnum } from "models/ControlEnum";
 import Paper from "@material-ui/core/Paper";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
-import { ControlStores } from "views/Editor/store/EditorViewStore";
+import { whiteOpacity } from "assets/jss/material-dashboard-react";
 
 const controlStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -14,6 +14,7 @@ const controlStyles = makeStyles((theme: Theme) =>
       cursor: "move",
       alignItems: "center",
       padding: "0.5rem 1rem",
+      backgroundColor: whiteOpacity(0.5),
     }
   })
 );
@@ -36,13 +37,11 @@ const ControlTabItem: React.FC<ControlProps> = ({ type }) => {
   const classes = controlStyles();
 
   const [_, drag, preview] = useDrag({
-    item: { type: ItemTypes.CONTROL, typeControl: type, control: ControlStores[type].create() },
+    item: { type: ItemTypes.CONTROL, typeControl: type },
     begin: () => {
-      const control = ControlStores[type].create();
       return {
         type: ItemTypes.CONTROL,
         typeControl: type,
-        control
       }
     },
     collect: (monitor: any) => ({

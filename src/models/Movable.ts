@@ -17,6 +17,7 @@ export default abstract class Movable implements IMovable {
 
   @action addChild(child: IControl): void {
     this.children.push(child);
+    child.setParent((this as unknown as IControl).id);
   }
 
   @action removeChild(child: IControl): void {
@@ -35,6 +36,7 @@ export default abstract class Movable implements IMovable {
 
   @action spliceChild(index: number, child: IControl): void {
     this.children.splice(index, 0, child);
+    child.setParent((this as unknown as IControl).id);
   }
 
   @action setOpened(opened: boolean): void {

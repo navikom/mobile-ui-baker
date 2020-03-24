@@ -1,7 +1,8 @@
 import IControl from "interfaces/IControl";
+import { IObservableArray } from "mobx";
 
 export default interface IMovable {
-  children: IControl[];
+  children: IObservableArray<IControl>;
   opened: boolean;
   title: string;
 

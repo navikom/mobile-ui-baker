@@ -48,7 +48,7 @@ const SegmentDialog = (props: {store: ITestStep}) => {
  const extraClasses = extraStyles();
  const centerNote = classNames(classes.note, classes.center, extraClasses.label);
 
- const onChange = (name: string) => {
+ const onChange = (name: string | number) => {
   setErrors(validate({name}, constraints));
   store.currentSegment.update({name} as ITestSegment);
  };

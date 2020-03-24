@@ -1,15 +1,29 @@
-import { withStyles } from "@material-ui/core";
+import React, { CSSProperties } from "react";
+import { InputBaseComponentProps, PropTypes, withStyles } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import React from "react";
 
-const Input = ({ ...props }) => {
+interface InputProps {
+  onChange?: (value: string | number) => void;
+  className?: string;
+  type?: string;
+  style?: CSSProperties;
+  label?: React.ReactNode;
+  value?: string | number;
+  error?: boolean;
+  margin?: PropTypes.Margin;
+  id?: string;
+  helperText?: string;
+  fullWidth?: boolean;
+  inputProps?: InputBaseComponentProps;
+}
+const Input: React.FC<InputProps> = ({ onChange, ...props }) => {
   return (
     <TextField
       {...props}
       variant="outlined"
       fullWidth
       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-        props.onChange(e.target.value)
+        onChange && onChange(e.target.value)
       }
     />
   );
