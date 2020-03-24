@@ -82,7 +82,7 @@ interface ElementProps extends ControlProps {
   elementRef: RefObject<HTMLDivElement>;
   level: number;
   cloneControl: (control: IControl) => void;
-  selectControl: (control: IControl) => void;
+  selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
 }
 
@@ -100,7 +100,7 @@ const ElementComponent: React.FC<ElementProps> =
        selectControl,
        isSelected
      }) => {
-      const { id, title, dropTarget, allowChildren, children, changeTitle, opened, switchOpened } = control;
+      const { title, dropTarget, allowChildren, children, changeTitle, opened, switchOpened } = control;
       const classes = useStyles();
       let borderStyles = {};
       if (isOverCurrent) {
@@ -159,7 +159,10 @@ const ElementComponent: React.FC<ElementProps> =
             <IconButton size="small" onClick={() => cloneControl(control)}>
               <FilterNone />
             </IconButton>
-            <IconButton size="small" onClick={control.deleteSelf}>
+            <IconButton size="small" onClick={() => {
+              selected && selectControl();
+              control.deleteSelf()
+            }}>
               <Delete />
             </IconButton>
           </Grid>
@@ -184,7 +187,7 @@ const ElementComponent: React.FC<ElementProps> =
 interface ControlItemProps extends ControlProps {
   level: number;
   cloneControl: (control: IControl) => void;
-  selectControl: (control: IControl) => void;
+  selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
 }
 

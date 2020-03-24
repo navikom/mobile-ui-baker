@@ -11,6 +11,8 @@ import { KeyboardArrowUp } from "@material-ui/icons";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import IControl from "interfaces/IControl";
+import Typography from "@material-ui/core/Typography";
+import { observer } from "mobx-react-lite";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,16 +46,19 @@ interface ControlDetailsProps {
   control?: IControl;
 }
 
-const ControlDetails: React.FC<ControlDetailsProps> = ({selectControl}) => {
+const ControlDetails: React.FC<ControlDetailsProps> = observer((
+  {selectControl, control}
+  ) => {
   const classes = useStyles();
   return (
     <div>
       <Button fullWidth variant="outlined" onClick={() => selectControl && selectControl()}>
         <KeyboardArrowUp />
       </Button>
+      <Typography variant="subtitle2" align="center" style={{marginTop: 10}}>{control!.title}</Typography>
     </div>
   )
-};
+});
 
 const Control: React.FC<IEditorTabsProps> = ({ selectedControl, selectControl }) => {
   return (

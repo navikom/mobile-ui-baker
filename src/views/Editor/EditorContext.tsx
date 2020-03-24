@@ -32,6 +32,7 @@ const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: "100%",
+      height: "100%"
     }
   })
 );

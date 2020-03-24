@@ -21,6 +21,7 @@ export default interface IControl extends IMovable {
   switchVisibility(): void;
   deleteSelf(): void;
   clone(): IControl;
+  mergeProperties(props: ICSSProperty[]): void;
 }
 
 export interface IGrid extends IControl {

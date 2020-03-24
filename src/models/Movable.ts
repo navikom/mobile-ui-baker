@@ -13,7 +13,7 @@ export default abstract class Movable implements IMovable {
 
   @action changeTitle = (title: string) => {
     this.title = title;
-  }
+  };
 
   @action addChild(child: IControl): void {
     this.children.push(child);

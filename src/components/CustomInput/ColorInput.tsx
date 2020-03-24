@@ -1,19 +1,20 @@
 import React from "react";
 import { makeStyles, withStyles } from "@material-ui/core";
 import LabeledInput from "components/CustomInput/LabeledInput";
-import setContrast from "utils/color";
 
 const useStyles = makeStyles(theme => ({
   root: {
     position: "relative"
   },
   input: {
+    padding: 0,
     position: "absolute",
-    top: 0,
-    left: 0,
-    height: "100%",
-    width: "100%",
-    opacity: 0,
+    top: "50%",
+    left: 5,
+    transform: "translate(0, -50%)",
+    height: 35,
+    width: 35,
+    border: "none"
   }
 }));
 
@@ -28,20 +29,22 @@ const ColorInput: React.FC<ColorInputProps> = (
     color,
     onChange,
     label,
-    ...rest }) => {
+    ...rest
+  }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <LabeledInput
         {...rest}
         className={classes.root}
-        style={{ width: 130 }}
         value={color}
+        onChange={(e) => onChange && onChange(e as string)}
         inputProps={{
-          style: { color: setContrast(color), height: 25, padding: "3px 5px", backgroundColor: color }
+          style: { marginLeft: 40, width: 70 }
         }}
       />
-      <input type="color" className={classes.input} value={color} onChange={(e) => onChange && onChange(e.currentTarget.value)} />
+      <input type="color" className={classes.input} value={color} onChange={(e) =>
+        onChange && onChange(e.currentTarget.value)} />
     </div>
   );
 };
@@ -49,7 +52,7 @@ const ColorInput: React.FC<ColorInputProps> = (
 export default withStyles({
   root: {
     "& .MuiInputBase-root": {
-      padding: "5px 8px"
+      padding: 0
     }
   }
 })(ColorInput);

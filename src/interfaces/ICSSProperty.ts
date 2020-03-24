@@ -1,12 +1,16 @@
 import React from "react";
+import { IObservableArray } from "mobx";
 
 export default interface ICSSProperty {
   key: keyof React.CSSProperties;
   value: string | number;
-  enabled: boolean;
   toJSON: {[key: string]: any};
+  expanded: boolean;
+  defaultValue: string | number;
+  children: IObservableArray<ICSSProperty>;
 
-  switchEnabled(): void;
   setValue(value: string | number): void;
   clone(): ICSSProperty;
+  switchExpanded(): void;
+
 }

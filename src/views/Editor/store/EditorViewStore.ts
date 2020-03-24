@@ -76,8 +76,9 @@ class EditorViewStore {
     newData && this.dictionary.setData(newData);
     this.screens = observable([CreateControl(ControlEnum.Grid)]);
     this.currentScreen = this.screens[0];
+    this.currentScreen.changeTitle("Screen");
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
-    // this.selectControl(this.currentScreen.children[0]);
+    this.selectControl(this.currentScreen.children[0]);
   }
 
   @action switchMode = () => {
@@ -129,6 +130,9 @@ class EditorViewStore {
   //  4.3 dropAction === Below -> drop source inside parent.parent below parent / \  which equal parent.parent        /
   @action handleDropElement = (parent: IControl, source: IControl, dropAction: DropEnum) => {
 
+    if(!Control.has(source.id)) {
+      source = CreateControl(source.type);
+    }
     const sParent = source.parentId ? Control.getById(source.parentId) : undefined;
     const pParent = parent.parentId ? Control.getById(parent.parentId) : undefined;
 
@@ -218,8 +222,12 @@ class EditorViewStore {
   };
 
   @action handleDropCanvas = (item: DragAndDropItem) => {
-    const control = item.control;
+    let control = item.control;
     if (!control) return;
+
+    if(!Control.has(control.id)) {
+      control = CreateControl(control.type);
+    }
 
     if (control.parentId) {
       const parent = Control.getById(control.parentId);
@@ -240,6 +248,7 @@ class EditorViewStore {
 
   @action addScreen = () => {
     const screen = CreateControl(ControlEnum.Grid);
+    screen.changeTitle("Screen");
     this.screens.push(screen);
     this.currentScreen = screen;
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));

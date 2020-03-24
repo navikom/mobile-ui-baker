@@ -46,7 +46,7 @@ interface ScreenComponentProps {
   handleDropCanvas: (item: DragAndDropItem) => void;
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   cloneControl: (control: IControl) => void;
-  selectControl: (control: IControl) => void;
+  selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
 }
 
@@ -86,7 +86,7 @@ interface TreeComponentProps {
   dictionary: EditorDictionary;
   cloneScreen: (screen: IControl) => void;
   cloneControl: (control: IControl) => void;
-  selectControl: (control: IControl) => void;
+  selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
 }
 

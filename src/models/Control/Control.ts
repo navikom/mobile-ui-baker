@@ -37,8 +37,15 @@ class Control extends Movable implements IControl {
   @computed get styles() {
     const styles: React.CSSProperties = {};
     this.cssProperties.forEach((prop) => {
-      // @ts-ignore
-      prop.enabled && (styles[prop.key] = prop.value);
+      if (prop.expanded) {
+        prop.children.forEach((child) => {
+          // @ts-ignore
+          styles[child.key] = child.value;
+        })
+      } else {
+        // @ts-ignore
+        styles[prop.key] = prop.value;
+      }
     });
     return styles;
   }
@@ -49,7 +56,33 @@ class Control extends Movable implements IControl {
     this.type = type;
     this.allowChildren = allowChildren;
     this.title = title;
-    this.cssProperties = observable([new CSSProperty("padding", "1rem", true)]);
+    this.cssProperties = observable([
+      new CSSProperty("background", "#ffffff", "#ffffff"),
+      new CSSProperty("padding", 15, 0, [
+        new CSSProperty("paddingTop", 0, 0),
+        new CSSProperty("paddingRight", 0, 0),
+        new CSSProperty("paddingBottom", 0, 0),
+        new CSSProperty("paddingLeft", 0, 0),
+      ]),
+      new CSSProperty("margin", 0, 0, [
+        new CSSProperty("marginTop", 0, 0),
+        new CSSProperty("marginRight", 0, 0),
+        new CSSProperty("marginBottom", 0, 0),
+        new CSSProperty("marginLeft", 0, 0),
+      ]),
+      new CSSProperty("border", "none", "none", [
+        new CSSProperty("borderTop", "none", "none"),
+        new CSSProperty("borderRight", "none", "none"),
+        new CSSProperty("borderBottom", "none", "none"),
+        new CSSProperty("borderLeft", "none", "none"),
+      ]),
+      new CSSProperty("borderRadius", 0, 0, [
+        new CSSProperty("borderTopLeftRadius", 0, 0),
+        new CSSProperty("borderTopRightRadius", 0, 0),
+        new CSSProperty("borderBottomRightRadius", 0, 0),
+        new CSSProperty("borderBottomLeftRadius", 0, 0),
+      ]),
+    ]);
   }
 
   @action switchVisibility = () => {
@@ -65,7 +98,7 @@ class Control extends Movable implements IControl {
   }
 
   @action deleteSelf = () => {
-    if(this.parentId) {
+    if (this.parentId) {
       const parent = Control.getById(this.parentId);
       parent && parent.removeChild(this);
     }
@@ -76,8 +109,28 @@ class Control extends Movable implements IControl {
     clone.cssProperties.replace(this.cssProperties.map(prop => prop.clone()));
   }
 
+  @action mergeProperties(props: ICSSProperty[]) {
+    const sliced = props.slice();
+    let prop: ICSSProperty;
+    while (prop = sliced.shift() as ICSSProperty) {
+      const same = this.cssProperties.find(p => p.key === prop.key);
+      if (same) {
+        same.value = prop.value;
+        same.children.forEach((child, i) => (same.value = prop.children[i].value));
+      } else {
+        this.cssProperties.push(prop.clone());
+      }
+    }
+  }
+
   clone(): IControl {
     throw new ErrorHandler("Redefine in children");
+  }
+
+  //######### static ##########//
+
+  static has(controlId: string) {
+    return this.controls.some(control => control.id === controlId);
   }
 
   static getById(id: string) {
@@ -90,7 +143,7 @@ class Control extends Movable implements IControl {
 
   static getOrCreate(instance: ModelCtor, control: IControl) {
     let contr = this.getById(control.id);
-    if(!contr) {
+    if (!contr) {
       contr = Control.fromJSON(instance, control);
       this.addItem(contr);
     }
