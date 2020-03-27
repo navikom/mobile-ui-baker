@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import IOSSwitch from "components/Switch/IOSSwitch";
 import { primaryOpacity, whiteOpacity } from "assets/jss/material-dashboard-react";
 import IconButton from "@material-ui/core/IconButton";
-import { Info, InfoOutlined } from "@material-ui/icons";
+import { InfoOutlined } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 import Popover from "@material-ui/core/Popover";
 import Card from "@material-ui/core/Card";
@@ -17,6 +17,7 @@ import NumberInput from "components/CustomInput/NumberInput";
 import ColorInput from "components/CustomInput/ColorInput";
 import LabeledInput from "components/CustomInput/LabeledInput";
 import CustomSelect from "components/CustomSelect/CustomSelect";
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,7 +31,8 @@ const useStyles = makeStyles(theme => ({
   container: {
     margin: "5px 3px 10px",
     padding: "5px 10px",
-    backgroundColor: whiteOpacity(.5)
+    backgroundColor: whiteOpacity(.5),
+    width: "100%"
   },
   closed: {
     fontSize: 0,
@@ -143,7 +145,7 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
             )
           }
         </div>
-        <IOSSwitch checked={enabled} />
+        <Switch checked={enabled} color="primary"/>
       </Grid>
       <div className={container}>
         <Grid container justify="space-between">
@@ -171,7 +173,7 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
           expanded !== undefined && (
             <div className={expand} onClick={switchExpanded}>
               <Typography>{dictionary.defValue(EditorDictionary.keys.moreOptions)} </Typography>
-              <IOSSwitch checked={expanded} />
+              <Switch checked={expanded} color="primary" />
             </div>
           )
         }

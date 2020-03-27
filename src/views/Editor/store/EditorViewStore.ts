@@ -40,8 +40,10 @@ class EditorViewStore {
   @observable selectedControl?: IControl;
   @observable dictionary = new EditorDictionary();
   @observable background: IBackgroundColor = { backgroundColor: whiteColor };
+  @observable statusBarColor: string = whiteColor;
   @observable mode: Mode = Mode.WHITE;
   @observable tabToolsIndex: number = 0;
+  @observable portrait: boolean = true;
   @observable ios: boolean = false;
 
   moveOpened: boolean = true;
@@ -59,12 +61,16 @@ class EditorViewStore {
     const props = [
       {
         selectedControl: this.selectedControl,
+        isSelected: this.isSelected,
+        cloneControl: this.cloneControl,
         selectControl: this.selectControl,
         dictionary: this.dictionary
       },
       {
         mode: this.mode,
         background: this.background,
+        statusBarColor: this.statusBarColor,
+        setStatusBarColor: this.setStatusBarColor,
         switchMode: this.switchMode,
         setBackground: this.setBackground,
         dictionary: this.dictionary
@@ -86,8 +92,16 @@ class EditorViewStore {
     this.mode = this.mode === Mode.WHITE ? Mode.DARK : Mode.WHITE;
   };
 
+  @action switchPortrait = () => {
+    this.portrait = !this.portrait;
+  };
+
   @action setBackground = (background: IBackgroundColor) => {
     this.background = background;
+  };
+
+  @action setStatusBarColor = (statusBarColor: string) => {
+    this.statusBarColor = statusBarColor;
   };
 
   @action createControl(type: ControlEnum) {

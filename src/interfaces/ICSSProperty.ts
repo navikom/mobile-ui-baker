@@ -7,6 +7,7 @@ export default interface ICSSProperty {
   toJSON: {[key: string]: any};
   expanded?: boolean;
   enabled: boolean;
+  category: string;
   defaultValue: string | number;
   showWhen?: string[];
   description?: string[];

@@ -15,11 +15,18 @@ import Paper from "@material-ui/core/Paper";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-import { AccountCircle, Android, Apple } from "@material-ui/icons";
+import {
+  AccountCircle,
+  Android,
+  Apple,
+  ScreenRotation,
+  StayCurrentLandscape,
+  StayCurrentPortrait
+} from "@material-ui/icons";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import EditorViewStore, { DragAndDropItem } from "views/Editor/store/EditorViewStore";
+import EditorViewStore, { DragAndDropItem, IBackgroundColor } from "views/Editor/store/EditorViewStore";
 import ControlTab from "views/Editor/components/tabs/ControlTab";
 import ControlItem from "views/Editor/components/control/ControlItem";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
@@ -33,7 +40,8 @@ const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: "100%",
-      height: "100%"
+      height: "100%",
+      overflow: "auto"
     }
   })
 );
@@ -45,6 +53,8 @@ interface ContentProps {
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
+  background: IBackgroundColor;
+  ios: boolean;
 }
 
 const Content: React.FC<ContentProps> = observer((
@@ -54,8 +64,11 @@ const Content: React.FC<ContentProps> = observer((
     handleDropCanvas,
     handleDropElement,
     isSelected,
-    selectControl }
-  ) => {
+    selectControl,
+    background,
+    ios
+  }
+) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.CONTROL,
     drop: (props: DragAndDropItem, monitor: any) => {
@@ -72,14 +85,17 @@ const Content: React.FC<ContentProps> = observer((
   const classes = contentStyles();
 
   const isActive = canDrop && isOver;
-  let backgroundColor = whiteColor;
+  let backgroundColor = background.backgroundColor;
   if (isActive) {
     backgroundColor = blackOpacity(0.05);
   } else if (canDrop) {
     backgroundColor = blackOpacity(0.1);
   }
+
+  const root = classNames(classes.root);
   return (
-    <div ref={drop} className={classes.root} style={{ backgroundColor: backgroundColor }} onClick={() => selectControl()}>
+    <div ref={drop} className={root} style={{ backgroundColor: backgroundColor }}
+         onClick={() => selectControl()}>
       {
         items.map((control, i) => {
           return <ControlItem
@@ -177,6 +193,9 @@ function Editor() {
             >
               <Apple />
             </IconButton>
+            <IconButton color="inherit" onClick={store.switchPortrait}>
+              {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
+            </IconButton>
           </div>
           <div>
             <IconButton
@@ -213,7 +232,7 @@ function Editor() {
         <DndProvider debugMode={true} backend={Backend}>
           <Grid container style={{ height: "100%" }}>
             <Grid item xs={2} sm={2} md={2} style={{ padding: 5 }}>
-              <div className={classes.bordered} style={{ overflow: "auto", height}}>
+              <div className={classes.bordered} style={{ overflow: "auto", height }}>
                 <TreeComponent
                   screens={store.screens}
                   moveControl={store.moveControl}
@@ -232,11 +251,18 @@ function Editor() {
               </div>
             </Grid>
             <Grid item xs={7} sm={7} md={7} style={{ padding: 5 }}>
-              <div className={classes.bordered} style={{ overflow: "auto", height}}>
+              <div className={classes.bordered} style={{ overflow: "auto", height }}>
                 <div style={{ transform: "translate3d(0, 0, 0)" }}>
                   <div style={{ transform: "scale(1)" }}>
-                    <DeviceComponent ios={store.ios} mode={store.mode}>
+                    <DeviceComponent
+                      ios={store.ios}
+                      mode={store.mode}
+                      background={store.background}
+                      statusBarColor={store.statusBarColor}
+                      portrait={store.portrait}>
                       <Content
+                        ios={store.ios}
+                        background={store.background}
                         items={store.currentScreen.children}
                         moveControl={store.moveControl}
                         handleDropCanvas={store.handleDropCanvas}

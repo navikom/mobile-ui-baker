@@ -19,9 +19,21 @@ export const data = {
   whiteSpaceDescription: "The white-space CSS property sets how white space inside an element is handled.",
   backgroundSizeDescription: "The background-size CSS property sets the size of the element's background image. The image can be left to its natural size, stretched, or constrained to fit the available space.",
   borderDescription: "The border shorthand CSS property sets an element's border. It sets the values of border-width, border-style, and border-color.",
+  transformDescription: "The transform CSS property lets you rotate, scale, skew, or translate an element. It modifies the coordinate space of the CSS visual formatting model.",
+  transitionDescription: "The transition CSS property is a shorthand property for transition-property, transition-duration, transition-timing-function, and transition-delay.",
+  transitionPropertyDescription: "The transition-property CSS property sets the CSS properties to which a transition effect should be applied.",
+  transitionDurationDescription: "The transition-duration CSS property sets the length of time a transition animation should take to complete. By default, the value is 0s, meaning that no animation will occur.",
+  transitionTimingDescription: "The transition-timing-function CSS property sets how intermediate values are calculated for CSS properties being affected by a transition effect.",
+  transitionDelayDescription: "The transition-delay CSS property specifies the duration to wait before starting a property's transition effect when its value changes.",
   learnMore: "Learn more",
   moreOptions: "More Options",
-  unit: "unit"
+  unit: "unit",
+  borders: "borders",
+  dimensions: "dimensions",
+  font: "font",
+  align: "align",
+  alignChildren: "align children",
+  animations: "animations"
 };
 
 class EditorDictionary extends AbstractDictionary {

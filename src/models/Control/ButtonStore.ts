@@ -5,15 +5,17 @@ import IControl, { IGrid } from "interfaces/IControl";
 import { ControlEnum } from "models/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
 import CSSProperty from "models/Control/CSSProperty";
-import { CSS_VALUE_NUMBER } from "models/Constants";
+import { CSS_CAT_ALIGN_CHILDREN, CSS_CAT_DIMENSIONS, CSS_VALUE_NUMBER } from "models/Constants";
 
 class ButtonStore extends Control implements IGrid {
   constructor(id: string) {
     super(ControlEnum.Button, id, "Button", true);
     this.mergeProperties([
-      new CSSProperty("padding", "3px 5px", "3px 5px", true),
-      new CSSProperty("width", 40, 40, true, CSS_VALUE_NUMBER).setUnits("px", ["px", "%", "rem"]),
-      new CSSProperty("height", 20, 20, true, CSS_VALUE_NUMBER).setUnits("px", ["px", "%", "rem"]),
+      new CSSProperty("padding", "3px 5px", "3px 5px", CSS_CAT_ALIGN_CHILDREN,true),
+      new CSSProperty("width", 40, 40, CSS_CAT_DIMENSIONS, true, CSS_VALUE_NUMBER)
+        .setUnits("px", ["px", "%", "rem"]),
+      new CSSProperty("height", 20, 20, CSS_CAT_DIMENSIONS,true, CSS_VALUE_NUMBER)
+        .setUnits("px", ["px", "%", "rem"]),
     ]);
   }
 

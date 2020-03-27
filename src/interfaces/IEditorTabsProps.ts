@@ -7,7 +7,11 @@ export default interface IEditorTabsProps {
   background?: IBackgroundColor;
   switchMode?: () => void;
   setBackground?: (background: IBackgroundColor) => void;
+  statusBarColor?: string;
+  setStatusBarColor?: (color: string) => void;
   dictionary?: EditorDictionary;
   selectedControl?: IControl;
   selectControl?: (control?: IControl) => void;
+  cloneControl?: (control: IControl) => void;
+  isSelected?: (control: IControl) => boolean;
 }

@@ -21,7 +21,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SettingsTab: React.FC<IEditorTabsProps> = (
-  {mode, switchMode, background, setBackground, dictionary}
+  {
+    mode,
+    switchMode,
+    background,
+    setBackground,
+    statusBarColor,
+    setStatusBarColor,
+    dictionary}
 ) => {
   const classes = useStyles();
   return (<div className={classes.root}>
@@ -38,8 +45,8 @@ const SettingsTab: React.FC<IEditorTabsProps> = (
       <FormControl component="fieldset">
         <FormLabel style={{marginBottom: 10}}>{dictionary!.defValue(EditorDictionary.keys.statusBar).toUpperCase()}</FormLabel>
         <ColorInput
-          color={background!.backgroundColor}
-          onChange={(e) => setBackground && setBackground({backgroundColor: e})}
+          color={statusBarColor!.toString()}
+          onChange={(e) => setStatusBarColor && setStatusBarColor(e)}
           label={dictionary!.defValue(EditorDictionary.keys.background)} />
       </FormControl>
       <FormControl component="fieldset">

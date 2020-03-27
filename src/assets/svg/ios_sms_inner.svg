@@ -22,11 +22,11 @@
                 <rect id="Background" fill="#FFFFFF" x="0" y="0" width="263.118441" height="468"/>
                 <g id="Message-Detail-Toolbar" transform="translate(0.000000, 437.478261)">
                     <g id="Toolbar-Background">
-                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"/>
+                        <use fill="red" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"/>
                         <use fill-opacity="0.7" fill="#F6F6F6" fill-rule="evenodd" style="mix-blend-mode: luminosity;" xlink:href="#path-1"/>
                     </g>
                     <g id="Tap-to-Talk-Button" transform="translate(235.000000, 7.000000)">
-                        <ellipse id="Tap-to-Talk-Button-Background" fill="#858E98" cx="9.12143928" cy="9.12143928" rx="9.12143928" ry="9.12143928"/>
+                        <ellipse id="Tap-to-Talk-Button-Background" fill="red" cx="9.12143928" cy="9.12143928" rx="9.12143928" ry="9.12143928"/>
                         <path d="M9,11.160628 C9.9939,11.160628 10.8,10.3399058 10.8,9.32729469 L10.8,5.35507246 C10.8,4.34276691 9.9939,3.52173913 9,3.52173913 C8.0061,3.52173913 7.2,4.34276691 7.2,5.35507246 L7.2,9.32729469 C7.2,10.3399058 8.0061,11.160628 9,11.160628 Z M11.4,7.49396135 L11.4,9.32729469 L11.4027,9.32729469 C11.4027,10.6579891 10.3542,11.7414891 9.0549,11.7717391 L8.9451,11.7717391 C7.6458,11.7414891 6.5976,10.6579891 6.5976,9.32729469 L6.6,9.32729469 L6.6,7.49396135 L6,7.49396135 L6,9.32729469 L6.0027,9.32729469 C6.0027,10.907628 7.1877,12.2108225 8.7,12.3645169 L8.7,13.910628 L6.9,13.910628 L6.9,14.5217391 L11.1,14.5217391 L11.1,13.910628 L9.3,13.910628 L9.3,12.3645169 C10.8123,12.2105169 11.9973,10.9073225 11.9973,9.32729469 L12,9.32729469 L12,7.49396135 L11.4,7.49396135 Z" id="Tap-to-Talk-Icon" fill="#F7F7F7"/>
                     </g>
                     <g id="Message-Entry-Field" transform="translate(39.000000, 6.000000)">
@@ -39,7 +39,7 @@
                 </g>
                 <g id="Message-Detail-Navigation-Bar">
                     <g id="Navigation-Bar-Background">
-                        <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"/>
+                        <use fill="red" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"/>
                         <use fill-opacity="0.7" fill="#F6F6F6" fill-rule="evenodd" style="mix-blend-mode: luminosity;" xlink:href="#path-3"/>
                     </g>
                     <polygon id="Back-Button" fill="#007AFF" points="15 23.4285714 13.56 22 6 29.4282143 13.56 37 15 35.5714286 8.88 29.4282143"/>

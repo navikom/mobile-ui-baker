@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme: Theme) =>
     hover: {
       "&:hover": {
         cursor: "move",
-        border: "1px dotted " + blackOpacity(0.1),
         backgroundColor: blackOpacity(0.05)
       }
     },
@@ -38,10 +37,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
-
-const Elements = {
-  [ControlEnum.Text]: TextInput
-};
 
 const borders = {
   [DropEnum.Left]: {
@@ -103,9 +98,10 @@ const ElementComponent: React.FC<ElementProps> =
       if(control.type === ControlEnum.Text) {
         showPlaceholder = true;
         if(isSelected(control)) {
-          placeholder = <EditorInput value={title} onChange={(e) => control.changeTitle(e)} style={{}} />;
+          backgroundColor = styles.backgroundColor;
+          placeholder = <EditorInput html={title} onChange={(e) => control.changeTitle(e)} style={styles} />;
         } else {
-          placeholder = <span style={{}}>{title}</span>;
+          placeholder = <span style={styles}>{title}</span>;
         }
       }
 

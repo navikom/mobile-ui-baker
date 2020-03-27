@@ -21,7 +21,8 @@ const useStyles = makeStyles((theme: Theme) =>
       transition: "all 0.1s",
     },
     input: {
-      width: theme.typography.pxToRem(80)
+      width: theme.typography.pxToRem(80),
+      textOverflow: "ellipsis"
     },
     container: {
       flexWrap: "nowrap",

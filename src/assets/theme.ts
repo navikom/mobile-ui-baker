@@ -11,6 +11,7 @@ export default createMuiTheme({
   palette: {
     primary: { main: primaryColor[0] },
     secondary: { main: infoColor[0] },
+    background: { default: "#eeeeee" },
     error: { main: dangerColor[0] }
   },
   overrides: {

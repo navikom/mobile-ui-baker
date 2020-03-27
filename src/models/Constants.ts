@@ -344,3 +344,14 @@ export const IOSPropertiesMap: Map<
   ...DevicePropertiesArray,
   [IOSDeviceProperties[0], NumberExpressionsMap]
 ]);
+
+//********** CSS EDITOR ******//
+export const CSS_CAT_BACKGROUND = "background";
+export const CSS_CAT_BORDERS = "borders";
+export const CSS_CAT_DIMENSIONS = "dimensions";
+export const CSS_CAT_FONT = "font";
+export const CSS_CAT_ALIGN = "align";
+export const CSS_CAT_ALIGN_CHILDREN = "alignChildren";
+export const CSS_CAT_ANIMATIONS = "animations";
+export const CSS_CATEGORIES = [CSS_CAT_BACKGROUND, CSS_CAT_BORDERS, CSS_CAT_DIMENSIONS, CSS_CAT_FONT, CSS_CAT_ALIGN,
+  CSS_CAT_ALIGN_CHILDREN, CSS_CAT_ANIMATIONS];

@@ -9,6 +9,7 @@ export const PROPERTY_EXPANDED = "expanded";
 export default class CSSProperty implements ICSSProperty {
   key: keyof React.CSSProperties;
   defaultValue: string | number;
+  category: string;
   showWhen?: string[];
   description?: string[];
   options?: string[];
@@ -49,6 +50,8 @@ export default class CSSProperty implements ICSSProperty {
     return {
       key: this.key,
       value: this.value,
+      defaultValue: this.defaultValue,
+      category: this.category,
       enabled: this.enabled,
       expanded: this.expanded,
       inject: this.inject,
@@ -66,12 +69,14 @@ export default class CSSProperty implements ICSSProperty {
     key: keyof React.CSSProperties,
     value: string | number,
     defaultValue: string | number,
+    category: string,
     enabled: boolean = false,
     valueType: CSSValueType = CSS_VALUE_STRING
     ) {
     this.key = key;
     this.value = value;
     this.defaultValue = defaultValue;
+    this.category = category;
     this.enabled = enabled;
     this.valueType = valueType;
   }
@@ -133,7 +138,7 @@ export default class CSSProperty implements ICSSProperty {
   }
 
   static fromJSON(json: ICSSProperty) {
-    const prop = new CSSProperty(json.key, json.value, json.defaultValue, json.enabled, json.valueType)
+    const prop = new CSSProperty(json.key, json.value, json.defaultValue, json.category, json.enabled, json.valueType)
       .setShowWhen(json.showWhen)
       .setDescription(json.description)
       .setInjectable(json.inject)
