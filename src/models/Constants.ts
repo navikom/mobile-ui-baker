@@ -85,6 +85,11 @@ export const ALL = "All";
 export const VARIABLES = "VARIABLES";
 export const ANDROID = "Android";
 export const IOS = "IOS";
+export const TABS_HEIGHT = 65;
+export const CSS_VALUE_STRING = "string";
+export const CSS_VALUE_NUMBER = "number";
+export const CSS_VALUE_COLOR = "color";
+export const CSS_VALUE_SELECT = "select";
 
 //********** Expressions *********//
 export const AND = "and";

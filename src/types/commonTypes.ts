@@ -21,3 +21,5 @@ export type SMSChannelComponentType = {
   ios: boolean;
   variant: MobileVariantType;
 };
+
+export type CSSValueType = "string" | "number" | "color" | "select"

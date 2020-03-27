@@ -27,6 +27,7 @@ import IControl from "interfaces/IControl";
 import { DropEnum } from "models/DropEnum";
 import TreeComponent from "views/Editor/components/TreeComponent";
 import SettingsTab from "views/Editor/components/tabs/SettingsTab";
+import { TABS_HEIGHT } from "models/Constants";
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,9 +43,19 @@ interface ContentProps {
   moveControl: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   handleDropCanvas: (item: DragAndDropItem) => void;
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
+  selectControl: (control?: IControl) => void;
+  isSelected: (control: IControl) => boolean;
 }
 
-const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDropCanvas, handleDropElement }) => {
+const Content: React.FC<ContentProps> = observer((
+  {
+    items,
+    moveControl,
+    handleDropCanvas,
+    handleDropElement,
+    isSelected,
+    selectControl }
+  ) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.CONTROL,
     drop: (props: DragAndDropItem, monitor: any) => {
@@ -68,11 +79,16 @@ const Content: React.FC<ContentProps> = observer(({ items, moveControl, handleDr
     backgroundColor = blackOpacity(0.1);
   }
   return (
-    <div ref={drop} className={classes.root} style={{ backgroundColor: backgroundColor }}>
+    <div ref={drop} className={classes.root} style={{ backgroundColor: backgroundColor }} onClick={() => selectControl()}>
       {
         items.map((control, i) => {
-          return <ControlItem key={control.id} control={control} moveControl={moveControl}
-                              handleDropElement={handleDropElement} />
+          return <ControlItem
+            key={control.id}
+            control={control}
+            moveControl={moveControl}
+            handleDropElement={handleDropElement}
+            isSelected={isSelected}
+            selectControl={selectControl} />
         })
       }
     </div>
@@ -117,14 +133,13 @@ const TabContent = [ControlTab, SettingsTab];
 function Editor() {
   const classes = editorStyles();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const [height, setHeight] = React.useState(window.innerHeight - 65);
+  const [height, setHeight] = React.useState(window.innerHeight - 75);
   const [store] = React.useState(new EditorViewStore());
   const open = Boolean(anchorEl);
 
   useEffect(() => {
     const resize = () => {
-      setHeight(window.innerHeight - 65);
-      console.log(99999, height);
+      setHeight(window.innerHeight - 75);
     };
     window.addEventListener("resize", resize);
     return () => {
@@ -198,7 +213,7 @@ function Editor() {
         <DndProvider debugMode={true} backend={Backend}>
           <Grid container style={{ height: "100%" }}>
             <Grid item xs={2} sm={2} md={2} style={{ padding: 5 }}>
-              <div className={classes.bordered} style={{ overflow: "auto", height: "100%" }}>
+              <div className={classes.bordered} style={{ overflow: "auto", height}}>
                 <TreeComponent
                   screens={store.screens}
                   moveControl={store.moveControl}
@@ -217,7 +232,7 @@ function Editor() {
               </div>
             </Grid>
             <Grid item xs={7} sm={7} md={7} style={{ padding: 5 }}>
-              <div className={classes.bordered} style={{ minHeight: "100%" }}>
+              <div className={classes.bordered} style={{ overflow: "auto", height}}>
                 <div style={{ transform: "translate3d(0, 0, 0)" }}>
                   <div style={{ transform: "scale(1)" }}>
                     <DeviceComponent ios={store.ios} mode={store.mode}>
@@ -226,6 +241,8 @@ function Editor() {
                         moveControl={store.moveControl}
                         handleDropCanvas={store.handleDropCanvas}
                         handleDropElement={store.handleDropElement}
+                        selectControl={store.selectControl}
+                        isSelected={store.isSelected}
                       />
                     </DeviceComponent>
                   </div>
@@ -249,7 +266,7 @@ function Editor() {
                   }
                 </Tabs>
               </Paper>
-              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: "calc(100% - 64px)" }}>
+              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT }}>
                 {React.createElement(TabContent[store.tabToolsIndex], store.tabProps)}
               </div>
             </Grid>

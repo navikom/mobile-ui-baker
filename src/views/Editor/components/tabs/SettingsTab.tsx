@@ -34,7 +34,14 @@ const SettingsTab: React.FC<IEditorTabsProps> = (
         </RadioGroup>
       </FormControl>
     </Grid>
-    <Grid container className={classes.container}>
+    <Grid container className={classes.container} justify="space-between">
+      <FormControl component="fieldset">
+        <FormLabel style={{marginBottom: 10}}>{dictionary!.defValue(EditorDictionary.keys.statusBar).toUpperCase()}</FormLabel>
+        <ColorInput
+          color={background!.backgroundColor}
+          onChange={(e) => setBackground && setBackground({backgroundColor: e})}
+          label={dictionary!.defValue(EditorDictionary.keys.background)} />
+      </FormControl>
       <FormControl component="fieldset">
         <FormLabel style={{marginBottom: 10}}>{dictionary!.defValue(EditorDictionary.keys.background).toUpperCase()}</FormLabel>
         <ColorInput

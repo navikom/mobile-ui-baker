@@ -59,7 +59,8 @@ class EditorViewStore {
     const props = [
       {
         selectedControl: this.selectedControl,
-        selectControl: this.selectControl
+        selectControl: this.selectControl,
+        dictionary: this.dictionary
       },
       {
         mode: this.mode,

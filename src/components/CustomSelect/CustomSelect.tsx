@@ -14,12 +14,13 @@ type CustomSelectType = {
   label?: string;
   options: (string | (string | number)[])[];
   onChange(value: string | number): void;
+  fullWidth?: boolean;
 };
 
 function CustomSelect(props: CustomSelectType) {
   return (
     <NativeSelect
-      fullWidth
+      fullWidth={props.fullWidth}
       value={props.value}
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
         props.onChange(e.target.value)

@@ -21,7 +21,6 @@ const Input: React.FC<InputProps> = ({ onChange, ...props }) => {
     <TextField
       {...props}
       variant="outlined"
-      fullWidth
       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
         onChange && onChange(e.target.value)
       }

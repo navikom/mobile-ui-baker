@@ -1,41 +1,6 @@
 import React from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import classNames from "classnames";
-import { dangerColor, inheritColor, primaryColor } from "assets/jss/material-dashboard-react";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    input: {
-      fontSize: theme.typography.pxToRem(14),
-      lineHeight: "150%",
-      fontWeight: 500,
-      transition: "all 0.1s",
-      padding: "5px 10px",
-      border: '1px solid transparent',
-      "&::placeholder": {
-        fontSize: theme.typography.pxToRem(14),
-      },
-      "&:hover": {
-        borderColor: primaryColor[1]
-      },
-      "&:focus": {
-        borderColor: primaryColor[0]
-      },
-
-      "&:disabled": {
-        color: inheritColor[0],
-        opacity: 1
-      }
-    },
-    fillWidth: {
-      width: "100%"
-    },
-    error: {
-      border: "1px solid " + dangerColor[1],
-      backgroundColor: dangerColor[0]
-    }
-  })
-);
+import useStyles from "components/CustomInput/inputStyles";
 
 interface Props {
   /**
@@ -71,7 +36,7 @@ interface Props {
   /**
    * Stretch to max width. Default: false
    */
-  fillWidth?: boolean;
+  fullWidth?: boolean;
 
   /**
    * Display error state
@@ -94,10 +59,10 @@ interface Props {
   ref?: React.Ref<HTMLInputElement>;
 }
 
-const TextInput: React.FC<Props> = ({ fillWidth, className, error, ...otherProps }) => {
+const TextInput: React.FC<Props> = ({ fullWidth, className, error, ...otherProps }) => {
   const classes = useStyles();
   return <input
-    className={classNames(classes.input, className, { [classes.fillWidth]: fillWidth, [classes.error]: error })}
+    className={classNames(classes.input, className, { [classes.fullWidth]: fullWidth, [classes.error]: error })}
     {...otherProps}
   />
 };

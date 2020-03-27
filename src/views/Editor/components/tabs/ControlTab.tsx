@@ -6,13 +6,13 @@ import { makeStyles } from "@material-ui/core";
 import CustomDragLayer from "views/Editor/components/CustomDragLayer";
 import IEditorTabsProps from "interfaces/IEditorTabsProps";
 import { primaryOpacity } from "assets/jss/material-dashboard-react";
-import IconButton from "@material-ui/core/IconButton";
 import { KeyboardArrowUp } from "@material-ui/icons";
-import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import IControl from "interfaces/IControl";
 import Typography from "@material-ui/core/Typography";
 import { observer } from "mobx-react-lite";
+import CSSProperties from "views/Editor/components/tabs/CSSProperties";
+import EditorDictionary from "views/Editor/store/EditorDictionary";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,27 +44,32 @@ const ControlTab: React.FC<IEditorTabsProps> = () => {
 interface ControlDetailsProps {
   selectControl?: (control?: IControl) => void;
   control?: IControl;
+  dictionary: EditorDictionary;
 }
 
 const ControlDetails: React.FC<ControlDetailsProps> = observer((
-  {selectControl, control}
+  {selectControl, control, dictionary}
   ) => {
-  const classes = useStyles();
   return (
-    <div>
+    <div style={{height: "100%"}}>
       <Button fullWidth variant="outlined" onClick={() => selectControl && selectControl()}>
         <KeyboardArrowUp />
       </Button>
-      <Typography variant="subtitle2" align="center" style={{marginTop: 10}}>{control!.title}</Typography>
+      <Typography variant="subtitle1" align="center" style={{marginTop: 10}}>{control!.title}</Typography>
+      <CSSProperties properties={control!.cssProperties} dictionary={dictionary} />
     </div>
   )
 });
 
-const Control: React.FC<IEditorTabsProps> = ({ selectedControl, selectControl }) => {
+const Control: React.FC<IEditorTabsProps> = (
+  { selectedControl, selectControl, dictionary }
+  ) => {
   return (
-    <div>
+    <div style={{height: "100%"}}>
       {
-        selectedControl === undefined ? <ControlTab /> : <ControlDetails selectControl={selectControl} control={selectedControl} />
+        selectedControl === undefined ?
+          <ControlTab /> :
+          <ControlDetails selectControl={selectControl} control={selectedControl} dictionary={dictionary as EditorDictionary} />
       }
     </div>
   )

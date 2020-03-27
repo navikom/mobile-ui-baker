@@ -31,4 +31,5 @@ export interface IButton extends IControl {}
 
 export interface IDrawer extends IControl {}
 
-export interface IText extends IControl {}
+export interface IText extends IControl {
+}

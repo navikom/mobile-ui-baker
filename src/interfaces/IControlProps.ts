@@ -11,4 +11,6 @@ export interface ControlProps {
   connectDropTarget?: (ref: RefObject<HTMLDivElement>) => void;
   isOver?: boolean;
   isOverCurrent: boolean;
+  selectControl(control?: IControl): void;
+  isSelected(control: IControl): boolean;
 }

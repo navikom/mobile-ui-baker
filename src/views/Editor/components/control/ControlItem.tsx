@@ -9,6 +9,10 @@ import { blackOpacity } from "assets/jss/material-dashboard-react";
 import { ControlProps } from "interfaces/IControlProps";
 import hover from "utils/hover";
 import classNames from "classnames";
+import { ControlEnum } from "models/ControlEnum";
+import TextInput from "components/CustomInput/TextInput";
+import EditorInput from "components/CustomInput/EditorInput";
+import { IText } from "interfaces/IControl";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,11 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface DragItem {
-  index: number;
-  id: string;
-  type: string;
-}
+const Elements = {
+  [ControlEnum.Text]: TextInput
+};
 
 const borders = {
   [DropEnum.Left]: {
@@ -60,12 +62,21 @@ const borders = {
 };
 
 interface ElementProps extends ControlProps {
-  elementRef: RefObject<HTMLDivElement>
+  elementRef: RefObject<HTMLDivElement>;
 }
 
 const ElementComponent: React.FC<ElementProps> =
   observer(
-    ({ control, isOverCurrent, isDragging, elementRef, moveControl, handleDropElement }) => {
+    ({
+       control,
+       isOverCurrent,
+       isDragging,
+       elementRef,
+       moveControl,
+       selectControl,
+       isSelected,
+       handleDropElement
+     }) => {
       const { id, title, styles, dropTarget, allowChildren, children } = control;
       const classes = useStyles();
       let backgroundColor = isOverCurrent ? "rgba(0,0,0,0.05)" : styles.backgroundColor;
@@ -87,9 +98,24 @@ const ElementComponent: React.FC<ElementProps> =
         [classes.invisible]: !control.visible
       });
 
+      let showPlaceholder = children.length === 0;
+      let placeholder = <span className={classes.placeholder}>{title}</span>;
+      if(control.type === ControlEnum.Text) {
+        showPlaceholder = true;
+        if(isSelected(control)) {
+          placeholder = <EditorInput value={title} onChange={(e) => control.changeTitle(e)} style={{}} />;
+        } else {
+          placeholder = <span style={{}}>{title}</span>;
+        }
+      }
+
       return (
         <div
           data-testid="control"
+          onClick={(e) => {
+            selectControl(control);
+            e.stopPropagation();
+          }}
           ref={elementRef}
           style={{
             ...styles, backgroundColor, ...borderStyles, ...position, ...(isDragging ? {
@@ -98,15 +124,34 @@ const ElementComponent: React.FC<ElementProps> =
             } : {}),
           }}
           className={controlClass}>
-          {!children.length && (<span className={classes.placeholder}>{title}</span>)}
+          {showPlaceholder && placeholder}
           {children && children.map((child, i) =>
-            <Item key={child.id} control={child} moveControl={moveControl} handleDropElement={handleDropElement} />)}
+            <Item
+              key={child.id}
+              control={child}
+              moveControl={moveControl}
+              handleDropElement={handleDropElement}
+              isSelected={isSelected}
+              selectControl={selectControl} />)}
         </div>
       )
     });
 
 const ControlItem: React.FC<ControlProps> = React.forwardRef(
-  ({ control, isDragging, isOver, isOverCurrent, connectDragSource, connectDropTarget, moveControl, handleDropElement }, ref) => {
+  (
+    {
+     control,
+     isDragging,
+      isOver,
+      isOverCurrent,
+      connectDragSource,
+      connectDropTarget,
+      moveControl,
+      handleDropElement,
+      selectControl,
+      isSelected
+    },
+    ref) => {
     const elementRef = React.useRef<HTMLDivElement>(null);
     connectDragSource && connectDragSource(elementRef);
     connectDropTarget && connectDropTarget(elementRef);
@@ -121,6 +166,8 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
         isDragging={isDragging}
         isOverCurrent={isOverCurrent}
         handleDropElement={handleDropElement}
+        selectControl={selectControl}
+        isSelected={isSelected}
         moveControl={moveControl} />
     )
   });
