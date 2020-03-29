@@ -25,6 +25,7 @@ const EditorInput: React.FC<EditorInputProps> =
   const ref = React.useRef<React.RefObject<HTMLElement>>();
     const classes = useStyles();
     return <ContentEditable
+      onClick={(e) => e.stopPropagation()}
       innerRef={ref as unknown as React.RefObject<HTMLElement>}
       className={classes.input}
       onChange={(e) => onChange(e.target.value)}

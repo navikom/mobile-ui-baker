@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core";
 import CustomDragLayer from "views/Editor/components/CustomDragLayer";
 import IEditorTabsProps from "interfaces/IEditorTabsProps";
 import { blackOpacity, primaryOpacity } from "assets/jss/material-dashboard-react";
-import { Delete, FilterNone, KeyboardArrowUp, Visibility, VisibilityOff } from "@material-ui/icons";
+import { Delete, FilterNone, KeyboardArrowUp, Lock, LockOpen, Visibility, VisibilityOff } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import IControl from "interfaces/IControl";
 import { observer } from "mobx-react-lite";
@@ -15,6 +15,9 @@ import EditorDictionary from "views/Editor/store/EditorDictionary";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import EditorInput from "components/CustomInput/EditorInput";
+import Tooltip from "@material-ui/core/Tooltip";
+import { TABS_HEIGHT } from "models/Constants";
+import ControlActions from "views/Editor/components/tabs/ControlActions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,6 +58,7 @@ interface ControlDetailsProps {
   isSelected?: (control: IControl) => boolean;
   control?: IControl;
   dictionary: EditorDictionary;
+  screens: IControl[];
 }
 
 const ControlDetails: React.FC<ControlDetailsProps> = observer((
@@ -63,15 +67,18 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
     control,
     dictionary,
     cloneControl,
-    isSelected
+    isSelected,
+    screens
   }
 ) => {
   const classes = useStyles();
   return (
     <div style={{ height: "100%" }}>
-      <Button fullWidth variant="outlined" onClick={() => selectControl && selectControl()}>
-        <KeyboardArrowUp />
-      </Button>
+      <Tooltip title={`${dictionary.defValue(EditorDictionary.keys.goTo)} ${dictionary.defValue(EditorDictionary.keys.controls)}`} placement="top">
+        <Button fullWidth variant="outlined" onClick={() => selectControl && selectControl()}>
+          <KeyboardArrowUp />
+        </Button>
+      </Tooltip>
       <Grid container alignItems="center" justify="space-between" className={classes.title}>
         <Grid item xs={8} sm={8} md={8}>
           <EditorInput
@@ -86,9 +93,16 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
             <IconButton size="small" onClick={control!.switchVisibility}>
               {control!.visible ? <Visibility /> : <VisibilityOff color="disabled" />}
             </IconButton>
-            <IconButton size="small" onClick={() => cloneControl!(control!)}>
-              <FilterNone />
-            </IconButton>
+            <Tooltip title={dictionary.defValue(EditorDictionary.keys.lockChildren)} placement="top">
+              <IconButton size="small" onClick={control!.switchLockChildren}>
+                {control!.lockedChildren ? <Lock color="disabled" /> : <LockOpen />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={dictionary.defValue(EditorDictionary.keys.cloneControl)} placement="top">
+              <IconButton size="small" onClick={() => cloneControl!(control!)}>
+                <FilterNone />
+              </IconButton>
+            </Tooltip>
             <IconButton size="small" onClick={() => {
               isSelected!(control!) && selectControl!();
               control!.deleteSelf()
@@ -98,7 +112,11 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           </Grid>
         </Grid>
       </Grid>
-      <CSSProperties properties={control!.cssProperties} dictionary={dictionary} />
+      <div style={{ height: `calc(100% - ${TABS_HEIGHT + 7}px)`, overflow: "auto" }}>
+        <CSSProperties control={control as IControl} dictionary={dictionary} />
+        <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
+      </div>
+
     </div>
   )
 });
@@ -109,7 +127,8 @@ const Control: React.FC<IEditorTabsProps> = (
     selectControl,
     dictionary,
     cloneControl,
-    isSelected
+    isSelected,
+    screens
   }
 ) => {
   return (
@@ -117,8 +136,13 @@ const Control: React.FC<IEditorTabsProps> = (
       {
         selectedControl === undefined ?
           <ControlTab /> :
-          <ControlDetails selectControl={selectControl} control={selectedControl} isSelected={isSelected}
-                          cloneControl={cloneControl} dictionary={dictionary as EditorDictionary} />
+          <ControlDetails
+            selectControl={selectControl}
+            control={selectedControl}
+            isSelected={isSelected}
+            screens={screens as IControl[]}
+            cloneControl={cloneControl}
+            dictionary={dictionary as EditorDictionary} />
       }
     </div>
   )

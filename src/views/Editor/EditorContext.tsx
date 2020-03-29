@@ -53,6 +53,7 @@ interface ContentProps {
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
+  setCurrentScreen: (screen: IControl) => void;
   background: IBackgroundColor;
   ios: boolean;
 }
@@ -66,7 +67,8 @@ const Content: React.FC<ContentProps> = observer((
     isSelected,
     selectControl,
     background,
-    ios
+    ios,
+    setCurrentScreen
   }
 ) => {
   const [{ canDrop, isOver }, drop] = useDrop({
@@ -104,6 +106,7 @@ const Content: React.FC<ContentProps> = observer((
             moveControl={moveControl}
             handleDropElement={handleDropElement}
             isSelected={isSelected}
+            setCurrentScreen={setCurrentScreen}
             selectControl={selectControl} />
         })
       }
@@ -269,6 +272,7 @@ function Editor() {
                         handleDropElement={store.handleDropElement}
                         selectControl={store.selectControl}
                         isSelected={store.isSelected}
+                        setCurrentScreen={store.setCurrentScreen}
                       />
                     </DeviceComponent>
                   </div>

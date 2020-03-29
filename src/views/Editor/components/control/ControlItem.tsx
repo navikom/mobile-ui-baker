@@ -10,9 +10,7 @@ import { ControlProps } from "interfaces/IControlProps";
 import hover from "utils/hover";
 import classNames from "classnames";
 import { ControlEnum } from "models/ControlEnum";
-import TextInput from "components/CustomInput/TextInput";
 import EditorInput from "components/CustomInput/EditorInput";
-import { IText } from "interfaces/IControl";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,22 +55,26 @@ const borders = {
 };
 
 interface ElementProps extends ControlProps {
-  elementRef: RefObject<HTMLDivElement>;
+  elementRef?: RefObject<HTMLDivElement>;
+  locked?: boolean;
 }
 
 const ElementComponent: React.FC<ElementProps> =
   observer(
-    ({
-       control,
-       isOverCurrent,
-       isDragging,
-       elementRef,
-       moveControl,
-       selectControl,
-       isSelected,
-       handleDropElement
-     }) => {
-      const { id, title, styles, dropTarget, allowChildren, children } = control;
+    (
+      {
+        control,
+        isOverCurrent,
+        isDragging,
+        elementRef,
+        moveControl,
+        selectControl,
+        isSelected,
+        handleDropElement,
+        locked,
+        setCurrentScreen
+      }) => {
+      const { title, styles, dropTarget, allowChildren, children, lockedChildren } = control;
       const classes = useStyles();
       let backgroundColor = isOverCurrent ? "rgba(0,0,0,0.05)" : styles.backgroundColor;
       let borderStyles = {};
@@ -95,9 +97,9 @@ const ElementComponent: React.FC<ElementProps> =
 
       let showPlaceholder = children.length === 0;
       let placeholder = <span className={classes.placeholder}>{title}</span>;
-      if(control.type === ControlEnum.Text) {
+      if (control.type === ControlEnum.Text) {
         showPlaceholder = true;
-        if(isSelected(control)) {
+        if (isSelected && isSelected(control)) {
           backgroundColor = styles.backgroundColor;
           placeholder = <EditorInput html={title} onChange={(e) => control.changeTitle(e)} style={styles} />;
         } else {
@@ -105,11 +107,14 @@ const ElementComponent: React.FC<ElementProps> =
         }
       }
 
+      locked = locked || lockedChildren;
+
       return (
         <div
           data-testid="control"
           onClick={(e) => {
-            selectControl(control);
+            selectControl && selectControl(control);
+            control.applyActions(setCurrentScreen);
             e.stopPropagation();
           }}
           ref={elementRef}
@@ -122,13 +127,23 @@ const ElementComponent: React.FC<ElementProps> =
           className={controlClass}>
           {showPlaceholder && placeholder}
           {children && children.map((child, i) =>
-            <Item
-              key={child.id}
-              control={child}
-              moveControl={moveControl}
-              handleDropElement={handleDropElement}
-              isSelected={isSelected}
-              selectControl={selectControl} />)}
+            locked ? (
+              <ElementComponent
+                key={child.id}
+                control={child}
+                locked={true}
+              />
+            ) : (
+              <Item
+                key={child.id}
+                control={child}
+                moveControl={moveControl}
+                handleDropElement={handleDropElement}
+                isSelected={isSelected}
+                setCurrentScreen={setCurrentScreen}
+                selectControl={selectControl} />
+            )
+          )}
         </div>
       )
     });
@@ -136,8 +151,8 @@ const ElementComponent: React.FC<ElementProps> =
 const ControlItem: React.FC<ControlProps> = React.forwardRef(
   (
     {
-     control,
-     isDragging,
+      control,
+      isDragging,
       isOver,
       isOverCurrent,
       connectDragSource,
@@ -145,6 +160,7 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
       moveControl,
       handleDropElement,
       selectControl,
+      setCurrentScreen,
       isSelected
     },
     ref) => {
@@ -164,6 +180,7 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
         handleDropElement={handleDropElement}
         selectControl={selectControl}
         isSelected={isSelected}
+        setCurrentScreen={setCurrentScreen}
         moveControl={moveControl} />
     )
   });
@@ -197,7 +214,7 @@ const Item = DropTarget(
       }
       const dragItem = monitor.getItem();
       const dropAction = hover(props, monitor, component.decoratedRef.current);
-      props.handleDropElement(props.control, dragItem.control, dropAction);
+      props.handleDropElement && props.handleDropElement(props.control, dragItem.control, dropAction);
     }
   },
   (connect, monitor) => ({

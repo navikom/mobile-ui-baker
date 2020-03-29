@@ -1,6 +1,6 @@
 import { action, observable } from "mobx";
 import { v4 as uuidv4 } from 'uuid';
-import Control from "models/Control/Control";
+import Control, { MAIN_CSS_PROPERTY } from "models/Control/Control";
 import IControl, { IText } from "interfaces/IControl";
 import { ControlEnum } from "models/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
@@ -16,24 +16,26 @@ import {
 class TextStore extends Control implements IText {
   constructor(id: string) {
     super(ControlEnum.Text, id, "Text", false);
-    this.mergeProperties([
-      new CSSProperty("backgroundColor", "#ffffff", "#ffffff", CSS_CAT_BACKGROUND,true, CSS_VALUE_COLOR),
-      new CSSProperty("color", "#000000", "#000000", CSS_CAT_FONT, false, CSS_VALUE_COLOR),
-      new CSSProperty("padding", 5, 5, CSS_CAT_ALIGN_CHILDREN),
-      new CSSProperty("fontFamily", "Verdana", "Verdana", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
-        .setOptions(["\"Times New Roman\"", "Georgia", "Arial", "Verdana", "\"Courier New\"", "\"Lucida Console\"", "Helvetica"]),
-      new CSSProperty("fontStyle", "normal", "normal", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
-        .setOptions(["normal", "italic", "oblique"]),
-      new CSSProperty("fontSize", 17, 17, CSS_CAT_FONT, false, CSS_VALUE_NUMBER),
-      new CSSProperty("fontWeight", "normal", "normal", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
-        .setOptions(["normal", "bold", "lighter", "bolder", "100", "200", "300", "400", "500", "600", "700", "800", "900"]),
-      new CSSProperty("textDecoration", "none", "none", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
-        .setOptions(["normal", "blink", "line-through", "overline", "underline", "inherit"]),
-      new CSSProperty("lineHeight", "normal", "normal", CSS_CAT_FONT)
-        .setDescription(["lineHeightDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/line-height"]),
-      new CSSProperty("textOverflow", "ellipsis", "ellipsis", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
-        .setOptions(["clip", "ellipsis"]).setDescription(["textOverflowDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow"])
-    ]);
+    this.mergeStyles(new Map([
+      [MAIN_CSS_PROPERTY, [
+        new CSSProperty("backgroundColor", "#ffffff", "#ffffff", CSS_CAT_BACKGROUND,true, CSS_VALUE_COLOR),
+        new CSSProperty("color", "#000000", "#000000", CSS_CAT_FONT, false, CSS_VALUE_COLOR),
+        new CSSProperty("padding", 5, 5, CSS_CAT_ALIGN_CHILDREN),
+        new CSSProperty("fontFamily", "Verdana", "Verdana", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
+          .setOptions(["\"Times New Roman\"", "Georgia", "Arial", "Verdana", "\"Courier New\"", "\"Lucida Console\"", "Helvetica"]),
+        new CSSProperty("fontStyle", "normal", "normal", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
+          .setOptions(["normal", "italic", "oblique"]),
+        new CSSProperty("fontSize", 17, 17, CSS_CAT_FONT, false, CSS_VALUE_NUMBER),
+        new CSSProperty("fontWeight", "normal", "normal", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
+          .setOptions(["normal", "bold", "lighter", "bolder", "100", "200", "300", "400", "500", "600", "700", "800", "900"]),
+        new CSSProperty("textDecoration", "none", "none", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
+          .setOptions(["normal", "blink", "line-through", "overline", "underline", "inherit"]),
+        new CSSProperty("lineHeight", "normal", "normal", CSS_CAT_FONT)
+          .setDescription(["lineHeightDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/line-height"]),
+        new CSSProperty("textOverflow", "ellipsis", "ellipsis", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
+          .setOptions(["clip", "ellipsis"]).setDescription(["textOverflowDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow"])
+      ]]
+    ]));
   }
 
   @action clone(): IText {

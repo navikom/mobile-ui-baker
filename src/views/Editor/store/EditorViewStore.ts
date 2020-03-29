@@ -64,7 +64,8 @@ class EditorViewStore {
         isSelected: this.isSelected,
         cloneControl: this.cloneControl,
         selectControl: this.selectControl,
-        dictionary: this.dictionary
+        dictionary: this.dictionary,
+        screens: this.screens
       },
       {
         mode: this.mode,

@@ -3,9 +3,6 @@ import React from "react";
 // @material-ui/core
 import NativeSelect from "@material-ui/core/NativeSelect";
 
-// services
-import { Dictionary } from "services/Dictionary/Dictionary";
-
 // core components
 import BootstrapInput from "components/CustomInput/BootstrapInput";
 
@@ -29,7 +26,7 @@ function CustomSelect(props: CustomSelectType) {
     >
       {props.options.map((e: string | (number | string)[], i: number) => (
         <option key={i} value={Array.isArray(e) ? e[0] : e}>
-          {Dictionary.value(Array.isArray(e) ? e[1].toString() : e)}
+          {Array.isArray(e) ? e[1].toString() : e}
         </option>
       ))}
     </NativeSelect>

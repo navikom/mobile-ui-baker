@@ -33,7 +33,21 @@ export const data = {
   font: "font",
   align: "align",
   alignChildren: "align children",
-  animations: "animations"
+  animations: "animations",
+  lockChildren: "Lock children",
+  cloneControl: "Clone control",
+  styles: "styles",
+  actions: "actions",
+  style: "style",
+  action: "action",
+  add: "add",
+  delete: "delete",
+  goTo: "go to",
+  onPress: "on press",
+  navigateTo: "navigate to",
+  enableStyle: "enable style",
+  disableStyle: "disable style",
+  toggleStyle: "toggle style"
 };
 
 class EditorDictionary extends AbstractDictionary {

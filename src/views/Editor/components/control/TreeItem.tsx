@@ -55,12 +55,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface DragItem {
-  index: number;
-  id: string;
-  type: string;
-}
-
 const borders = {
   [DropEnum.Left]: {
     borderLeft: "4px dotted rgba(0,0,0,0.2)",
@@ -101,7 +95,7 @@ const ElementComponent: React.FC<ElementProps> =
        selectControl,
        isSelected
      }) => {
-      const { title, dropTarget, allowChildren, children, changeTitle, opened, switchOpened } = control;
+      const { title, dropTarget, allowChildren, children, changeTitle, opened, switchOpened, lockedChildren } = control;
       const classes = useStyles();
       let borderStyles = {};
       if (isOverCurrent) {
@@ -168,7 +162,7 @@ const ElementComponent: React.FC<ElementProps> =
             </IconButton>
           </Grid>
           <div className={list}>
-            {children && children.map((child, i) =>
+            {children && !lockedChildren && children.map((child, i) =>
               <TreeItem
                 key={child.id}
                 control={child}
@@ -265,7 +259,7 @@ const TreeItem = DropTarget(
         return;
       }
       const dropAction = hover(props, monitor, component.decoratedRef.current);
-      props.handleDropElement(props.control, dragItem.control, dropAction);
+      props.handleDropElement && props.handleDropElement(props.control, dragItem.control, dropAction);
     }
   },
   (connect, monitor) => ({
