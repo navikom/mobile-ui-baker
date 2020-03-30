@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { action } from "mobx";
-import Control, { MAIN_CSS_PROPERTY } from "models/Control/Control";
+import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
 import IControl, { IGrid } from "interfaces/IControl";
 import { ControlEnum } from "models/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
@@ -11,7 +11,7 @@ class GridStore extends Control implements IGrid {
   constructor(id: string) {
     super(ControlEnum.Grid, id, "Grid", true);
     this.mergeStyles(new Map([
-      [MAIN_CSS_PROPERTY, [
+      [MAIN_CSS_STYLE, [
         new CSSProperty("display", "flex", "flex", CSS_CAT_ALIGN_CHILDREN,true, CSS_VALUE_SELECT)
           .setOptions(["inherit", "flex", "block", "inline"])
           .setDescription(["displayDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/display"]),

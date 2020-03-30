@@ -40,9 +40,5 @@ export default interface IControl extends IMovable {
 export interface IGrid extends IControl {
 }
 
-export interface IButton extends IControl {}
-
-export interface IDrawer extends IControl {}
-
 export interface IText extends IControl {
 }

@@ -23,7 +23,7 @@ import {
   CSS_VALUE_SELECT
 } from "models/Constants";
 
-export const MAIN_CSS_PROPERTY = "Main";
+export const MAIN_CSS_STYLE = "Main";
 
 type ModelType = IControl;
 export type ModelCtor<M extends IControl = IControl> = (new (id: string) => M) & ModelType;
@@ -41,16 +41,16 @@ class Control extends Movable implements IControl {
   @observable visible: boolean = true;
   @observable lockedChildren: boolean = false;
   @observable cssStyles: Map<string, IObservableArray<ICSSProperty>>;
-  @observable classes: string[] = observable([MAIN_CSS_PROPERTY]);
+  @observable classes: string[] = observable([MAIN_CSS_STYLE]);
   @observable actions: IObservableArray<IObservableArray<string>> = observable([]);
 
   get toJSON() {
     const keys = Array.from(this.cssStyles.keys());
-    const cssProperties = [];
+    const cssStyles = [];
     let l = keys.length, i = 0;
     while (l--) {
       const key = keys[i++];
-      cssProperties.push([key, this.cssStyles.get(key)!.filter(prop => prop.enabled).map(prop => prop.toJSON)]);
+      cssStyles.push([key, this.cssStyles.get(key)!.filter(prop => prop.enabled).map(prop => prop.toJSON)]);
     }
 
     return {
@@ -61,7 +61,7 @@ class Control extends Movable implements IControl {
       id: this.id,
       heldChildren: this.lockedChildren,
       allowChildren: this.allowChildren,
-      cssProperties
+      cssStyles
     }
   }
 
@@ -70,7 +70,12 @@ class Control extends Movable implements IControl {
     let l = this.classes.length, i = 0;
     while (l--) {
       const clazz = this.classes[i++];
-      this.cssStyles.has(clazz) && this.cssStyles.get(clazz)!.filter(prop => prop.enabled)
+      this.cssStyles.has(clazz) && this.cssStyles.get(clazz)!.filter(prop => {
+        if(!prop.enabled && styles.hasOwnProperty(prop.key)) {
+          delete styles[prop.key];
+        }
+        return prop.enabled;
+      })
         .forEach((prop) => {
           // @ts-ignore
           styles[prop.key] = prop.inject ? prop.inject.replace("$", prop.value) : prop.valueWithUnit;
@@ -86,7 +91,18 @@ class Control extends Movable implements IControl {
     this.allowChildren = allowChildren;
     this.title = title;
     this.cssStyles = new Map([
-      [MAIN_CSS_PROPERTY, observable([
+      [MAIN_CSS_STYLE, observable([
+        new CSSProperty("position", "static", "static", CSS_CAT_ALIGN, false, CSS_VALUE_SELECT)
+          .setOptions(["static", "relative", "absolute", "sticky"])
+          .setDescription(["positionDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/position"]),
+        new CSSProperty("top", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+          .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
+        new CSSProperty("bottom", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+          .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
+        new CSSProperty("left", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+          .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
+        new CSSProperty("right", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+          .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
         new CSSProperty("backgroundColor", "#ffffff", "#ffffff", CSS_CAT_BACKGROUND, false,
           CSS_VALUE_COLOR),
         new CSSProperty("backgroundImage",
@@ -201,11 +217,12 @@ class Control extends Movable implements IControl {
       const parent = Control.getById(this.parentId);
       parent && parent.removeChild(this);
     }
+    Control.removeItem(this);
   };
 
   @action addCSSStyle = () => {
     const key = `Style${this.cssStyles.size}`;
-    this.cssStyles.set(key, observable(this.cssStyles.get(MAIN_CSS_PROPERTY)!.map(prop => prop.clone())));
+    this.cssStyles.set(key, observable(this.cssStyles.get(MAIN_CSS_STYLE)!.map(prop => prop.clone())));
     Control.addClass(this.id, key);
   };
 
@@ -214,11 +231,8 @@ class Control extends Movable implements IControl {
       return;
     }
     let key = newKey.replace(/\//g, "1");
-    if (key === MAIN_CSS_PROPERTY) {
-      key = newKey + 1;
-    }
-    if (key === oldKey) {
-      return;
+    if (key === MAIN_CSS_STYLE || key === oldKey) {
+      key = newKey + "" + 1;
     }
     this.cssStyles.set(key, this.cssStyles.get(oldKey) as IObservableArray<ICSSProperty>);
     this.cssStyles.delete(oldKey);
@@ -235,7 +249,7 @@ class Control extends Movable implements IControl {
     clone.mergeStyles(this.cssStyles);
     if (clone.cssStyles.size > 1) {
       Array.from(clone.cssStyles.keys())
-        .filter(k => k !== MAIN_CSS_PROPERTY).forEach(k => Control.addClass(clone.id, k));
+        .filter(k => k !== MAIN_CSS_STYLE).forEach(k => Control.addClass(clone.id, k));
     }
   }
 
@@ -249,6 +263,9 @@ class Control extends Movable implements IControl {
   }
 
   @action merge(key: string, props: ICSSProperty[]) {
+    if(!this.cssStyles.has(key)) {
+      this.cssStyles.set(key, observable([]));
+    }
     const sliced = props.slice();
     let prop: ICSSProperty;
     while (prop = sliced.shift() as ICSSProperty) {
@@ -259,7 +276,8 @@ class Control extends Movable implements IControl {
       if (same) {
         same.updateProperties(prop as unknown as { [key: string]: string | number });
       } else {
-        this.cssStyles.get(key)!.push(prop.clone());
+        const property = prop instanceof CSSProperty ? prop.clone() : CSSProperty.fromJSON(prop);
+        this.cssStyles.get(key)!.push(property);
       }
     }
   }
@@ -269,7 +287,6 @@ class Control extends Movable implements IControl {
   };
 
   @action editAction = (index: number, action: string, props: string) => {
-    console.log(111, index, action, props);
     this.actions[index].replace([action, ...props.split("/")]);
   };
 
@@ -285,9 +302,12 @@ class Control extends Movable implements IControl {
       const control = Control.getById(action[1]) as IControl;
       if (action[0] === ACTION_NAVIGATE_TO) {
         cb && cb(control);
-      } else if (Control.has(action[1])) {
+      } else {
 
         const style = action[2];
+        if(!control.cssStyles.has(style)) {
+          return;
+        }
         if (action[0] === ACTION_ENABLE_STYLE) {
           control.addClass(style);
         } else if (action[0] === ACTION_DISABLE_STYLE) {
@@ -339,7 +359,7 @@ class Control extends Movable implements IControl {
     control.mergeStyles(new Map(json.cssStyles));
     if (control.cssStyles.size > 1) {
       Array.from(control.cssStyles.keys())
-        .filter(k => k !== MAIN_CSS_PROPERTY).forEach(k => this.addClass(control.id, k));
+        .filter(k => k !== MAIN_CSS_STYLE).forEach(k => this.addClass(control.id, k));
     }
     return control;
   }
@@ -357,7 +377,7 @@ class Control extends Movable implements IControl {
   @action static renameClass(id: string, oldClassName: string, newClassName: string) {
     const oldClass = `${id}/${oldClassName}`;
     const newClass = `${id}/${newClassName}`;
-    this.classes.splice(this.classes.indexOf(oldClass), 0, newClass);
+    this.classes.splice(this.classes.indexOf(oldClass), 1, newClass);
   }
 
   static create(instance: ModelCtor, control: IControl) {

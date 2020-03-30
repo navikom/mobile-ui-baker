@@ -5,28 +5,27 @@ import { DropEnum } from "models/DropEnum";
 import Control from "models/Control/Control";
 import CreateControl from "models/Control/ControlStores";
 
-describe("EditorViewStore.js", () => {
+describe("EditorViewStore", () => {
   let store: EditorViewStore;
   beforeEach(() => {
     store = new EditorViewStore();
-    store.addItem(CreateControl(ControlEnum.Drawer));
-    store.addItem(CreateControl(ControlEnum.Button));
+    store.addItem(CreateControl(ControlEnum.Grid));
     store.addItem(CreateControl(ControlEnum.Text));
   });
 
   it("Add control items to the store document", () => {
-    expect(store.currentScreen.children.length).toBe(4);
+    expect(store.currentScreen.children.length).toBe(3);
   });
 
   it("Drop control to the canvas", () => {
-    store.handleDropCanvas({ type: "Control", control: CreateControl(ControlEnum.Button) });
-    expect(store.currentScreen.children.length).toBe(5);
-    expect(store.currentScreen.children[4].title).toBe("Button");
+    store.handleDropCanvas({ type: "Control", control: CreateControl(ControlEnum.Grid) });
+    expect(store.currentScreen.children.length).toBe(4);
+    expect(store.currentScreen.children[3].title).toBe("Grid");
   });
 
   it("Drop new control inside the first element", () => {
     const parent = store.currentScreen.children[0];
-    const child = CreateControl(ControlEnum.Button);
+    const child = CreateControl(ControlEnum.Grid);
     store.handleDropElement(parent, child, DropEnum.Inside);
     expect(parent.children.length).toBe(1);
     expect(parent.children[0]).toBe(child);
@@ -34,34 +33,34 @@ describe("EditorViewStore.js", () => {
 
   it("Drop new control above the first element", () => {
     const parent = store.currentScreen.children[0];
-    const child = CreateControl(ControlEnum.Button);
+    const child = CreateControl(ControlEnum.Grid);
     store.handleDropElement(parent, child, DropEnum.Above);
     expect(parent.children.length).toBe(0);
-    expect(store.currentScreen.children.length).toBe(5);
+    expect(store.currentScreen.children.length).toBe(4);
     expect(store.currentScreen.children[0]).toBe(child);
   });
 
   it("Drop new control below the first element", () => {
     const parent = store.currentScreen.children[0];
-    const child = CreateControl(ControlEnum.Button);
+    const child = CreateControl(ControlEnum.Grid);
     store.handleDropElement(parent, child, DropEnum.Below);
     expect(parent.children.length).toBe(0);
-    expect(store.currentScreen.children.length).toBe(5);
+    expect(store.currentScreen.children.length).toBe(4);
     expect(store.currentScreen.children[1]).toBe(child);
   });
 
   it("Drop new control inside the control with allowChildren property equals false, impossible", () => {
-    const parent = store.currentScreen.children[3];
+    const parent = store.currentScreen.children[2];
     expect(parent.allowChildren).toBe(false);
-    const child = CreateControl(ControlEnum.Button);
+    const child = CreateControl(ControlEnum.Grid);
     store.handleDropElement(parent, child, DropEnum.Inside);
     expect(parent.children.length).toBe(0);
-    expect(store.currentScreen.children.length).toBe(4);
+    expect(store.currentScreen.children.length).toBe(3);
   });
 
   it("Sort controls inside another control", () => {
     const parent = store.currentScreen.children[0];
-    const child = CreateControl(ControlEnum.Button);
+    const child = CreateControl(ControlEnum.Grid);
     const child2 = CreateControl(ControlEnum.Text);
     store.handleDropElement(parent, child, DropEnum.Inside);
     expect(parent.children.length).toBe(1);
@@ -73,18 +72,18 @@ describe("EditorViewStore.js", () => {
   });
 
   it("Move and drop second control inside third control", () => {
-    const parent = store.currentScreen.children[2];
-    const child = store.currentScreen.children[3];
-    expect(store.currentScreen.children.length).toBe(4);
-    store.handleDropElement(parent, child, DropEnum.Inside);
+    const parent = store.currentScreen.children[1];
+    const child = store.currentScreen.children[2];
     expect(store.currentScreen.children.length).toBe(3);
+    store.handleDropElement(parent, child, DropEnum.Inside);
+    expect(store.currentScreen.children.length).toBe(2);
     expect(parent.children.length).toBe(1);
     expect(parent.children[0]).toBe(child);
   });
 
   it("Move and drop control from one parent to another", () => {
     const parent1 = store.currentScreen.children[0];
-    const child1 = CreateControl(ControlEnum.Button);
+    const child1 = CreateControl(ControlEnum.Grid);
     const parent2 = store.currentScreen.children[1];
     const child2 = CreateControl(ControlEnum.Text);
     store.handleDropElement(parent1, child1, DropEnum.Inside);
@@ -101,7 +100,7 @@ describe("EditorViewStore.js", () => {
 
   it("Move and drop parent control inside the there child control impossible", () => {
     const parent1 = store.currentScreen.children[0];
-    const child1 = CreateControl(ControlEnum.Button);
+    const child1 = CreateControl(ControlEnum.Grid);
     jest.useFakeTimers();
     // child1 control hover above parent1
     store.moveControl(parent1, child1, DropEnum.Inside);
@@ -124,13 +123,13 @@ describe("EditorViewStore.js", () => {
 
   it("Move and drop control from one screen to another below child", () => {
     const firstScreen = store.screens[0];
-    expect(firstScreen.children.length).toBe(4);
+    expect(firstScreen.children.length).toBe(3);
     const secondScreen = store.addScreen();
     expect(secondScreen.children.length).toBe(1);
     expect(store.screens.length).toBe(2);
     const child = firstScreen.children[1];
     store.handleDropElement(secondScreen.children[0], child, DropEnum.Below);
-    expect(firstScreen.children.length).toBe(3);
+    expect(firstScreen.children.length).toBe(2);
     expect(secondScreen.children.length).toBe(2);
     expect(secondScreen.children[1]).toBe(child);
     expect(child.parentId).toBe(secondScreen.id);
@@ -141,7 +140,7 @@ describe("EditorViewStore.js", () => {
     const secondScreen = store.addScreen();
     const child = firstScreen.children[1];
     store.handleDropElement(secondScreen.children[0], child, DropEnum.Above);
-    expect(firstScreen.children.length).toBe(3);
+    expect(firstScreen.children.length).toBe(2);
     expect(secondScreen.children.length).toBe(2);
     expect(secondScreen.children[0]).toBe(child);
     expect(child.parentId).toBe(secondScreen.id);
@@ -153,7 +152,7 @@ describe("EditorViewStore.js", () => {
     const child = firstScreen.children[1];
     const parent = secondScreen.children[0];
     store.handleDropElement(parent, child, DropEnum.Inside);
-    expect(firstScreen.children.length).toBe(3);
+    expect(firstScreen.children.length).toBe(2);
     expect(parent.children[0]).toBe(child);
     expect(secondScreen.hasChild(child)).toBe(false);
   });
@@ -161,7 +160,7 @@ describe("EditorViewStore.js", () => {
   it("Move and drop control inside itself forbidden", () => {
     const control = store.screens[0].children[0];
     store.handleDropElement(control, control, DropEnum.Inside);
-    expect(store.screens[0].children.length).toBe(4);
+    expect(store.screens[0].children.length).toBe(3);
   });
 
   it("Add new screen and make it selected and then remove, which will make first screen selected automatically ", () => {
@@ -185,7 +184,7 @@ describe("EditorViewStore.js", () => {
   it("Delete control", () => {
     const firstScreen = store.screens[0];
     const parent = firstScreen.children[0];
-    const child = CreateControl(ControlEnum.Button);
+    const child = CreateControl(ControlEnum.Grid);
     store.handleDropElement(parent, child, DropEnum.Inside);
 
     expect(parent.hasChild(child)).toBe(true);
@@ -193,10 +192,10 @@ describe("EditorViewStore.js", () => {
 
     expect(parent.hasChild(child)).toBe(false);
 
-    expect(firstScreen.children.length).toBe(4);
+    expect(firstScreen.children.length).toBe(3);
     parent.deleteSelf();
 
-    expect(firstScreen.children.length).toBe(3);
+    expect(firstScreen.children.length).toBe(2);
     expect(firstScreen.hasChild(parent)).toBe(false);
   });
 
@@ -214,7 +213,7 @@ describe("EditorViewStore.js", () => {
 
   it("Clone control", () => {
     const screen = store.screens[0];
-    const control = CreateControl(ControlEnum.Button);
+    const control = CreateControl(ControlEnum.Grid);
     screen.addChild(control);
     const text = CreateControl(ControlEnum.Text);
     control.addChild(text);

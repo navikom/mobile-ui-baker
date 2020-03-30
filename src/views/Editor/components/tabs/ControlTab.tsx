@@ -18,6 +18,7 @@ import EditorInput from "components/CustomInput/EditorInput";
 import Tooltip from "@material-ui/core/Tooltip";
 import { TABS_HEIGHT } from "models/Constants";
 import ControlActions from "views/Editor/components/tabs/ControlActions";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,6 +31,9 @@ const useStyles = makeStyles(theme => ({
   disableDetailsButton: {
     backgroundColor: primaryOpacity(.05)
   },
+  paragraph: {
+    margin: "4px 0"
+  },
   title: {
     marginTop: 5,
     marginBottom: 5,
@@ -38,16 +42,24 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ControlTab: React.FC<IEditorTabsProps> = () => {
+const ControlTab: React.FC<IEditorTabsProps> = ({dictionary}) => {
   const classes = useStyles();
   const keys = Object.keys(EditorViewStore.CONTROLS) as (keyof typeof ControlEnum)[];
   return (
-    <div className={classes.root}>
-      {
-        keys.map((k, i) =>
-          <ControlTabItem key={i.toString()} type={EditorViewStore.CONTROLS[k]} />)
-      }
-      <CustomDragLayer />
+    <div>
+      <Typography align="center" variant="subtitle1" className={classes.paragraph}>
+        {dictionary!.defValue(EditorDictionary.keys.elements)}
+      </Typography>
+      <div className={classes.root}>
+        {
+          keys.map((k, i) =>
+            <ControlTabItem key={i.toString()} type={EditorViewStore.CONTROLS[k]} />)
+        }
+        <CustomDragLayer />
+      </div>
+      <Typography align="center" variant="subtitle1" className={classes.paragraph}>
+        {dictionary!.defValue(EditorDictionary.keys.controls)}
+      </Typography>
     </div>
   )
 };
@@ -112,7 +124,7 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           </Grid>
         </Grid>
       </Grid>
-      <div style={{ height: `calc(100% - ${TABS_HEIGHT + 7}px)`, overflow: "auto" }}>
+      <div style={{ height: `calc(100% - ${TABS_HEIGHT + 18}px)`, overflow: "auto" }}>
         <CSSProperties control={control as IControl} dictionary={dictionary} />
         <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
       </div>
@@ -135,7 +147,7 @@ const Control: React.FC<IEditorTabsProps> = (
     <div style={{ height: "100%" }}>
       {
         selectedControl === undefined ?
-          <ControlTab /> :
+          <ControlTab dictionary={dictionary} /> :
           <ControlDetails
             selectControl={selectControl}
             control={selectedControl}

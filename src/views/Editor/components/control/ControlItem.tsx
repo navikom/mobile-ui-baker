@@ -85,13 +85,9 @@ const ElementComponent: React.FC<ElementProps> =
           backgroundColor = styles.backgroundColor
         }
       }
-      let position = {};
-      if (!children.length) {
-        position = { position: "relative" };
-      }
 
       const controlClass = classNames({
-        [classes.hover]: true,
+        [classes.hover]: !locked,
         [classes.invisible]: !control.visible
       });
 
@@ -107,27 +103,30 @@ const ElementComponent: React.FC<ElementProps> =
         }
       }
 
-      locked = locked || lockedChildren;
+      const lock = locked || lockedChildren;
 
       return (
         <div
           data-testid="control"
           onClick={(e) => {
+            if(locked) {
+              return;
+            }
             selectControl && selectControl(control);
             control.applyActions(setCurrentScreen);
             e.stopPropagation();
           }}
           ref={elementRef}
           style={{
-            ...styles, backgroundColor, ...borderStyles, ...position, ...(isDragging ? {
+            ...styles, backgroundColor, ...borderStyles, ...(isDragging ? {
               position: "absolute",
               top: -1000
             } : {}),
           }}
           className={controlClass}>
-          {showPlaceholder && placeholder}
+          {showPlaceholder && <div style={{position: "relative", height: "100%"}}>{placeholder}</div>}
           {children && children.map((child, i) =>
-            locked ? (
+            lock ? (
               <ElementComponent
                 key={child.id}
                 control={child}

@@ -15,7 +15,7 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import IControl from "interfaces/IControl";
-import { MAIN_CSS_PROPERTY } from "models/Control/Control";
+import { MAIN_CSS_STYLE } from "models/Control/Control";
 import EditorInput from "components/CustomInput/EditorInput";
 import IconButton from "@material-ui/core/IconButton";
 
@@ -111,7 +111,7 @@ const CSSMap: React.FC<CSSMapProps> = ({ control, dictionary }) => {
               aria-controls={`panel${i}a-content`}
               id={`panel${i}a-header`}
             >
-              {key === MAIN_CSS_PROPERTY ?
+              {key === MAIN_CSS_STYLE ?
                 <Typography variant="subtitle2">{key}</Typography> :
                 (<Grid container alignItems="center" justify="space-between">
                   <Grid item xs={11} sm={11} md={11}>

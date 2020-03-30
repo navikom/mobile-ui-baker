@@ -1,6 +1,6 @@
 import { action, observable } from "mobx";
 import { v4 as uuidv4 } from 'uuid';
-import Control, { MAIN_CSS_PROPERTY } from "models/Control/Control";
+import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
 import IControl, { IText } from "interfaces/IControl";
 import { ControlEnum } from "models/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
@@ -17,8 +17,8 @@ class TextStore extends Control implements IText {
   constructor(id: string) {
     super(ControlEnum.Text, id, "Text", false);
     this.mergeStyles(new Map([
-      [MAIN_CSS_PROPERTY, [
-        new CSSProperty("backgroundColor", "#ffffff", "#ffffff", CSS_CAT_BACKGROUND,true, CSS_VALUE_COLOR),
+      [MAIN_CSS_STYLE, [
+        new CSSProperty("backgroundColor", "#ffffff", "#ffffff", CSS_CAT_BACKGROUND,false, CSS_VALUE_COLOR),
         new CSSProperty("color", "#000000", "#000000", CSS_CAT_FONT, false, CSS_VALUE_COLOR),
         new CSSProperty("padding", 5, 5, CSS_CAT_ALIGN_CHILDREN),
         new CSSProperty("fontFamily", "Verdana", "Verdana", CSS_CAT_FONT, false, CSS_VALUE_SELECT)

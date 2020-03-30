@@ -133,7 +133,6 @@ const ControlActions: React.FC<Props> = (
                         const arr = e.split("/");
                         return [e, `${Control.getById(arr[0])!.title}/${arr[1]}`]
                       });
-                    console.log(99999, action, properties, properties.join("/"));
                     return <Actions
                       key={i.toString()}
                       index={i}

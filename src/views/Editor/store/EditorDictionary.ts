@@ -25,6 +25,7 @@ export const data = {
   transitionDurationDescription: "The transition-duration CSS property sets the length of time a transition animation should take to complete. By default, the value is 0s, meaning that no animation will occur.",
   transitionTimingDescription: "The transition-timing-function CSS property sets how intermediate values are calculated for CSS properties being affected by a transition effect.",
   transitionDelayDescription: "The transition-delay CSS property specifies the duration to wait before starting a property's transition effect when its value changes.",
+  positionDescription: "The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.",
   learnMore: "Learn more",
   moreOptions: "More Options",
   unit: "unit",
@@ -47,7 +48,8 @@ export const data = {
   navigateTo: "navigate to",
   enableStyle: "enable style",
   disableStyle: "disable style",
-  toggleStyle: "toggle style"
+  toggleStyle: "toggle style",
+  elements: "elements"
 };
 
 class EditorDictionary extends AbstractDictionary {
