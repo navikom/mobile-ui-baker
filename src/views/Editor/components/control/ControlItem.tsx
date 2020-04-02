@@ -92,14 +92,15 @@ const ElementComponent: React.FC<ElementProps> =
       });
 
       let showPlaceholder = children.length === 0;
-      let placeholder = <span className={classes.placeholder}>{title}</span>;
+      let placeholder = <div className={classes.placeholder}>{title}</div>;
       if (control.type === ControlEnum.Text) {
         showPlaceholder = true;
         if (isSelected && isSelected(control)) {
           backgroundColor = styles.backgroundColor;
           placeholder = <EditorInput html={title} onChange={(e) => control.changeTitle(e)} style={styles} />;
         } else {
-          placeholder = <span style={styles}>{title}</span>;
+          // @ts-ignore
+          placeholder = title;
         }
       }
 

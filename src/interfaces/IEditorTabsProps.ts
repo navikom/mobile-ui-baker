@@ -15,4 +15,6 @@ export default interface IEditorTabsProps {
   cloneControl?: (control: IControl) => void;
   isSelected?: (control: IControl) => boolean;
   screens?: IControl[];
+  autoSave?: boolean;
+  switchAutoSave?: () => void;
 }

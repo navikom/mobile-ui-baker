@@ -148,4 +148,16 @@ describe("Control", () => {
     grid2.addClass("Style1");
     expect(grid2.styles.backgroundColor === "red").toBeTruthy();
   });
+
+  it("Convert control tree to JSON and vice versa", () => {
+    const grid = CreateControl(ControlEnum.Grid);
+    grid.addChild(CreateControl(ControlEnum.Grid));
+    const json = grid.toJSON;
+    Control.clear();
+
+    const grid2 = CreateControl(json.type, json as IControl);
+    expect(grid.id === grid2.id).toBeTruthy();
+    expect(grid === grid2).toBeFalsy();
+    expect(grid2.children.length).toBe(1);
+  });
 });

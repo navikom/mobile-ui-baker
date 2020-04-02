@@ -20,12 +20,13 @@ class TextStore extends Control implements IText {
       [MAIN_CSS_STYLE, [
         new CSSProperty("backgroundColor", "#ffffff", "#ffffff", CSS_CAT_BACKGROUND,false, CSS_VALUE_COLOR),
         new CSSProperty("color", "#000000", "#000000", CSS_CAT_FONT, false, CSS_VALUE_COLOR),
-        new CSSProperty("padding", 5, 5, CSS_CAT_ALIGN_CHILDREN),
+        new CSSProperty("padding", "5px", "5px", CSS_CAT_ALIGN_CHILDREN),
         new CSSProperty("fontFamily", "Verdana", "Verdana", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
           .setOptions(["\"Times New Roman\"", "Georgia", "Arial", "Verdana", "\"Courier New\"", "\"Lucida Console\"", "Helvetica"]),
         new CSSProperty("fontStyle", "normal", "normal", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
           .setOptions(["normal", "italic", "oblique"]),
-        new CSSProperty("fontSize", 17, 17, CSS_CAT_FONT, false, CSS_VALUE_NUMBER),
+        new CSSProperty("fontSize", 17, 17, CSS_CAT_FONT, false, CSS_VALUE_NUMBER)
+          .setUnits("px", ["px", "rem"]),
         new CSSProperty("fontWeight", "normal", "normal", CSS_CAT_FONT, false, CSS_VALUE_SELECT)
           .setOptions(["normal", "bold", "lighter", "bolder", "100", "200", "300", "400", "500", "600", "700", "800", "900"]),
         new CSSProperty("textDecoration", "none", "none", CSS_CAT_FONT, false, CSS_VALUE_SELECT)

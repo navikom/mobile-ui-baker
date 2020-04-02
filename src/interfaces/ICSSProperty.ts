@@ -34,5 +34,5 @@ export default interface ICSSProperty {
   clone(): ICSSProperty;
   switchExpanded(): void;
   switchEnabled(): void;
-  updateProperties(props: {[key: string]: string | number}): void;
+  updateProperties(props: {[key: string]: string | number | boolean}): void;
 }

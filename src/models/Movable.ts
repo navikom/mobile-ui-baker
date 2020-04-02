@@ -1,18 +1,21 @@
 import { action, IObservableArray, observable } from "mobx";
 import IMovable from "interfaces/IMovable";
 import IControl from "interfaces/IControl";
+import { ErrorHandler } from "utils/ErrorHandler";
 
-export default abstract class Movable implements IMovable {
+export default class Movable implements IMovable {
+  id?: string;
   @observable children: IObservableArray<IControl> = observable([]);
   @observable opened: boolean = false;
   @observable title: string = "Control";
+  timeout?: NodeJS.Timeout;
 
   hasChild(control: IControl) {
     return this.children.some(child => child === control);
   }
 
-  @action changeTitle = (title: string) => {
-    this.title = title;
+  @action changeTitle(title: string) {
+    throw new ErrorHandler("Redefine in children");
   };
 
   @action addChild(child: IControl): void {
@@ -45,6 +48,12 @@ export default abstract class Movable implements IMovable {
 
   @action switchOpened = () => {
     this.setOpened(!this.opened);
-  }
+  };
 
+  applyWithTimeout(cb: () => void) {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(cb, 1000);
+  }
 }

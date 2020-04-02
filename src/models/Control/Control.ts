@@ -6,7 +6,7 @@ import { DropEnum } from "models/DropEnum";
 import Movable from "models/Movable";
 import { ErrorHandler } from "utils/ErrorHandler";
 import ICSSProperty from "interfaces/ICSSProperty";
-import CSSProperty from "models/Control/CSSProperty";
+import CSSProperty, { CSS_SET_VALUE, CSS_SWITCH_ENABLED, CSS_SWITCH_EXPANDED } from "models/Control/CSSProperty";
 import {
   ACTION_DISABLE_STYLE,
   ACTION_ENABLE_STYLE,
@@ -22,6 +22,19 @@ import {
   CSS_VALUE_NUMBER,
   CSS_VALUE_SELECT
 } from "models/Constants";
+import EditorHistory, {
+  ControlStatic,
+  HIST_ADD_ACTION,
+  HIST_ADD_CSS_STYLE,
+  HIST_CHANGE_TITLE, HIST_CONTROL_PROP_CHANGE,
+  HIST_CSS_PROP,
+  HIST_DELETE_SELF,
+  HIST_EDIT_ACTION,
+  HIST_REMOVE_ACTION,
+  HIST_REMOVE_CSS_STYLE,
+  HIST_RENAME_CSS_STYLE
+} from "views/Editor/store/EditorHistory";
+import IHistory from "interfaces/IHistory";
 
 export const MAIN_CSS_STYLE = "Main";
 
@@ -34,7 +47,8 @@ class Control extends Movable implements IControl {
   readonly allowChildren: boolean;
   static controls: IControl[] = [];
   static actions: string[] = ["onPress"];
-  @observable static classes: string[] = [];
+  @observable static history: IHistory;
+  @observable static classes: IObservableArray<string> = observable([]);
   @observable title: string;
   @observable parentId?: string;
   @observable dropTarget?: DropEnum;
@@ -52,14 +66,13 @@ class Control extends Movable implements IControl {
       const key = keys[i++];
       cssStyles.push([key, this.cssStyles.get(key)!.filter(prop => prop.enabled).map(prop => prop.toJSON)]);
     }
-
     return {
       type: this.type,
       title: this.title,
       parentId: this.parentId,
       children: this.children.map(child => child.toJSON),
       id: this.id,
-      heldChildren: this.lockedChildren,
+      lockedChildren: this.lockedChildren,
       allowChildren: this.allowChildren,
       cssStyles
     }
@@ -71,7 +84,7 @@ class Control extends Movable implements IControl {
     while (l--) {
       const clazz = this.classes[i++];
       this.cssStyles.has(clazz) && this.cssStyles.get(clazz)!.filter(prop => {
-        if(!prop.enabled && styles.hasOwnProperty(prop.key)) {
+        if (!prop.enabled && styles.hasOwnProperty(prop.key)) {
           delete styles[prop.key];
         }
         return prop.enabled;
@@ -82,6 +95,10 @@ class Control extends Movable implements IControl {
         });
     }
     return styles;
+  }
+
+  cssProperty(key: string, propName: string) {
+    return computed(() => this.cssStyles.get(key)!.find(e => e.key === propName)).get();
   }
 
   constructor(type: ControlEnum, id: string, title: string, allowChildren: boolean = true) {
@@ -128,7 +145,7 @@ class Control extends Movable implements IControl {
           .setUnits("px", ["px", "%", "rem"]),
         new CSSProperty("maxHeight", 20, 20, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
           .setUnits("px", ["px", "%", "rem"]),
-        new CSSProperty("padding", 15, 0, CSS_CAT_ALIGN_CHILDREN, true)
+        new CSSProperty("padding", "15px", 0, CSS_CAT_ALIGN_CHILDREN, true)
           .makeExpandable(),
         new CSSProperty("paddingTop", 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
           .setShowWhen(["padding", "expanded"]).setUnits("px", ["px", "%", "rem"]),
@@ -196,10 +213,6 @@ class Control extends Movable implements IControl {
     this.classes.includes(value) && this.classes.splice(this.classes.indexOf(value), 1);
   }
 
-  @action switchLockChildren = () => {
-    this.lockedChildren = !this.lockedChildren;
-  };
-
   @action switchVisibility = () => {
     this.visible = !this.visible;
   };
@@ -212,21 +225,43 @@ class Control extends Movable implements IControl {
     this.dropTarget = target;
   }
 
-  @action deleteSelf = () => {
+  @action setCSSStyle(key: string, style: ICSSProperty[]) {
+    this.cssStyles.set(key, observable(style.map(e => CSSProperty.fromJSON(e))));
+    Control.addClass(this.id, key);
+  }
+
+  // ###### apply history start ######## //
+
+  @action changeTitle = (title: string, noHistory?: boolean) => {
+    const undo = { control: this.id, title: this.title };
+    this.title = title;
+    const redo = { control: this.id, title: this.title };
+    !noHistory && this.applyWithTimeout(() => {
+        Control.history.add([HIST_CHANGE_TITLE, undo, redo]);
+      }
+    );
+  };
+
+  @action deleteSelf = (noHistory?: boolean) => {
     if (this.parentId) {
       const parent = Control.getById(this.parentId);
+      !noHistory && Control.history.add([HIST_DELETE_SELF,
+        { control: this.toJSON, index: parent!.children.indexOf(this) },
+        { control: this.id }
+      ]);
       parent && parent.removeChild(this);
     }
     Control.removeItem(this);
   };
 
-  @action addCSSStyle = () => {
+  @action addCSSStyle = (noHistory?: boolean) => {
     const key = `Style${this.cssStyles.size}`;
     this.cssStyles.set(key, observable(this.cssStyles.get(MAIN_CSS_STYLE)!.map(prop => prop.clone())));
     Control.addClass(this.id, key);
+    !noHistory && Control.history.add([HIST_ADD_CSS_STYLE, { control: this.id, key }, { control: this.id }]);
   };
 
-  @action renameCSSStyle = (oldKey: string, newKey: string) => {
+  @action renameCSSStyle = (oldKey: string, newKey: string, noHistory?: boolean) => {
     if (!this.cssStyles.has(oldKey)) {
       return;
     }
@@ -237,15 +272,104 @@ class Control extends Movable implements IControl {
     this.cssStyles.set(key, this.cssStyles.get(oldKey) as IObservableArray<ICSSProperty>);
     this.cssStyles.delete(oldKey);
     Control.renameClass(this.id, oldKey, key);
+    !noHistory && Control.history.add([HIST_RENAME_CSS_STYLE,
+      { control: this.id, oldKey: key, key: oldKey }, { control: this.id, key, oldKey }]);
   };
 
-  @action removeCSSStyle(key: string): void {
+  @action removeCSSStyle(key: string, noHistory?: boolean): void {
+    const undo = { control: this.id, style: this.cssStyles.get(key)!.map(prop => prop.toJSON), key };
     this.cssStyles.delete(key);
     Control.removeClass(this.id, key);
+    const redo = { control: this.id, key };
+    !noHistory && Control.history.add([HIST_REMOVE_CSS_STYLE, undo, redo]);
+  }
+
+  @action addAction = (action: string[], noHistory?: boolean) => {
+    this.actions.push(observable(action));
+    !noHistory && Control.history.add([HIST_ADD_ACTION,
+      { control: this.id, index: this.actions.length - 1 },
+      { control: this.id, action: action.slice() }
+    ]);
+  };
+
+  @action editAction = (index: number, action: string, props: string, noHistory?: boolean) => {
+    const undo = { control: this.id, action: this.actions[index].slice(), index };
+    this.actions[index].replace([action, ...props.split("/")]);
+    const redo = { control: this.id, action: [action, props], index };
+    !noHistory && Control.history.add([HIST_EDIT_ACTION, undo, redo]);
+  };
+
+  @action removeAction = (index: number, noHistory?: boolean) => {
+    const undo = { control: this.id, action: this.actions[index].slice(), index };
+    this.actions.splice(index, 1);
+    const redo = { control: this.id, index };
+    !noHistory && Control.history.add([HIST_REMOVE_ACTION, undo, redo]);
+  };
+
+  @action switchLockChildren = () => {
+    const undo = { control: this.id, model: { lockedChildren: this.lockedChildren } };
+    this.lockedChildren = !this.lockedChildren;
+    const redo = { control: this.id, model: { lockedChildren: this.lockedChildren } };
+    Control.history.add([HIST_CONTROL_PROP_CHANGE, undo, redo]);
+  };
+
+  // ####### styles handlers ######## //
+  @action switchExpanded = (key: string, propName: string) => () => {
+
+    const property = this.cssProperty(key, propName);
+    if (property) {
+      const undo = { control: this.id, key, method: [CSS_SWITCH_EXPANDED, propName, property.expanded] };
+      property.switchExpanded();
+      const redo = { control: this.id, key, method: [CSS_SWITCH_EXPANDED, propName, property.expanded] };
+      Control.history.add([HIST_CSS_PROP, undo, redo]);
+    }
+  };
+
+  @action switchEnabled = (key: string, propName: string) => () => {
+    const property = this.cssProperty(key, propName);
+    if (property) {
+      const undo = { control: this.id, key, method: [CSS_SWITCH_ENABLED, propName, property.enabled] };
+      property.switchEnabled();
+      const redo = { control: this.id, key, method: [CSS_SWITCH_ENABLED, propName, property.enabled] };
+      Control.history.add([HIST_CSS_PROP, undo, redo]);
+    }
+  };
+
+  @action setValue = (key: string, propName: string) => (value: string | number) => {
+    const property = this.cssProperty(key, propName);
+    if (property) {
+      const undo = { control: this.id, key, method: [CSS_SET_VALUE, propName, property.value] }
+      property.setValue(value);
+      const redo = { control: this.id, key, method: [CSS_SET_VALUE, propName, property.value] }
+      Control.history.add([HIST_CSS_PROP, undo, redo]);
+    }
+  };
+
+  // ###### apply history end ######## //
+
+  @action applyPropertyMethod(styleKey: string, method: string, propName: string, value: string | number | boolean) {
+    const property = this.cssProperty(styleKey, propName);
+    if (property) {
+      if (method === CSS_SWITCH_ENABLED) {
+        property.updateProperties({ enabled: value });
+      } else if (method === CSS_SWITCH_EXPANDED) {
+        property.updateProperties({ expanded: value });
+      } else {
+        property.setValue(value as string | number);
+      }
+    }
+  }
+
+  @action applyChanges(changes: IControl) {
+    Object.assign(this, changes)
+  }
+
+  @action setAction(index: number, actions: string[]): void {
+    this.actions.splice(index, 0, observable(actions));
   }
 
   @action cloneProps(clone: IControl) {
-    clone.changeTitle(this.title);
+    clone.title = this.title;
     clone.mergeStyles(this.cssStyles);
     if (clone.cssStyles.size > 1) {
       Array.from(clone.cssStyles.keys())
@@ -263,7 +387,7 @@ class Control extends Movable implements IControl {
   }
 
   @action merge(key: string, props: ICSSProperty[]) {
-    if(!this.cssStyles.has(key)) {
+    if (!this.cssStyles.has(key)) {
       this.cssStyles.set(key, observable([]));
     }
     const sliced = props.slice();
@@ -282,18 +406,6 @@ class Control extends Movable implements IControl {
     }
   }
 
-  @action addAction = (action: string[]) => {
-    this.actions.push(observable(action));
-  };
-
-  @action editAction = (index: number, action: string, props: string) => {
-    this.actions[index].replace([action, ...props.split("/")]);
-  };
-
-  @action removeAction = (index: number) => {
-    this.actions.splice(index, 1);
-  }
-
   applyActions = (cb?: (screen: IControl) => void) => {
     this.actions.forEach(action => {
       if (!Control.has(action[1])) {
@@ -305,7 +417,7 @@ class Control extends Movable implements IControl {
       } else {
 
         const style = action[2];
-        if(!control.cssStyles.has(style)) {
+        if (!control.cssStyles.has(style)) {
           return;
         }
         if (action[0] === ACTION_ENABLE_STYLE) {
@@ -347,6 +459,8 @@ class Control extends Movable implements IControl {
   }
 
   static removeItem(control: IControl) {
+    const classes = this.classes.filter(e => !e.includes(control.id));
+    this.classes.replace(classes);
     this.controls.splice(this.controls.indexOf(control), 1);
   }
 
@@ -354,7 +468,7 @@ class Control extends Movable implements IControl {
     const control = new instance(json.id);
     control.title = json.title;
     control.parentId = json.parentId;
-    control.children.replace(json.children);
+    // control.children.replace(json.children.map(child => ));
     control.lockedChildren = json.lockedChildren;
     control.mergeStyles(new Map(json.cssStyles));
     if (control.cssStyles.size > 1) {
@@ -364,25 +478,35 @@ class Control extends Movable implements IControl {
     return control;
   }
 
-  @action static addClass(id: string, className: string) {
+  @action
+  static addClass(id: string, className: string) {
     const clazz = `${id}/${className}`;
     !this.classes.includes(clazz) && this.classes.push(clazz);
   }
 
-  @action static removeClass(id: string, className: string) {
+  @action
+  static removeClass(id: string, className: string) {
     const clazz = `${id}/${className}`;
     this.classes.includes(clazz) && this.classes.splice(this.classes.indexOf(clazz), 1);
   }
 
-  @action static renameClass(id: string, oldClassName: string, newClassName: string) {
+  @action
+  static renameClass(id: string, oldClassName: string, newClassName: string) {
     const oldClass = `${id}/${oldClassName}`;
     const newClass = `${id}/${newClassName}`;
     this.classes.splice(this.classes.indexOf(oldClass), 1, newClass);
+  }
+
+  static clear() {
+    this.controls = [];
+    this.classes.replace([]);
   }
 
   static create(instance: ModelCtor, control: IControl) {
     return this.getOrCreate(instance, control);
   }
 }
+
+Control.history = new EditorHistory(Control as ControlStatic);
 
 export default Control;

@@ -124,7 +124,7 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           </Grid>
         </Grid>
       </Grid>
-      <div style={{ height: `calc(100% - ${TABS_HEIGHT + 18}px)`, overflow: "auto" }}>
+      <div style={{ height: `calc(100% - ${TABS_HEIGHT + 28}px)`, overflow: "auto" }}>
         <CSSProperties control={control as IControl} dictionary={dictionary} />
         <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
       </div>

@@ -32,19 +32,18 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     list: {
       margin: "0 .1em",
-      padding: ".1em"
+      padding: ".1em",
+      maxHeight: "1000px"
     },
     closed: {
-      fontSize: 0,
-      margin: 0,
-      opacity: 0,
-      padding: 0,
-      height: 0,
+      padding: "0 .1em",
       overflow: "hidden",
-      transition: "opacity .25s,font-size .1s,margin .1s,padding .1s,height .1s"
+      maxHeight: 0,
+      opacity: 0,
+      transition: "all .1s"
     },
     opened: {
-      transition: "font-size .1s,margin .1s,height .1s,padding .1s,opacity .1s"
+      transition: "all .1s"
     },
     selected: {
       backgroundColor: warningOpacity(0.1)
@@ -148,7 +147,7 @@ const ElementComponent: React.FC<ElementProps> =
               onChange={(e) => changeTitle(e.currentTarget.value)}
               onClick={() => selectControl(control)}
             />
-            <IconButton size="small" onClick={control.switchVisibility}>
+            <IconButton size="small" onClick={control.switchVisibility} style={{marginLeft: "auto"}}>
               {control.visible ? <Visibility /> : <VisibilityOff color="disabled" />}
             </IconButton>
             <IconButton size="small" onClick={() => cloneControl(control)}>

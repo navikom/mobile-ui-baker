@@ -58,15 +58,16 @@ const useStyles = makeStyles(theme => ({
 interface CSSPropertyProps {
   prop: ICSSProperty;
   dictionary: EditorDictionary;
+  setValue: (value: string | number) => void;
+  switchExpanded: () => void;
+  switchEnabled: () => void;
 }
 
 const CSSProperty: React.FC<CSSPropertyProps> = (
   { prop: {
     value,
-    setValue,
     enabled,
     title,
-    switchEnabled,
     description,
     isString,
     isNumber,
@@ -76,7 +77,10 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
     unit,
     units,
     setUnit,
-    switchExpanded },
+    },
+    setValue,
+    switchExpanded,
+    switchEnabled,
     dictionary,
   }
 ) => {

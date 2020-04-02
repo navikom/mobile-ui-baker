@@ -5,6 +5,9 @@ import { CSSValueType } from "types/commonTypes";
 import { CSS_VALUE_COLOR, CSS_VALUE_NUMBER, CSS_VALUE_SELECT, CSS_VALUE_STRING } from "models/Constants";
 
 export const PROPERTY_EXPANDED = "expanded";
+export const CSS_SWITCH_ENABLED = "switchEnabled";
+export const CSS_SWITCH_EXPANDED = "switchExpanded";
+export const CSS_SET_VALUE = "setValue";
 
 export default class CSSProperty implements ICSSProperty {
   key: keyof React.CSSProperties;
@@ -46,7 +49,7 @@ export default class CSSProperty implements ICSSProperty {
     return this.valueType === CSS_VALUE_SELECT;
   }
 
-  get toJSON() {
+  @computed get toJSON() {
     return {
       key: this.key,
       value: this.value,
@@ -116,6 +119,8 @@ export default class CSSProperty implements ICSSProperty {
     this.unit = unit;
   };
 
+  //####### add to the history start #######//
+
   @action switchExpanded = () => {
     this.expanded = !this.expanded;
   };
@@ -128,7 +133,9 @@ export default class CSSProperty implements ICSSProperty {
     this.value = value;
   };
 
-  @action updateProperties(props: {[key: string]: string | number}) {
+  //####### add to the history end #######//
+
+  @action updateProperties(props: {[key: string]: string | number | boolean}) {
     Object.assign(this, props);
   }
 

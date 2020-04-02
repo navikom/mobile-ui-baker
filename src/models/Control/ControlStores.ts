@@ -10,5 +10,11 @@ export const ControlStores = {
 };
 
 export default function CreateControl(type: ControlEnum, json?: IControl) {
-  return Control.create(ControlStores[type] as unknown as ModelCtor<IControl>, json || ControlStores[type].create());
+  const control = Control.create(ControlStores[type] as unknown as ModelCtor<IControl>, json || ControlStores[type].create());
+  if(json && control.children.length === 0) {
+    json.children.forEach(child => {
+      control.addChild(CreateControl(child.type, child));
+    });
+  }
+  return control;
 }

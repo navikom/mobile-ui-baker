@@ -8,6 +8,7 @@ export const data = {
   mode: "mode",
   white: "white",
   dark: "dark",
+  autoSave: "auto save",
   background: "background",
   statusBar: "status bar",
   backgroundImageDescription: "The background-image CSS property sets one or more background images on an element",

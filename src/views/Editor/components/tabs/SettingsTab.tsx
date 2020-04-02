@@ -10,6 +10,7 @@ import { Mode } from "views/Editor/store/EditorViewStore";
 import IEditorTabsProps from "interfaces/IEditorTabsProps";
 import ColorInput from "components/CustomInput/ColorInput";
 import Grid from "@material-ui/core/Grid";
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,11 +29,19 @@ const SettingsTab: React.FC<IEditorTabsProps> = (
     setBackground,
     statusBarColor,
     setStatusBarColor,
+    autoSave,
+    switchAutoSave,
     dictionary}
 ) => {
   const classes = useStyles();
   return (<div className={classes.root}>
     <Grid container>
+      <FormControl component="fieldset">
+        <FormLabel>{dictionary!.defValue(EditorDictionary.keys.autoSave).toUpperCase()}</FormLabel>
+        <Switch checked={autoSave} color="primary" onChange={switchAutoSave}/>
+      </FormControl>
+    </Grid>
+    <Grid container className={classes.container} >
       <FormControl component="fieldset">
         <FormLabel>{dictionary!.defValue(EditorDictionary.keys.mode).toUpperCase()}</FormLabel>
         <RadioGroup row aria-label="mode" name="mode" value={mode} onChange={switchMode}>

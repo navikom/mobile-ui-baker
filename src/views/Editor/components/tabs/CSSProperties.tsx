@@ -4,7 +4,6 @@ import ICSSProperty from "interfaces/ICSSProperty";
 import { CSS_CATEGORIES, TABS_HEIGHT } from "models/Constants";
 import CSSProperty from "views/Editor/components/tabs/CSSProperty";
 import EditorDictionary from "views/Editor/store/EditorDictionary";
-import { PROPERTY_EXPANDED } from "models/Control/CSSProperty";
 import { ExpansionPanel, makeStyles } from "@material-ui/core";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import { Add, Delete, ExpandMore } from "@material-ui/icons";
@@ -18,6 +17,7 @@ import IControl from "interfaces/IControl";
 import { MAIN_CSS_STYLE } from "models/Control/Control";
 import EditorInput from "components/CustomInput/EditorInput";
 import IconButton from "@material-ui/core/IconButton";
+import { PROPERTY_EXPANDED } from "models/Control/CSSProperty";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -35,13 +35,15 @@ const useStyles = makeStyles(theme => ({
 );
 
 interface CSSPropertiesProps {
-  properties: ICSSProperty[];
   dictionary: EditorDictionary;
+  control: IControl,
+  styleKey: string;
 }
 
-const CSSPropertiesComponent: React.FC<CSSPropertiesProps> = ({ properties, dictionary }) => {
+const CSSPropertiesComponent: React.FC<CSSPropertiesProps> = ({ control, styleKey, dictionary }) => {
 
   const classes = useStyles();
+  const properties = control.cssStyles.get(styleKey) as ICSSProperty[];
 
   const hasToShow = (prop: ICSSProperty) => {
     if (prop.showWhen) {
@@ -78,7 +80,13 @@ const CSSPropertiesComponent: React.FC<CSSPropertiesProps> = ({ properties, dict
             <ExpansionPanelDetails className={classes.details}>
               <Grid container>
                 {(prop[1] as ICSSProperty[]).map((p, j) =>
-                  <CSSProperty key={j.toString()} prop={p} dictionary={dictionary} />)}
+                  <CSSProperty
+                    key={j.toString()}
+                    switchEnabled={control.switchEnabled(styleKey, p.key)}
+                    switchExpanded={control.switchExpanded(styleKey, p.key)}
+                    setValue={control.setValue(styleKey, p.key)}
+                    prop={p}
+                    dictionary={dictionary} />)}
               </Grid>
             </ExpansionPanelDetails>
           </ExpansionPanel>)
@@ -130,7 +138,7 @@ const CSSMap: React.FC<CSSMapProps> = ({ control, dictionary }) => {
 
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.details}>
-              <CSSProperties properties={cssStyles.get(key) as ICSSProperty[]} dictionary={dictionary} />
+              <CSSProperties control={control} styleKey={key} dictionary={dictionary} />
             </ExpansionPanelDetails>
           </ExpansionPanel>)
         })
@@ -138,7 +146,7 @@ const CSSMap: React.FC<CSSMapProps> = ({ control, dictionary }) => {
       <Tooltip
         title={`${dictionary.defValue(EditorDictionary.keys.add)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
         placement="top">
-        <Button fullWidth variant="outlined" className={classes.paragraph} onClick={addCSSStyle}>
+        <Button fullWidth variant="outlined" className={classes.paragraph} onClick={() => addCSSStyle()}>
           <Add />
         </Button>
       </Tooltip>

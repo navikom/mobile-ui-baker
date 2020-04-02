@@ -6,7 +6,7 @@ export default interface IMovable {
   opened: boolean;
   title: string;
 
-  changeTitle(title: string): void;
+  changeTitle(title: string, noHistory?: boolean): void;
   setOpened(opened: boolean): void;
   switchOpened(): void;
   addChild(child: IControl): void;

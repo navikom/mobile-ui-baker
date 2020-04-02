@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { createStyles, Theme } from "@material-ui/core";
+import { createStyles, Theme, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { DndProvider, useDrop } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
@@ -18,10 +18,10 @@ import IconButton from "@material-ui/core/IconButton";
 import {
   AccountCircle,
   Android,
-  Apple,
+  Apple, Redo,
   ScreenRotation,
   StayCurrentLandscape,
-  StayCurrentPortrait
+  StayCurrentPortrait, Undo
 } from "@material-ui/icons";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -35,6 +35,7 @@ import { DropEnum } from "models/DropEnum";
 import TreeComponent from "views/Editor/components/TreeComponent";
 import SettingsTab from "views/Editor/components/tabs/SettingsTab";
 import { TABS_HEIGHT } from "models/Constants";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -117,7 +118,7 @@ const Content: React.FC<ContentProps> = observer((
 const editorStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      minWidth: theme.typography.pxToRem(1000),
+      minWidth: theme.typography.pxToRem(1400),
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -149,11 +150,17 @@ function a11yProps(index: number) {
 
 const TabContent = [ControlTab, SettingsTab];
 
-function Editor() {
-  const classes = editorStyles();
+interface ContextComponentProps {
+  store: EditorViewStore;
+}
+
+const ContextComponent: React.FC<ContextComponentProps> = (
+  {
+    store,
+  }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [height, setHeight] = React.useState(window.innerHeight - 75);
-  const [store] = React.useState(new EditorViewStore());
+  const classes = editorStyles();
   const open = Boolean(anchorEl);
 
   useEffect(() => {
@@ -173,9 +180,7 @@ function Editor() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   const tabsStyle = classNames(classes.tabs);
-
   return (
     <div className={classes.root} style={{ height }}>
       <AppBar position="static">
@@ -234,7 +239,7 @@ function Editor() {
       <div style={{ height: "100%" }}>
         <DndProvider debugMode={true} backend={Backend}>
           <Grid container style={{ height: "100%" }}>
-            <Grid item xs={2} sm={2} md={2} style={{ padding: 5 }}>
+            <Grid item xs={2} sm={2} md={3} style={{ padding: 5 }}>
               <div className={classes.bordered} style={{ overflow: "auto", height }}>
                 <TreeComponent
                   screens={store.screens}
@@ -253,7 +258,7 @@ function Editor() {
                 />
               </div>
             </Grid>
-            <Grid item xs={7} sm={7} md={7} style={{ padding: 5 }}>
+            <Grid item xs={7} sm={7} md={6} style={{ padding: 5 }}>
               <div className={classes.bordered} style={{ overflow: "auto", height }}>
                 <div style={{ transform: "translate3d(0, 0, 0)" }}>
                   <div style={{ transform: "scale(1)" }}>
@@ -303,8 +308,25 @@ function Editor() {
           </Grid>
         </DndProvider>
       </div>
+      <div style={{ position: "absolute", bottom: 20, left: "480px" }}>
+        <ButtonGroup color="primary" variant="outlined">
+          <Button disabled={!store.history.canUndo} onClick={() => store.history.undo()}>
+            <Undo/>
+          </Button>
+          <Button disabled={!store.history.canRedo} onClick={() => store.history.redo()}>
+            <Redo/>
+          </Button>
+        </ButtonGroup>
+      </div>
     </div>
-  );
+  )
+};
+
+const Context = observer(ContextComponent);
+
+function Editor() {
+  const [store] = React.useState(new EditorViewStore());
+  return <Context store={store} />;
 }
 
-export default observer(Editor);
+export default Editor;

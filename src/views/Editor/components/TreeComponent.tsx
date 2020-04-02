@@ -18,17 +18,17 @@ const useStyles = makeStyles((theme: Theme) =>
     list: {
       margin: "0 .5em",
       padding: ".5em",
+      maxHeight: "1000px",
     },
     closed: {
-      fontSize: 0,
-      margin: 0,
+      overflow: "hidden",
+      padding: "0 .5em",
+      maxHeight: 0,
       opacity: 0,
-      padding: 0,
-      height: 0,
-      transition: "opacity .1s,font-size .1s,margin .1s,padding .1s,height .1s"
+      transition: "max-height .2s,padding .1s, opacity .2s"
     },
     opened: {
-      transition: "font-size .1s,margin .1s,height .1s,padding .1s,opacity .1s"
+      transition: "all .1s"
     },
     selected: {
       backgroundColor: primaryOpacity(.08),
@@ -116,7 +116,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
         {dictionary.defValue(EditorDictionary.keys.screen).toUpperCase()}
       </Grid>
       {screens.map((screen, i) => (
-        <div key={i.toString()} style={{marginTop: 25}}>
+        <div key={i.toString()} style={{marginTop: 15}}>
           <Grid container className={isCurrent(screen) ? classes.selected : undefined}>
             <IconButton onClick={screen.switchOpened} size="small">
               {screen.opened ? <Remove /> : <Add />}
@@ -127,7 +127,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
               onChange={(e) => screen.changeTitle(e.currentTarget.value)}
               onClick={() => setCurrentScreen(screen)}
             />
-            <IconButton size="small" onClick={() => cloneScreen(screen)}>
+            <IconButton size="small" onClick={() => cloneScreen(screen)} style={{marginLeft: "auto"}}>
               <FilterNone />
             </IconButton>
             {
