@@ -19,7 +19,6 @@ import { IRoute } from "interfaces/IRoute";
 // models
 import { App } from "models/App.ts";
 import {
-  SIDEBAR_APPLICATION,
   SIDEBAR_ENGAGE,
   SIDEBAR_MAIN,
   SIDEBAR_OTHER,
@@ -39,7 +38,6 @@ type LinkProps = {
   location: any;
   rtlActive: boolean;
   routes: (google.maps.DirectionsRoute & IRoute)[];
-  currentApp: string;
 }
 
 const Links = observer((props: LinkProps) => {
@@ -49,11 +47,10 @@ const Links = observer((props: LinkProps) => {
     return props.location.pathname.includes(routeName);
   };
 
-  const getKey = (key: string) => key === SIDEBAR_APPLICATION && props.currentApp ? props.currentApp : key;
   const color = props.color as ColorType;
-  const treeMap = [SIDEBAR_MAIN, SIDEBAR_APPLICATION, SIDEBAR_ENGAGE, SIDEBAR_USER, SIDEBAR_OTHER]
+  const treeMap = [SIDEBAR_MAIN, SIDEBAR_ENGAGE, SIDEBAR_USER, SIDEBAR_OTHER]
     .map((key) =>
-      [getKey(key), props.routes.filter((route: google.maps.DirectionsRoute & IRoute) =>
+      [key, props.routes.filter((route: google.maps.DirectionsRoute & IRoute) =>
         route.category === key && (!route.role || (App.user && App.user.hasRole(route.role))))]);
 
   return (
@@ -162,7 +159,7 @@ interface ISidebar extends RouteComponentProps {
 
 function Sidebar(props: ISidebar) {
   const classes = useSidebarStyle();
-  const {color, logo, image, logoText, routes, history, currentApp, rtlActive} = props;
+  const {color, logo, image, logoText, routes, history, rtlActive} = props;
 
   return (
     <div>
@@ -184,7 +181,7 @@ function Sidebar(props: ISidebar) {
           <Brand logo={logo} logoText={logoText} classes={classes}/>
           <div className={classes.sidebarWrapper}>
             {props.rtlActive ? <RTLNavbarLinks history={history}/> : <AdminNavbarLinks {...props}/>}
-            <Links color={color} rtlActive={rtlActive} routes={routes} location={props.location} currentApp={currentApp}/>
+            <Links color={color} rtlActive={rtlActive} routes={routes} location={props.location} />
           </div>
           {image !== undefined ? (
             <div
@@ -207,7 +204,7 @@ function Sidebar(props: ISidebar) {
         >
           <Brand logo={logo} logoText={logoText} classes={classes}/>
           <div className={classes.sidebarWrapper}>
-            <Links routes={routes} rtlActive={rtlActive} color={color} location={props.location} currentApp={currentApp}/>
+            <Links routes={routes} rtlActive={rtlActive} color={color} location={props.location} />
           </div>
           {image !== undefined ? (
             <div

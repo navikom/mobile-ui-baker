@@ -20,13 +20,7 @@ export class DeviceStore implements IDevice {
   }
 
   constructor(model: IDevice) {
-    let params: {headers: string} = {headers: ""};
-    try {
-      params = JSON.parse(model.info.headers);
-    } catch (e) {
-      console.log("Device body Error: %s", e.message);
-    }
-    this.info = Object.assign({}, model.info, { params });
+    this.info = model.info;
     this.createdAt = model.createdAt;
   }
 

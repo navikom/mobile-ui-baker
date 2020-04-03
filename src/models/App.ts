@@ -11,9 +11,7 @@ import { RoleStore } from "models/Role/RoleStore.ts";
 import { UserStore } from "models/User/UserStore.ts";
 import { Auth } from "models/Auth/Auth.ts";
 import * as Constants from "models/Constants.ts";
-import { Apps } from "models/App/AppsStore";
 import { Settings } from "models/Settings";
-import { AppDataStore } from "models/App/AppDataStore";
 import { Roles } from "models/Role/RolesStore";
 import { Events } from "models/Event/EventsStore";
 import { Regions } from "models/Region/RegionsStore";
@@ -33,14 +31,6 @@ export class AppStore implements IFlow {
 
   @computed get sessionIsReady(): boolean {
     return this.loggedIn;
-  }
-
-  @computed get currentApp() {
-    return AppDataStore.app;
-  }
-
-  @computed get appRoutes() {
-    return AppDataStore.routes;
   }
 
   constructor() {
@@ -78,7 +68,6 @@ export class AppStore implements IFlow {
     Auth.stop();
     this.userDisposer && this.userDisposer();
     this.anonymousDisposer();
-    Apps.clear();
     CampaignViewStore.clear();
   }
 

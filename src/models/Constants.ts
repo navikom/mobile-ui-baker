@@ -40,7 +40,6 @@ export const SUPER_ADMIN_ROLE = 2;
 //********* Sidebar Categories *********//
 export const SIDEBAR_MAIN = "Main";
 export const SIDEBAR_OTHER = "Other";
-export const SIDEBAR_APPLICATION = "Application";
 export const SIDEBAR_USER = "User";
 export const SIDEBAR_ENGAGE = "Campaign";
 

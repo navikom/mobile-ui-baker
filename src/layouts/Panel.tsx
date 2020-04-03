@@ -10,7 +10,6 @@ import "perfect-scrollbar/css/perfect-scrollbar.css";
 
 // interfaces
 import { IRoute } from "interfaces/IRoute";
-import { IApp } from "interfaces/IApp";
 
 // models
 import { App } from "models/App";
@@ -25,7 +24,7 @@ const Sidebar = lazy(() => import("components/Sidebar/Sidebar"));
 
 // core containers
 import ScrollContainer from "containers/ScrollContainer/ScrollContainer";
-import routes, { appRoutes } from "routes";
+import routes from "routes";
 
 import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboardStyle";
 
@@ -52,19 +51,14 @@ const switchRoutes = (routes: IRoute[]) => (
 );
 
 export default (props: RouteComponentProps) => {
+  const [color] = useState("blue");
   const [appImage, setAppImage] = useState(image);
-  const [color, setColor] = useState("blue");
-  const [hasImage, setHasImage] = useState(true);
-  const [fixedClasses, setFixedClasses] = useState("dropdown");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currRoutes, setCurrRoutes] =
-    useState([...routes.filter(prop => prop.layout === PANEL_ROUTE), ...appRoutes.common]);
+    useState([...routes.filter(prop => prop.layout === PANEL_ROUTE)]);
   const [sidebarRoutes, setSidebarRoutes] = useState(routes.filter(prop => prop.layout === PANEL_ROUTE) as IRoute[]);
   const [currentApp, setCurrentApp] = useState(null as string | null);
 
-  const handleImageClick = (image: any) => {
-    setAppImage(image);
-  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -80,20 +74,10 @@ export default (props: RouteComponentProps) => {
     }
   };
 
-  const dispose = useDisposable(() =>
-    reaction(() => App.currentApp && App.currentApp.title, (app?: string | null) => {
-      console.log('effect==========', App.currentApp, App.appRoutes);
-      setCurrentApp(app ? app : null);
-      setCurrRoutes([...routes.filter(prop => prop.layout === PANEL_ROUTE), ...appRoutes.common, ...App.appRoutes]);
-      setSidebarRoutes([...routes.filter(prop => prop.layout === PANEL_ROUTE), ...App.appRoutes]);
-    })
-  );
-
   useEffect(() => {
     window.addEventListener("resize", resizeFunction);
     return () => {
       window.removeEventListener("resize", resizeFunction);
-      dispose();
     };
   }, []);
 
@@ -105,14 +89,11 @@ export default (props: RouteComponentProps) => {
 
   const classes = dashboardStyle();
 
-  console.log('Admin=======', currentApp);
-
   return (
     <div className={classes.wrapper}>
       <Sidebar
         routes={sidebarRoutes}
-        currentApp={currentApp}
-        logoText={"ebInSolut"}
+        logoText={"MUIBAKER"}
         logo={logo}
         image={appImage}
         handleDrawerToggle={handleDrawerToggle}

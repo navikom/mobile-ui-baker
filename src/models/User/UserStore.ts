@@ -12,8 +12,6 @@ import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { UserEventsStore } from "models/User/UserEventsStore";
 
 import convertDate from "utils/convertDate";
-import { IUsersApps } from "interfaces/IUsersApps";
-import { UsersApps } from "models/User/UsersApps";
 import { UsersDevices } from "models/User/UsersDevices";
 import { IPagination } from "interfaces/IPagination";
 import { UserReferralsStore } from "models/User/UserReferralsStore";
@@ -54,7 +52,6 @@ export class UserStore implements IUser {
   @observable lastLogin!: number;
   @observable fullDataLoaded = false;
   @observable devices?: IUsersDevices[];
-  @observable apps?: IUsersApps[];
   @observable referrals: IPagination<IUser>;
   @observable anonymous: boolean = true;
   readonly roles: IObservableArray<IUsersRoles> = observable<IUsersRoles>([]);
@@ -111,7 +108,6 @@ export class UserStore implements IUser {
     model.regions &&
     (model.location = model.regions.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]);
     model.devices && (this.devices = model.devices.map(device => UsersDevices.from(device)));
-    model.apps && (this.apps = model.apps.map(app => UsersApps.from(app)));
     model.email && (this.email = model.email);
     model.firstName && (this.firstName = model.firstName);
     model.lastName && (this.lastName = model.lastName);
@@ -170,7 +166,6 @@ export class UserStore implements IUser {
       subscription: false,
       referrer: undefined,
       eventsCount: 0,
-      apps: undefined,
       regions: undefined,
       location: undefined,
       lastEvent: undefined

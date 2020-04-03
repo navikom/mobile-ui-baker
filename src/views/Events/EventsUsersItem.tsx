@@ -35,7 +35,6 @@ const GridItem = lazy(() => import("components/Grid/GridItem"));
 const UserInfoTab = lazy(() => import("views/Events/components/UserInfoTab"));
 const UserDevicesTab = lazy(() => import("views/Events/components/UserDevicesTab"));
 const UserEventsTab = lazy(() => import("views/Events/components/UserEventsTab"));
-const UserAppsTab = lazy(() => import("views/Events/components/UserAppsTab"));
 
 interface MatchInfo {
   userId: string;
@@ -79,11 +78,6 @@ const EventsUsersItem = (props: UsersItemProps) => {
               tabName: Dictionary.defValue(DictionaryService.keys.devices),
               tabIcon: Devices,
               tabContent: (<UserDevicesTab devices={user.devices}/>)
-            },
-            {
-              tabName: Dictionary.defValue(DictionaryService.keys.apps),
-              tabIcon: Apps,
-              tabContent: (<UserAppsTab apps={user.apps}/>)
             },
             {
               tabName: Dictionary.defValue(DictionaryService.keys.events),

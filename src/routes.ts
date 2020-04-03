@@ -4,10 +4,7 @@ import {
   Person,
   CastForEducation,
   People,
-  Image,
-  Apps,
   Build as BuildIcon,
-  ListAltOutlined,
   SupervisedUserCircle,
   LinearScaleOutlined,
   DeviceHub,
@@ -21,24 +18,20 @@ import {
 import { lazy } from "utils";
 import {
   PANEL_ROUTE,
-  SIDEBAR_APPLICATION,
   SIDEBAR_ENGAGE,
   SIDEBAR_MAIN,
   SIDEBAR_OTHER,
   SIDEBAR_USER,
   SUPER_ADMIN_ROLE
 } from "models/Constants";
-import { IRoute } from "interfaces/IRoute";
 
 const DashboardPage = lazy(() => import("views/Dashboard/Dashboard"));
 const EventsList = lazy(() => import("views/Events/EventsList.tsx"));
 const EventsUsersItem = lazy(() => import("views/Events/EventsUsersItem.tsx"));
 const UserProfile = lazy(() => import("views/UserProfile/UserProfile"));
-const AppsList = lazy(() => import("views/AppsList/AppsList"));
 const UsersList = lazy(() => import("views/Users/UsersList"));
 const UsersItem = lazy(() => import("views/Users/UsersItem"));
 const RolesList = lazy(() => import("views/Roles/RolesList"));
-const AppsItem = lazy(() => import("views/AppsList/AppsItem"));
 const Login = lazy(() => import("views/Login/Login"));
 const SignUp = lazy(() => import("views/SignUp/SignUp"));
 const StartPage = lazy(() => import("views/StartPage/StartPage"));
@@ -149,16 +142,6 @@ const dashboardRoutesMap = {
     name: "Segment",
     rtlName: "ملف تعريفي للمستخدم",
     component: SegmentsItem,
-    layout: PANEL_ROUTE,
-    auth: true,
-    category: SIDEBAR_MAIN
-  },
-  apps: {
-    path: "/apps",
-    name: "Applications",
-    rtlName: "ملف تعريفي للمستخدم",
-    icon: Apps,
-    component: AppsList,
     layout: PANEL_ROUTE,
     auth: true,
     category: SIDEBAR_MAIN
@@ -341,45 +324,6 @@ const dashboardRoutesMap = {
   //   auth: true,
   //   category: SIDEBAR_OTHER
   // }
-};
-
-const appItem = {
-  url: "/app",
-  params: "/:appId",
-  name: "Common",
-  rtlName: "لوحة القيادة",
-  component: AppsItem,
-  layout: PANEL_ROUTE,
-  auth: true,
-  category: SIDEBAR_APPLICATION
-};
-
-export const appRoutes: { [key: string]: IRoute[] } = {
-  common: [
-    appItem,
-    {
-      ...appItem,
-      params: "/:appId/:pageName"
-    }
-  ],
-  "1": [
-    {
-      ...appItem,
-      path: "/app/1/overview",
-      params: undefined,
-      url: undefined,
-      icon: ListAltOutlined
-    },
-    {
-      ...appItem,
-      path: "/app/1/pictures",
-      params: undefined,
-      url: undefined,
-      name: "Pictures",
-      rtlName: "لوحة القيادة",
-      icon: Image
-    }
-  ]
 };
 
 export const mainNavRoutes = [dashboardRoutesMap.login];

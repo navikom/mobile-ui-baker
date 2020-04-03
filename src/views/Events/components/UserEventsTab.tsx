@@ -62,9 +62,6 @@ function EventInfo(props: EventInfoType) {
     <Grid container>
       <InfoItem title={Dictionary.defValue(DictionaryService.keys.device)} data={props.data.device.plainData} />
       <InfoItem title={Dictionary.defValue(DictionaryService.keys.region)} data={props.data.region.plainData} />
-      {props.data.app && (
-        <InfoItem title={Dictionary.defValue(DictionaryService.keys.application)} data={props.data.app.plainData} />
-      )}
       {props.data.hasCustom && (
         <InfoItem
           title={Dictionary.defValue(DictionaryService.keys.custom)}

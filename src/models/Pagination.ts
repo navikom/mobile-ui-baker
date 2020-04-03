@@ -6,7 +6,7 @@ import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
 import { IPagination } from "interfaces/IPagination";
 import {ErrorHandler} from 'utils/ErrorHandler';
 
-type ApiMethodsInterface = "user" | "event" | "app" | "pixartPicture" | "segment" | "campaign" | "region";
+type ApiMethodsInterface = "user" | "event" | "segment" | "campaign" | "region";
 type RequestTypesInterface = "pagination";
 
 export abstract class Pagination<T extends WithPrimaryKey> extends Errors implements IPagination<T> {

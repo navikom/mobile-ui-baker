@@ -1,6 +1,4 @@
 import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
-import { IRole, RoleType } from "interfaces/IRole";
-import { IUsersApps } from "interfaces/IUsersApps";
 import { IUsersRegions } from "interfaces/IUsersRegions";
 import { IUsersDevices } from "interfaces/IUsersDevices";
 import { IUsersEvents } from "interfaces/IUsersEvents";
@@ -29,7 +27,6 @@ export interface IUser extends WithPrimaryKey {
   subscription?: boolean;
   referrer?: number;
   eventsCount?: number;
-  apps?: IUsersApps[];
   roles: IObservableArray<IUsersRoles>;
   devices?: IUsersDevices[];
   events: IUsersEvents;

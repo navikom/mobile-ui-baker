@@ -4,8 +4,6 @@ import { Users } from "models/User/UsersStore";
 import parseModel from "utils/parseModelRow";
 import {DeviceStore} from "models/Device/DeviceStore";
 import {RegionStore} from "models/Region/RegionStore";
-import {AppStore} from "models/App/AppStore";
-import {IApp} from "interfaces/IApp";
 import {IDevice} from "interfaces/IDevice";
 import {IRegion} from "interfaces/IRegion";
 
@@ -14,7 +12,6 @@ export class EventStore implements IEvent {
   userId!: number;
   createdAt!: Date;
   eventId!: number;
-  app!: IApp | null;
   device!: IDevice;
   region!: IRegion;
   info!: {[key: string]: any};
@@ -36,7 +33,6 @@ export class EventStore implements IEvent {
     userData && model.user.update(userData);
     model.device && (model.device = DeviceStore.from(model.device));
     model.region && (model.region = RegionStore.from(model.region));
-    model.app = model.app ? AppStore.from(model.app) : null;
 
     return new EventStore(model);
   }

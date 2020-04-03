@@ -86,19 +86,6 @@ class Setting extends HttpBase {
   }
 }
 
-class PixartPicture extends HttpBase {
-  constructor() {
-    super("pixart-pictures");
-  }
-
-  save(data: any) {
-    return this.fetchData("post", undefined, data, undefined, [
-      "Content-Type",
-      "Accept"
-    ]);
-  }
-}
-
 class Roles extends HttpBase {
   constructor() {
     super("roles");
@@ -139,10 +126,6 @@ export default class Api extends ApiBase {
 
   get setting(): Setting {
     return new Setting();
-  }
-
-  get pixartPicture(): PixartPicture {
-    return new PixartPicture();
   }
 
   get role(): Roles {
