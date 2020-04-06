@@ -1,11 +1,11 @@
 import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
-import { IUsersRegions } from "interfaces/IUsersRegions";
-import { IUsersDevices } from "interfaces/IUsersDevices";
 import { IUsersEvents } from "interfaces/IUsersEvents";
 import { IPagination } from "interfaces/IPagination";
 import { IObservableArray } from "mobx";
-import { IUsersRoles } from "interfaces/IUsersRoles";
 import { FemaleType, MaleType } from "types/commonTypes";
+import { IRole } from "interfaces/IRole";
+import { IRegion } from "interfaces/IRegion";
+import { IDevice } from "interfaces/IDevice";
 
 export type GenderType = MaleType | FemaleType;
 export interface IUser extends WithPrimaryKey {
@@ -27,11 +27,11 @@ export interface IUser extends WithPrimaryKey {
   subscription?: boolean;
   referrer?: number;
   eventsCount?: number;
-  roles: IObservableArray<IUsersRoles>;
-  devices?: IUsersDevices[];
+  roles: IObservableArray<IRole>;
+  devices?: IDevice[];
   events: IUsersEvents;
-  regions?: IUsersRegions[];
-  location?: IUsersRegions;
+  regions?: IRegion[];
+  location?: IRegion;
   lastEvent?: Date;
   referrals: IPagination<IUser>;
   anonymous: boolean;
@@ -45,6 +45,6 @@ export interface IUser extends WithPrimaryKey {
   updateForm(model: IUser): void;
   setFullDataLoaded(value?: boolean): void;
   hasRole(roleId: number): boolean;
-  updateRoles(roles: IUsersRoles[]): void;
+  updateRoles(roles: IRole[]): void;
   totalTime: string;
 }

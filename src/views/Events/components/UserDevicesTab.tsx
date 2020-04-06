@@ -10,7 +10,6 @@ import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 // interfaces
-import { IUsersDevices } from "interfaces/IUsersDevices";
 
 // services
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
@@ -18,6 +17,7 @@ import Chip from "@material-ui/core/Chip";
 import { ExpansionDataItems } from "components/ExpansionPanel/ExpansionDataItems";
 import ExpansionPanelDetails from "components/ExpansionPanel/ExpansionPanelDetails";
 import Grid from "@material-ui/core/Grid";
+import { IDevice } from "interfaces/IDevice";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,12 +31,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function UserDevicesTab(props: {devices: IUsersDevices[]}) {
+function UserDevicesTab(props: {devices: IDevice[]}) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       {props.devices.length ? (
-        props.devices.map((device: IUsersDevices, key: number) => (
+        props.devices.map((device: IDevice, key: number) => (
           <ExpansionPanel key={key}>
             <ExpansionPanelSummary
               expandIcon={<ExpandMoreIcon />}

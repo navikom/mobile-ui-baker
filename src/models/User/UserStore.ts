@@ -3,7 +3,6 @@ import { action, computed, IObservableArray, observable } from "mobx";
 // interfaces
 import { IUsersEvents } from "interfaces/IUsersEvents";
 import { GenderType, IUser } from "interfaces/IUser";
-import { IUsersDevices } from "interfaces/IUsersDevices";
 
 // services
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
@@ -12,12 +11,15 @@ import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { UserEventsStore } from "models/User/UserEventsStore";
 
 import convertDate from "utils/convertDate";
-import { UsersDevices } from "models/User/UsersDevices";
 import { IPagination } from "interfaces/IPagination";
 import { UserReferralsStore } from "models/User/UserReferralsStore";
 import { ADMIN_ROLE, SUPER_ADMIN_ROLE } from "models/Constants";
 import { Roles } from "models/Role/RolesStore";
-import { IUsersRoles } from "interfaces/IUsersRoles";
+import { IDevice } from "interfaces/IDevice";
+import { IRole } from "interfaces/IRole";
+import { DeviceStore } from "models/Device/DeviceStore";
+import { IRegion } from "interfaces/IRegion";
+import { RegionStore } from "models/Region/RegionStore";
 
 export const MALE = "Male";
 export const FEMALE = "Female";
@@ -51,10 +53,12 @@ export class UserStore implements IUser {
   @observable eventsCount = 1;
   @observable lastLogin!: number;
   @observable fullDataLoaded = false;
-  @observable devices?: IUsersDevices[];
+  @observable devices?: IDevice[];
+  @observable regions?: IRegion[];
+  @observable location?: IRegion;
   @observable referrals: IPagination<IUser>;
   @observable anonymous: boolean = true;
-  readonly roles: IObservableArray<IUsersRoles> = observable<IUsersRoles>([]);
+  readonly roles: IObservableArray<IRole> = observable<IRole>([]);
 
 
   @computed
@@ -80,7 +84,7 @@ export class UserStore implements IUser {
   hasRole(roleId: number): boolean {
     return computed(() => {
       if(!this.roles) return false;
-      return this.roles!.some((e: IUsersRoles) => e.role.roleId === roleId);
+      return this.roles!.some((e: IRole) => e.roleId === roleId);
     }).get();
   }
 
@@ -105,9 +109,12 @@ export class UserStore implements IUser {
     model.eventsCount && (this.eventsCount = Number(model.eventsCount));
     convertDate(model);
     !this.gender && (this.gender = MALE);
+    model.regions && (this.regions = model.regions.map(region =>
+      RegionStore.from({...region, createdAt: region.IUsersRegions!.createdAt})));
     model.regions &&
-    (model.location = model.regions.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]);
-    model.devices && (this.devices = model.devices.map(device => UsersDevices.from(device)));
+    (this.location = this.regions!.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]);
+    model.devices && (this.devices = model.devices.map(device =>
+      DeviceStore.from({...device, createdAt: device.IUsersDevices!.createdAt})));
     model.email && (this.email = model.email);
     model.firstName && (this.firstName = model.firstName);
     model.lastName && (this.lastName = model.lastName);
@@ -133,10 +140,10 @@ export class UserStore implements IUser {
     Object.assign(this, model);
   }
 
-  @action updateRoles(roles: IUsersRoles[]) {
+  @action updateRoles(roles: IRole[]) {
     this.roles.replace([]);
-    roles.forEach((userRole: IUsersRoles) =>
-      this.roles.push({createdAt: userRole.createdAt, role: Roles.getOrCreate(userRole.role)}));
+    roles.forEach((role: IRole) =>
+      this.roles.push(Roles.getOrCreate({...role, createdAt: role.UsersRoles!.createdAt})));
   }
 
   static from(model: IUser): UserStore {

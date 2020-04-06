@@ -7,6 +7,7 @@ export class RegionStore implements IRegion {
   ip!: string;
   lg!: number;
   lt!: number;
+  createdAt!: Date;
   region: string;
   regionId: number;
   timezone!: string;
@@ -32,6 +33,7 @@ export class RegionStore implements IRegion {
     model.lt && (this.lt = model.lt);
     this.region = model.region;
     this.regionId = model.regionId;
+    this.createdAt = model.createdAt;
     model.timezone && (this.timezone = model.timezone);
   }
 

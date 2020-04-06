@@ -93,7 +93,7 @@ export default (props: RouteComponentProps) => {
     <div className={classes.wrapper}>
       <Sidebar
         routes={sidebarRoutes}
-        logoText={"MUIBAKER"}
+        logoText={"ebInSolut"}
         logo={logo}
         image={appImage}
         handleDrawerToggle={handleDrawerToggle}

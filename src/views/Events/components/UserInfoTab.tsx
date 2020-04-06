@@ -51,7 +51,7 @@ const UserInfoTab = (props: UserInfoTabType) => (
       body={<UserLocationCard location={props.user!.location} />}
     />
     <InfoTabCard
-      header={Dictionary.defValue(DictionaryService.keys.location)}
+      header={Dictionary.defValue(DictionaryService.keys.events)}
       body={<UserEventsCard user={props.user} />}
     />
   </div>

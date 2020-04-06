@@ -40,7 +40,7 @@ function nav(props: any, classes: any) {
 
 function Header({ ...props }) {
   function makeBrand() {
-    const name = "Muibaker";
+    const name = "Webinsolut";
     // props.routes.map((prop, key) => {
     //   if (prop.url === props.location.pathname) {
     //     name = props.rtlActive ? prop.rtlName : prop.name;
