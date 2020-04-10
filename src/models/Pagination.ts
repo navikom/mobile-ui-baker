@@ -6,15 +6,15 @@ import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
 import { IPagination } from "interfaces/IPagination";
 import {ErrorHandler} from 'utils/ErrorHandler';
 
-type ApiMethodsInterface = "user" | "event" | "segment" | "campaign" | "region";
-type RequestTypesInterface = "pagination";
+export type ApiMethodTypes = "user" | "event" | "segment" | "campaign" | "region" | "project" | "control" | "component";
+export type RequestMethodTypes = "pagination" | "sharedPagination" | "adminPagination";
 
 export abstract class Pagination<T extends WithPrimaryKey> extends Errors implements IPagination<T> {
   started = false;
   page = 0;
   pageSize = 20;
-  apiMethod: ApiMethodsInterface;
-  requestMethod: RequestTypesInterface;
+  apiMethod: ApiMethodTypes;
+  requestMethod: RequestMethodTypes;
   additionalParams: any;
   pk: string;
 
@@ -56,9 +56,9 @@ export abstract class Pagination<T extends WithPrimaryKey> extends Errors implem
     return computed(() => this.items.some((e: any) => id === e[this.pk])).get();
   }
 
-  protected constructor(pKey: string, apiMethod: ApiMethodsInterface, size: number,
-              requestMethod: RequestTypesInterface = "pagination", rowsPerPageOption: number[] = [5, 10, 25, 50],
-              additionalParams?: any, viewRowsPerPage?: number) {
+  protected constructor(pKey: string, apiMethod: ApiMethodTypes, size: number,
+                        requestMethod: RequestMethodTypes = "pagination", rowsPerPageOption: number[] = [5, 10, 25, 50],
+                        additionalParams?: any, viewRowsPerPage?: number) {
     super();
     this.pk = pKey;
     this.apiMethod = apiMethod;

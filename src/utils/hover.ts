@@ -1,5 +1,5 @@
 import { XYCoord } from "react-dnd";
-import { DropEnum } from "models/DropEnum";
+import { DropEnum } from "enums/DropEnum";
 import { ControlProps } from "interfaces/IControlProps";
 import { DragAndDropItem } from "views/Editor/store/EditorViewStore";
 

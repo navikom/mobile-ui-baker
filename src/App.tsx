@@ -1,13 +1,14 @@
 import React from "react";
-import { ThemeProvider } from "@material-ui/core/styles";
 import { Redirect, Route, Router, Switch } from "react-router-dom";
+import { createBrowserHistory } from "history";
+import { ThemeProvider } from "@material-ui/core/styles";
 import WaitingComponent from "hocs/WaitingComponent";
 import Panel from "layouts/Panel";
 import Main from "layouts/Main";
 import Editor from "layouts/Editor";
-import theme from "assets/theme";
+import Projects from "layouts/Projects";
 
-import { createBrowserHistory } from "history";
+import theme from "assets/theme";
 
 // models
 import { App as AppStore } from "models/App.ts";
@@ -36,6 +37,10 @@ function App() {
           <Route
             path={Constants.EDITOR_ROUTE}
             component={WaitingComponent(Editor)}
+          />
+          <Route
+            path={Constants.PROJECTS_ROUTE + "/:id"}
+            component={WaitingComponent(Projects)}
           />
           <Route
             path={Constants.SIGN_UP_ROUTE}

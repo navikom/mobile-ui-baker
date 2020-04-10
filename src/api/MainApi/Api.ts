@@ -110,6 +110,24 @@ class Region extends HttpBase {
   }
 }
 
+class Project extends HttpBase {
+  constructor() {
+    super("projects");
+  }
+}
+
+class Control extends HttpBase {
+  constructor() {
+    super("controls");
+  }
+}
+
+class Component extends HttpBase {
+  constructor() {
+    super("components");
+  }
+}
+
 export default class Api extends ApiBase {
 
   get user(): User {
@@ -142,5 +160,17 @@ export default class Api extends ApiBase {
 
   get region(): Region {
     return new Region();
+  }
+
+  get project(): Project {
+    return new Project();
+  }
+
+  get control(): Control {
+    return new Control();
+  }
+
+  get component(): Component {
+    return new Component();
   }
 }

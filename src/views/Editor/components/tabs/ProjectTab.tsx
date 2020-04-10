@@ -6,22 +6,34 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import EditorDictionary from "views/Editor/store/EditorDictionary";
-import { Mode } from "views/Editor/store/EditorViewStore";
 import IEditorTabsProps from "interfaces/IEditorTabsProps";
 import ColorInput from "components/CustomInput/ColorInput";
 import Grid from "@material-ui/core/Grid";
-import Switch from "@material-ui/core/Switch";
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
+import {
+  CloudUpload,
+} from "@material-ui/icons";
+import EditorInput from "components/CustomInput/EditorInput";
+import { blackOpacity } from "assets/jss/material-dashboard-react";
+import { Mode } from "enums/ModeEnum";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: theme.typography.pxToRem(5)
   },
   container: {
-    marginTop: theme.typography.pxToRem(10)
+    marginTop: theme.typography.pxToRem(10),
+    padding: 5
+  },
+  title: {
+    marginTop: 5,
+    marginBottom: 5,
+    padding: 5,
+    backgroundColor: blackOpacity(0.05)
   }
 }));
 
-const SettingsTab: React.FC<IEditorTabsProps> = (
+const ProjectTab: React.FC<IEditorTabsProps> = (
   {
     mode,
     switchMode,
@@ -29,17 +41,32 @@ const SettingsTab: React.FC<IEditorTabsProps> = (
     setBackground,
     statusBarColor,
     setStatusBarColor,
-    autoSave,
-    switchAutoSave,
+    saveProject,
+    savingProject,
+    project,
+    changeProjectTitle,
     dictionary}
 ) => {
   const classes = useStyles();
   return (<div className={classes.root}>
-    <Grid container>
-      <FormControl component="fieldset">
-        <FormLabel>{dictionary!.defValue(EditorDictionary.keys.autoSave).toUpperCase()}</FormLabel>
-        <Switch checked={autoSave} color="primary" onChange={switchAutoSave}/>
-      </FormControl>
+    <Grid container alignItems="center" justify="space-between" className={classes.title}>
+      <Grid item xs={8} sm={8} md={8}>
+        <EditorInput
+          style={{}}
+          html={project!.title}
+          onChange={changeProjectTitle as (value: string) => void}
+          tagName="b"
+        />
+      </Grid>
+      <Grid item xs={4} sm={4} md={4}>
+        <Grid container justify="flex-end">
+          <Tooltip title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
+            <IconButton onClick={saveProject} disabled={savingProject}>
+              <CloudUpload />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+      </Grid>
     </Grid>
     <Grid container className={classes.container} >
       <FormControl component="fieldset">
@@ -69,4 +96,4 @@ const SettingsTab: React.FC<IEditorTabsProps> = (
   </div>)
 };
 
-export default observer(SettingsTab);
+export default observer(ProjectTab);

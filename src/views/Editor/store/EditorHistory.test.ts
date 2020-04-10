@@ -4,7 +4,7 @@ import GridStore from "models/Control/GridStore";
 import IControl from "interfaces/IControl";
 import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
 import { ACTION_TOGGLE_STYLE } from "models/Constants";
-import { DropEnum } from "models/DropEnum";
+import { DropEnum } from "enums/DropEnum";
 
 describe("EditorHistory", () => {
   let store: EditorViewStore, control: IControl;

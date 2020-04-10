@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import EditorViewStore from "views/Editor/store/EditorViewStore";
-import { ControlEnum } from "models/ControlEnum";
-import { DropEnum } from "models/DropEnum";
+import { ControlEnum } from "enums/ControlEnum";
+import { DropEnum } from "enums/DropEnum";
 import Control from "models/Control/Control";
 import CreateControl from "models/Control/ControlStores";
 

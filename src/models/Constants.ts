@@ -21,8 +21,6 @@ export const PANEL_ROUTE = "/panel";
 export const DASHBOARD_ROUTE = "/panel/dashboard";
 export const EVENTS_USERS_LIST_ROUTE = "/panel/events-users";
 export const USERS_LIST_ROUTE = "/panel/users";
-export const APPS_LIST_ROUTE = "/panel/apps";
-export const APP_LIST_ROUTE = "/panel/app";
 export const LOGIN_ROUTE = "/login";
 export const SIGN_UP_ROUTE = "/sign-up";
 export const START_PAGE_ROUTE = "/start-page";
@@ -31,11 +29,12 @@ export const SMS_CAMPAIGNS_ROUTE = "/panel/campaigns/sms";
 export const IN_APP_CAMPAIGNS_ROUTE = "/panel/campaigns/in-app";
 export const PUSH_CAMPAIGNS_ROUTE = "/panel/campaigns/push";
 export const EDITOR_ROUTE = "/editor";
+export const PROJECTS_ROUTE = "/projects";
 
 //********* Roles **********//
-export const USER_ROLE = 1;
-export const ADMIN_ROLE = 3;
-export const SUPER_ADMIN_ROLE = 2;
+export const USER_ROLE = 3;
+export const ADMIN_ROLE = 2;
+export const SUPER_ADMIN_ROLE = 1;
 
 //********* Sidebar Categories *********//
 export const SIDEBAR_MAIN = "Main";
@@ -93,6 +92,9 @@ export const CSS_VALUE_SELECT = "select";
 //********** Expressions *********//
 export const AND = "and";
 export const OR = "or";
+
+//********** Errors ************//
+export const ERROR_USER_DID_NOT_LOGIN = "user-did-not-login";
 
 //********** Days **************//
 export const DaysOfWeek = [

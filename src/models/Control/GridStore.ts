@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { action } from "mobx";
 import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
 import IControl, { IGrid } from "interfaces/IControl";
-import { ControlEnum } from "models/ControlEnum";
+import { ControlEnum } from "enums/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
 import CSSProperty from "models/Control/CSSProperty";
 import { CSS_CAT_ALIGN_CHILDREN, CSS_VALUE_SELECT } from "models/Constants";

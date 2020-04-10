@@ -64,8 +64,8 @@ const headerStyle = makeStyles(() =>
     link: {
       ...title,
       textTransform: "none",
-      lineHeight: "26px",
-      fontSize: "20px"
+      lineHeight: "20px",
+      fontSize: "17px"
     },
     appResponsive: {
       top: "8px"

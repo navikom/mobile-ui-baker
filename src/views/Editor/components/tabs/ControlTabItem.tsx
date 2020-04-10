@@ -3,7 +3,7 @@ import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { makeStyles } from "@material-ui/core/styles";
 import { createStyles, Theme } from "@material-ui/core";
-import { ControlEnum } from "models/ControlEnum";
+import { ControlEnum } from "enums/ControlEnum";
 import Paper from "@material-ui/core/Paper";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
 import { whiteOpacity } from "assets/jss/material-dashboard-react";
@@ -54,7 +54,7 @@ const ControlTabItem: React.FC<ControlProps> = ({ type }) => {
 
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true })
-  }, [])
+  }, [preview])
 
   return (
     <Paper elevation={0} ref={drag} className={classes.container}>

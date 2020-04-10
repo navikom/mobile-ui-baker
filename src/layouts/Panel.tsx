@@ -11,9 +11,6 @@ import "perfect-scrollbar/css/perfect-scrollbar.css";
 // interfaces
 import { IRoute } from "interfaces/IRoute";
 
-// models
-import { App } from "models/App";
-
 // utils
 import { lazy } from "utils";
 

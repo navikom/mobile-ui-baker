@@ -25,9 +25,10 @@ export default class CSSProperty implements ICSSProperty {
   @observable unit?: string;
 
   get title() {
-    let title = [], char;
+    let title = [];
     const items = Array.from(this.key);
-    while (char = items.shift()) {
+    while (items.length) {
+      let char = items.shift() as string;
       title.push(char === char.toUpperCase() ? "-" + char.toLowerCase() : char);
     }
     return title.join("");

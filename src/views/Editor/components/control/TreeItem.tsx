@@ -1,7 +1,7 @@
 import React, { RefObject, useImperativeHandle } from "react";
 import { DragSource, DropTarget } from "react-dnd";
 import { observer } from "mobx-react-lite";
-import { DropEnum } from "models/DropEnum";
+import { DropEnum } from "enums/DropEnum";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
 import { makeStyles } from "@material-ui/core/styles";
 import { createStyles, Theme } from "@material-ui/core";

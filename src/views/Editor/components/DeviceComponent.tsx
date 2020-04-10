@@ -9,16 +9,17 @@ import AndroidWrapperLand from "assets/img/device/gpixel_outer_land.png";
 import IOSWrapper from "assets/img/device/iphone_6_outer.png";
 import IOSWrapperLand from "assets/img/device/iphone_6_outer_land.png";
 import { blackOpacity, whiteColor } from "assets/jss/material-dashboard-react";
-import { IBackgroundColor, Mode } from "views/Editor/store/EditorViewStore";
 import AndroidPixelInner from "components/Icons/AndroidPixelInner";
 import IPhone6Inner from "components/Icons/IPhone6Inner";
 import AndroidPixelNavBar from "components/Icons/AndroidPixelNavBar";
+import { Mode } from "enums/ModeEnum";
+import { IBackgroundColor } from "interfaces/IProject";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
       padding: theme.spacing(3),
-      overflow: "auto"
+      overflow: "auto",
     },
     wrapper: {
       position: "relative",
@@ -130,7 +131,7 @@ const IOSDevice: React.FC<DeviceComponentProps> = (
   });
   const content = classNames(extraClasses.topBar, extraClasses.content);
   return (
-    <Grid className={inner}>
+    <Grid className={inner} id="capture">
       <IPhone6Inner
         width={portrait? undefined : 490}
         height={portrait? undefined : 260}
@@ -166,7 +167,7 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
   const navbar = portrait ?
     { bottom: 0 } : { transform: "rotate(-90deg)", right: -230, height: 271 };
   return (
-    <div className={inner}>
+    <div className={inner} id="capture">
       <AndroidPixelInner
         width={portrait? undefined : 490}
         style={{position: "absolute"}}

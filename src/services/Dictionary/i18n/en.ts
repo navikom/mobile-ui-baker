@@ -1,3 +1,5 @@
+import { ERROR_USER_DID_NOT_LOGIN } from "models/Constants";
+
 export default {
   "auth:wrong-password": "The password is invalid.",
   "auth:user-not-found": "User with that credentials is not exists.",
@@ -304,4 +306,7 @@ export default {
   textMessage: "Text message",
   mobileUiEditor: "Mobile UI Editor",
   getStarted: "Get Started",
+  projectStored: "project stored",
+  emptyProject: "empty project",
+  [ERROR_USER_DID_NOT_LOGIN]: "Please, login to save a project"
 };

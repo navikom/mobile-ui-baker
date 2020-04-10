@@ -3,23 +3,31 @@ import { whiteColor } from "assets/jss/material-dashboard-react";
 import EditorDictionary, { data } from "views/Editor/store/EditorDictionary";
 import { IObject } from "services/Dictionary/AbstractDictionary";
 import IControl from "interfaces/IControl";
-import { ControlEnum } from "models/ControlEnum";
-import { DropEnum } from "models/DropEnum";
+import { ControlEnum } from "enums/ControlEnum";
+import { DropEnum } from "enums/DropEnum";
 import Control from "models/Control/Control";
 import CreateControl from "models/Control/ControlStores";
 import {
-  HIST_ADD_SCREEN, HIST_CLONE_CONTROL, HIST_CLONE_SCREEN,
-  HIST_CURRENT_SCREEN, HIST_DELETE_SCREEN,
+  HIST_ADD_SCREEN,
+  HIST_CLONE_CONTROL,
+  HIST_CLONE_SCREEN,
+  HIST_CURRENT_SCREEN,
+  HIST_DELETE_SCREEN,
   HIST_DROP,
   HIST_DROP_INDEX,
   HIST_DROP_PARENT,
-  HIST_HANDLE_DROP_CANVAS, HIST_SETTINGS
+  HIST_HANDLE_DROP_CANVAS,
+  HIST_PROJECT_TITLE_CHANGE,
+  HIST_SETTINGS
 } from "views/Editor/store/EditorHistory";
 import { IHistoryObject, SettingsPropType } from "interfaces/IHistory";
-
-export interface IBackgroundColor {
-  backgroundColor: string;
-}
+import IProject, { IBackgroundColor, IProjectData, IProjectVersion } from "interfaces/IProject";
+import ProjectsStore from "models/Project/ProjectsStore";
+import ProjectStore from "models/Project/ProjectStore";
+import ProjectEnum from "enums/ProjectEnum";
+import { Errors } from "models/Errors";
+import { Mode } from "enums/ModeEnum";
+import { Dictionary } from "services/Dictionary/Dictionary";
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -28,15 +36,10 @@ export interface DragAndDropItem {
   index?: number;
 }
 
-export enum Mode {
-  DARK,
-  WHITE
-}
-
-class EditorViewStore {
+class EditorViewStore extends Errors {
   static STORE_JSON = "storeJson";
   static AUTO_SAVE = "autoSave";
-  static TABS = [EditorDictionary.keys.controls, EditorDictionary.keys.settings];
+  static TABS = [EditorDictionary.keys.project, EditorDictionary.keys.controls];
   static CONTROLS = ControlEnum;
   @observable history = Control.history;
   @observable screens: IObservableArray<IControl>;
@@ -50,9 +53,14 @@ class EditorViewStore {
   @observable portrait: boolean = true;
   @observable ios: boolean = false;
   @observable autoSave: boolean = false;
+  @observable saving: boolean = false;
+  @observable project: IProject;
+  @observable fetchingProject: boolean = false;
+  @observable savingProject: boolean = false;
 
   moveOpened: boolean = true;
   debug: boolean = false;
+  timer?: NodeJS.Timeout;
 
   isCurrent = (screen: IControl) => {
     return computed(() => this.currentScreen === screen).get();
@@ -62,16 +70,18 @@ class EditorViewStore {
     return computed(() => this.selectedControl === control).get();
   };
 
+  get toJSON() {
+    return JSON.stringify({
+      screens: this.screens.map(e => e.toJSON),
+      background: this.background,
+      statusBarColor: this.statusBarColor,
+      mode: this.mode,
+      title: this.project.title
+    })
+  }
+
   @computed get tabProps() {
     const props = [
-      {
-        selectedControl: this.selectedControl,
-        isSelected: this.isSelected,
-        cloneControl: this.cloneControl,
-        selectControl: this.selectControl,
-        dictionary: this.dictionary,
-        screens: this.screens
-      },
       {
         mode: this.mode,
         background: this.background,
@@ -81,13 +91,28 @@ class EditorViewStore {
         setBackground: this.setBackground,
         dictionary: this.dictionary,
         autoSave: this.autoSave,
-        switchAutoSave: this.switchAutoSave
+        switchAutoSave: this.switchAutoSave,
+        saveProject: this.saveProject,
+        project: this.project,
+        changeProjectTitle: this.changeProjectTitle
+      },
+      {
+        selectedControl: this.selectedControl,
+        isSelected: this.isSelected,
+        cloneControl: this.cloneControl,
+        selectControl: this.selectControl,
+        dictionary: this.dictionary,
+        screens: this.screens,
+        saveControl: this.saveControl,
+        saveComponent: this.saveComponent
       }
     ];
     return props[this.tabToolsIndex];
   }
 
-  constructor(newData?: typeof data & IObject) {
+  constructor(projectId: number | null, newData?: typeof data & IObject) {
+    super();
+    this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
     this.history.setFabric(CreateControl);
     this.history.setViewStore(this);
     newData && this.dictionary.setData(newData);
@@ -97,11 +122,77 @@ class EditorViewStore {
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
     this.selectControl(this.currentScreen.children[0]);
 
+    this.fetchProjectData(projectId);
+
     this.checkLocalStorage();
   }
 
+  saveProject = async () => {
+    this.setSavingProject(true);
+    try {
+      this.project.version.update({data: this.toJSON} as unknown as IProjectVersion);
+      await ProjectsStore.save(this.project);
+      this.setSuccessRequest(true);
+      this.setTimeOut(() => this.setSuccessRequest(false), 5000);
+    } catch (err) {
+      this.setError(Dictionary.value(err.message));
+      this.setTimeOut(() => this.setError(null), 5000);
+    }
+    this.setSavingProject(false);
+  };
+
+  saveControl = async (control: IControl) => {
+    if(!control.project) {
+      control.setProject(ProjectStore.createEmpty(ProjectEnum.CONTROL));
+    }
+    control.setSaving(true);
+    try {
+      control.project!.version.update({data: control.toJSON} as IProjectVersion);
+      await ProjectsStore.save(control.project as IProject);
+      this.setSuccessRequest(true);
+      this.setTimeOut(() => this.setSuccessRequest(false), 5000);
+    } catch (err) {
+      this.setError(Dictionary.value(err.message));
+      this.setTimeOut(() => this.setError(null), 5000);
+    }
+    control.setSaving(false);
+  };
+
+  saveComponent = (control: IControl) => {
+    if(!control.project) {
+      control.setProject(ProjectStore.createEmpty(ProjectEnum.COMPONENT));
+    }
+    this.saveControl(control);
+  };
+
   @action clearLocalStorage() {
     localStorage.clear();
+  }
+
+  @action setFetchingProject(value: boolean) {
+    this.fetchingProject = value;
+  }
+
+  @action setSavingProject(value: boolean) {
+    this.savingProject = value;
+  }
+
+  @action async fetchProjectData(projectId: number | null) {
+    if(!projectId) {
+      return;
+    }
+    this.setFetchingProject(true);
+    try {
+      const project = await ProjectsStore.fetchFullData(projectId);
+      runInAction(() => {
+        this.project = project;
+      });
+      this.fromJSON(project.version.data);
+      this.save();
+    } catch (err) {
+      console.log("Fetch full project data error %s", err.message);
+    }
+    this.setFetchingProject(false);
   }
 
   @action async checkLocalStorage() {
@@ -112,32 +203,38 @@ class EditorViewStore {
     if(this.autoSave && json) {
       try {
         const data = JSON.parse(json);
-        runInAction(() => {
-          this.screens.replace(data.screens.map((e: IControl) => CreateControl(ControlEnum.Grid, e)));
-          this.currentScreen = this.screens[0];
-          this.selectControl(this.currentScreen.children[0]);
-          this.mode = data.mode;
-          this.background = data.background;
-          this.statusBarColor = data.statusBarColor;
-        })
+        this.fromJSON(data);
       } catch(err) {
         console.log("LocalStorage json data parse error %s", err.message);
       }
     }
   }
 
+  @action fromJSON(data: IProjectData) {
+    this.screens.replace(data.screens.map((e) => CreateControl(ControlEnum.Grid, e)));
+    this.currentScreen = this.screens[0];
+    this.selectControl(this.currentScreen.children[0]);
+    this.mode = data.mode;
+    this.background = data.background;
+    this.statusBarColor = data.statusBarColor;
+    this.project.update({title: data.title} as IProject);
+  }
+
   @action save() {
     if(!this.autoSave) {
       return;
     }
-    const json = JSON.stringify({
-      screens: this.screens.map(e => e.toJSON),
-      background: this.background,
-      statusBarColor: this.statusBarColor,
-      mode: this.mode
-    });
+    this.saving = true;
+    const json = this.toJSON;
     localStorage.setItem(EditorViewStore.STORE_JSON, json);
-    console.log("Saved to LocalStore");
+    if(!this.timer) {
+      this.timer = setTimeout(() => {
+        runInAction(() => {
+          this.saving = false;
+        });
+        this.timer = undefined;
+      }, 1000)
+    }
   }
 
   @action switchAutoSave = () => {
@@ -191,6 +288,16 @@ class EditorViewStore {
     this.mode = this.mode === Mode.WHITE ? Mode.DARK : Mode.WHITE;
     const redo = { control: this.currentScreen.id, key: "mode", value: this.mode } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
+  };
+
+  @action changeProjectTitle = (value: string) => {
+    if(value.length > 50) {
+      return;
+    }
+    const undo = { control: this.currentScreen.id, value: this.project.title } as unknown as IHistoryObject;
+    this.project.update({title: value} as IProject);
+    const redo = { control: this.currentScreen.id, value: this.project.title } as unknown as IHistoryObject;
+    this.history.add([HIST_PROJECT_TITLE_CHANGE, undo, redo]);
   };
 
   @action setBackground = (background: IBackgroundColor) => {

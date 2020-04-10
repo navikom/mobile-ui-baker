@@ -7,7 +7,7 @@ import { Add, AddCircleOutline, Delete, FilterNone, Remove } from "@material-ui/
 import classNames from "classnames";
 import IControl from "interfaces/IControl";
 import TreeItem from "views/Editor/components/control/TreeItem";
-import { DropEnum } from "models/DropEnum";
+import { DropEnum } from "enums/DropEnum";
 import { DragAndDropItem } from "views/Editor/store/EditorViewStore";
 import { primaryOpacity } from "assets/jss/material-dashboard-react";
 import EditorDictionary from "views/Editor/store/EditorDictionary";
@@ -117,7 +117,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
       </Grid>
       {screens.map((screen, i) => (
         <div key={i.toString()} style={{marginTop: 15}}>
-          <Grid container className={isCurrent(screen) ? classes.selected : undefined}>
+          <Grid container className={isCurrent(screen) ? classes.selected : undefined} style={{paddingRight: 5}}>
             <IconButton onClick={screen.switchOpened} size="small">
               {screen.opened ? <Remove /> : <Add />}
             </IconButton>

@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { ControlEnum } from "models/ControlEnum";
+import { ControlEnum } from "enums/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
 import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
 import CSSProperty from "models/Control/CSSProperty";

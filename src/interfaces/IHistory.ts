@@ -1,6 +1,7 @@
-import { ControlEnum } from "models/ControlEnum";
+import { ControlEnum } from "enums/ControlEnum";
 import IControl from "interfaces/IControl";
-import { IBackgroundColor, Mode } from "views/Editor/store/EditorViewStore";
+import { Mode } from "enums/ModeEnum";
+import IProject, { IBackgroundColor } from "interfaces/IProject";
 
 export interface IHistoryObject {
   control: string | { [key: string]: any };
@@ -21,6 +22,7 @@ export interface IHistoryObject {
 }
 
 export interface ViewStore {
+  project: IProject;
   applyHistorySettings(key: SettingsPropType, value: Mode & string & IBackgroundColor): void;
   setCurrentScreen(screen: IControl, noHistory?: boolean): void;
   removeScreen(screen: IControl, noHistory?: boolean): void;

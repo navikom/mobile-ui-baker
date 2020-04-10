@@ -9,6 +9,9 @@ export const data = {
   white: "white",
   dark: "dark",
   autoSave: "auto save",
+  save: "save",
+  import: "import",
+  export: "export",
   background: "background",
   statusBar: "status bar",
   backgroundImageDescription: "The background-image CSS property sets one or more background images on an element",
@@ -50,7 +53,11 @@ export const data = {
   enableStyle: "enable style",
   disableStyle: "disable style",
   toggleStyle: "toggle style",
-  elements: "elements"
+  elements: "elements",
+  project: "project",
+  control: "control",
+  component: "component",
+  makeScreenshot: "make screenshot"
 };
 
 class EditorDictionary extends AbstractDictionary {

@@ -43,6 +43,9 @@ const CampaignsItem = lazy(() => import("views/Campaigns/CampaignsItem"));
 const SegmentsList = lazy(() => import("views/Segments/SegmentsList"));
 const SegmentsItem = lazy(() => import("views/Segments/SegmentsItem"));
 
+const Editor = lazy(() => import("views/Editor/EditorView"));
+const Projects = lazy(() => import("views/Projects/ProjectsView"));
+
 const dashboardRoutesMap = {
   guide: {
     path: "/guide",
@@ -220,6 +223,28 @@ const dashboardRoutesMap = {
     component: SignUp,
     layout: "/main"
   },
+  editor: {
+    path: "/editor",
+    name: "editor",
+    rtlName: "لوحة الادارة",
+    component: Editor,
+    layout: "/main"
+  },
+  editorProject: {
+    path: "/editor",
+    params: "/:projectId",
+    name: "editor",
+    rtlName: "لوحة الادارة",
+    component: Editor,
+    layout: "/main"
+  },
+  projects: {
+    path: "/projects",
+    name: "projects",
+    rtlName: "لوحة الادارة",
+    component: Projects,
+    layout: "/main"
+  },
   startPage: {
     path: "/start-page",
     name: "Start Page",
@@ -314,18 +339,8 @@ const dashboardRoutesMap = {
     auth: true,
     category: SIDEBAR_MAIN
   }
-  // rtl: {
-  //   path: "/rtl-page",
-  //   name: "RTL Support",
-  //   rtlName: "پشتیبانی از راست به چپ",
-  //   icon: Language,
-  //   component: RTLPage,
-  //   layout: "/rtl",
-  //   auth: true,
-  //   category: SIDEBAR_OTHER
-  // }
 };
 
-export const mainNavRoutes = [dashboardRoutesMap.login];
+export const mainNavRoutes = [dashboardRoutesMap.projects, dashboardRoutesMap.editor, dashboardRoutesMap.login];
 
 export default Object.values(dashboardRoutesMap);

@@ -1,8 +1,9 @@
-import { action, computed, IObservableArray, observable, runInAction } from "mobx";
+import { action, computed, IObservableArray, observable } from "mobx";
 import IControl from "interfaces/IControl";
 import IHistory, { IHistoryObject, SettingsPropType, ViewStore } from "interfaces/IHistory";
-import { ControlEnum } from "models/ControlEnum";
-import { IBackgroundColor, Mode } from "views/Editor/store/EditorViewStore";
+import { ControlEnum } from "enums/ControlEnum";
+import { Mode } from "enums/ModeEnum";
+import IProject, { IBackgroundColor } from "interfaces/IProject";
 
 export const HIST_CHANGE_TITLE = "changeTitle";
 export const HIST_DELETE_SELF = "deleteSelf";
@@ -24,6 +25,7 @@ export const HIST_DELETE_SCREEN = "deleteScreen";
 export const HIST_CLONE_SCREEN = "cloneScreen";
 export const HIST_CLONE_CONTROL = "cloneControl";
 export const HIST_CONTROL_PROP_CHANGE = "controlProperties";
+export const HIST_PROJECT_TITLE_CHANGE = "projectTitle";
 
 export interface ControlStatic {
   getById(id: string): IControl;
@@ -217,6 +219,7 @@ class EditorHistory implements IHistory {
         break;
       case HIST_SETTINGS:
         this.viewStore!.applyHistorySettings(object.key as SettingsPropType, object.value as Mode & string & IBackgroundColor);
+        break;
       case HIST_CURRENT_SCREEN:
         this.viewStore!.setCurrentScreen(control, true);
         break;
@@ -241,6 +244,9 @@ class EditorHistory implements IHistory {
         break;
       case HIST_CONTROL_PROP_CHANGE:
         control.applyChanges(object.model as IControl);
+        break;
+      case HIST_PROJECT_TITLE_CHANGE:
+        this.viewStore!.project.update({ title: object.value } as unknown as IProject);
         break;
     }
     this.viewStore!.save();
@@ -345,6 +351,9 @@ class EditorHistory implements IHistory {
         break;
       case HIST_CONTROL_PROP_CHANGE:
         control.applyChanges(object.model as IControl);
+        break;
+      case HIST_PROJECT_TITLE_CHANGE:
+        this.viewStore!.project.update({ title: object.value } as unknown as IProject);
         break;
     }
     this.viewStore!.save();

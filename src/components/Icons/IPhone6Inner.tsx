@@ -1,6 +1,6 @@
 import React from "react";
-import { Mode } from "views/Editor/store/EditorViewStore";
 import { whiteColor } from "assets/jss/material-dashboard-react";
+import { Mode } from "enums/ModeEnum";
 
 interface Props {
   mode: Mode;

@@ -5,7 +5,6 @@ import ICSSProperty from "interfaces/ICSSProperty";
 import { Grid, makeStyles } from "@material-ui/core";
 import EditorDictionary from "views/Editor/store/EditorDictionary";
 import Typography from "@material-ui/core/Typography";
-import IOSSwitch from "components/Switch/IOSSwitch";
 import { primaryOpacity, whiteOpacity } from "assets/jss/material-dashboard-react";
 import IconButton from "@material-ui/core/IconButton";
 import { InfoOutlined } from "@material-ui/icons";

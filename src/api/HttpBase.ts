@@ -5,7 +5,6 @@ import settings from "config/server";
 export abstract class HttpBase {
  url: string;
  debug = true;
- currentRequests: {[k: string]: any} = {};
 
  protected constructor(url: string) {
   this.url = `${settings.mainApi}/${url}`;
@@ -13,6 +12,14 @@ export abstract class HttpBase {
 
  pagination(page: number, pageSize: number, additionalParams?: number) {
   return this.fetchData("get", `${page}/${pageSize}${additionalParams ? additionalParams : ""}`);
+ }
+
+ sharedPagination(page: number, pageSize: number, additionalParams?: number) {
+  return this.fetchData("get", `shared/${page}/${pageSize}${additionalParams ? additionalParams : ""}`);
+ }
+
+ adminPagination(page: number, pageSize: number, additionalParams?: number) {
+  return this.fetchData("get", `admin/${page}/${pageSize}${additionalParams ? additionalParams : ""}`);
  }
 
  fullData(id: number) {

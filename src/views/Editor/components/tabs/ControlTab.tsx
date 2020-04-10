@@ -1,12 +1,21 @@
 import React from "react";
-import { ControlEnum } from "models/ControlEnum";
+import { ControlEnum } from "enums/ControlEnum";
 import EditorViewStore from "views/Editor/store/EditorViewStore";
 import ControlTabItem from "views/Editor/components/tabs/ControlTabItem";
 import { makeStyles } from "@material-ui/core";
 import CustomDragLayer from "views/Editor/components/CustomDragLayer";
 import IEditorTabsProps from "interfaces/IEditorTabsProps";
 import { blackOpacity, primaryOpacity } from "assets/jss/material-dashboard-react";
-import { Delete, FilterNone, KeyboardArrowUp, Lock, LockOpen, Visibility, VisibilityOff } from "@material-ui/icons";
+import {
+  CloudUpload,
+  Delete,
+  FilterNone,
+  KeyboardArrowUp,
+  Lock,
+  LockOpen,
+  Visibility,
+  VisibilityOff
+} from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import IControl from "interfaces/IControl";
 import { observer } from "mobx-react-lite";
@@ -71,6 +80,8 @@ interface ControlDetailsProps {
   control?: IControl;
   dictionary: EditorDictionary;
   screens: IControl[];
+  saveControl: (control: IControl) => void;
+  saveComponent: (control: IControl) => void;
 }
 
 const ControlDetails: React.FC<ControlDetailsProps> = observer((
@@ -80,6 +91,8 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
     dictionary,
     cloneControl,
     isSelected,
+    saveControl,
+    saveComponent,
     screens
   }
 ) => {
@@ -115,6 +128,16 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
                 <FilterNone />
               </IconButton>
             </Tooltip>
+            <Tooltip title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.control)}`}>
+              <IconButton onClick={() => {}}>
+                <CloudUpload />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.component)}`}>
+              <IconButton onClick={() => {}} disabled={control?.saving}>
+                <CloudUpload />
+              </IconButton>
+            </Tooltip>
             <IconButton size="small" onClick={() => {
               isSelected!(control!) && selectControl!();
               control!.deleteSelf()
@@ -140,6 +163,8 @@ const Control: React.FC<IEditorTabsProps> = (
     dictionary,
     cloneControl,
     isSelected,
+    saveControl,
+    saveComponent,
     screens
   }
 ) => {
@@ -149,6 +174,8 @@ const Control: React.FC<IEditorTabsProps> = (
         selectedControl === undefined ?
           <ControlTab dictionary={dictionary} /> :
           <ControlDetails
+            saveControl={saveControl as (control: IControl) => void}
+            saveComponent={saveComponent as (control: IControl) => void}
             selectControl={selectControl}
             control={selectedControl}
             isSelected={isSelected}

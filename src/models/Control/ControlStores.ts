@@ -1,4 +1,4 @@
-import { ControlEnum } from "models/ControlEnum";
+import { ControlEnum } from "enums/ControlEnum";
 import GridStore from "models/Control/GridStore";
 import TextStore from "models/Control/TextStore";
 import Control, { ModelCtor } from "models/Control/Control";

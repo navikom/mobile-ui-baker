@@ -32,7 +32,7 @@ function nav(props: any, classes: any) {
         className={classes.link}
         onClick={() => props.history.push(route.path)}
       >
-        {Dictionary.value(route.name)}
+        {Dictionary.value(route.name).toUpperCase()}
       </Button>
     );
   });

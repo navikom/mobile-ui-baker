@@ -1,9 +1,10 @@
 import React from "react";
 import { action, IObservableArray } from "mobx";
-import { ControlEnum } from "models/ControlEnum";
-import { DropEnum } from "models/DropEnum";
+import { ControlEnum } from "enums/ControlEnum";
+import { DropEnum } from "enums/DropEnum";
 import IMovable from "interfaces/IMovable";
 import ICSSProperty from "interfaces/ICSSProperty";
+import IProject from "interfaces/IProject";
 
 export default interface IControl extends IMovable {
   type: ControlEnum;
@@ -18,6 +19,8 @@ export default interface IControl extends IMovable {
   toJSON: { [key: string]: any };
   classes: string[];
   actions: string[][];
+  project?: IProject;
+  saving: boolean;
 
   cssProperty(key: string, propName: string): ICSSProperty | undefined;
 
@@ -58,6 +61,10 @@ export default interface IControl extends IMovable {
   setAction(index: number, actions: string[]): void;
 
   applyChanges(changes: IControl): void;
+
+  setSaving(value: boolean): void;
+
+  setProject(project: IProject): void;
 
   /// properties
   switchExpanded(key: string, propName: string): () => void;

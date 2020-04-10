@@ -1,8 +1,14 @@
 import React from "react";
-import Editor from "views/Editor/EditorContext";
+import { History } from "history";
+import { lazy } from "utils";
 
-function EditorLayout() {
-  return <Editor/>
+const EditorView = lazy(() => import("views/Editor/EditorView"));
+
+interface Props {
+  history: History;
+}
+function EditorLayout(props: Props) {
+  return <EditorView {...props} />
 }
 
 export default EditorLayout;

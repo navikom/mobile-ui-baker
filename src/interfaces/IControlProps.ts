@@ -1,5 +1,5 @@
 import IControl from "interfaces/IControl";
-import { DropEnum } from "models/DropEnum";
+import { DropEnum } from "enums/DropEnum";
 import { RefObject } from "react";
 
 export interface ControlProps {

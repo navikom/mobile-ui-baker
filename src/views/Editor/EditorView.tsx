@@ -1,41 +1,60 @@
 import React, { useEffect } from "react";
-import { createStyles, Theme, Button } from "@material-ui/core";
+import { NavLink } from "react-router-dom"
+import { matchPath } from 'react-router'
 import { makeStyles } from "@material-ui/core/styles";
 import { DndProvider, useDrop } from "react-dnd";
+import classNames from "classnames";
 import Backend from "react-dnd-html5-backend";
 import { observer } from "mobx-react-lite";
+import html2canvas from "html2canvas";
+
+// @material-ui/core
+import { createStyles, Theme, Button } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import DeviceComponent from "views/Editor/components/DeviceComponent";
-import { blackOpacity, whiteColor } from "assets/jss/material-dashboard-react";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import classNames from "classnames";
 import Paper from "@material-ui/core/Paper";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import {
-  AccountCircle,
+  AccountCircle, AddAPhoto,
   Android,
-  Apple, Redo,
-  ScreenRotation,
+  Apple, Clear,
+  Redo,
+  RestorePage,
   StayCurrentLandscape,
-  StayCurrentPortrait, Undo
+  StayCurrentPortrait,
+  Undo
 } from "@material-ui/icons";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Tooltip from "@material-ui/core/Tooltip";
+
+import DeviceComponent from "views/Editor/components/DeviceComponent";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import EditorViewStore, { DragAndDropItem, IBackgroundColor } from "views/Editor/store/EditorViewStore";
+import EditorViewStore, { DragAndDropItem } from "views/Editor/store/EditorViewStore";
 import ControlTab from "views/Editor/components/tabs/ControlTab";
 import ControlItem from "views/Editor/components/control/ControlItem";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
 import IControl from "interfaces/IControl";
-import { DropEnum } from "models/DropEnum";
+import { DropEnum } from "enums/DropEnum";
 import TreeComponent from "views/Editor/components/TreeComponent";
-import SettingsTab from "views/Editor/components/tabs/SettingsTab";
-import { TABS_HEIGHT } from "models/Constants";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
+import { ROOT_ROUTE, TABS_HEIGHT } from "models/Constants";
+import ProjectTab from "views/Editor/components/tabs/ProjectTab";
+import EditorDictionary from "views/Editor/store/EditorDictionary";
+import { blackOpacity, whiteColor } from "assets/jss/material-dashboard-react";
+import { RouteComponentProps } from "react-router";
+import { IBackgroundColor } from "interfaces/IProject";
+import AddAlert from "@material-ui/icons/AddAlert";
+import Snackbar from "components/Snackbar/Snackbar";
+import { SharedControls } from "models/Project/ControlsStore";
+import { SharedComponents } from "models/Project/SharedComponentsStore";
+import { when } from "mobx";
+import { App } from "models/App";
+import { OwnComponents } from "models/Project/OwnComponentsStore";
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -125,6 +144,7 @@ const editorStyles = makeStyles((theme: Theme) =>
     },
     title: {
       marginRight: theme.spacing(12),
+      color: whiteColor
     },
     tabs: {
       backgroundColor: blackOpacity(0.05),
@@ -137,6 +157,10 @@ const editorStyles = makeStyles((theme: Theme) =>
     },
     headerButtons: {
       flexGrow: 1,
+    },
+    headerRightGroup: {
+      display: "flex",
+      alignItems: "center"
     }
   })
 );
@@ -148,7 +172,7 @@ function a11yProps(index: number) {
   };
 }
 
-const TabContent = [ControlTab, SettingsTab];
+const TabContent = [ProjectTab, ControlTab];
 
 interface ContextComponentProps {
   store: EditorViewStore;
@@ -180,14 +204,29 @@ const ContextComponent: React.FC<ContextComponentProps> = (
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleScreenshot = () => {
+    const element = document.querySelector("#capture") as HTMLElement;
+    element && html2canvas(element).then(canvas => {
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL();
+      a.download = "somefilename.png";
+      a.click();
+      setTimeout(() => {
+        a.remove();
+      }, 300);
+    })
+  };
+
   const tabsStyle = classNames(classes.tabs);
   return (
     <div className={classes.root} style={{ height }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            {Dictionary.defValue(DictionaryService.keys.mobileUiEditor)}
-          </Typography>
+          <NavLink to={ROOT_ROUTE}>
+            <Typography variant="h6" className={classes.title}>
+              {Dictionary.defValue(DictionaryService.keys.mobileUiEditor)}
+            </Typography>
+          </NavLink>
           <div className={classes.headerButtons}>
             <IconButton
               color={store.ios ? "default" : "inherit"}
@@ -204,8 +243,26 @@ const ContextComponent: React.FC<ContextComponentProps> = (
             <IconButton color="inherit" onClick={store.switchPortrait}>
               {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
             </IconButton>
+            <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
+              <IconButton color="inherit" onClick={handleScreenshot}>
+                <AddAPhoto />
+              </IconButton>
+            </Tooltip>
           </div>
-          <div>
+          <div className={classes.headerRightGroup}>
+            <Typography color={store.saving ? "secondary" : "primary"} style={{ transition: "all .5s ease-out" }}>
+              {Dictionary.defValue(DictionaryService.keys.projectStored)}
+            </Typography>
+            <Tooltip
+              title={store.dictionary.defValue(EditorDictionary.keys.autoSave)}
+            >
+              <IconButton
+                onClick={store.switchAutoSave}
+                color={store.autoSave ? "secondary" : "inherit"}
+              >
+                <RestorePage />
+              </IconButton>
+            </Tooltip>
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -311,21 +368,56 @@ const ContextComponent: React.FC<ContextComponentProps> = (
       <div style={{ position: "absolute", bottom: 20, left: "480px" }}>
         <ButtonGroup color="primary" variant="outlined">
           <Button disabled={!store.history.canUndo} onClick={() => store.history.undo()}>
-            <Undo/>
+            <Undo />
           </Button>
           <Button disabled={!store.history.canRedo} onClick={() => store.history.redo()}>
-            <Redo/>
+            <Redo />
           </Button>
         </ButtonGroup>
       </div>
+      <Snackbar
+        place="br"
+        color="info"
+        icon={AddAlert}
+        message={Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, store.project.title)}
+        open={store.successRequest}
+        closeNotification={() => store.setSuccessRequest(false)}
+        close
+      />
+      <Snackbar
+        place="br"
+        color="danger"
+        icon={Clear}
+        message={Dictionary.defValue(DictionaryService.keys.dataSaveError, [store.project.title, store.error || ""])}
+        open={store.hasError}
+        closeNotification={() => store.setError(null)}
+        close
+      />
     </div>
   )
 };
 
 const Context = observer(ContextComponent);
 
-function Editor() {
-  const [store] = React.useState(new EditorViewStore());
+function Editor(props: RouteComponentProps) {
+  const match = matchPath<{id: string}>(props.history.location.pathname, {
+    path: '/editor/:id',
+    exact: true,
+    strict: false
+  });
+  const id = match ? Number(match.params.id) : null;
+  const [store] = React.useState(new EditorViewStore(id));
+  useEffect(() => {
+    SharedControls.fetchItems().catch(err => console.log("Shared controls fetch error %s", err.message));
+    SharedComponents.fetchItems().catch(err => console.log("Shared controls fetch error %s", err.message));
+    when(() => App.loggedIn, async () => {
+      try {
+        await OwnComponents.fetchItems();
+      } catch(err) {
+        console.log("Own components error %s", err.message);
+      }
+    });
+  }, []);
   return <Context store={store} />;
 }
 

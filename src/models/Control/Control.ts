@@ -1,8 +1,8 @@
 import React from "react";
 import { action, computed, IObservableArray, observable } from "mobx";
 import IControl from "interfaces/IControl";
-import { ControlEnum } from "models/ControlEnum";
-import { DropEnum } from "models/DropEnum";
+import { ControlEnum } from "enums/ControlEnum";
+import { DropEnum } from "enums/DropEnum";
 import Movable from "models/Movable";
 import { ErrorHandler } from "utils/ErrorHandler";
 import ICSSProperty from "interfaces/ICSSProperty";
@@ -35,6 +35,7 @@ import EditorHistory, {
   HIST_RENAME_CSS_STYLE
 } from "views/Editor/store/EditorHistory";
 import IHistory from "interfaces/IHistory";
+import IProject from "interfaces/IProject";
 
 export const MAIN_CSS_STYLE = "Main";
 
@@ -57,6 +58,8 @@ class Control extends Movable implements IControl {
   @observable cssStyles: Map<string, IObservableArray<ICSSProperty>>;
   @observable classes: string[] = observable([MAIN_CSS_STYLE]);
   @observable actions: IObservableArray<IObservableArray<string>> = observable([]);
+  @observable saving: boolean = false;
+  project?: IProject;
 
   get toJSON() {
     const keys = Array.from(this.cssStyles.keys());
@@ -186,7 +189,7 @@ class Control extends Movable implements IControl {
           .setShowWhen(["borderRadius", "expanded"]).setUnits("px", ["px", "%", "rem"]),
         new CSSProperty("transform", "rotate(3turn)", "rotate(3turn)", CSS_CAT_ANIMATIONS)
           .setDescription(["transformDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transform"]),
-        new CSSProperty("transition", "all 3s ease-out 1s", "all 1s ease-out 1s", CSS_CAT_ANIMATIONS)
+        new CSSProperty("transition", "all .5s ease-out", "all .5s ease-out", CSS_CAT_ANIMATIONS)
           .makeExpandable()
           .setDescription(["transitionDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transition"]),
         new CSSProperty("transitionProperty", "all", "all", CSS_CAT_ANIMATIONS)
@@ -203,6 +206,14 @@ class Control extends Movable implements IControl {
           .setShowWhen(["transition", "expanded"]).setUnits("s", ["s", "ms"]),
       ])]
     ]);
+  }
+
+  setProject(project:IProject) {
+    this.project = project;
+  }
+
+  @action setSaving(value: boolean): void {
+    this.saving = value;
   }
 
   @action addClass(value: string) {
@@ -233,13 +244,13 @@ class Control extends Movable implements IControl {
   // ###### apply history start ######## //
 
   @action changeTitle = (title: string, noHistory?: boolean) => {
+    if(title.length > 1000) {
+      return;
+    }
     const undo = { control: this.id, title: this.title };
     this.title = title;
     const redo = { control: this.id, title: this.title };
-    !noHistory && this.applyWithTimeout(() => {
-        Control.history.add([HIST_CHANGE_TITLE, undo, redo]);
-      }
-    );
+    !noHistory && Control.history.add([HIST_CHANGE_TITLE, undo, redo]);
   };
 
   @action deleteSelf = (noHistory?: boolean) => {
@@ -391,8 +402,8 @@ class Control extends Movable implements IControl {
       this.cssStyles.set(key, observable([]));
     }
     const sliced = props.slice();
-    let prop: ICSSProperty;
-    while (prop = sliced.shift() as ICSSProperty) {
+    while (sliced.length) {
+      let prop = sliced.shift() as ICSSProperty;
       if (!this.cssStyles.has(key)) {
         continue;
       }
@@ -468,7 +479,6 @@ class Control extends Movable implements IControl {
     const control = new instance(json.id);
     control.title = json.title;
     control.parentId = json.parentId;
-    // control.children.replace(json.children.map(child => ));
     control.lockedChildren = json.lockedChildren;
     control.mergeStyles(new Map(json.cssStyles));
     if (control.cssStyles.size > 1) {
