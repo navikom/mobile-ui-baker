@@ -11,13 +11,13 @@ import { when } from "mobx";
 import { App } from "models/App";
 import CampaignViewStore from "views/Campaigns/store/CampaignViewStore";
 import {
-  EMAIL_CAMPAIGNS_ROUTE,
+  ROUTE_EMAIL_CAMPAIGNS,
   EMAIL_CHANNEL,
-  IN_APP_CAMPAIGNS_ROUTE,
+  ROUTE_IN_APP_CAMPAIGNS,
   IN_APP_CHANNEL,
-  PUSH_CAMPAIGNS_ROUTE,
+  ROUTE_PUSH_CAMPAIGNS,
   PUSH_CHANNEL,
-  SMS_CAMPAIGNS_ROUTE,
+  ROUTE_SMS_CAMPAIGNS,
   SMS_CHANNEL
 } from "models/Constants";
 import { ChannelType } from "types/commonTypes";
@@ -31,10 +31,10 @@ type CampaignMatch = {
 };
 
 const channels: {[key: string]: ChannelType} = {
-  [EMAIL_CAMPAIGNS_ROUTE]: EMAIL_CHANNEL,
-  [SMS_CAMPAIGNS_ROUTE]: SMS_CHANNEL,
-  [IN_APP_CAMPAIGNS_ROUTE]: IN_APP_CHANNEL,
-  [PUSH_CAMPAIGNS_ROUTE]: PUSH_CHANNEL
+  [ROUTE_EMAIL_CAMPAIGNS]: EMAIL_CHANNEL,
+  [ROUTE_SMS_CAMPAIGNS]: SMS_CHANNEL,
+  [ROUTE_IN_APP_CAMPAIGNS]: IN_APP_CHANNEL,
+  [ROUTE_PUSH_CAMPAIGNS]: PUSH_CHANNEL
 };
 
 function CampaignsItem(props: RouteComponentProps<CampaignMatch>) {

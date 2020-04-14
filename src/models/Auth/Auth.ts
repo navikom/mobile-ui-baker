@@ -66,6 +66,7 @@ export class AuthStore extends Errors implements IFlow {
   async signup(email: string, password: string) {
     try {
       this.update(await api(Apis.Main).user.signup(email, password));
+      App.navigationHistory && App.navigationHistory.go(-2);
     } catch (err) {
       this.setError(Dictionary.value(err.message));
     }
@@ -76,6 +77,7 @@ export class AuthStore extends Errors implements IFlow {
     try {
       const data = await api(Apis.Main).user.login(email, password);
       this.update(data);
+      App.navigationHistory && App.navigationHistory.goBack();
     } catch (err) {
       this.setError(Dictionary.value(err.message));
     }
@@ -98,7 +100,7 @@ export class AuthStore extends Errors implements IFlow {
       this.update(data);
     } catch (err) {
       console.log("Refresh Error", err.message);
-      App.navigationHistory && App.navigationHistory.push(Constants.LOGIN_ROUTE);
+      App.navigationHistory && App.navigationHistory.push(Constants.ROUTE_LOGIN);
     }
   }
 

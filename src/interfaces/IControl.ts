@@ -19,7 +19,7 @@ export default interface IControl extends IMovable {
   toJSON: { [key: string]: any };
   classes: string[];
   actions: string[][];
-  project?: IProject;
+  instance?: IProject;
   saving: boolean;
 
   cssProperty(key: string, propName: string): ICSSProperty | undefined;
@@ -64,7 +64,7 @@ export default interface IControl extends IMovable {
 
   setSaving(value: boolean): void;
 
-  setProject(project: IProject): void;
+  setInstance(instance: IProject): void;
 
   /// properties
   switchExpanded(key: string, propName: string): () => void;

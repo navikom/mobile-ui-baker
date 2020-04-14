@@ -5,7 +5,6 @@ import { IObject } from "services/Dictionary/AbstractDictionary";
 import IControl from "interfaces/IControl";
 import { ControlEnum } from "enums/ControlEnum";
 import { DropEnum } from "enums/DropEnum";
-import Control from "models/Control/Control";
 import CreateControl from "models/Control/ControlStores";
 import {
   HIST_ADD_SCREEN,
@@ -28,6 +27,10 @@ import ProjectEnum from "enums/ProjectEnum";
 import { Errors } from "models/Errors";
 import { Mode } from "enums/ModeEnum";
 import { Dictionary } from "services/Dictionary/Dictionary";
+import { App } from "models/App";
+import { ErrorHandler } from "utils/ErrorHandler";
+import { ERROR_USER_DID_NOT_LOGIN, ROUTE_EDITOR } from "models/Constants";
+import ControlStore from "models/Control/ControlStore";
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -41,7 +44,7 @@ class EditorViewStore extends Errors {
   static AUTO_SAVE = "autoSave";
   static TABS = [EditorDictionary.keys.project, EditorDictionary.keys.controls];
   static CONTROLS = ControlEnum;
-  @observable history = Control.history;
+  @observable history = ControlStore.history;
   @observable screens: IObservableArray<IControl>;
   @observable currentScreen: IControl;
   @observable selectedControl?: IControl;
@@ -110,7 +113,7 @@ class EditorViewStore extends Errors {
     return props[this.tabToolsIndex];
   }
 
-  constructor(projectId: number | null, newData?: typeof data & IObject) {
+  constructor(newData?: typeof data & IObject) {
     super();
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
     this.history.setFabric(CreateControl);
@@ -120,20 +123,25 @@ class EditorViewStore extends Errors {
     this.currentScreen = this.screens[0];
     this.currentScreen.changeTitle("Screen", true);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
-    this.selectControl(this.currentScreen.children[0]);
-
-    this.fetchProjectData(projectId);
-
-    this.checkLocalStorage();
   }
 
   saveProject = async () => {
+
     this.setSavingProject(true);
     try {
+      if (!App.loggedIn) {
+        throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
+      }
       this.project.version.update({data: this.toJSON} as unknown as IProjectVersion);
       await ProjectsStore.save(this.project);
       this.setSuccessRequest(true);
-      this.setTimeOut(() => this.setSuccessRequest(false), 5000);
+      this.setTimeOut(() => {
+        this.setSuccessRequest(false);
+        const path = ROUTE_EDITOR + "/" + this.project.projectId;
+        if(window.location.pathname !== path) {
+          App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR + "/" + this.project.projectId);
+        }
+      }, 5000);
     } catch (err) {
       this.setError(Dictionary.value(err.message));
       this.setTimeOut(() => this.setError(null), 5000);
@@ -142,13 +150,20 @@ class EditorViewStore extends Errors {
   };
 
   saveControl = async (control: IControl) => {
-    if(!control.project) {
-      control.setProject(ProjectStore.createEmpty(ProjectEnum.CONTROL));
+
+    if(!control.instance) {
+      const instance = ProjectStore.createEmpty(ProjectEnum.CONTROL);
+      control.setInstance(instance);
+      instance.update({title: control.title} as IProject);
     }
     control.setSaving(true);
     try {
-      control.project!.version.update({data: control.toJSON} as IProjectVersion);
-      await ProjectsStore.save(control.project as IProject);
+
+      if (!App.loggedIn) {
+        throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
+      }
+      control.instance!.version.update({data: control.toJSON} as IProjectVersion);
+      await ProjectsStore.save(control.instance as IProject);
       this.setSuccessRequest(true);
       this.setTimeOut(() => this.setSuccessRequest(false), 5000);
     } catch (err) {
@@ -158,11 +173,13 @@ class EditorViewStore extends Errors {
     control.setSaving(false);
   };
 
-  saveComponent = (control: IControl) => {
-    if(!control.project) {
-      control.setProject(ProjectStore.createEmpty(ProjectEnum.COMPONENT));
+  saveComponent = async (control: IControl) => {
+    if(!control.instance) {
+      const instance = ProjectStore.createEmpty(ProjectEnum.COMPONENT);
+      control.setInstance(instance);
+      instance.update({title: control.title} as IProject);
     }
-    this.saveControl(control);
+    await this.saveControl(control);
   };
 
   @action clearLocalStorage() {
@@ -187,10 +204,11 @@ class EditorViewStore extends Errors {
       runInAction(() => {
         this.project = project;
       });
-      this.fromJSON(project.version.data);
+      this.fromJSON(project.version.data as IProjectData);
       this.save();
     } catch (err) {
-      console.log("Fetch full project data error %s", err.message);
+      console.log("Fetch full instance data error %s", err.message);
+      App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
     }
     this.setFetchingProject(false);
   }
@@ -329,11 +347,11 @@ class EditorViewStore extends Errors {
   //  4.3 dropAction === Below -> drop source inside parent.parent below parent / \  which equal parent.parent        /
   @action handleDropElement = (parent: IControl, source: IControl, dropAction: DropEnum) => {
 
-    if (!Control.has(source.id)) {
+    if (!ControlStore.has(source.id)) {
       source = CreateControl(source.type);
     }
-    const sParent = source.parentId ? Control.getById(source.parentId) : undefined;
-    const pParent = parent.parentId ? Control.getById(parent.parentId) : undefined;
+    const sParent = source.parentId ? ControlStore.getById(source.parentId) : undefined;
+    const pParent = parent.parentId ? ControlStore.getById(parent.parentId) : undefined;
 
     if (source.hasChild(parent)) {
       return;
@@ -504,8 +522,12 @@ class EditorViewStore extends Errors {
     let control = item.control;
     if (!control) return;
 
-    if (!Control.has(control.id)) {
+    if (!ControlStore.has(control.id)) {
       control = CreateControl(control.type);
+    }
+
+    if(control.instance) {
+      control = control.clone();
     }
 
     const undo = {
@@ -521,7 +543,7 @@ class EditorViewStore extends Errors {
     };
 
     if (control.parentId) {
-      const parent = Control.getById(control.parentId);
+      const parent = ControlStore.getById(control.parentId);
       if (parent) {
         redo.index = parent.children.indexOf(control);
         undo.index = redo.index;
@@ -581,7 +603,7 @@ class EditorViewStore extends Errors {
     const undo = {control: clone.id};
     const redo = {control: clone.toJSON, parent: control.parentId, index: -1};
     if (control.parentId) {
-      const parent = Control.getById(control.parentId);
+      const parent = ControlStore.getById(control.parentId);
       const index = parent!.children.indexOf(control);
       parent!.spliceChild(index + 1, clone);
       redo.index = index + 1;

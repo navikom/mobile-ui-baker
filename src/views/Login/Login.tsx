@@ -148,7 +148,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                           </Button>
                         </GridItem>
                         <GridItem xs={12} sm={10} md={7}>
-                          <Button onClick={() => this.props.history.push(Constants.SIGN_UP_ROUTE)} link size="sm">
+                          <Button onClick={() => this.props.history.push(Constants.ROUTE_SIGN_UP)} link size="sm">
                             {Dictionary.defValue(DictionaryService.keys.doNotHaveAccount)}
                           </Button>
                         </GridItem>

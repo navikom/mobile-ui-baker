@@ -1,17 +1,18 @@
 import "@testing-library/jest-dom";
-import EditorViewStore, { Mode } from "views/Editor/store/EditorViewStore";
+import EditorViewStore from "views/Editor/store/EditorViewStore";
 import GridStore from "models/Control/GridStore";
 import IControl from "interfaces/IControl";
-import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
+import ControlStore, { MAIN_CSS_STYLE } from "ControlStore.ts";
 import { ACTION_TOGGLE_STYLE } from "models/Constants";
 import { DropEnum } from "enums/DropEnum";
+import { Mode } from "enums/ModeEnum";
 
 describe("EditorHistory", () => {
   let store: EditorViewStore, control: IControl;
   beforeEach(() => {
     jest.clearAllTimers();
-    Control.clear();
-    store = new EditorViewStore();
+    ControlStore.clear();
+    store = new EditorViewStore(null);
     store.history.clear();
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
     control = store.currentScreen.children[store.currentScreen.children.length - 1];
@@ -180,49 +181,49 @@ describe("EditorHistory", () => {
 
   it("dropCanvas history record", () => {
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control1 = Control.controls[Control.controls.length - 1];
+    const control1 = ControlStore.controls[ControlStore.controls.length - 1];
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control2 = Control.controls[Control.controls.length - 1];
+    const control2 = ControlStore.controls[ControlStore.controls.length - 1];
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control3 = Control.controls[Control.controls.length - 1];
+    const control3 = ControlStore.controls[ControlStore.controls.length - 1];
     expect(store.currentScreen.children.length).toBe(5);
-    expect(Control.controls.length).toBe(6);
+    expect(ControlStore.controls.length).toBe(6);
 
     store.history.undo();
     expect(store.currentScreen.children.length).toBe(4);
-    expect(Control.controls.length).toBe(5);
+    expect(ControlStore.controls.length).toBe(5);
 
     store.history.undo();
     expect(store.currentScreen.children.length).toBe(3);
-    expect(Control.controls.length).toBe(4);
+    expect(ControlStore.controls.length).toBe(4);
 
     store.history.undo();
     expect(store.currentScreen.children.length).toBe(2);
-    expect(Control.controls.length).toBe(3);
+    expect(ControlStore.controls.length).toBe(3);
 
     store.history.redo();
     expect(store.currentScreen.children.length).toBe(3);
-    expect(Control.controls.length).toBe(4);
-    expect(Control.controls.find(e => e.id === control1.id)!.id).toBe(control1.id);
+    expect(ControlStore.controls.length).toBe(4);
+    expect(ControlStore.controls.find(e => e.id === control1.id)!.id).toBe(control1.id);
 
     store.history.redo();
     expect(store.currentScreen.children.length).toBe(4);
-    expect(Control.controls.length).toBe(5);
-    expect(Control.controls.find(e => e.id === control2.id)!.id).toBe(control2.id);
+    expect(ControlStore.controls.length).toBe(5);
+    expect(ControlStore.controls.find(e => e.id === control2.id)!.id).toBe(control2.id);
 
     store.history.redo();
     expect(store.currentScreen.children.length).toBe(5);
-    expect(Control.controls.length).toBe(6);
-    expect(Control.controls.find(e => e.id === control3.id)!.id).toBe(control3.id);
+    expect(ControlStore.controls.length).toBe(6);
+    expect(ControlStore.controls.find(e => e.id === control3.id)!.id).toBe(control3.id);
   });
 
   it("drop element with parent", () => {
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control1 = Control.controls[Control.controls.length - 1];
+    const control1 = ControlStore.controls[ControlStore.controls.length - 1];
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control2 = Control.controls[Control.controls.length - 1];
+    const control2 = ControlStore.controls[ControlStore.controls.length - 1];
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control3 = Control.controls[Control.controls.length - 1];
+    const control3 = ControlStore.controls[ControlStore.controls.length - 1];
 
     store.handleDropElement(control, control1, DropEnum.Inside);
 
@@ -258,11 +259,11 @@ describe("EditorHistory", () => {
 
   it("move controls inside parent", () => {
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control1 = Control.controls[Control.controls.length - 1];
+    const control1 = ControlStore.controls[ControlStore.controls.length - 1];
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control2 = Control.controls[Control.controls.length - 1];
+    const control2 = ControlStore.controls[ControlStore.controls.length - 1];
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    const control3 = Control.controls[Control.controls.length - 1];
+    const control3 = ControlStore.controls[ControlStore.controls.length - 1];
 
     store.handleDropElement(control, control1, DropEnum.Inside);
     store.handleDropElement(control1, control2, DropEnum.Above);

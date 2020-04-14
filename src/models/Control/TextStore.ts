@@ -1,6 +1,5 @@
 import { action } from "mobx";
 import { v4 as uuidv4 } from 'uuid';
-import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
 import IControl, { IText } from "interfaces/IControl";
 import { ControlEnum } from "enums/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
@@ -12,8 +11,9 @@ import {
   CSS_VALUE_NUMBER,
   CSS_VALUE_SELECT
 } from "models/Constants";
+import ControlStore, { MAIN_CSS_STYLE } from "models/Control/ControlStore";
 
-class TextStore extends Control implements IText {
+class TextStore extends ControlStore implements IText {
   constructor(id: string) {
     super(ControlEnum.Text, id, "Text", false);
     this.mergeStyles(new Map([

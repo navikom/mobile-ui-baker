@@ -24,7 +24,7 @@ function getItemStyles(
 
   let { x, y } = currentOffset;
 
-  const transform = `translate(${x}px, ${y}px)`
+  const transform = `translate(${x}px, ${y}px)`;
   return {
     transform,
     WebkitTransform: transform,
@@ -49,7 +49,7 @@ const CustomDragLayer: React.FC = () => {
   function renderItem() {
     switch (itemType) {
       case ItemTypes.CONTROL:
-        return <BoxDragPreview><ControlTabItemPreview type={item.typeControl} /></BoxDragPreview>;
+        return <BoxDragPreview><ControlTabItemPreview type={item.control ? item.control.title : item.typeControl} /></BoxDragPreview>;
       default:
         return null
     }

@@ -28,12 +28,12 @@ import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboar
 import image from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/webinsolut.png";
 import WaitingComponent from "hocs/WaitingComponent";
-import { PANEL_ROUTE } from "models/Constants";
+import { LAYOUT_PANEL } from "models/Constants";
 
 const switchRoutes = (routes: IRoute[]) => (
   <Switch>
     {routes.map((prop: IRoute, key: number) => {
-      if (prop.layout === PANEL_ROUTE) {
+      if (prop.layout === LAYOUT_PANEL) {
         return (
           <Route
             exact
@@ -52,8 +52,8 @@ export default (props: RouteComponentProps) => {
   const [appImage, setAppImage] = useState(image);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currRoutes, setCurrRoutes] =
-    useState([...routes.filter(prop => prop.layout === PANEL_ROUTE)]);
-  const [sidebarRoutes, setSidebarRoutes] = useState(routes.filter(prop => prop.layout === PANEL_ROUTE) as IRoute[]);
+    useState([...routes.filter(prop => prop.layout === LAYOUT_PANEL)]);
+  const [sidebarRoutes, setSidebarRoutes] = useState(routes.filter(prop => prop.layout === LAYOUT_PANEL) as IRoute[]);
   const [currentApp, setCurrentApp] = useState(null as string | null);
 
 

@@ -7,7 +7,6 @@ import { blackOpacity } from "assets/jss/material-dashboard-react";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import { Add, Delete, ExpandMore } from "@material-ui/icons";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import Control from "models/Control/Control";
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import CustomSelect from "components/CustomSelect/CustomSelect";
@@ -21,6 +20,7 @@ import {
 import { observer } from "mobx-react-lite";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
+import ControlStore from "models/Control/ControlStore";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -96,16 +96,16 @@ const ControlActions: React.FC<Props> = (
       removeAction,
     }, screens, dictionary }) => {
   const classes = useStyles();
-  const disabled = screens.length < 2 && Control.classes.length === 0;
+  const disabled = screens.length < 2 && ControlStore.classes.length === 0;
   const actionData: string[] = [];
   const actionList = EDITOR_ACTIONS.slice()
     .filter(e =>
       (screens.length > 1 && e === ACTION_NAVIGATE_TO) ||
-      (Control.classes.length > 0 && [ACTION_TOGGLE_STYLE, ACTION_ENABLE_STYLE, ACTION_DISABLE_STYLE].includes(e)))
+      (ControlStore.classes.length > 0 && [ACTION_TOGGLE_STYLE, ACTION_ENABLE_STYLE, ACTION_DISABLE_STYLE].includes(e)))
     .map(e => [e, dictionary.value(e)]);
 
-  if (Control.classes.length > 0) {
-    actionData.push(ACTION_TOGGLE_STYLE, ...Control.classes[0].split("/"));
+  if (ControlStore.classes.length > 0) {
+    actionData.push(ACTION_TOGGLE_STYLE, ...ControlStore.classes[0].split("/"));
   } else if (screens.length > 1) {
     actionData.push(ACTION_NAVIGATE_TO, screens[1].id);
   }
@@ -115,7 +115,7 @@ const ControlActions: React.FC<Props> = (
       <Typography variant="subtitle2" align="center"
                   className={classes.paragraph}>{dictionary.defValue(EditorDictionary.keys.actions)}</Typography>
       {
-        Control.actions.map((action, i) => (
+        ControlStore.actions.map((action, i) => (
           <ExpansionPanel key={i} className={classes.root}>
             <ExpansionPanelSummary
               expandIcon={<ExpandMore />}
@@ -129,9 +129,9 @@ const ControlActions: React.FC<Props> = (
                   actions.map((action, i) => {
                     const [actionName, ...properties] = action;
                     const props = actionName === ACTION_NAVIGATE_TO ?
-                      screens.map(e => [e.id, e.title]) : Control.classes.map(e => {
+                      screens.map(e => [e.id, e.title]) : ControlStore.classes.map(e => {
                         const arr = e.split("/");
-                        return [e, `${Control.getById(arr[0])!.title}/${arr[1]}`]
+                        return [e, `${ControlStore.getById(arr[0])!.title}/${arr[1]}`]
                       });
                     return <Actions
                       key={i.toString()}

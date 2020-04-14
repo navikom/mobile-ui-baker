@@ -8,7 +8,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import { EDITOR_ROUTE, ROOT_ROUTE, TABS_HEIGHT } from "models/Constants";
+import { ROUTE_EDITOR, ROUTE_ROOT, TABS_HEIGHT } from "models/Constants";
 import { makeStyles } from "@material-ui/core";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
@@ -60,56 +60,56 @@ const ContextComponent: React.FC = () => {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE + "/1"
+      route: ROUTE_EDITOR + "/1"
     },
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE
+      route: ROUTE_EDITOR
     },
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE
+      route: ROUTE_EDITOR
     },
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE
+      route: ROUTE_EDITOR
     },
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE
+      route: ROUTE_EDITOR
     },
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE
+      route: ROUTE_EDITOR
     },
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE
+      route: ROUTE_EDITOR
     },
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: EDITOR_ROUTE
+      route: ROUTE_EDITOR
     },
   ];
   return (
     <>
       <AppBar position="fixed">
         <Toolbar>
-          <NavLink to={ROOT_ROUTE}>
+          <NavLink to={ROUTE_ROOT}>
             <Typography variant="h6" className={classes.title}>
               {Dictionary.defValue(DictionaryService.keys.mobileUiEditor)}
             </Typography>

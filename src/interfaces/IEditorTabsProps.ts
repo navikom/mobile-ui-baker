@@ -22,6 +22,7 @@ export default interface IEditorTabsProps {
   savingProject?: boolean;
   saveControl?: (control: IControl) => void;
   saveComponent?: (control: IControl) => void;
+  deleteControl?: (control: IControl) => void;
   changeProjectTitle?: (value: string) => void;
   project?: IProject;
 }

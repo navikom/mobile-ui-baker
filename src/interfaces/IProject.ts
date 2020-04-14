@@ -17,11 +17,12 @@ export interface IProjectData {
   statusBarColor: string;
   title: string;
 }
+
 export interface IProjectVersion {
   versionId: number;
-  data: IProjectData;
+  data: IProjectData | IControl;
 
-  update(model: IProjectVersion): void;
+  update(model: IProjectVersion | IControl): void;
 }
 
 export default interface IProject extends WithPrimaryKey {
@@ -41,9 +42,9 @@ export default interface IProject extends WithPrimaryKey {
   images?: IImage[];
   isBuyer?: boolean;
   version: IProjectVersion;
+  JSON: {title: string; data: IControl, versionId: number};
 
-  update(data: IProject): void;
-  updateVersions(versions: IProjectVersion[]): void;
-  setId(id: number): void;
-  toJSON(): {[key: string]: any};
+  update(data: IProject): IProject;
+  updateVersions(versions: IProjectVersion[]): IProject;
+  setId(id: number): IProject;
 }

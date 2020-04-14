@@ -21,13 +21,14 @@ interface EditorInputProps {
 }
 
 const EditorInput: React.FC<EditorInputProps> =
-  ({ onChange, ...rest }) => {
+  ({ onChange, html, ...rest }) => {
   const ref = React.useRef<React.RefObject<HTMLElement>>();
     const classes = useStyles();
     return <ContentEditable
       onClick={(e) => e.stopPropagation()}
       innerRef={ref as unknown as React.RefObject<HTMLElement>}
       className={classes.input}
+      html={html.length > 0 ? html : 'h'}
       onChange={(e) => onChange(e.target.value)}
       {...rest}
     />

@@ -3,11 +3,12 @@ import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { makeStyles } from "@material-ui/core/styles";
 import { createStyles, Theme } from "@material-ui/core";
-import { ControlEnum } from "enums/ControlEnum";
 import Paper from "@material-ui/core/Paper";
+import { ControlEnum } from "enums/ControlEnum";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
-import { whiteOpacity } from "assets/jss/material-dashboard-react";
 import { ControlStores } from "models/Control/ControlStores";
+import IControl from "interfaces/IControl";
+import { inheritBoxShadow, whiteOpacity } from "assets/jss/material-dashboard-react";
 
 const controlStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -16,35 +17,44 @@ const controlStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       padding: "0.5rem 1rem",
       backgroundColor: whiteOpacity(0.5),
+      boxShadow: inheritBoxShadow.boxShadow
     }
   })
 );
 
 interface ControlProps {
-  type: ControlEnum;
+  type?: ControlEnum;
+  control?: IControl;
+  handleMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
-export const ControlTabItemPreview: React.FC<ControlProps> = ({ type }) => {
+export const ControlTabItemPreview: React.FC<ControlProps> = (
+  {
+    type, control
+  }: ControlProps) => {
   const classes = controlStyles();
 
   return (
     <Paper elevation={0} className={classes.container}>
-      {type}
+      {(control && control.title) || type}
     </Paper>
   )
 };
 
-const ControlTabItem: React.FC<ControlProps> = ({ type }) => {
+const ControlTabItem: React.FC<ControlProps> = (
+  {
+    type, control, handleMenu
+  }) => {
   const classes = controlStyles();
 
   const [_, drag, preview] = useDrag({
-    item: { type: ItemTypes.CONTROL, typeControl: type, control: ControlStores[type].create() },
+    item: { type: ItemTypes.CONTROL, typeControl: type, control: control || ControlStores[type!].create() },
     begin: () => {
-      const control = ControlStores[type].create();
+      const controlItem = control || ControlStores[type!].create();
       return {
         type: ItemTypes.CONTROL,
         typeControl: type,
-        control
+        control: controlItem
       }
     },
     collect: (monitor: any) => ({
@@ -57,8 +67,8 @@ const ControlTabItem: React.FC<ControlProps> = ({ type }) => {
   }, [preview])
 
   return (
-    <Paper elevation={0} ref={drag} className={classes.container}>
-      {type}
+    <Paper elevation={0} ref={drag} className={classes.container} onClick={handleMenu}>
+      {(control && control.title) || type}
     </Paper>
   )
 };

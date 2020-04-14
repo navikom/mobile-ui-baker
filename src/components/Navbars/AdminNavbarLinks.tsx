@@ -23,7 +23,7 @@ import Search from "@material-ui/icons/Search";
 // models
 import { App } from "models/App.ts";
 import { Auth } from "models/Auth/Auth.ts";
-import { LOGIN_ROUTE } from "models/Constants";
+import { ROUTE_LOGIN } from "models/Constants";
 
 // core components
 import CustomInput from "components/CustomInput/CustomInput.tsx";
@@ -197,7 +197,7 @@ function AdminNavbarLinks(props: RouteComponentProps) {
                         if (App.loggedIn) {
                           logout();
                         }
-                        props.history.push(LOGIN_ROUTE);
+                        props.history.push(ROUTE_LOGIN);
                       }}
                       className={dropdownClasses.dropdownItem}
                     >

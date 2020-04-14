@@ -12,7 +12,7 @@ import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 // models
 import { Users } from "models/User/UsersStore";
 import { App } from "models/App";
-import { USERS_LIST_ROUTE } from "models/Constants";
+import { ROUTE_USERS_LIST } from "models/Constants";
 
 // assets
 import useStyle from "assets/jss/material-dashboard-react/components/listStyle";
@@ -61,7 +61,7 @@ export default observer((props: RouteComponentProps) => {
             onChangeRowsPerPage: Users.handleChangeRowsPerPage
           }}
           onRowClick={(data: string[]) =>
-            props.history.push(USERS_LIST_ROUTE + "/" + data[0])
+            props.history.push(ROUTE_USERS_LIST + "/" + data[0])
           }
         />
       </CardBody>

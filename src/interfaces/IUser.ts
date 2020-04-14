@@ -40,6 +40,7 @@ export interface IUser extends WithPrimaryKey {
 
   fullName?: string;
   anonymousString?: string;
+  isAdmin: boolean;
 
   update(model: IUser): void;
   updateForm(model: IUser): void;

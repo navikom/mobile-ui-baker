@@ -13,7 +13,7 @@ import { UserEventsStore } from "models/User/UserEventsStore";
 import convertDate from "utils/convertDate";
 import { IPagination } from "interfaces/IPagination";
 import { UserReferralsStore } from "models/User/UserReferralsStore";
-import { ADMIN_ROLE, SUPER_ADMIN_ROLE } from "models/Constants";
+import { ROLE_ADMIN, ROLE_SUPER_ADMIN } from "models/Constants";
 import { Roles } from "models/Role/RolesStore";
 import { IDevice } from "interfaces/IDevice";
 import { IRole } from "interfaces/IRole";
@@ -74,11 +74,11 @@ export class UserStore implements IUser {
   }
 
   @computed get isSuperAdmin() {
-    return this.hasRole(SUPER_ADMIN_ROLE);
+    return this.hasRole(ROLE_SUPER_ADMIN);
   }
 
   @computed get isAdmin() {
-    return this.hasRole(ADMIN_ROLE);
+    return this.hasRole(ROLE_SUPER_ADMIN) || this.hasRole(ROLE_ADMIN);
   }
 
   hasRole(roleId: number): boolean {

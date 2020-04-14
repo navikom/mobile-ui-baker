@@ -16,25 +16,27 @@ import {
 } from "types/commonTypes";
 import { TestSegmentPropertyType } from "interfaces/ITestStep";
 
-export const ROOT_ROUTE = "/";
-export const PANEL_ROUTE = "/panel";
-export const DASHBOARD_ROUTE = "/panel/dashboard";
-export const EVENTS_USERS_LIST_ROUTE = "/panel/events-users";
-export const USERS_LIST_ROUTE = "/panel/users";
-export const LOGIN_ROUTE = "/login";
-export const SIGN_UP_ROUTE = "/sign-up";
-export const START_PAGE_ROUTE = "/start-page";
-export const EMAIL_CAMPAIGNS_ROUTE = "/panel/campaigns/email";
-export const SMS_CAMPAIGNS_ROUTE = "/panel/campaigns/sms";
-export const IN_APP_CAMPAIGNS_ROUTE = "/panel/campaigns/in-app";
-export const PUSH_CAMPAIGNS_ROUTE = "/panel/campaigns/push";
-export const EDITOR_ROUTE = "/editor";
-export const PROJECTS_ROUTE = "/projects";
+export const ROUTE_ROOT = "/";
+export const LAYOUT_PANEL = "/panel";
+export const LAYOUT_MAIN = "/main";
+export const ROUTE_DASHBOARD = "/panel/dashboard";
+export const ROUTE_USER_PROFILE = "/panel/user-profile";
+export const ROUTE_EVENTS_USERS_LIST = "/panel/events-users";
+export const ROUTE_USERS_LIST = "/panel/users";
+export const ROUTE_LOGIN = "/login";
+export const ROUTE_SIGN_UP = "/sign-up";
+export const ROUTE_START_PAGE = "/start-page";
+export const ROUTE_EMAIL_CAMPAIGNS = "/panel/campaigns/email";
+export const ROUTE_SMS_CAMPAIGNS = "/panel/campaigns/sms";
+export const ROUTE_IN_APP_CAMPAIGNS = "/panel/campaigns/in-app";
+export const ROUTE_PUSH_CAMPAIGNS = "/panel/campaigns/push";
+export const ROUTE_EDITOR = "/editor";
+export const ROUTE_PROJECTS = "/projects";
 
 //********* Roles **********//
-export const USER_ROLE = 3;
-export const ADMIN_ROLE = 2;
-export const SUPER_ADMIN_ROLE = 1;
+export const ROLE_USER = 3;
+export const ROLE_ADMIN = 2;
+export const ROLE_SUPER_ADMIN = 1;
 
 //********* Sidebar Categories *********//
 export const SIDEBAR_MAIN = "Main";
@@ -95,6 +97,8 @@ export const OR = "or";
 
 //********** Errors ************//
 export const ERROR_USER_DID_NOT_LOGIN = "user-did-not-login";
+export const ERROR_ACCESS_DENIED = "access-denied";
+export const ERROR_PROJECT_DOES_NOT_EXIST = "project-does-not-exist";
 
 //********** Days **************//
 export const DaysOfWeek = [

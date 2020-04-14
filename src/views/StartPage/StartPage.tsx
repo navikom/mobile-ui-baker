@@ -35,7 +35,7 @@ class StartPage extends React.Component<StartPageProps> {
             <Grid container justify="center" className={classes.button}>
               <Fade in={true} mountOnEnter>
                 <Button
-                  onClick={() => history.push(Constants.PROJECTS_ROUTE)}
+                  onClick={() => history.push(Constants.ROUTE_PROJECTS)}
                   size="lg"
                   color="primary">
                   {Dictionary.defValue(DictionaryService.keys.getStarted)}

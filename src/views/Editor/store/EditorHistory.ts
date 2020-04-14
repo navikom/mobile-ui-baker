@@ -4,6 +4,7 @@ import IHistory, { IHistoryObject, SettingsPropType, ViewStore } from "interface
 import { ControlEnum } from "enums/ControlEnum";
 import { Mode } from "enums/ModeEnum";
 import IProject, { IBackgroundColor } from "interfaces/IProject";
+import isTests from "utils/isTests";
 
 export const HIST_CHANGE_TITLE = "changeTitle";
 export const HIST_DELETE_SELF = "deleteSelf";
@@ -85,7 +86,7 @@ class EditorHistory implements IHistory {
     }
     this.carriage = this.size - 1;
     debug && console.log("History add", this.carriage, this.canUndo, this.canRedo, item);
-    process.env.NODE_ENV !== "test" && this.viewStore && this.viewStore.save();
+    !isTests() && this.viewStore && this.viewStore.save();
   }
 
   @action

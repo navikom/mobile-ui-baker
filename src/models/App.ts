@@ -19,11 +19,12 @@ import CampaignViewStore from "views/Campaigns/store/CampaignViewStore";
 import { OwnProjects } from "models/Project/OwnProjectsStore";
 import { OwnComponents } from "models/Project/OwnComponentsStore";
 
+let debug = false;
+
 export class AppStore implements IFlow {
   @observable role: IRole = RoleStore.defaultRole();
   @observable user: IUser | null = null;
   @observable navigationHistory?: History;
-  private redirectRoute?: string;
   userDisposer?: IReactionDisposer;
   anonymousDisposer: IReactionDisposer;
 
@@ -38,13 +39,12 @@ export class AppStore implements IFlow {
   constructor() {
     when(() => this.user !== null, () => this.ifUserChanged());
     this.anonymousDisposer = reaction(() => {
-      console.log('this.anonymousDisposer', this.user, this.loggedIn, Auth.anonymous);
+      debug && console.log('this.anonymousDisposer', this.user, this.loggedIn, Auth.anonymous);
       return this.loggedIn;
     }, async (loggedIn: boolean) => {
       loggedIn && await Roles.fetch();
       this.ifUserChanged();
     });
-    // when(() => Regions.allFetched, () => SegmentRegionViewStore.loadData());
   }
 
   @action
@@ -80,29 +80,14 @@ export class AppStore implements IFlow {
   }
 
   ifUserChanged() {
-    console.log(2323232323, this.user);
+    debug && console.log(2323232323, this.user);
     if (!this.navigationHistory || !this.user) {
       return;
     }
     if (Auth.anonymous) {
       this.clear();
-      if (window.location.pathname.includes(Constants.PANEL_ROUTE)) {
-        this.redirectRoute = window.location.pathname;
-        this.navigationHistory.push(Constants.LOGIN_ROUTE);
-      } else {
-        if(!window.location.pathname.includes(Constants.EDITOR_ROUTE) && !window.location.pathname.includes(Constants.PROJECTS_ROUTE)) {
-          this.navigationHistory.push(Constants.ROOT_ROUTE);
-        }
-      }
-    } else {
-      console.log(757575575757, this.redirectRoute, window.location.pathname, window.location.pathname.includes(Constants.PANEL_ROUTE));
-      if(this.redirectRoute) {
-        this.navigationHistory.replace(this.redirectRoute);
-        this.redirectRoute = undefined;
-        return;
-      }
-      if (!window.location.pathname.includes(Constants.PANEL_ROUTE)) {
-        this.navigationHistory.push(Constants.DASHBOARD_ROUTE);
+      if (window.location.pathname.includes(Constants.LAYOUT_PANEL)) {
+        this.navigationHistory.push(Constants.ROUTE_LOGIN);
       }
     }
   }

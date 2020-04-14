@@ -53,7 +53,7 @@ const extraStyles = makeStyles((theme: Theme) =>
   }));
 
 
-export default observer(() => {
+const UserPersonalData = observer(() => {
   const classes = useStyles();
   const extraClasses = extraStyles();
   const store = UserDetails.personalDataStore;
@@ -216,3 +216,5 @@ export default observer(() => {
     </MuiPickersUtilsProvider>
   );
 });
+
+export default UserPersonalData;

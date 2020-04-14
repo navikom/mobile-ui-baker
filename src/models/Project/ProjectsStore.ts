@@ -3,9 +3,6 @@ import { ApiMethodTypes, Pagination, RequestMethodTypes } from "models/Paginatio
 import IProject from "interfaces/IProject";
 import ProjectStore from "models/Project/ProjectStore";
 import { api, Apis } from "api";
-import { App } from "models/App";
-import { ErrorHandler } from "utils/ErrorHandler";
-import { ERROR_USER_DID_NOT_LOGIN } from "models/Constants";
 
 export default class ProjectsStore extends Pagination<IProject> {
 
@@ -43,25 +40,27 @@ export default class ProjectsStore extends Pagination<IProject> {
 
   static async fetchFullData(projectId: number) {
     const data = await api(Apis.Main).project.fullData(projectId);
-    const project = this.getOrCreate(data);
-    project.update(data);
+    const project = this.getOrCreate(data).update(data).updateVersions(data.versions);
     return project;
   }
 
-  static save(project: IProject) {
-    if (!App.loggedIn) {
-      throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
-    }
-    const method: ApiMethodTypes = ["project", "control", "component"][project.type] as ApiMethodTypes;
+  static async save(project: IProject) {
+    const method: ApiMethodTypes = ["control", "component", "project"][project.type] as ApiMethodTypes;
     if (!project.projectId) {
-      api(Apis.Main)[method].add(project.toJSON()).then(data => project.update(data));
+      const data = await api(Apis.Main)[method].add(project.JSON);
+      project.update(data).updateVersions(data.versions).setId(data.projectId);
+    } else {
+      const data = await api(Apis.Main)[method].update(project.projectId, project.JSON);
+      project.update(data).updateVersions(data.versions);
     }
   }
 
   static getOrCreate(data: IProject): IProject {
     if (!this.has(data.projectId)) {
-      this.items.push(ProjectStore.from(data));
+      this.items.push(ProjectStore.from(data).update(data).setId(data.projectId).updateVersions(data.versions));
+
     }
+
     return this.getById(data.projectId) as IProject;
   }
 }

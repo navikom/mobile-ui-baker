@@ -22,7 +22,7 @@ import {
 import { lazy } from "utils";
 
 // models
-import { EVENTS_USERS_LIST_ROUTE } from "models/Constants";
+import { ROUTE_EVENTS_USERS_LIST } from "models/Constants";
 import { App } from "models/App";
 
 // services
@@ -271,7 +271,7 @@ const EventsList = (props: UsersListProps) => {
               tabContent: (
                 <UsersTable
                   handleClick={(userId: string) =>
-                    props.history.push(EVENTS_USERS_LIST_ROUTE + "/" + userId)
+                    props.history.push(ROUTE_EVENTS_USERS_LIST + "/" + userId)
                   }
                 />
               )

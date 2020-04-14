@@ -1,9 +1,9 @@
-import { ADMIN_ROLE, SUPER_ADMIN_ROLE, USER_ROLE } from "models/Constants";
+import { ROLE_ADMIN, ROLE_SUPER_ADMIN, ROLE_USER } from "models/Constants";
 
 export type RoleType =
-  | typeof USER_ROLE
-  | typeof ADMIN_ROLE
-  | typeof SUPER_ADMIN_ROLE;
+  | typeof ROLE_USER
+  | typeof ROLE_ADMIN
+  | typeof ROLE_SUPER_ADMIN;
 
 export interface IUsersRoles {
   userId: number;

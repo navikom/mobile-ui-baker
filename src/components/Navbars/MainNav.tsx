@@ -18,19 +18,20 @@ import { IRoute } from "interfaces/IRoute";
 // model
 import * as Constants from "models/Constants.ts";
 
-import { mainNavRoutes } from "routes";
+import { mainNavRoutes, mainNavRoutesLoggedIn } from "routes";
 import useStyles from "assets/jss/material-dashboard-react/components/headerStyle";
 import { Dictionary } from "services/Dictionary/Dictionary";
+import { App } from "models/App";
 
 function nav(props: any, classes: any) {
-  return mainNavRoutes.map((route: IRoute, i: number) => {
+  return (App.loggedIn ? mainNavRoutesLoggedIn : mainNavRoutes).map((route: IRoute, i: number) => {
     if(!route.path) return null;
     return (
       <Button
         key={i}
         color="transparent"
         className={classes.link}
-        onClick={() => props.history.push(route.path)}
+        onClick={() => props.history.push(route.auth ? `${route.layout}${route.path}` : route.path)}
       >
         {Dictionary.value(route.name).toUpperCase()}
       </Button>
@@ -40,7 +41,7 @@ function nav(props: any, classes: any) {
 
 function Header({ ...props }) {
   function makeBrand() {
-    const name = "Webinsolut";
+    const name = "MUIDITOR";
     // props.routes.map((prop, key) => {
     //   if (prop.url === props.location.pathname) {
     //     name = props.rtlActive ? prop.rtlName : prop.name;
@@ -62,7 +63,7 @@ function Header({ ...props }) {
           <Button
             color="transparent"
             className={classes.title}
-            onClick={() => props.history.push(Constants.ROOT_ROUTE)}
+            onClick={() => props.history.push(Constants.ROUTE_ROOT)}
           >
             {makeBrand()}
           </Button>

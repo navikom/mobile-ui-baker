@@ -27,27 +27,27 @@ function App() {
       <Router history={hist}>
         <Switch>
           <Route
-            path={Constants.PANEL_ROUTE}
+            path={Constants.LAYOUT_PANEL}
             component={WaitingComponent(Panel)}
           />
           <Route
-            path={Constants.LOGIN_ROUTE}
+            path={Constants.ROUTE_LOGIN}
             component={WaitingComponent(Main)}
           />
           <Route
-            path={Constants.EDITOR_ROUTE}
+            path={Constants.ROUTE_EDITOR}
             component={WaitingComponent(Editor)}
           />
           <Route
-            path={Constants.PROJECTS_ROUTE + "/:id"}
+            path={Constants.ROUTE_PROJECTS}
             component={WaitingComponent(Projects)}
           />
           <Route
-            path={Constants.SIGN_UP_ROUTE}
+            path={Constants.ROUTE_SIGN_UP}
             component={WaitingComponent(Main)}
           />
-          <Route path={Constants.ROOT_ROUTE} component={WaitingComponent(Main)} />
-          <Redirect to={Constants.START_PAGE_ROUTE} />
+          <Route path={Constants.ROUTE_ROOT} component={WaitingComponent(Main)} />
+          <Redirect to={Constants.ROUTE_START_PAGE} />
           <Route path="*" component={WaitingComponent(Panel)} />
         </Switch>
       </Router>

@@ -17,12 +17,13 @@ import {
 
 import { lazy } from "utils";
 import {
-  PANEL_ROUTE,
+  LAYOUT_MAIN,
+  LAYOUT_PANEL,
   SIDEBAR_ENGAGE,
   SIDEBAR_MAIN,
   SIDEBAR_OTHER,
   SIDEBAR_USER,
-  SUPER_ADMIN_ROLE
+  ROLE_SUPER_ADMIN
 } from "models/Constants";
 
 const DashboardPage = lazy(() => import("views/Dashboard/Dashboard"));
@@ -53,7 +54,7 @@ const dashboardRoutesMap = {
     rtlName: "يرشد",
     icon: CastForEducation,
     component: Guide,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_OTHER
   },
@@ -63,7 +64,7 @@ const dashboardRoutesMap = {
     rtlName: "يرشد",
     icon: BuildIcon,
     component: Build,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_OTHER
   },
@@ -73,7 +74,7 @@ const dashboardRoutesMap = {
     rtlName: "لوحة القيادة",
     icon: Dashboard,
     component: DashboardPage,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -83,7 +84,7 @@ const dashboardRoutesMap = {
     rtlName: "لوحة القيادة",
     icon: LinearScaleOutlined,
     component: EventsList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -94,7 +95,7 @@ const dashboardRoutesMap = {
     rtlName: "لوحة القيادة",
     icon: SupervisedUserCircle,
     component: EventsUsersItem,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -104,7 +105,7 @@ const dashboardRoutesMap = {
     icon: People,
     rtlName: "ملف تعريفي للمستخدم",
     component: UsersList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -114,7 +115,7 @@ const dashboardRoutesMap = {
     name: "User",
     rtlName: "ملف تعريفي للمستخدم",
     component: UsersItem,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -124,10 +125,10 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: DeviceHub,
     component: RolesList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN,
-    role: SUPER_ADMIN_ROLE
+    role: ROLE_SUPER_ADMIN
   },
   segments: {
     path: "/segments",
@@ -135,7 +136,7 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: PieChart,
     component: SegmentsList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -145,90 +146,40 @@ const dashboardRoutesMap = {
     name: "Segment",
     rtlName: "ملف تعريفي للمستخدم",
     component: SegmentsItem,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
   userProfile: {
     path: "/user-profile",
-    name: "User Profile",
+    name: "Profile",
     rtlName: "ملف تعريفي للمستخدم",
     icon: Person,
     component: UserProfile,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_USER
   },
-  // table: {
-  //   path: "/table",
-  //   name: "Table List",
-  //   rtlName: "قائمة الجدول",
-  //   icon: "content_paste",
-  //   component: TableList,
-  //   layout: PANEL_ROUTE,
-  //   auth: true,
-  //   category: SIDEBAR_OTHER
-  // },
-  // typography: {
-  //   path: "/typography",
-  //   name: "Typography",
-  //   rtlName: "طباعة",
-  //   icon: LibraryBooks,
-  //   component: Typography,
-  //   layout: PANEL_ROUTE,
-  //   auth: true,
-  //   category: SIDEBAR_OTHER
-  // },
-  // icons: {
-  //   path: "/icons",
-  //   name: "Icons",
-  //   rtlName: "الرموز",
-  //   icon: BubbleChart,
-  //   component: Icons,
-  //   layout: PANEL_ROUTE,
-  //   auth: true,
-  //   category: SIDEBAR_OTHER
-  // },
-  // maps: {
-  //   path: "/maps",
-  //   name: "Maps",
-  //   rtlName: "خرائط",
-  //   icon: LocationOn,
-  //   component: Maps,
-  //   layout: PANEL_ROUTE,
-  //   auth: true,
-  //   category: SIDEBAR_OTHER
-  // },
-  // notifications: {
-  //   path: "/notifications",
-  //   name: "Notifications",
-  //   rtlName: "إخطارات",
-  //   icon: Notifications,
-  //   component: NotificationsPage,
-  //   layout: PANEL_ROUTE,
-  //   auth: true,
-  //   category: SIDEBAR_OTHER
-  // },
   login: {
     path: "/login",
     name: "login",
     rtlName: "لوحة الادارة",
     component: Login,
-    layout: "/main"
+    layout: LAYOUT_MAIN
   },
   signup: {
     path: "/sign-up",
     name: "Sign up",
     rtlName: "لوحة الادارة",
     component: SignUp,
-    layout: "/main"
+    layout: LAYOUT_MAIN
   },
   editor: {
     path: "/editor",
     name: "editor",
     rtlName: "لوحة الادارة",
     component: Editor,
-    layout: "/main"
+    layout: LAYOUT_MAIN
   },
   editorProject: {
     path: "/editor",
@@ -236,28 +187,28 @@ const dashboardRoutesMap = {
     name: "editor",
     rtlName: "لوحة الادارة",
     component: Editor,
-    layout: "/main"
+    layout: LAYOUT_MAIN
   },
   projects: {
     path: "/projects",
     name: "projects",
     rtlName: "لوحة الادارة",
     component: Projects,
-    layout: "/main"
+    layout: LAYOUT_MAIN
   },
   startPage: {
     path: "/start-page",
     name: "Start Page",
     rtlName: "لوحة الادارة",
     component: StartPage,
-    layout: "/main"
+    layout: LAYOUT_MAIN
   },
   startPageMain: {
     path: "/",
     name: "Start Page",
     rtlName: "لوحة الادارة",
     component: StartPage,
-    layout: "/main"
+    layout: LAYOUT_MAIN
   },
   emailEngage: {
     path: "/campaigns/email",
@@ -265,7 +216,7 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: Mail,
     component: CampaignsList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_ENGAGE
   },
@@ -275,7 +226,7 @@ const dashboardRoutesMap = {
     name: "Email campaign",
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -285,7 +236,7 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: PermPhoneMsg,
     component: CampaignsList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_ENGAGE
   },
@@ -295,7 +246,7 @@ const dashboardRoutesMap = {
     name: "SMS campaign",
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -305,7 +256,7 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: ViewCompact,
     component: CampaignsList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_ENGAGE
   },
@@ -315,7 +266,7 @@ const dashboardRoutesMap = {
     name: "In-App campaign",
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   },
@@ -325,7 +276,7 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: ConfirmationNumber,
     component: CampaignsList,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_ENGAGE
   },
@@ -335,12 +286,13 @@ const dashboardRoutesMap = {
     name: "Push campaign",
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
-    layout: PANEL_ROUTE,
+    layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_MAIN
   }
 };
 
 export const mainNavRoutes = [dashboardRoutesMap.projects, dashboardRoutesMap.editor, dashboardRoutesMap.login];
+export const mainNavRoutesLoggedIn = [dashboardRoutesMap.projects, dashboardRoutesMap.editor, dashboardRoutesMap.userProfile];
 
 export default Object.values(dashboardRoutesMap);

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { NavLink } from "react-router-dom"
-import { matchPath } from 'react-router'
+import { matchPath } from "react-router";
+import { RouteComponentProps } from "react-router";
 import { makeStyles } from "@material-ui/core/styles";
 import { DndProvider, useDrop } from "react-dnd";
 import classNames from "classnames";
@@ -42,11 +43,10 @@ import { ItemTypes } from "views/Editor/store/ItemTypes";
 import IControl from "interfaces/IControl";
 import { DropEnum } from "enums/DropEnum";
 import TreeComponent from "views/Editor/components/TreeComponent";
-import { ROOT_ROUTE, TABS_HEIGHT } from "models/Constants";
+import { ROUTE_LOGIN, ROUTE_ROOT, ROUTE_USER_PROFILE, TABS_HEIGHT } from "models/Constants";
 import ProjectTab from "views/Editor/components/tabs/ProjectTab";
 import EditorDictionary from "views/Editor/store/EditorDictionary";
 import { blackOpacity, whiteColor } from "assets/jss/material-dashboard-react";
-import { RouteComponentProps } from "react-router";
 import { IBackgroundColor } from "interfaces/IProject";
 import AddAlert from "@material-ui/icons/AddAlert";
 import Snackbar from "components/Snackbar/Snackbar";
@@ -55,6 +55,7 @@ import { SharedComponents } from "models/Project/SharedComponentsStore";
 import { when } from "mobx";
 import { App } from "models/App";
 import { OwnComponents } from "models/Project/OwnComponentsStore";
+import { Auth } from "models/Auth/Auth";
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -204,6 +205,22 @@ const ContextComponent: React.FC<ContextComponentProps> = (
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const navigateLogin = () => {
+    handleClose();
+    App.navigationHistory!.push(ROUTE_LOGIN);
+  };
+
+  const navigateDashboard = () => {
+    handleClose();
+    App.navigationHistory!.push(ROUTE_USER_PROFILE);
+  };
+
+  const logout = () => {
+    handleClose();
+    Auth.logout();
+  };
+
   const handleScreenshot = () => {
     const element = document.querySelector("#capture") as HTMLElement;
     element && html2canvas(element).then(canvas => {
@@ -222,7 +239,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     <div className={classes.root} style={{ height }}>
       <AppBar position="static">
         <Toolbar>
-          <NavLink to={ROOT_ROUTE}>
+          <NavLink to={ROUTE_ROOT}>
             <Typography variant="h6" className={classes.title}>
               {Dictionary.defValue(DictionaryService.keys.mobileUiEditor)}
             </Typography>
@@ -287,8 +304,16 @@ const ContextComponent: React.FC<ContextComponentProps> = (
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              {
+                App.loggedIn ?
+                  (<MenuItem
+                    onClick={navigateDashboard}>{Dictionary.defValue(DictionaryService.keys.dashboard)}</MenuItem>) :
+                  (<MenuItem onClick={navigateLogin}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
+              }
+              {
+                App.loggedIn &&
+                (<MenuItem onClick={logout}>{Dictionary.defValue(DictionaryService.keys.logout)}</MenuItem>)
+              }
             </Menu>
           </div>
         </Toolbar>
@@ -379,7 +404,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         place="br"
         color="info"
         icon={AddAlert}
-        message={Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, store.project.title)}
+        message={Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, Dictionary.defValue(DictionaryService.keys.data))}
         open={store.successRequest}
         closeNotification={() => store.setSuccessRequest(false)}
         close
@@ -388,7 +413,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         place="br"
         color="danger"
         icon={Clear}
-        message={Dictionary.defValue(DictionaryService.keys.dataSaveError, [store.project.title, store.error || ""])}
+        message={Dictionary.defValue(DictionaryService.keys.dataSaveError, [Dictionary.defValue(DictionaryService.keys.data), store.error || ""])}
         open={store.hasError}
         closeNotification={() => store.setError(null)}
         close
@@ -400,20 +425,23 @@ const ContextComponent: React.FC<ContextComponentProps> = (
 const Context = observer(ContextComponent);
 
 function Editor(props: RouteComponentProps) {
-  const match = matchPath<{id: string}>(props.history.location.pathname, {
-    path: '/editor/:id',
+  const match = matchPath<{ id: string }>(props.history.location.pathname, {
+    path: "/editor/:id",
     exact: true,
     strict: false
   });
   const id = match ? Number(match.params.id) : null;
-  const [store] = React.useState(new EditorViewStore(id));
+  const [store] = React.useState(new EditorViewStore());
   useEffect(() => {
+    console.log("EditorView mount");
+    store.checkLocalStorage();
+    store.fetchProjectData(id);
     SharedControls.fetchItems().catch(err => console.log("Shared controls fetch error %s", err.message));
     SharedComponents.fetchItems().catch(err => console.log("Shared controls fetch error %s", err.message));
     when(() => App.loggedIn, async () => {
       try {
         await OwnComponents.fetchItems();
-      } catch(err) {
+      } catch (err) {
         console.log("Own components error %s", err.message);
       }
     });

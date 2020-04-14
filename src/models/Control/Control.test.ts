@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { ControlEnum } from "enums/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
-import Control, { MAIN_CSS_STYLE } from "models/Control/Control";
+import ControlStore, { MAIN_CSS_STYLE } from "ControlStore.ts";
 import CSSProperty from "models/Control/CSSProperty";
 import {
   ACTION_NAVIGATE_TO,
@@ -15,14 +15,14 @@ import IControl from "interfaces/IControl";
 describe("Control", () => {
   it("New Control element will be added to static Classes.controls array", () => {
     const grid = CreateControl(ControlEnum.Grid);
-    expect(Control.has(grid.id)).toBe(true);
+    expect(ControlStore.has(grid.id)).toBe(true);
   });
 
   it("Control deleteSelf will be deleted from static Classes.controls array", () => {
     const grid = CreateControl(ControlEnum.Grid);
-    expect(Control.has(grid.id)).toBe(true);
+    expect(ControlStore.has(grid.id)).toBe(true);
     grid.deleteSelf();
-    expect(Control.has(grid.id)).toBe(false);
+    expect(ControlStore.has(grid.id)).toBe(false);
   });
 
   it("New Control element has enabled style 'padding'", () => {
@@ -45,14 +45,14 @@ describe("Control", () => {
     const position2 = secondStyle![0];
     expect(position2.enabled).toBeTruthy();
     expect(position === position2).toBeFalsy();
-    expect(Control.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
     grid.renameCSSStyle("Style1", "NewStyle");
     expect(grid.cssStyles.has("Style1")).toBeFalsy();
-    expect(Control.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
-    expect(Control.classes.includes(`${grid.id}/NewStyle`)).toBeTruthy();
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
+    expect(ControlStore.classes.includes(`${grid.id}/NewStyle`)).toBeTruthy();
     grid.removeCSSStyle("NewStyle");
     expect(grid.cssStyles.has("NewStyle")).toBeFalsy();
-    expect(Control.classes.includes(`${grid.id}/NewStyle`)).toBeFalsy();
+    expect(ControlStore.classes.includes(`${grid.id}/NewStyle`)).toBeFalsy();
   });
 
   it("Merge styles", () => {
@@ -137,7 +137,7 @@ describe("Control", () => {
     const json = grid.toJSON;
     expect(json.cssStyles[0][1].length).toBe(4);
     expect(json.id === grid.id).toBeTruthy();
-    Control.removeItem(grid);
+    ControlStore.removeItem(grid);
     const grid2 = CreateControl(json.type, json as IControl);
 
     expect(grid2.id === grid.id).toBeTruthy();
@@ -153,7 +153,7 @@ describe("Control", () => {
     const grid = CreateControl(ControlEnum.Grid);
     grid.addChild(CreateControl(ControlEnum.Grid));
     const json = grid.toJSON;
-    Control.clear();
+    ControlStore.clear();
 
     const grid2 = CreateControl(json.type, json as IControl);
     expect(grid.id === grid2.id).toBeTruthy();

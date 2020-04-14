@@ -5,6 +5,7 @@ import ProjectEnum from "enums/ProjectEnum";
 import { IUser } from "interfaces/IUser";
 import { IImage } from "interfaces/IImage";
 import ProjectVersionStore from "models/Project/ProjectVersionStore";
+import IControl from "interfaces/IControl";
 
 export default class ProjectStore implements IProject {
   createdAt: Date = new Date();
@@ -18,7 +19,7 @@ export default class ProjectStore implements IProject {
   @observable projectId: number = 0;
   @observable tags?: string;
   @observable title: string = "Project";
-  @observable versions: IObservableArray<IProjectVersion>;
+  @observable versions: IObservableArray<IProjectVersion> = observable([]);
   type: ProjectEnum;
   updatedAt?: Date;
   userId: number;
@@ -27,14 +28,21 @@ export default class ProjectStore implements IProject {
     return this.versions[0];
   }
 
-  constructor(type: ProjectEnum, userId: number, versions: IProjectVersion[]) {
+  get JSON() {
+    return {
+      title: this.title,
+      versionId: this.version.versionId,
+      data: this.version.data
+    } as {title: string, data: IControl, versionId: number}
+  }
+
+  constructor(type: ProjectEnum, userId: number) {
     this.type = type;
     this.title = ["Control", "Component", "Project"][type];
     this.userId = userId;
-    this.versions = observable(versions);
   }
 
-  @action update(model: IProject): void {
+  @action update(model: IProject) {
     model.createdAt && (this.createdAt = model.createdAt);
     model.updatedAt && (this.updatedAt = model.updatedAt);
     model.isBuyer !== undefined && (this.isBuyer = model.isBuyer);
@@ -44,32 +52,25 @@ export default class ProjectStore implements IProject {
     model.tags && (this.tags = model.tags);
     model.title && (this.title = model.title);
     model.userId && (this.userId = model.userId);
+    return this;
   }
 
   @action updateVersions(versions:IProjectVersion[]) {
-    this.versions.replace(versions);
+    this.versions.replace(versions.map(v => ProjectVersionStore.from(v)));
+    return this;
   }
 
   setId(id: number) {
     this.projectId = id;
-  }
-
-  toJSON(): { [p: string]: any } {
-    return {
-      title: this.title,
-      data: this.version.data
-    }
+    return this;
   }
 
   static from(model: IProject) {
-    const versions = model.versions ? model.versions : [ProjectVersionStore.from({versionId: 0, data: {}} as IProjectVersion)];
-    const project = new ProjectStore(model.type, model.userId, versions);
-    project.update(model);
-    return project;
+    return new ProjectStore(model.type, model.userId);
   }
 
   static createEmpty(type: ProjectEnum) {
-    return this.from({type, userId: 0} as IProject);
+    return this.from({type, userId: 0} as IProject).updateVersions([ProjectVersionStore.createEmpty()]);
   }
 
 }

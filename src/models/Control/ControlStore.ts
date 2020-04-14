@@ -42,7 +42,7 @@ export const MAIN_CSS_STYLE = "Main";
 type ModelType = IControl;
 export type ModelCtor<M extends IControl = IControl> = (new (id: string) => M) & ModelType;
 
-class Control extends Movable implements IControl {
+class ControlStore extends Movable implements IControl {
   type: ControlEnum;
   id: string;
   readonly allowChildren: boolean;
@@ -59,7 +59,7 @@ class Control extends Movable implements IControl {
   @observable classes: string[] = observable([MAIN_CSS_STYLE]);
   @observable actions: IObservableArray<IObservableArray<string>> = observable([]);
   @observable saving: boolean = false;
-  project?: IProject;
+  instance?: IProject;
 
   get toJSON() {
     const keys = Array.from(this.cssStyles.keys());
@@ -208,8 +208,8 @@ class Control extends Movable implements IControl {
     ]);
   }
 
-  setProject(project:IProject) {
-    this.project = project;
+  setInstance(project:IProject) {
+    this.instance = project;
   }
 
   @action setSaving(value: boolean): void {
@@ -238,7 +238,7 @@ class Control extends Movable implements IControl {
 
   @action setCSSStyle(key: string, style: ICSSProperty[]) {
     this.cssStyles.set(key, observable(style.map(e => CSSProperty.fromJSON(e))));
-    Control.addClass(this.id, key);
+    ControlStore.addClass(this.id, key);
   }
 
   // ###### apply history start ######## //
@@ -250,26 +250,26 @@ class Control extends Movable implements IControl {
     const undo = { control: this.id, title: this.title };
     this.title = title;
     const redo = { control: this.id, title: this.title };
-    !noHistory && Control.history.add([HIST_CHANGE_TITLE, undo, redo]);
+    !noHistory && ControlStore.history.add([HIST_CHANGE_TITLE, undo, redo]);
   };
 
   @action deleteSelf = (noHistory?: boolean) => {
     if (this.parentId) {
-      const parent = Control.getById(this.parentId);
-      !noHistory && Control.history.add([HIST_DELETE_SELF,
+      const parent = ControlStore.getById(this.parentId);
+      !noHistory && ControlStore.history.add([HIST_DELETE_SELF,
         { control: this.toJSON, index: parent!.children.indexOf(this) },
         { control: this.id }
       ]);
       parent && parent.removeChild(this);
     }
-    Control.removeItem(this);
+    ControlStore.removeItem(this);
   };
 
   @action addCSSStyle = (noHistory?: boolean) => {
     const key = `Style${this.cssStyles.size}`;
     this.cssStyles.set(key, observable(this.cssStyles.get(MAIN_CSS_STYLE)!.map(prop => prop.clone())));
-    Control.addClass(this.id, key);
-    !noHistory && Control.history.add([HIST_ADD_CSS_STYLE, { control: this.id, key }, { control: this.id }]);
+    ControlStore.addClass(this.id, key);
+    !noHistory && ControlStore.history.add([HIST_ADD_CSS_STYLE, { control: this.id, key }, { control: this.id }]);
   };
 
   @action renameCSSStyle = (oldKey: string, newKey: string, noHistory?: boolean) => {
@@ -282,22 +282,22 @@ class Control extends Movable implements IControl {
     }
     this.cssStyles.set(key, this.cssStyles.get(oldKey) as IObservableArray<ICSSProperty>);
     this.cssStyles.delete(oldKey);
-    Control.renameClass(this.id, oldKey, key);
-    !noHistory && Control.history.add([HIST_RENAME_CSS_STYLE,
+    ControlStore.renameClass(this.id, oldKey, key);
+    !noHistory && ControlStore.history.add([HIST_RENAME_CSS_STYLE,
       { control: this.id, oldKey: key, key: oldKey }, { control: this.id, key, oldKey }]);
   };
 
   @action removeCSSStyle(key: string, noHistory?: boolean): void {
     const undo = { control: this.id, style: this.cssStyles.get(key)!.map(prop => prop.toJSON), key };
     this.cssStyles.delete(key);
-    Control.removeClass(this.id, key);
+    ControlStore.removeClass(this.id, key);
     const redo = { control: this.id, key };
-    !noHistory && Control.history.add([HIST_REMOVE_CSS_STYLE, undo, redo]);
+    !noHistory && ControlStore.history.add([HIST_REMOVE_CSS_STYLE, undo, redo]);
   }
 
   @action addAction = (action: string[], noHistory?: boolean) => {
     this.actions.push(observable(action));
-    !noHistory && Control.history.add([HIST_ADD_ACTION,
+    !noHistory && ControlStore.history.add([HIST_ADD_ACTION,
       { control: this.id, index: this.actions.length - 1 },
       { control: this.id, action: action.slice() }
     ]);
@@ -307,21 +307,21 @@ class Control extends Movable implements IControl {
     const undo = { control: this.id, action: this.actions[index].slice(), index };
     this.actions[index].replace([action, ...props.split("/")]);
     const redo = { control: this.id, action: [action, props], index };
-    !noHistory && Control.history.add([HIST_EDIT_ACTION, undo, redo]);
+    !noHistory && ControlStore.history.add([HIST_EDIT_ACTION, undo, redo]);
   };
 
   @action removeAction = (index: number, noHistory?: boolean) => {
     const undo = { control: this.id, action: this.actions[index].slice(), index };
     this.actions.splice(index, 1);
     const redo = { control: this.id, index };
-    !noHistory && Control.history.add([HIST_REMOVE_ACTION, undo, redo]);
+    !noHistory && ControlStore.history.add([HIST_REMOVE_ACTION, undo, redo]);
   };
 
   @action switchLockChildren = () => {
     const undo = { control: this.id, model: { lockedChildren: this.lockedChildren } };
     this.lockedChildren = !this.lockedChildren;
     const redo = { control: this.id, model: { lockedChildren: this.lockedChildren } };
-    Control.history.add([HIST_CONTROL_PROP_CHANGE, undo, redo]);
+    ControlStore.history.add([HIST_CONTROL_PROP_CHANGE, undo, redo]);
   };
 
   // ####### styles handlers ######## //
@@ -332,7 +332,7 @@ class Control extends Movable implements IControl {
       const undo = { control: this.id, key, method: [CSS_SWITCH_EXPANDED, propName, property.expanded] };
       property.switchExpanded();
       const redo = { control: this.id, key, method: [CSS_SWITCH_EXPANDED, propName, property.expanded] };
-      Control.history.add([HIST_CSS_PROP, undo, redo]);
+      ControlStore.history.add([HIST_CSS_PROP, undo, redo]);
     }
   };
 
@@ -342,7 +342,7 @@ class Control extends Movable implements IControl {
       const undo = { control: this.id, key, method: [CSS_SWITCH_ENABLED, propName, property.enabled] };
       property.switchEnabled();
       const redo = { control: this.id, key, method: [CSS_SWITCH_ENABLED, propName, property.enabled] };
-      Control.history.add([HIST_CSS_PROP, undo, redo]);
+      ControlStore.history.add([HIST_CSS_PROP, undo, redo]);
     }
   };
 
@@ -352,7 +352,7 @@ class Control extends Movable implements IControl {
       const undo = { control: this.id, key, method: [CSS_SET_VALUE, propName, property.value] }
       property.setValue(value);
       const redo = { control: this.id, key, method: [CSS_SET_VALUE, propName, property.value] }
-      Control.history.add([HIST_CSS_PROP, undo, redo]);
+      ControlStore.history.add([HIST_CSS_PROP, undo, redo]);
     }
   };
 
@@ -384,7 +384,7 @@ class Control extends Movable implements IControl {
     clone.mergeStyles(this.cssStyles);
     if (clone.cssStyles.size > 1) {
       Array.from(clone.cssStyles.keys())
-        .filter(k => k !== MAIN_CSS_STYLE).forEach(k => Control.addClass(clone.id, k));
+        .filter(k => k !== MAIN_CSS_STYLE).forEach(k => ControlStore.addClass(clone.id, k));
     }
   }
 
@@ -419,10 +419,10 @@ class Control extends Movable implements IControl {
 
   applyActions = (cb?: (screen: IControl) => void) => {
     this.actions.forEach(action => {
-      if (!Control.has(action[1])) {
+      if (!ControlStore.has(action[1])) {
         return;
       }
-      const control = Control.getById(action[1]) as IControl;
+      const control = ControlStore.getById(action[1]) as IControl;
       if (action[0] === ACTION_NAVIGATE_TO) {
         cb && cb(control);
       } else {
@@ -463,7 +463,7 @@ class Control extends Movable implements IControl {
   static getOrCreate(instance: ModelCtor, control: IControl) {
     let contr = this.getById(control.id);
     if (!contr) {
-      contr = Control.fromJSON(instance, control);
+      contr = ControlStore.fromJSON(instance, control);
       this.addItem(contr);
     }
     return contr;
@@ -517,6 +517,6 @@ class Control extends Movable implements IControl {
   }
 }
 
-Control.history = new EditorHistory(Control as ControlStatic);
+ControlStore.history = new EditorHistory(ControlStore as ControlStatic);
 
-export default Control;
+export default ControlStore;

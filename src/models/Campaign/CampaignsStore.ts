@@ -2,10 +2,10 @@ import { action, observable } from "mobx";
 import { ICampaign } from "interfaces/ICampaign";
 import { IChannelCampaigns } from "interfaces/IChannelCampaigns";
 import {
-  EMAIL_CAMPAIGNS_ROUTE,
-  IN_APP_CAMPAIGNS_ROUTE,
-  PUSH_CAMPAIGNS_ROUTE,
-  SMS_CAMPAIGNS_ROUTE
+  ROUTE_EMAIL_CAMPAIGNS,
+  ROUTE_IN_APP_CAMPAIGNS,
+  ROUTE_PUSH_CAMPAIGNS,
+  ROUTE_SMS_CAMPAIGNS
 } from "models/Constants";
 import { EmailCampaigns } from "models/Campaign/Email/EmailCampaignsStore";
 import { SmsCampaigns } from "models/Campaign/Sms/SmsCampaignsStore";
@@ -14,10 +14,10 @@ import { PushCampaigns } from "models/Campaign/Push/PushCampaignsStore";
 
 class CampaignsStore {
   @observable stores: Map<string, IChannelCampaigns<ICampaign>> = new Map([
-    [EMAIL_CAMPAIGNS_ROUTE, EmailCampaigns],
-    [SMS_CAMPAIGNS_ROUTE, SmsCampaigns],
-    [IN_APP_CAMPAIGNS_ROUTE, InAppCampaigns],
-    [PUSH_CAMPAIGNS_ROUTE, PushCampaigns]
+    [ROUTE_EMAIL_CAMPAIGNS, EmailCampaigns],
+    [ROUTE_SMS_CAMPAIGNS, SmsCampaigns],
+    [ROUTE_IN_APP_CAMPAIGNS, InAppCampaigns],
+    [ROUTE_PUSH_CAMPAIGNS, PushCampaigns]
   ]);
   @observable currentStore: IChannelCampaigns<ICampaign> | null = null;
 

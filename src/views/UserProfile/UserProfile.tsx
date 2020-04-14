@@ -34,7 +34,7 @@ const UserReferrals = lazy(() => import("views/UserProfile/components/UserReferr
 const UserReferralDetails = lazy(() => import("views/UserProfile/components/UserReferralDetails"));
 
 
-const Profile = observer(() => {
+const Profile = () => {
   if (!UserDetails.user) return null;
   const tabs = [
     {
@@ -89,12 +89,12 @@ const Profile = observer(() => {
       />
     </GridContainer>
   );
-});
+};
 
 function UserProfile() {
 
   const dispose = useDisposable(() =>
-    when(() => App.sessionIsReady, async () => {
+    when(() => App.loggedIn, async () => {
       const user = App.user as IUser;
       UserDetails.bindUser(user);
       Users.loadFullData(user);
@@ -104,7 +104,7 @@ function UserProfile() {
 
   useEffect(() => {
     return () => dispose();
-  });
+  }, []);
 
   return <Profile/>;
 }

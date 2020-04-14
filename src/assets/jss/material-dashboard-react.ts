@@ -290,6 +290,7 @@ export {
   primaryBoxShadow,
   infoBoxShadow,
   successBoxShadow,
+  inheritBoxShadow,
   warningBoxShadow,
   dangerBoxShadow,
   roseBoxShadow,

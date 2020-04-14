@@ -3,6 +3,8 @@ import { action } from "mobx";
 
 export const data = {
   controls: "controls",
+  components: "components",
+  sharedComponents: "shared components",
   settings: "settings",
   screen: "screen",
   mode: "mode",
