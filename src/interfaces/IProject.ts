@@ -6,6 +6,14 @@ import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
 import { Mode } from "enums/ModeEnum";
 import IControl from "interfaces/IControl";
 
+export interface IProjectJSON {
+  title: string;
+  description?: string;
+  price: number;
+  data: IProjectData | IControl;
+  versionId: number;
+}
+
 export interface IBackgroundColor {
   backgroundColor: string;
 }
@@ -42,7 +50,9 @@ export default interface IProject extends WithPrimaryKey {
   images?: IImage[];
   isBuyer?: boolean;
   version: IProjectVersion;
-  JSON: {title: string; data: IControl, versionId: number};
+  preview?: string;
+  previewSize?: {width?: number, height?: number};
+  JSON: {title: string; description?: string; price: number; data: IProjectData | IControl, versionId: number};
 
   update(data: IProject): IProject;
   updateVersions(versions: IProjectVersion[]): IProject;

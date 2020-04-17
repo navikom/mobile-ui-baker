@@ -84,6 +84,7 @@ export class UserStore implements IUser {
   hasRole(roleId: number): boolean {
     return computed(() => {
       if(!this.roles) return false;
+      if(roleId === ROLE_ADMIN && this.isSuperAdmin) return true;
       return this.roles!.some((e: IRole) => e.roleId === roleId);
     }).get();
   }

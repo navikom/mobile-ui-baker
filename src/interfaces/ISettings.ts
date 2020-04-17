@@ -12,4 +12,5 @@ export interface ISettings {
   systemEventsList?: string[];
   customEventsList?: string[];
   expressions?: string[];
+  bucket?: string;
 }

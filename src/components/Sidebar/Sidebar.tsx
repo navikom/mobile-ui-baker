@@ -51,13 +51,14 @@ const Links = observer((props: LinkProps) => {
   const treeMap = [SIDEBAR_MAIN, SIDEBAR_ENGAGE, SIDEBAR_USER, SIDEBAR_OTHER]
     .map((key) =>
       [key, props.routes.filter((route: google.maps.DirectionsRoute & IRoute) =>
-        route.category === key && (!route.role || (App.user && App.user.hasRole(route.role))))]);
+        route.category === key && route.auth && (!route.role || (App.user && App.user.hasRole(route.role))))])
+    .filter(e => e[1].length);
 
   return (
     <div>
       {
         treeMap.map((routesList: any[], key: number) => {
-          if(routesList[1].length === 0) return null;
+          // if(routesList[1].length === 0) return null;
           const title = Dictionary.value(routesList[0]);
           return (
             <List className={classes.list} key={key}>
@@ -70,8 +71,8 @@ const Links = observer((props: LinkProps) => {
                 })}
               />
               {routesList[1].map((prop: google.maps.DirectionsRoute & IRoute, key: number) => {
-                if (!prop.path || !prop.auth) return null;
-                if(prop.auth && !App.loggedIn) return null;
+                if(!App.loggedIn) return null;
+
                 const listItemClasses = classNames({
                   [" " + classes[color]]: activeRoute(prop.layout + prop.path)
                 });

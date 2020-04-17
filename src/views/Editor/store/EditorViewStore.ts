@@ -26,11 +26,14 @@ import ProjectStore from "models/Project/ProjectStore";
 import ProjectEnum from "enums/ProjectEnum";
 import { Errors } from "models/Errors";
 import { Mode } from "enums/ModeEnum";
-import { Dictionary } from "services/Dictionary/Dictionary";
+import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { App } from "models/App";
 import { ErrorHandler } from "utils/ErrorHandler";
 import { ERROR_USER_DID_NOT_LOGIN, ROUTE_EDITOR } from "models/Constants";
 import ControlStore from "models/Control/ControlStore";
+import { SharedControls } from "models/Project/ControlsStore";
+import { OwnComponents } from "models/Project/OwnComponentsStore";
+import html2canvas from "html2canvas";
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -60,6 +63,7 @@ class EditorViewStore extends Errors {
   @observable project: IProject;
   @observable fetchingProject: boolean = false;
   @observable savingProject: boolean = false;
+  @observable successMessage: string = "";
 
   moveOpened: boolean = true;
   debug: boolean = false;
@@ -100,6 +104,7 @@ class EditorViewStore extends Errors {
         changeProjectTitle: this.changeProjectTitle
       },
       {
+        deleteControl: this.deleteControl,
         selectedControl: this.selectedControl,
         isSelected: this.isSelected,
         cloneControl: this.cloneControl,
@@ -134,6 +139,9 @@ class EditorViewStore extends Errors {
       }
       this.project.version.update({data: this.toJSON} as unknown as IProjectVersion);
       await ProjectsStore.save(this.project);
+      runInAction(() => {
+        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, this.project.title);
+      });
       this.setSuccessRequest(true);
       this.setTimeOut(() => {
         this.setSuccessRequest(false);
@@ -143,10 +151,24 @@ class EditorViewStore extends Errors {
         }
       }, 5000);
     } catch (err) {
-      this.setError(Dictionary.value(err.message));
+      this.setError(Dictionary.defValue(DictionaryService.keys.dataSaveError, [this.project.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
     }
     this.setSavingProject(false);
+  };
+
+  private makeScreenshot(control: IControl) {
+    const element = document.querySelector("#capture_" + control.id) as HTMLElement;
+    return new Promise((resolve, reject) => {
+      element && html2canvas(element).then(canvas => {
+        canvas.toBlob((blob) => {
+          const file = new File([blob as BlobPart], "capture.png", {
+            type: 'image/png'
+          });
+          resolve(file);
+        });
+      });
+    });
   };
 
   saveControl = async (control: IControl) => {
@@ -158,16 +180,20 @@ class EditorViewStore extends Errors {
     }
     control.setSaving(true);
     try {
-
       if (!App.loggedIn) {
         throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
       }
       control.instance!.version.update({data: control.toJSON} as IProjectVersion);
-      await ProjectsStore.save(control.instance as IProject);
+      const blob = await this.makeScreenshot(control);
+      await ProjectsStore.save(control.instance as IProject, [blob]);
+      (control.instance!.type === ProjectEnum.CONTROL ? SharedControls : OwnComponents).push([control.instance!]);
+      runInAction(() => {
+        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, control.title);
+      });
       this.setSuccessRequest(true);
       this.setTimeOut(() => this.setSuccessRequest(false), 5000);
     } catch (err) {
-      this.setError(Dictionary.value(err.message));
+      this.setError(Dictionary.defValue(DictionaryService.keys.dataSaveError, [control.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
     }
     control.setSaving(false);
@@ -180,6 +206,20 @@ class EditorViewStore extends Errors {
       instance.update({title: control.title} as IProject);
     }
     await this.saveControl(control);
+  };
+
+  deleteControl = async (control: IControl) => {
+    try {
+      await (control.instance!.type === ProjectEnum.CONTROL ? SharedControls : OwnComponents).delete(control.instance!);
+      runInAction(() => {
+        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataDeletedSuccessfully, control.title);
+      });
+      this.setSuccessRequest(true);
+      this.setTimeOut(() => this.setSuccessRequest(false), 5000);
+    } catch (err) {
+      this.setError(Dictionary.defValue(DictionaryService.keys.dataDeleteError, [control.title, Dictionary.value(err.message)]));
+      this.setTimeOut(() => this.setError(null), 5000);
+    }
   };
 
   @action clearLocalStorage() {

@@ -23,7 +23,7 @@ import {
   SIDEBAR_MAIN,
   SIDEBAR_OTHER,
   SIDEBAR_USER,
-  ROLE_SUPER_ADMIN
+  ROLE_SUPER_ADMIN, ROLE_ADMIN
 } from "models/Constants";
 
 const DashboardPage = lazy(() => import("views/Dashboard/Dashboard"));
@@ -36,6 +36,8 @@ const RolesList = lazy(() => import("views/Roles/RolesList"));
 const Login = lazy(() => import("views/Login/Login"));
 const SignUp = lazy(() => import("views/SignUp/SignUp"));
 const StartPage = lazy(() => import("views/StartPage/StartPage"));
+const ProjectsList = lazy(() => import("views/Projects/ProjectsList"));
+const ProjectItem = lazy(() => import("views/Projects/ProjectItem"));
 
 const Guide = lazy(() => import("views/Guide/Guide"));
 const Build = lazy(() => import("views/Build/Build"));
@@ -56,7 +58,8 @@ const dashboardRoutesMap = {
     component: Guide,
     layout: LAYOUT_PANEL,
     auth: true,
-    category: SIDEBAR_OTHER
+    category: SIDEBAR_OTHER,
+    role: ROLE_SUPER_ADMIN
   },
   build: {
     path: "/build",
@@ -66,7 +69,8 @@ const dashboardRoutesMap = {
     component: Build,
     layout: LAYOUT_PANEL,
     auth: true,
-    category: SIDEBAR_OTHER
+    category: SIDEBAR_OTHER,
+    role: ROLE_SUPER_ADMIN
   },
   dashboard: {
     path: "/dashboard",
@@ -76,7 +80,8 @@ const dashboardRoutesMap = {
     component: DashboardPage,
     layout: LAYOUT_PANEL,
     auth: true,
-    category: SIDEBAR_MAIN
+    category: SIDEBAR_MAIN,
+    role: ROLE_ADMIN
   },
   eventsUsers: {
     path: "/events-users",
@@ -86,7 +91,8 @@ const dashboardRoutesMap = {
     component: EventsList,
     layout: LAYOUT_PANEL,
     auth: true,
-    category: SIDEBAR_MAIN
+    category: SIDEBAR_MAIN,
+    role: ROLE_ADMIN
   },
   eventsUser: {
     url: "/events-users",
@@ -96,8 +102,8 @@ const dashboardRoutesMap = {
     icon: SupervisedUserCircle,
     component: EventsUsersItem,
     layout: LAYOUT_PANEL,
-    auth: true,
-    category: SIDEBAR_MAIN
+    category: SIDEBAR_MAIN,
+    role: ROLE_ADMIN
   },
   users: {
     path: "/users",
@@ -107,6 +113,7 @@ const dashboardRoutesMap = {
     component: UsersList,
     layout: LAYOUT_PANEL,
     auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
   },
   user: {
@@ -116,7 +123,7 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     component: UsersItem,
     layout: LAYOUT_PANEL,
-    auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
   },
   roles: {
@@ -138,7 +145,8 @@ const dashboardRoutesMap = {
     component: SegmentsList,
     layout: LAYOUT_PANEL,
     auth: true,
-    category: SIDEBAR_MAIN
+    category: SIDEBAR_MAIN,
+    role: ROLE_ADMIN
   },
   segment: {
     url: "/segments",
@@ -147,7 +155,7 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     component: SegmentsItem,
     layout: LAYOUT_PANEL,
-    auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
   },
   userProfile: {
@@ -158,6 +166,26 @@ const dashboardRoutesMap = {
     component: UserProfile,
     layout: LAYOUT_PANEL,
     auth: true,
+    category: SIDEBAR_USER
+  },
+  projectList: {
+    path: "/projects",
+    name: "Projects",
+    rtlName: "ملف تعريفي للمستخدم",
+    icon: Person,
+    component: ProjectsList,
+    layout: LAYOUT_PANEL,
+    auth: true,
+    category: SIDEBAR_USER
+  },
+  projectItem: {
+    path: "/projects",
+    params: "/:id",
+    name: "Project item",
+    rtlName: "ملف تعريفي للمستخدم",
+    icon: Person,
+    component: ProjectItem,
+    layout: LAYOUT_PANEL,
     category: SIDEBAR_USER
   },
   login: {
@@ -218,6 +246,7 @@ const dashboardRoutesMap = {
     component: CampaignsList,
     layout: LAYOUT_PANEL,
     auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_ENGAGE
   },
   emailEngageItem: {
@@ -227,7 +256,7 @@ const dashboardRoutesMap = {
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
     layout: LAYOUT_PANEL,
-    auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
   },
   smsEngage: {
@@ -236,8 +265,9 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: PermPhoneMsg,
     component: CampaignsList,
-    layout: LAYOUT_PANEL,
     auth: true,
+    layout: LAYOUT_PANEL,
+    role: ROLE_ADMIN,
     category: SIDEBAR_ENGAGE
   },
   smsEngageItem: {
@@ -247,7 +277,7 @@ const dashboardRoutesMap = {
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
     layout: LAYOUT_PANEL,
-    auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
   },
   inAppEngage: {
@@ -256,8 +286,9 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: ViewCompact,
     component: CampaignsList,
-    layout: LAYOUT_PANEL,
     auth: true,
+    layout: LAYOUT_PANEL,
+    role: ROLE_ADMIN,
     category: SIDEBAR_ENGAGE
   },
   inAppEngageItem: {
@@ -267,7 +298,7 @@ const dashboardRoutesMap = {
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
     layout: LAYOUT_PANEL,
-    auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
   },
   pushEngage: {
@@ -276,8 +307,9 @@ const dashboardRoutesMap = {
     rtlName: "ملف تعريفي للمستخدم",
     icon: ConfirmationNumber,
     component: CampaignsList,
-    layout: LAYOUT_PANEL,
     auth: true,
+    layout: LAYOUT_PANEL,
+    role: ROLE_ADMIN,
     category: SIDEBAR_ENGAGE
   },
   pushEngageItem: {
@@ -287,7 +319,7 @@ const dashboardRoutesMap = {
     rtlName: "لوحة القيادة",
     component: CampaignsItem,
     layout: LAYOUT_PANEL,
-    auth: true,
+    role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
   }
 };

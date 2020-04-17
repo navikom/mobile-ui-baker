@@ -108,6 +108,7 @@ const ElementComponent: React.FC<ElementProps> =
 
       return (
         <div
+          id={`capture_${control.id}`}
           data-testid="control"
           onClick={(e) => {
             if(locked) {

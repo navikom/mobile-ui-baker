@@ -1,4 +1,5 @@
 import { createStyles } from "@material-ui/core/styles";
+import { whiteColor } from "assets/jss/material-dashboard-react";
 
 const styles = createStyles({
   cardCategoryWhite: {
@@ -37,6 +38,15 @@ const styles = createStyles({
   },
   button: {
     marginTop: 40,
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: whiteColor
+  },
+  paragraph: {
+    margin: "15px 0"
   }
 });
 

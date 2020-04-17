@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React from "react";
-import { observable } from "mobx";
+import { action, observable } from "mobx";
 import { observer } from "mobx-react";
 // @material-ui/core components
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
@@ -24,6 +24,9 @@ import { RouteComponentProps } from "react-router";
 
 import styles from "assets/jss/material-dashboard-react/views/singlePageStyle.tsx";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
+import CustomCheckbox from "components/CustomCheckbox/CustomCheckbox";
+import Typography from "@material-ui/core/Typography";
+import Dialog from "@material-ui/core/Dialog";
 
 interface FormControlInterface {
   error?: boolean;
@@ -52,23 +55,61 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
   @observable email: string = "";
   @observable password: string = "";
   @observable confirmPassword: string = "";
+  @observable terms: boolean = false;
 
-  state: Readonly<SignUpState> = {
+  state: Readonly<SignUpState & { open: boolean }> = {
     errors: null,
+    open: false,
     formCompleted: false
   };
 
   onInput = (key: InputsTypes, e: React.ChangeEvent<HTMLInputElement>) => {
     this[key] = e.target.value;
     const errors = Auth.onInput(
-      Object.assign({ email: this.email, password: this.password, confirmPassword: this.confirmPassword }, { [key]: e.target.value })
+      Object.assign(
+        { email: this.email, password: this.password, confirmPassword: this.confirmPassword, terms: this.terms },
+        { [key]: e.target.value })
+    );
+
+    this.setState({ errors, formCompleted: errors == null });
+  };
+
+  switchTerms = () => {
+    this.terms = !this.terms;
+    const errors = Auth.onInput(
+      Object.assign(
+        { email: this.email, password: this.password, confirmPassword: this.confirmPassword },
+        { terms: this.terms })
     );
 
     this.setState({ errors, formCompleted: errors == null });
   };
 
   onSubmit = async () => {
+    if (!this.state.formCompleted) {
+      return;
+    }
     Auth.signup(this.email, this.password);
+  };
+
+  openModal = () => {
+    this.setState({ open: true } as unknown as SignUpState);
+  };
+
+  @action setTerms = () => {
+    this.closeModal();
+    this.terms = true;
+    const errors = Auth.onInput(
+      Object.assign(
+        { email: this.email, password: this.password, confirmPassword: this.confirmPassword },
+        { terms: this.terms })
+    );
+
+    this.setState({ errors, formCompleted: errors == null });
+  };
+
+  closeModal = () => {
+    this.setState({ open: false } as unknown as SignUpState);
   };
 
   input(key: InputsTypes, labelText: string, id: string, icon: string, inputProps = {}) {
@@ -132,6 +173,20 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
                           {this.input("confirmPassword", Dictionary.defValue(DictionaryService.keys.confirmPassword), "confirmPassword", "lock", { type: "password" })}
                         </GridItem>
                       </GridContainer>
+                      <GridContainer justify="center">
+                        <GridItem xs={12} sm={10} md={10}>
+                          <CustomCheckbox
+                            error={this.state.errors && this.state.errors.terms !== undefined}
+                            checked={this.terms}
+                            onChange={this.switchTerms}
+                            label={Dictionary.defValue(DictionaryService.keys.iAgreeWithTerms)}
+                            labelPlacement="end"
+                          />
+                          <Button color="transparent" onClick={this.openModal}>
+                            {Dictionary.defValue(DictionaryService.keys.viewTerms)}
+                          </Button>
+                        </GridItem>
+                      </GridContainer>
                       {Auth.hasError && (
                         <GridContainer justify="center">
                           <GridItem xs={12} sm={10} md={10}>
@@ -163,6 +218,43 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
             </Slide>
           </GridItem>
         </GridContainer>
+        <Dialog
+          maxWidth="md"
+          className={classes.modal}
+          aria-labelledby="spring-modal-title"
+          aria-describedby="spring-modal-description"
+          open={this.state.open}
+          onClose={this.closeModal}
+        >
+          <Fade in={this.state.open}>
+
+            <Card style={{boxShadow: "none"}} plain>
+              <CardHeader color="primary">
+                <h4
+                  className={classes.cardTitleWhite}>{Dictionary.defValue(DictionaryService.keys.termsAndConditions)}</h4>
+              </CardHeader>
+              <CardBody>
+                {
+                  [...Array(7)].map((_, i) =>
+                    <Typography key={i.toString()} className={classes.paragraph}>
+                      Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing
+                      luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis
+                      tortor
+                      tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum
+                      quis in sit varius lorem sit metus mi.
+                    </Typography>
+                  )
+                }
+              </CardBody>
+              <CardFooter right>
+                <Button onClick={this.closeModal}>Close</Button>
+                <Button color="primary" onClick={this.setTerms}>
+                  {Dictionary.defValue(DictionaryService.keys.iAgree)}
+                </Button>
+              </CardFooter>
+            </Card>
+          </Fade>
+        </Dialog>
       </div>
     );
   }

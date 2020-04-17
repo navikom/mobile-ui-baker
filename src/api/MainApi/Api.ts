@@ -55,27 +55,6 @@ class AEvent extends HttpBase {
   }
 }
 
-class App extends HttpBase {
-  constructor() {
-    super("apps");
-  }
-
-  update(appId: number, data: any) {
-    return this.fetchData("put", appId.toString(), data, undefined, [
-      "Content-Type",
-      "Accept"
-    ]);
-  }
-
-  sortImages(appId: number, data: { imageId: number; sort: number }[]) {
-    return this.fetchData("put", `${appId}/images/sort`, data);
-  }
-
-  deleteAppImage(appId: number, imageId: number) {
-    return this.fetchData("delete", `${appId}/image/${imageId}`);
-  }
-}
-
 class Setting extends HttpBase {
   constructor() {
     super("settings");
@@ -110,9 +89,20 @@ class Region extends HttpBase {
   }
 }
 
-class Project extends HttpBase {
+export class Project extends HttpBase {
   constructor() {
     super("projects");
+  }
+  update(projectId: number, data: any) {
+    return this.fetchData("put", projectId.toString(), data, undefined, ["Content-Type", "Accept"]);
+  }
+
+  sortImages(projectId: number, data: {imageId: number, sort: number}[]) {
+    return this.fetchData("put", `${projectId}/images/sort`, data);
+  }
+
+  deleteImage(projectId: number, imageId: number) {
+    return this.fetchData("delete", `${projectId}/image/${imageId}`);
   }
 }
 
@@ -120,11 +110,27 @@ class Control extends HttpBase {
   constructor() {
     super("controls");
   }
+
+  update(controlId: number, data: any) {
+    return this.fetchData("put", controlId.toString(), data, undefined, ["Content-Type", "Accept"]);
+  }
+
+  deleteImage(controlId: number, imageId: number) {
+    return this.fetchData("delete", `${controlId}/image/${imageId}`);
+  }
 }
 
 class Component extends HttpBase {
   constructor() {
     super("components");
+  }
+
+  update(componentId: number, data: any) {
+    return this.fetchData("put", componentId.toString(), data, undefined, ["Content-Type", "Accept"]);
+  }
+
+  deleteImage(componentId: number, imageId: number) {
+    return this.fetchData("delete", `${componentId}/image/${imageId}`);
   }
 }
 
@@ -136,10 +142,6 @@ export default class Api extends ApiBase {
 
   get event(): AEvent {
     return new AEvent();
-  }
-
-  get app(): App {
-    return new App();
   }
 
   get setting(): Setting {

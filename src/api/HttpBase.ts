@@ -34,6 +34,10 @@ export abstract class HttpBase {
   return this.fetchData("post", undefined, body);
  }
 
+ addWithImages(data: any) {
+  return this.fetchData("put", undefined, data, undefined, ["Content-Type", "Accept"]);
+ }
+
  update(id: number, body: {[k: string]: any}) {
   return this.fetchData("put", id.toString(), body);
  }
@@ -43,9 +47,6 @@ export abstract class HttpBase {
  }
 
  fetchData(method: string, calMethod?: string, body?: Body, header: Headers = {}, excludeHeaders?: string[]) {
-  // if (this.session) {
-  //  header["X-Cookie"] = `SESSION=${this.session}`;
-  // }
   const url = calMethod ? `${this.url}/${calMethod}` : this.url;
   return request(method, url, header, body, excludeHeaders, this.debug);
  }

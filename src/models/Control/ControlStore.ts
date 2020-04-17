@@ -36,6 +36,7 @@ import EditorHistory, {
 } from "views/Editor/store/EditorHistory";
 import IHistory from "interfaces/IHistory";
 import IProject from "interfaces/IProject";
+import { boxShadow } from "assets/jss/material-dashboard-react";
 
 export const MAIN_CSS_STYLE = "Main";
 
@@ -204,6 +205,8 @@ class ControlStore extends Movable implements IControl {
         new CSSProperty("transitionDelay", 0.5, 0.5, CSS_CAT_ANIMATIONS, false, CSS_VALUE_NUMBER)
           .setDescription(["transitionDelayDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transition-delay"])
           .setShowWhen(["transition", "expanded"]).setUnits("s", ["s", "ms"]),
+        new CSSProperty("boxShadow", boxShadow.boxShadow, boxShadow.boxShadow, CSS_CAT_BACKGROUND)
+          .setDescription(["boxShadow", "https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow"]),
       ])]
     ]);
   }

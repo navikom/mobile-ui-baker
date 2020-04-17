@@ -184,13 +184,13 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     store,
   }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const [height, setHeight] = React.useState(window.innerHeight - 75);
+  const [height, setHeight] = React.useState(window.innerHeight);
   const classes = editorStyles();
   const open = Boolean(anchorEl);
 
   useEffect(() => {
     const resize = () => {
-      setHeight(window.innerHeight - 75);
+      setHeight(window.innerHeight);
     };
     window.addEventListener("resize", resize);
     return () => {
@@ -211,7 +211,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     App.navigationHistory!.push(ROUTE_LOGIN);
   };
 
-  const navigateDashboard = () => {
+  const navigateProfile = () => {
     handleClose();
     App.navigationHistory!.push(ROUTE_USER_PROFILE);
   };
@@ -226,7 +226,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     element && html2canvas(element).then(canvas => {
       const a = document.createElement("a");
       a.href = canvas.toDataURL();
-      a.download = "somefilename.png";
+      a.download = `${store.project.title.length ? store.project.title : 'Project'}.png`;
       a.click();
       setTimeout(() => {
         a.remove();
@@ -307,7 +307,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
               {
                 App.loggedIn ?
                   (<MenuItem
-                    onClick={navigateDashboard}>{Dictionary.defValue(DictionaryService.keys.dashboard)}</MenuItem>) :
+                    onClick={navigateProfile}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
                   (<MenuItem onClick={navigateLogin}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
               }
               {
@@ -318,11 +318,11 @@ const ContextComponent: React.FC<ContextComponentProps> = (
           </div>
         </Toolbar>
       </AppBar>
-      <div style={{ height: "100%" }}>
+      <div>
         <DndProvider debugMode={true} backend={Backend}>
           <Grid container style={{ height: "100%" }}>
-            <Grid item xs={2} sm={2} md={3} style={{ padding: 5 }}>
-              <div className={classes.bordered} style={{ overflow: "auto", height }}>
+            <Grid item xs={2} sm={2} md={3} style={{ padding: 5, position:"relative" }}>
+              <div className={classes.bordered} style={{ overflow: "auto", height: height - TABS_HEIGHT }}>
                 <TreeComponent
                   screens={store.screens}
                   moveControl={store.moveControl}
@@ -339,9 +339,19 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   isSelected={store.isSelected}
                 />
               </div>
+              <div style={{ position: "absolute", bottom: 20, right: -130 }}>
+                <ButtonGroup color="primary" variant="outlined">
+                  <Button disabled={!store.history.canUndo} onClick={() => store.history.undo()}>
+                    <Undo />
+                  </Button>
+                  <Button disabled={!store.history.canRedo} onClick={() => store.history.redo()}>
+                    <Redo />
+                  </Button>
+                </ButtonGroup>
+              </div>
             </Grid>
             <Grid item xs={7} sm={7} md={6} style={{ padding: 5 }}>
-              <div className={classes.bordered} style={{ overflow: "auto", height }}>
+              <div className={classes.bordered} style={{ overflow: "auto", height: height - TABS_HEIGHT }}>
                 <div style={{ transform: "translate3d(0, 0, 0)" }}>
                   <div style={{ transform: "scale(1)" }}>
                     <DeviceComponent
@@ -383,28 +393,18 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   }
                 </Tabs>
               </Paper>
-              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT }}>
+              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT * 2 }}>
                 {React.createElement(TabContent[store.tabToolsIndex], store.tabProps)}
               </div>
             </Grid>
           </Grid>
         </DndProvider>
       </div>
-      <div style={{ position: "absolute", bottom: 20, left: "480px" }}>
-        <ButtonGroup color="primary" variant="outlined">
-          <Button disabled={!store.history.canUndo} onClick={() => store.history.undo()}>
-            <Undo />
-          </Button>
-          <Button disabled={!store.history.canRedo} onClick={() => store.history.redo()}>
-            <Redo />
-          </Button>
-        </ButtonGroup>
-      </div>
       <Snackbar
         place="br"
         color="info"
         icon={AddAlert}
-        message={Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, Dictionary.defValue(DictionaryService.keys.data))}
+        message={store.successMessage}
         open={store.successRequest}
         closeNotification={() => store.setSuccessRequest(false)}
         close
@@ -413,7 +413,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         place="br"
         color="danger"
         icon={Clear}
-        message={Dictionary.defValue(DictionaryService.keys.dataSaveError, [Dictionary.defValue(DictionaryService.keys.data), store.error || ""])}
+        message={store.error || ""}
         open={store.hasError}
         closeNotification={() => store.setError(null)}
         close

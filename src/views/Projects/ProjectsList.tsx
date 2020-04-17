@@ -10,12 +10,13 @@ import { lazy } from "utils";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 
 // models
-import { Users } from "models/User/UsersStore";
 import { App } from "models/App";
-import { ROUTE_USERS_LIST } from "models/Constants";
+import { ROUTE_PROJECTS_LIST } from "models/Constants";
+import { OwnProjects } from "models/Project/OwnProjectsStore";
 
 // assets
 import useStyle from "assets/jss/material-dashboard-react/components/listStyle";
+import Typography from "@material-ui/core/Typography";
 
 // core components
 const Table = lazy(() => import("components/Table/TablePagination"));
@@ -23,16 +24,29 @@ const Card = lazy(() => import("components/Card/Card.tsx"));
 const CardHeader = lazy(() => import("components/Card/CardHeader.tsx"));
 const CardBody = lazy(() => import("components/Card/CardBody.tsx"));
 
-const UsersList = observer((props: RouteComponentProps) => {
-  useDisposable(() => when(() => App.sessionIsReady, () => Users.fetchItems()));
+const ProjectsList = observer((props: RouteComponentProps) => {
+  useDisposable(() => when(() => App.sessionIsReady, () => OwnProjects.fetchItems()));
 
   const classes = useStyle();
+
+  if (OwnProjects.count === 0) {
+    return (
+      <Typography
+        variant="subtitle1"
+        color="inherit"
+        align="center"
+        className={classes.title}
+      >
+        {Dictionary.defValue(DictionaryService.keys.noProjects)}.
+      </Typography>
+    );
+  }
 
   return (
     <Card>
       <CardHeader color="primary">
         <h4 className={classes.cardTitleWhite}>
-          {Dictionary.defValue(DictionaryService.keys.users)}
+          {Dictionary.defValue(DictionaryService.keys.projects)}
         </h4>
         <p className={classes.cardCategoryWhite}>
           {Dictionary.defValue(DictionaryService.keys.usersDashboard)}
@@ -43,25 +57,23 @@ const UsersList = observer((props: RouteComponentProps) => {
           tableProps={{
             tableHeaderColor: "primary",
             tableHead: [
-              Dictionary.defValue(DictionaryService.keys.userId),
+              Dictionary.defValue(DictionaryService.keys.id),
               Dictionary.defValue(DictionaryService.keys.date),
-              Dictionary.defValue(DictionaryService.keys.action),
-              Dictionary.defValue(DictionaryService.keys.email),
-              Dictionary.defValue(DictionaryService.keys.status),
-              Dictionary.defValue(DictionaryService.keys.activity)
+              Dictionary.defValue(DictionaryService.keys.title),
+              Dictionary.defValue(DictionaryService.keys.access),
             ],
-            tableData: Users.userTableData
+            tableData: OwnProjects.projectTableData
           }}
           paginationProps={{
-            rowsPerPageOptions: Users.rowsPerPageOptions,
-            count: Users.count,
-            rowsPerPage: Users.viewRowsPerPage,
-            page: Users.viewPage,
-            onChangePage: Users.handleChangePageInView,
-            onChangeRowsPerPage: Users.handleChangeRowsPerPage
+            rowsPerPageOptions: OwnProjects.rowsPerPageOptions,
+            count: OwnProjects.count,
+            rowsPerPage: OwnProjects.viewRowsPerPage,
+            page: OwnProjects.viewPage,
+            onChangePage: OwnProjects.handleChangePageInView,
+            onChangeRowsPerPage: OwnProjects.handleChangeRowsPerPage
           }}
           onRowClick={(data: string[]) =>
-            props.history.push(ROUTE_USERS_LIST + "/" + data[0])
+            props.history.push(ROUTE_PROJECTS_LIST + "/" + data[0])
           }
         />
       </CardBody>
@@ -69,4 +81,4 @@ const UsersList = observer((props: RouteComponentProps) => {
   );
 });
 
-export default UsersList;
+export default ProjectsList;

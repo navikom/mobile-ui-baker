@@ -23,6 +23,7 @@ export const ROUTE_DASHBOARD = "/panel/dashboard";
 export const ROUTE_USER_PROFILE = "/panel/user-profile";
 export const ROUTE_EVENTS_USERS_LIST = "/panel/events-users";
 export const ROUTE_USERS_LIST = "/panel/users";
+export const ROUTE_PROJECTS_LIST = "/panel/projects";
 export const ROUTE_LOGIN = "/login";
 export const ROUTE_SIGN_UP = "/sign-up";
 export const ROUTE_START_PAGE = "/start-page";

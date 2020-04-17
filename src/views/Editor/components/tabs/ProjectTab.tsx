@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
   input: {
     backgroundColor: blackOpacity(0.001),
     textOverflow: "ellipsis",
-    // fontWeight: "bold",
     fontSize: 17
   }
 }));

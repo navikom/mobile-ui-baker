@@ -30,7 +30,7 @@ const constraints = {
   }
 };
 
-const registrConstraints = Object.assign({
+const registerConstraints = Object.assign({
   confirmPassword: {
     presence: {
       message: `^${Dictionary.defValue(DictionaryService.keys.cantBeEmpty, Dictionary.defValue(DictionaryService.keys.confirmPassword))}`
@@ -38,6 +38,15 @@ const registrConstraints = Object.assign({
     equality: {
       attribute: "password",
       message: `^${Dictionary.defValue(DictionaryService.keys.repeatPasswordNotEqual)}`
+    }
+  },
+  terms: {
+    presence: {
+      message: `^${ Dictionary.defValue(DictionaryService.keys.mustAgreeToTerms) }`
+    },
+    inclusion: {
+      within: [true],
+      message: `^${ Dictionary.defValue(DictionaryService.keys.mustAgreeToTerms) }`
     }
   }
 }, constraints);
@@ -148,7 +157,7 @@ export class AuthStore extends Errors implements IFlow {
     if (this.hasError) {
       this.setError(null);
     }
-    return validate(data, login ? constraints : registrConstraints);
+    return validate(data, login ? constraints : registerConstraints);
   }
 
   stop(): void {

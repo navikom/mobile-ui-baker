@@ -34,7 +34,7 @@ const UserReferrals = lazy(() => import("views/UserProfile/components/UserReferr
 const UserReferralDetails = lazy(() => import("views/UserProfile/components/UserReferralDetails"));
 
 
-const Profile = () => {
+const ProfileComponent = () => {
   if (!UserDetails.user) return null;
   const tabs = [
     {
@@ -90,6 +90,8 @@ const Profile = () => {
     </GridContainer>
   );
 };
+
+const Profile = observer(ProfileComponent);
 
 function UserProfile() {
 

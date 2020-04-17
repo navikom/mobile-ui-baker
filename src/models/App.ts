@@ -36,6 +36,10 @@ export class AppStore implements IFlow {
     return this.loggedIn;
   }
 
+  @computed get isAdmin(): boolean {
+    return this.loggedIn && this.user!.isAdmin;
+  }
+
   constructor() {
     when(() => this.user !== null, () => this.ifUserChanged());
     this.anonymousDisposer = reaction(() => {

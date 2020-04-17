@@ -264,7 +264,7 @@ describe("EditorViewStore", () => {
     await store.saveProject();
     expect(store.project.projectId).toBe(1);
 
-    // update project should update to the same existing project
+    // updateProjectData project should updateProjectData to the same existing project
     const projectResponse = projects.project1;
     projectResponse.data.title = "Title 2";
     fetchMock.mockResponseOnce(JSON.stringify(projectResponse), responseHeader);
@@ -316,7 +316,7 @@ describe("EditorViewStore", () => {
     expect(control.instance!.projectId).toBe(2);
     expect(control.instance!.version.versionId).toBe(3);
 
-    // update component should update to the same existing instance
+    // updateProjectData component should updateProjectData to the same existing instance
     const componentResponse = components.component1;
     componentResponse.data.title = "New Title";
     componentResponse.data.versions[0].data.title = "New Grid Title";
@@ -350,7 +350,7 @@ describe("EditorViewStore", () => {
     expect(control.instance!.projectId).toBe(3);
     expect(control.instance!.version.versionId).toBe(5);
 
-    // update component should update to the same existing instance
+    // updateProjectData component should updateProjectData to the same existing instance
     const controlResponse = controls.control3;
     controlResponse.data.title = "New Title";
     controlResponse.data.versions[0].data.title = "New Grid Title";

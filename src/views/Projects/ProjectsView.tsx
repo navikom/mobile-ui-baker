@@ -17,6 +17,7 @@ import GridListTileBar from "@material-ui/core/GridListTileBar";
 import { Edit } from "@material-ui/icons";
 import EmptyProjectImg from "assets/img/projects/empty-project.png";
 import { blackOpacity, whiteOpacity } from "assets/jss/material-dashboard-react";
+import { observer } from "mobx-react-lite";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: TABS_HEIGHT
   },
   gridList: {
-    flexWrap: 'nowrap',
+    height: 450,
     // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
     transform: 'translateZ(0)',
   },
@@ -62,49 +63,10 @@ const ContextComponent: React.FC = () => {
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
       route: ROUTE_EDITOR + "/1"
     },
-    {
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
-      img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR
-    },
-    {
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
-      img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR
-    },
-    {
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
-      img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR
-    },
-    {
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
-      img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR
-    },
-    {
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
-      img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR
-    },
-    {
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
-      img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR
-    },
-    {
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
-      img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR
-    },
+    ...OwnProjects.previewList,
+    ...SharedProjects.previewList
   ];
+  console.log(9999999, Math.min(6, tileData.length));
   return (
     <>
       <AppBar position="fixed">
@@ -117,10 +79,11 @@ const ContextComponent: React.FC = () => {
         </Toolbar>
       </AppBar>
       <div className={classes.root}>
-        <GridList cellHeight={510} className={classes.gridList} cols={6}>
+        <GridList cellHeight={450} className={classes.gridList} cols={Math.min(6, tileData.length)}>
           {tileData.map((tile, i) => (
             <GridListTile
               key={i.toString()}
+              style={{width: 260}}
             >
               <img src={tile.img} alt={tile.title} />
               <GridListTileBar
@@ -144,19 +107,22 @@ const ContextComponent: React.FC = () => {
   )
 };
 
+const Context = observer(ContextComponent);
+
 function ProjectsView() {
   useEffect( () => {
     SharedProjects.fetchItems().catch(err => console.log("Shared projects error %s", err.message));
     when(() => App.loggedIn, async () => {
       try {
         await OwnProjects.fetchItems();
+        await SharedProjects.fetchItems();
       } catch(err) {
         console.log("Own projects error %s", err.message);
       }
     });
 
   }, []);
-  return <ContextComponent />
+  return <Context />
 }
 
 export default ProjectsView;

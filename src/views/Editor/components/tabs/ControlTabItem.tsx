@@ -9,6 +9,7 @@ import { ItemTypes } from "views/Editor/store/ItemTypes";
 import { ControlStores } from "models/Control/ControlStores";
 import IControl from "interfaces/IControl";
 import { inheritBoxShadow, whiteOpacity } from "assets/jss/material-dashboard-react";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const controlStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -64,12 +65,26 @@ const ControlTabItem: React.FC<ControlProps> = (
 
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true })
-  }, [preview])
+  }, [preview]);
+
+  let style;
+  if(control && control.instance) {
+    style = {
+      background: `no-repeat url(${control.instance.preview})`,
+      backgroundPosition: "center",
+      backgroundSize: "95%",
+      color: "transparent",
+      ...control.instance.previewSize,
+      padding: 0
+    };
+  }
 
   return (
-    <Paper elevation={0} ref={drag} className={classes.container} onClick={handleMenu}>
-      {(control && control.title) || type}
-    </Paper>
+    <Tooltip placement="top" title={(control && control.title) || type}>
+      <Paper elevation={0} ref={drag} className={classes.container} onClick={handleMenu} style={style || {}}>
+        {(control && control.title) || type}
+      </Paper>
+    </Tooltip>
   )
 };
 

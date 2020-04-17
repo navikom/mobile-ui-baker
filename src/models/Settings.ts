@@ -23,6 +23,7 @@ class SettingsStore implements ISettings {
  @observable cloudinaryPath?: string;
  @observable cloudinaryFolder?: string;
  @observable beefree?: IBeefree;
+ @observable bucket?: string;
 
  @action
  async fetch() {
@@ -37,6 +38,7 @@ class SettingsStore implements ISettings {
  @action update(data: ISettings) {
   this.cloudinaryPath = data.cloudinaryPath;
   this.cloudinaryFolder = data.cloudinaryFolder;
+  this.bucket = data.bucket;
   const beefree = data.bee!.split("___");
   this.beefree = Beefree.from(beefree[0], beefree[1]);
   Events.setSystemEventsList(data.systemEventsList as []);

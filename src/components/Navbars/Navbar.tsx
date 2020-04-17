@@ -40,13 +40,15 @@ export default (props: IHeader) => {
   const classes = useStyles();
   const makeBrand = () => {
     let name = "Page didn't find.";
-
+    let exact = false;
     props.routes.map((prop: google.maps.DirectionsRoute & IRoute) => {
+      if(exact) return;
       if (
         props.location.pathname.includes(prop.layout + prop.url) ||
         props.location.pathname.includes(prop.layout + prop.path)
       ) {
         name = props.rtlActive ? prop.rtlName : prop.name;
+        exact = props.location.pathname === prop.layout + prop.path;
       }
       return null;
     });

@@ -32,6 +32,7 @@ export const data = {
   transitionTimingDescription: "The transition-timing-function CSS property sets how intermediate values are calculated for CSS properties being affected by a transition effect.",
   transitionDelayDescription: "The transition-delay CSS property specifies the duration to wait before starting a property's transition effect when its value changes.",
   positionDescription: "The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.",
+  boxShadow: "The box-shadow CSS property adds shadow effects around an element's frame. You can set multiple effects separated by commas. A box shadow is described by X and Y offsets relative to the element, blur and spread radius, and color",
   learnMore: "Learn more",
   moreOptions: "More Options",
   unit: "unit",
@@ -59,7 +60,10 @@ export const data = {
   project: "project",
   control: "control",
   component: "component",
-  makeScreenshot: "make screenshot"
+  makeScreenshot: "make screenshot",
+  deleteWarning: "$ will be deleted forever. Are you sure?",
+  yes: "Yes",
+  no: "No"
 };
 
 class EditorDictionary extends AbstractDictionary {

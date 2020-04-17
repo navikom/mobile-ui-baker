@@ -1,6 +1,6 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 
-export default makeStyles(() =>
+export default makeStyles((theme: Theme) =>
   createStyles({
     typo: {
       paddingLeft: "25%",
@@ -44,6 +44,10 @@ export default makeStyles(() =>
     media: {
       backgroundSize: "contain",
       height: "300px"
+    },
+    title: {
+      opacity: 0.5,
+      marginTop: theme.typography.pxToRem(10)
     }
   })
 );

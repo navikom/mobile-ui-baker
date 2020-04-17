@@ -23,7 +23,7 @@ import Search from "@material-ui/icons/Search";
 // models
 import { App } from "models/App.ts";
 import { Auth } from "models/Auth/Auth.ts";
-import { ROUTE_LOGIN } from "models/Constants";
+import { ROUTE_EDITOR, ROUTE_LOGIN } from "models/Constants";
 
 // core components
 import CustomInput from "components/CustomInput/CustomInput.tsx";
@@ -31,6 +31,7 @@ import Button from "components/CustomButtons/Button.tsx";
 
 import useStyles from "assets/jss/material-dashboard-react/components/headerLinksStyle";
 import useDropdownStyles from "assets/jss/material-dashboard-react/dropdownStyle";
+import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 
 function AdminNavbarLinks(props: RouteComponentProps) {
   const classes = useStyles();
@@ -63,39 +64,15 @@ function AdminNavbarLinks(props: RouteComponentProps) {
 
   return (
     <div>
-      <div className={classes.searchWrapper}>
-        <CustomInput
-          formControlProps={{
-            className: classes.margin + " " + classes.search
-          }}
-          inputProps={{
-            placeholder: "Search",
-            inputProps: {
-              "aria-label": "Search"
-            }
-          }}
-        />
-        <Button color="white" aria-label="edit" justIcon round>
-          <Search />
-        </Button>
-      </div>
-      <IconButton className={iconButtonStyle} aria-label="Dashboard">
-        <Dashboard />
-        <Hidden mdUp implementation="css">
-          <p className={classes.linkText}>Dashboard</p>
-        </Hidden>
-      </IconButton>
       <div className={classes.manager}>
         <IconButton
           className={iconButtonStyle}
           onClick={handleClick(setAnchorEl, anchorEl)}
         >
-          <Badge badgeContent={5} color="primary">
-            <Notifications />
-          </Badge>
+          <Dashboard />
           <Hidden mdUp implementation="css">
-            <p onClick={() => {}} className={classes.linkText}>
-              Notification
+            <p onClick={() => props.history.push(ROUTE_EDITOR)} className={classes.linkText}>
+              {Dictionary.defValue(DictionaryService.keys.editor)}
             </p>
           </Hidden>
         </IconButton>
@@ -122,34 +99,10 @@ function AdminNavbarLinks(props: RouteComponentProps) {
                 <ClickAwayListener onClickAway={handleClose(setAnchorEl)}>
                   <MenuList role="menu">
                     <MenuItem
-                      onClick={handleClose(setAnchorEl)}
+                      onClick={() => props.history.push(ROUTE_EDITOR)}
                       className={dropdownClasses.dropdownItem}
                     >
-                      Mike John responded to your email
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleClose(setAnchorEl)}
-                      className={dropdownClasses.dropdownItem}
-                    >
-                      You have 5 new tasks
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleClose(setAnchorEl)}
-                      className={dropdownClasses.dropdownItem}
-                    >
-                      You&apos;re now friend with Andrew
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleClose(setAnchorEl)}
-                      className={dropdownClasses.dropdownItem}
-                    >
-                      Another Notification
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleClose(setAnchorEl)}
-                      className={dropdownClasses.dropdownItem}
-                    >
-                      Another One
+                      {Dictionary.defValue(DictionaryService.keys.editor)}
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
@@ -166,7 +119,15 @@ function AdminNavbarLinks(props: RouteComponentProps) {
         >
           <Person />
           <Hidden mdUp implementation="css">
-            <p className={classes.linkText}>Profile</p>
+            <p onClick={() => {
+              if (App.loggedIn) {
+                logout();
+              }
+              props.history.push(ROUTE_LOGIN);
+            }}
+               className={classes.linkText}>
+              {App.loggedIn ? Dictionary.defValue(DictionaryService.keys.logout) : Dictionary.defValue(DictionaryService.keys.login)}
+            </p>
           </Hidden>
         </IconButton>
         <Poppers
@@ -201,7 +162,7 @@ function AdminNavbarLinks(props: RouteComponentProps) {
                       }}
                       className={dropdownClasses.dropdownItem}
                     >
-                      {App.loggedIn ? "Logout" : "Login"}
+                      {App.loggedIn ? Dictionary.defValue(DictionaryService.keys.logout) : Dictionary.defValue(DictionaryService.keys.login)}
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>

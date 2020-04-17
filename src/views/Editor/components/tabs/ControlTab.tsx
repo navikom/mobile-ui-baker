@@ -16,6 +16,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
+import Popover from "@material-ui/core/Popover";
 
 import { ControlEnum } from "enums/ControlEnum";
 import EditorViewStore from "views/Editor/store/EditorViewStore";
@@ -28,13 +29,13 @@ import EditorDictionary from "views/Editor/store/EditorDictionary";
 import { TABS_HEIGHT } from "models/Constants";
 import ControlActions from "views/Editor/components/tabs/ControlActions";
 import TextInput from "components/CustomInput/TextInput";
+import DialogAlert from "components/Dialog/DialogAlert";
 import { App } from "models/App";
 import { blackOpacity, primaryOpacity } from "assets/jss/material-dashboard-react";
 import { SharedControls } from "models/Project/ControlsStore";
 import { SharedComponents } from "models/Project/SharedComponentsStore";
 import { CreateFromInstance } from "models/Control/ControlStores";
 import { OwnComponents } from "models/Project/OwnComponentsStore";
-import Popover from "@material-ui/core/Popover";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -68,29 +69,40 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ControlTab: React.FC<IEditorTabsProps> = ({ dictionary, deleteControl }) => {
+interface ControlTabProps extends IEditorTabsProps {}
+
+const ControlTab: React.FC<ControlTabProps> = (
+  { dictionary,
+    selectedControl,
+    selectControl,
+    deleteControl }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const [control, selectControl] = React.useState<IControl | null>(null);
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const classes = useStyles();
   const keys = Object.keys(EditorViewStore.CONTROLS) as (keyof typeof ControlEnum)[];
   const open = Boolean(anchorEl);
-  const isAdmin = App.user && App.user.isAdmin;
+  const isAdmin = App.isAdmin;
 
   const handleMenu = (control: IControl) => (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
-    selectControl(control);
+    selectControl && selectControl(control);
   };
+
+  const handleDialogClose = () => setOpenDialog(false);
 
   const handleClose = () => {
     setAnchorEl(null);
-    selectControl(null);
   };
 
   const handleDelete = () => {
-    // todo show alert before delete
-    // deleteControl && control && deleteControl(control);
+    setOpenDialog(true);
     handleClose();
   };
+
+  const title = selectedControl && selectedControl.instance && selectedControl.instance.type ? ["control", "component"][selectedControl.instance.type] : "control";
+
+  const dialogContent =
+    dictionary!.defValue(EditorDictionary.keys.deleteWarning, `${dictionary!.value(title)} "${selectedControl && selectedControl.title}"`);
 
   return (
     <div>
@@ -121,7 +133,7 @@ const ControlTab: React.FC<IEditorTabsProps> = ({ dictionary, deleteControl }) =
       <div className={classes.container}>
         {
           SharedComponents.items.map((instance, i) => {
-            const control = CreateFromInstance(instance)
+            const control = CreateFromInstance(instance);
             return <ControlTabItem key={i.toString()} control={control} handleMenu={isAdmin ? handleMenu(control) : () => {}}  />
           })
         }
@@ -158,6 +170,18 @@ const ControlTab: React.FC<IEditorTabsProps> = ({ dictionary, deleteControl }) =
          <Delete />
        </IconButton>
       </Popover>
+      <DialogAlert
+        open={openDialog}
+        handleClose={handleDialogClose}
+        title={`${dictionary!.defValue(EditorDictionary.keys.delete)} ${dictionary!.defValue(EditorDictionary.keys.action)}`}
+        content={dialogContent}
+        okTitle={dictionary!.defValue(EditorDictionary.keys.yes)}
+        cancelTitle={dictionary!.defValue(EditorDictionary.keys.no)}
+        onOk={() => {
+          deleteControl && selectedControl && deleteControl(selectedControl);
+        }}
+        onCancel={() => selectControl && selectControl()}
+      />
     </div>
   )
 };
@@ -218,10 +242,10 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           </IconButton>
         </Tooltip>
         {
-          App.user && App.user.isAdmin && (
+          App.isAdmin && (
             <Tooltip
               title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.control)}`}>
-              <IconButton size="small" onClick={() => saveControl(control!)}>
+              <IconButton size="small" onClick={() => saveControl(control!)} disabled={control!.saving}>
                 <CloudUpload />
               </IconButton>
             </Tooltip>
@@ -240,7 +264,7 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           <Delete />
         </IconButton>
       </Grid>
-      <div style={{ height: `calc(100% - ${TABS_HEIGHT + 28}px)`, overflow: "auto" }}>
+      <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 10}px)`, overflow: "auto" }}>
         <CSSProperties control={control as IControl} dictionary={dictionary} />
         <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
       </div>
@@ -258,14 +282,31 @@ const Control: React.FC<IEditorTabsProps> = (
     isSelected,
     saveControl,
     saveComponent,
-    screens
+    screens,
+    deleteControl
   }
 ) => {
+  const [element, setElement] = React.useState<IControl | undefined>();
+
+  const deleteElement = () => {
+    console.log("Delete control", element);
+    deleteControl && element && deleteControl(element);
+    setElement(undefined);
+  };
+
+  const selectElement = (element?: IControl) => {
+    setElement(element);
+  };
+
   return (
     <div style={{ height: "100%" }}>
       {
         selectedControl === undefined ?
-          <ControlTab dictionary={dictionary} /> :
+          <ControlTab
+            selectedControl={element}
+            selectControl={selectElement}
+            deleteControl={deleteElement}
+            dictionary={dictionary} /> :
           <ControlDetails
             saveControl={saveControl as (control: IControl) => void}
             saveComponent={saveComponent as (control: IControl) => void}

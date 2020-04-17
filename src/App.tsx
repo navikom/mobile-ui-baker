@@ -18,6 +18,23 @@ import "assets/css/material-dashboard-react.css";
 
 const hist = createBrowserHistory();
 
+const prevHistoryPush = hist.push;
+let lastLocation = hist.location;
+
+hist.listen(location => {
+  lastLocation = location;
+});
+hist.push = (pathname: any, state: {} = {}) => {
+  if (
+    lastLocation === null ||
+    pathname !==
+    lastLocation.pathname + lastLocation.search + lastLocation.hash ||
+    JSON.stringify(state) !== JSON.stringify(lastLocation.state)
+  ) {
+    prevHistoryPush(pathname, state);
+  }
+};
+
 AppStore.setHistory(hist);
 AppStore.start();
 

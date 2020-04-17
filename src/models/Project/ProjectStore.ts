@@ -1,11 +1,12 @@
 import { action, computed, IObservableArray, observable } from "mobx";
-import IProject, { IProjectVersion } from "interfaces/IProject";
+import IProject, { IProjectData, IProjectJSON, IProjectVersion } from "interfaces/IProject";
 import AccessEnum from "enums/AccessEnum";
 import ProjectEnum from "enums/ProjectEnum";
 import { IUser } from "interfaces/IUser";
 import { IImage } from "interfaces/IImage";
 import ProjectVersionStore from "models/Project/ProjectVersionStore";
-import IControl from "interfaces/IControl";
+import { ImageStore } from "models/Image/ImageStore";
+import { Users } from "models/User/UsersStore";
 
 export default class ProjectStore implements IProject {
   createdAt: Date = new Date();
@@ -28,12 +29,24 @@ export default class ProjectStore implements IProject {
     return this.versions[0];
   }
 
+  @computed get preview() {
+    return this.images[0] && this.images[0].path(this.userId);
+  }
+
+  @computed get previewSize() {
+    const image = this.images[0];
+    return image && {width: (image.width || 1) * .5, height: (image.height || 1) * .5};
+  }
+
   get JSON() {
-    return {
+    const object: IProjectJSON = {
+      price: this.price,
       title: this.title,
       versionId: this.version.versionId,
       data: this.version.data
-    } as {title: string, data: IControl, versionId: number}
+    };
+    this.description && (object.description = this.description);
+    return object;
   }
 
   constructor(type: ProjectEnum, userId: number) {
@@ -47,11 +60,17 @@ export default class ProjectStore implements IProject {
     model.updatedAt && (this.updatedAt = model.updatedAt);
     model.isBuyer !== undefined && (this.isBuyer = model.isBuyer);
     model.description && (this.description = model.description);
-    model.images && (this.images.replace(model.images));
+    model.images &&
+    (this.images.replace(
+      model.images.map(image => ImageStore.from(image))
+        .sort((im1, im2) => im1.ProjectsImages!.sorting - im2.ProjectsImages!.sorting)
+      )
+    );
     model.price !== undefined && (this.price = model.price);
     model.tags && (this.tags = model.tags);
     model.title && (this.title = model.title);
     model.userId && (this.userId = model.userId);
+    model.owner && (this.owner = Users.getOrCreate({...model.owner, userId: this.userId}));
     return this;
   }
 

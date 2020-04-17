@@ -22,6 +22,7 @@ import { mainNavRoutes, mainNavRoutesLoggedIn } from "routes";
 import useStyles from "assets/jss/material-dashboard-react/components/headerStyle";
 import { Dictionary } from "services/Dictionary/Dictionary";
 import { App } from "models/App";
+import { observer } from "mobx-react-lite";
 
 function nav(props: any, classes: any) {
   return (App.loggedIn ? mainNavRoutesLoggedIn : mainNavRoutes).map((route: IRoute, i: number) => {
@@ -89,4 +90,4 @@ Header.propTypes = {
   color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger"])
 };
 
-export default Header;
+export default observer(Header);

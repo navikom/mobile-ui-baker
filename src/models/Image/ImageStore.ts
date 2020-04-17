@@ -1,24 +1,33 @@
-import { IImage } from "interfaces/IImage";
-import { computed, observable } from "mobx";
-import { Settings } from "models/Settings";
+import { computed } from "mobx";
+import { IImage, IProjectsImages } from "interfaces/IImage";
+import settings from "config/server";
 
 export class ImageStore implements IImage {
   imageId: number;
+  width?: number;
+  height?: number;
+  ProjectsImages?: IProjectsImages;
 
-  path(width = 300): string {
+  path(userId: number): string {
     return computed(
       () =>
-        `${Settings.cloudinaryPath}/image/upload/c_scale,h_${width}/${
-          Settings.cloudinaryFolder
-        }/${this.imageId}`
+        `${settings.domain}/image/${userId}/${this.imageId}`
     ).get();
   }
 
-  constructor(imageId: number) {
+  constructor(
+    {imageId, width, height, ProjectsImages}: IImage) {
     this.imageId = imageId;
+    this.width = width;
+    this.height = height;
+    this.ProjectsImages = ProjectsImages;
   }
 
-  static from(imageId: number) {
-    return new ImageStore(imageId);
+  static from(model: IImage) {
+    return new ImageStore(model);
+  }
+
+  setSort(sort: number) {
+    this.ProjectsImages!.sorting = sort;
   }
 }
