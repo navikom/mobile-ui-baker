@@ -16,8 +16,6 @@ import { Roles } from "models/Role/RolesStore";
 import { Events } from "models/Event/EventsStore";
 import { Regions } from "models/Region/RegionsStore";
 import CampaignViewStore from "views/Campaigns/store/CampaignViewStore";
-import { OwnProjects } from "models/Project/OwnProjectsStore";
-import { OwnComponents } from "models/Project/OwnComponentsStore";
 
 let debug = false;
 
@@ -79,8 +77,6 @@ export class AppStore implements IFlow {
 
   clear() {
     Events.clear();
-    OwnProjects.clear();
-    OwnComponents.clear();
   }
 
   ifUserChanged() {

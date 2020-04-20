@@ -26,7 +26,7 @@ interface Props {
   /**
    * Register callback for focus event
    */
-  onClick?: () => void;
+  onClick?: (e: any) => void;
 
   /**
    * Read only mode. Default: false

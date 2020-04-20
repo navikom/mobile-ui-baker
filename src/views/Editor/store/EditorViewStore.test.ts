@@ -3,7 +3,6 @@ import {FetchMock} from "jest-fetch-mock";
 import EditorViewStore from "views/Editor/store/EditorViewStore";
 import { ControlEnum } from "enums/ControlEnum";
 import { DropEnum } from "enums/DropEnum";
-import ControlStore from "ControlStore.ts";
 import CreateControl from "models/Control/ControlStores";
 import { Auth } from "models/Auth/Auth";
 import { App } from "models/App";
@@ -21,6 +20,7 @@ const postResponseSuccess = JSON.stringify({success: true});
 describe("EditorViewStore", () => {
   let store: EditorViewStore;
   beforeEach(() => {
+    jest.clearAllTimers();
     fetchMock.resetMocks();
     store = new EditorViewStore();
     store.addItem(CreateControl(ControlEnum.Grid));
@@ -250,7 +250,7 @@ describe("EditorViewStore", () => {
   it("Save new project fail if user logged out", () => {
     expect(store.error).toBe(null);
     store.saveProject();
-    expect(store.error).toBe("Please, login to perform this");
+    expect(store.error).toBe("Project save error: Please, login to perform this");
   });
 
   it("The project manipulation", async () => {
@@ -278,7 +278,7 @@ describe("EditorViewStore", () => {
     expect(App.loggedIn).toBeFalsy();
     expect(store.error).toBe(null);
     await store.saveProject();
-    expect(store.error).toBe("Please, login to perform this");
+    expect(store.error).toBe("Title 2 save error: Please, login to perform this");
   });
 
   it("Open the new project if requested project does not exists", async () => {
@@ -304,12 +304,18 @@ describe("EditorViewStore", () => {
 
   it("The component manipulation", async () => {
     // Save new component adds instance (project with Component type)
-    fetchMock.mockResponses(
-      [JSON.stringify(users.login), responseHeader],
+    fetchMock.mockResponseOnce(
+      JSON.stringify(users.login), responseHeader,
     );
     await Auth.login("test", "test");
     expect(App.loggedIn).toBe(true);
     const control = store.currentScreen.children[0];
+
+    document.body.innerHTML =
+      '<div>' +
+      `  <span id="capture_${control.id}" />` +
+      '</div>';
+
     expect(control.instance).toBeUndefined();
     fetchMock.mockResponseOnce(JSON.stringify(components.component1), responseHeader);
     await store.saveComponent(control);
@@ -332,7 +338,7 @@ describe("EditorViewStore", () => {
     expect(App.loggedIn).toBeFalsy();
     expect(store.error).toBe(null);
     await store.saveControl(control);
-    expect(store.error).toBe("Please, login to perform this");
+    expect(store.error).toBe("Grid save error: Please, login to perform this");
   });
 
 
@@ -344,6 +350,12 @@ describe("EditorViewStore", () => {
     await Auth.login("test", "test");
     expect(App.loggedIn).toBe(true);
     const control = store.currentScreen.children[0];
+
+    document.body.innerHTML =
+      '<div>' +
+      `  <span id="capture_${control.id}" />` +
+      '</div>';
+
     expect(control.instance).toBeUndefined();
     fetchMock.mockResponseOnce(JSON.stringify(controls.control3), responseHeader);
     await store.saveControl(control);
@@ -366,7 +378,7 @@ describe("EditorViewStore", () => {
     expect(App.loggedIn).toBeFalsy();
     expect(store.error).toBe(null);
     await store.saveControl(control);
-    expect(store.error).toBe("Please, login to perform this");
+    expect(store.error).toBe("Grid save error: Please, login to perform this");
 
   });
 

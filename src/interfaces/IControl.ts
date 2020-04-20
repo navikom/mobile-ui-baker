@@ -17,10 +17,11 @@ export default interface IControl extends IMovable {
   visible: boolean;
   lockedChildren: boolean;
   toJSON: { [key: string]: any };
-  classes: string[];
-  actions: string[][];
+  classes: IObservableArray<string>;
+  actions: IObservableArray<IObservableArray<string>>;
   instance?: IProject;
   saving: boolean;
+  activeClass(style: string): boolean;
 
   cssProperty(key: string, propName: string): ICSSProperty | undefined;
 
@@ -41,6 +42,8 @@ export default interface IControl extends IMovable {
   addClass(value: string): void;
 
   removeClass(value: string, noHistory?: boolean): void;
+
+  switchClass(style: string): void;
 
   addCSSStyle(noHistory?: boolean): void;
 

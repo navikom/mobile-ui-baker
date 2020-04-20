@@ -50,6 +50,7 @@ export const data = {
   action: "action",
   add: "add",
   delete: "delete",
+  switch: "switch",
   goTo: "go to",
   onPress: "on press",
   navigateTo: "navigate to",

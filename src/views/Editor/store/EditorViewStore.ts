@@ -29,7 +29,7 @@ import { Mode } from "enums/ModeEnum";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { App } from "models/App";
 import { ErrorHandler } from "utils/ErrorHandler";
-import { ERROR_USER_DID_NOT_LOGIN, ROUTE_EDITOR } from "models/Constants";
+import { ERROR_ELEMENT_DOES_NOT_EXIST, ERROR_USER_DID_NOT_LOGIN, ROUTE_EDITOR } from "models/Constants";
 import ControlStore from "models/Control/ControlStore";
 import { SharedControls } from "models/Project/ControlsStore";
 import { OwnComponents } from "models/Project/OwnComponentsStore";
@@ -160,14 +160,18 @@ class EditorViewStore extends Errors {
   private makeScreenshot(control: IControl) {
     const element = document.querySelector("#capture_" + control.id) as HTMLElement;
     return new Promise((resolve, reject) => {
-      element && html2canvas(element).then(canvas => {
-        canvas.toBlob((blob) => {
-          const file = new File([blob as BlobPart], "capture.png", {
-            type: 'image/png'
+      if(element) {
+        html2canvas(element).then(canvas => {
+          canvas.toBlob((blob) => {
+            const file = new File([blob as BlobPart], "capture.png", {
+              type: 'image/png'
+            });
+            resolve(file);
           });
-          resolve(file);
         });
-      });
+      } else {
+        reject(new ErrorHandler(ERROR_ELEMENT_DOES_NOT_EXIST));
+      }
     });
   };
 

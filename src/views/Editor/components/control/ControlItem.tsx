@@ -104,6 +104,11 @@ const ElementComponent: React.FC<ElementProps> =
         }
       }
 
+      const emptyControl: React.CSSProperties = {};
+      if(!control.children.length && control.type === ControlEnum.Grid) {
+        emptyControl.padding = "15px";
+      }
+
       const lock = locked || lockedChildren;
 
       return (
@@ -120,7 +125,7 @@ const ElementComponent: React.FC<ElementProps> =
           }}
           ref={elementRef}
           style={{
-            ...styles, backgroundColor, ...borderStyles, ...(isDragging ? {
+            ...styles, backgroundColor, ...emptyControl, ...borderStyles, ...(isDragging ? {
               position: "absolute",
               top: -1000
             } : {}),

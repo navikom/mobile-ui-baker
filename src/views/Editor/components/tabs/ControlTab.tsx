@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => ({
 
 interface ControlTabProps extends IEditorTabsProps {}
 
-const ControlTab: React.FC<ControlTabProps> = (
+const ControlTabComponent: React.FC<ControlTabProps> = (
   { dictionary,
     selectedControl,
     selectControl,
@@ -185,6 +185,8 @@ const ControlTab: React.FC<ControlTabProps> = (
     </div>
   )
 };
+
+const ControlTab = observer(ControlTabComponent);
 
 interface ControlDetailsProps {
   selectControl?: (control?: IControl) => void;

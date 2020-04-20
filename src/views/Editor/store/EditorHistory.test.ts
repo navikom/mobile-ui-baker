@@ -2,17 +2,17 @@ import "@testing-library/jest-dom";
 import EditorViewStore from "views/Editor/store/EditorViewStore";
 import GridStore from "models/Control/GridStore";
 import IControl from "interfaces/IControl";
-import ControlStore, { MAIN_CSS_STYLE } from "ControlStore.ts";
 import { ACTION_TOGGLE_STYLE } from "models/Constants";
 import { DropEnum } from "enums/DropEnum";
 import { Mode } from "enums/ModeEnum";
+import ControlStore, { MAIN_CSS_STYLE } from "models/Control/ControlStore";
 
 describe("EditorHistory", () => {
   let store: EditorViewStore, control: IControl;
   beforeEach(() => {
     jest.clearAllTimers();
     ControlStore.clear();
-    store = new EditorViewStore(null);
+    store = new EditorViewStore(undefined);
     store.history.clear();
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
     control = store.currentScreen.children[store.currentScreen.children.length - 1];
@@ -92,7 +92,7 @@ describe("EditorHistory", () => {
     const newName = "New Style";
 
     expect(control.cssStyles.has(oldName)).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(49);
+    expect(control.cssStyles.get(oldName)!.length).toBe(50);
     control.switchEnabled(oldName, "position")();
 
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
@@ -100,7 +100,7 @@ describe("EditorHistory", () => {
     control.renameCSSStyle(oldName, newName);
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(49);
+    expect(control.cssStyles.get(newName)!.length).toBe(50);
 
     control.removeCSSStyle(newName);
     expect(control.cssStyles.has(newName)).toBeFalsy();
@@ -108,12 +108,12 @@ describe("EditorHistory", () => {
     store.history.undo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(49);
+    expect(control.cssStyles.get(newName)!.length).toBe(50);
 
     store.history.undo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(49);
+    expect(control.cssStyles.get(oldName)!.length).toBe(50);
 
     store.history.undo();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeFalsy();
@@ -123,14 +123,14 @@ describe("EditorHistory", () => {
 
     store.history.redo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(49);
+    expect(control.cssStyles.get(oldName)!.length).toBe(50);
 
     store.history.redo();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
     store.history.redo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(49);
+    expect(control.cssStyles.get(newName)!.length).toBe(50);
   });
 
   it("add/remove style records", () => {

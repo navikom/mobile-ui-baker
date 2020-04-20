@@ -69,10 +69,12 @@ const ControlTabItem: React.FC<ControlProps> = (
 
   let style;
   if(control && control.instance) {
+    console.log(11111111, control, control && control.instance);
     style = {
-      background: `no-repeat url(${control.instance.preview})`,
+      backgroundImage: `url(${control.instance.preview})`,
+      backgroundRepeat: "no-repeat",
       backgroundPosition: "center",
-      backgroundSize: "95%",
+      backgroundSize: "90%",
       color: "transparent",
       ...control.instance.previewSize,
       padding: 0

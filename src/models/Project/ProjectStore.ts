@@ -1,5 +1,5 @@
 import { action, computed, IObservableArray, observable } from "mobx";
-import IProject, { IProjectData, IProjectJSON, IProjectVersion } from "interfaces/IProject";
+import IProject, { IProjectJSON, IProjectVersion } from "interfaces/IProject";
 import AccessEnum from "enums/AccessEnum";
 import ProjectEnum from "enums/ProjectEnum";
 import { IUser } from "interfaces/IUser";

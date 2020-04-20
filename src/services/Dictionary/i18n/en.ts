@@ -325,4 +325,5 @@ export default {
   access: "Access",
   price: "Price",
   noProjects: "There are no saved projects",
+  "element-does-not-exist": "Element does not exist"
 };

@@ -28,7 +28,7 @@ const EditorInput: React.FC<EditorInputProps> =
       onClick={(e) => e.stopPropagation()}
       innerRef={ref as unknown as React.RefObject<HTMLElement>}
       className={classes.input}
-      html={html.length > 0 ? html : 'h'}
+      html={html}
       onChange={(e) => onChange(e.target.value)}
       {...rest}
     />

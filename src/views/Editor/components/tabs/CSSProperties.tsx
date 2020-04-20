@@ -6,7 +6,7 @@ import CSSProperty from "views/Editor/components/tabs/CSSProperty";
 import EditorDictionary from "views/Editor/store/EditorDictionary";
 import { ExpansionPanel, makeStyles } from "@material-ui/core";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import { Add, Delete, ExpandMore } from "@material-ui/icons";
+import { Add, CheckCircle, Delete, ExpandMore } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import { blackOpacity } from "assets/jss/material-dashboard-react";
@@ -18,6 +18,7 @@ import EditorInput from "components/CustomInput/EditorInput";
 import IconButton from "@material-ui/core/IconButton";
 import { PROPERTY_EXPANDED } from "models/Control/CSSProperty";
 import { MAIN_CSS_STYLE } from "models/Control/ControlStore";
+import TextInput from "components/CustomInput/TextInput";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,6 +31,10 @@ const useStyles = makeStyles(theme => ({
     },
     paragraph: {
       margin: "4px 0"
+    },
+    input: {
+      backgroundColor: blackOpacity(0.001),
+      textOverflow: "ellipsis",
     }
   })
 );
@@ -122,17 +127,37 @@ const CSSMap: React.FC<CSSMapProps> = ({ control, dictionary }) => {
               {key === MAIN_CSS_STYLE ?
                 <Typography variant="subtitle2">{key}</Typography> :
                 (<Grid container alignItems="center" justify="space-between">
-                  <Grid item xs={11} sm={11} md={11}>
-                    <EditorInput style={{}} html={key} onChange={(e) => control.renameCSSStyle(key, e)} />
+                  <Grid item xs={9} sm={9} md={9}>
+                    <TextInput
+                      fullWidth
+                      className={classes.input}
+                      value={key}
+                      onChange={(e) => control.renameCSSStyle(key, e.currentTarget.value)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
                   </Grid>
-                  <Grid item xs={1} sm={1} md={1}>
-                    <Tooltip
-                      title={`${dictionary.defValue(EditorDictionary.keys.delete)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
-                      placement="top">
-                      <IconButton size="small" onClick={() => control.removeCSSStyle(key)}>
-                        <Delete />
-                      </IconButton>
-                    </Tooltip>
+                  <Grid container item xs={3} sm={3} md={3} justify="flex-end">
+                      <Tooltip
+                        title={`${dictionary.defValue(EditorDictionary.keys.switch)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
+                        placement="top">
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            control.switchClass(key);
+                            e.stopPropagation();
+                          }}
+                          color={control.activeClass(key) ? "primary" : "inherit"}
+                        >
+                          <CheckCircle />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip
+                        title={`${dictionary.defValue(EditorDictionary.keys.delete)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
+                        placement="top">
+                        <IconButton size="small" onClick={() => control.removeCSSStyle(key)}>
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
                   </Grid>
                 </Grid>)}
 

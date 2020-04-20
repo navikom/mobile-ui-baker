@@ -1,7 +1,6 @@
 import "@testing-library/jest-dom";
 import { ControlEnum } from "enums/ControlEnum";
 import CreateControl from "models/Control/ControlStores";
-import ControlStore, { MAIN_CSS_STYLE } from "ControlStore.ts";
 import CSSProperty from "models/Control/CSSProperty";
 import {
   ACTION_NAVIGATE_TO,
@@ -11,6 +10,7 @@ import {
   CSS_VALUE_NUMBER
 } from "models/Constants";
 import IControl from "interfaces/IControl";
+import ControlStore, { MAIN_CSS_STYLE } from "models/Control/ControlStore";
 
 describe("Control", () => {
   it("New Control element will be added to static Classes.controls array", () => {
@@ -27,7 +27,7 @@ describe("Control", () => {
 
   it("New Control element has enabled style 'padding'", () => {
     const grid = CreateControl(ControlEnum.Grid);
-    expect(grid.styles.hasOwnProperty("padding")).toBe(true);
+    expect(grid.styles.hasOwnProperty("padding")).toBe(false);
   });
 
   it("Add new style will add clone of the main style and makes record [control.id]/[styleName]" +
@@ -58,7 +58,7 @@ describe("Control", () => {
   it("Merge styles", () => {
     const grid = CreateControl(ControlEnum.Grid);
     expect(grid.styles.hasOwnProperty("width")).toBeFalsy();
-    expect(grid.styles.hasOwnProperty("padding")).toBeTruthy();
+    expect(grid.styles.hasOwnProperty("padding")).toBeFalsy();
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
     const width = mainStyle![9];
     expect(width.key === "width").toBeTruthy();
@@ -135,7 +135,7 @@ describe("Control", () => {
     background1.setValue("red");
 
     const json = grid.toJSON;
-    expect(json.cssStyles[0][1].length).toBe(4);
+    expect(json.cssStyles[0][1].length).toBe(3);
     expect(json.id === grid.id).toBeTruthy();
     ControlStore.removeItem(grid);
     const grid2 = CreateControl(json.type, json as IControl);

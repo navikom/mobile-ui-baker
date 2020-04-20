@@ -80,7 +80,6 @@ export default class ProjectsStore extends Pagination<IProject> {
       } else {
         data = await api(Apis.Main)[method].update(project.projectId, project.JSON);
       }
-
       project.update(data).updateVersions(data.versions);
     }
   }
