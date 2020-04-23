@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
-import PropTypes from "prop-types";
+import { RouteComponentProps } from "react-router-dom";
+import { History } from "history";
+import { observer } from "mobx-react-lite";
 
 // @material-ui/core components
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Hidden from "@material-ui/core/Hidden";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu, { MenuProps } from '@material-ui/core/Menu';
+import { withStyles } from "@material-ui/core";
+import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
 
-// @material-ui/icons
 // core components
 import Button from "components/CustomButtons/Button.tsx";
 
@@ -17,14 +23,39 @@ import { IRoute } from "interfaces/IRoute";
 
 // model
 import * as Constants from "models/Constants.ts";
+import { App } from "models/App";
 
 import { mainNavRoutes, mainNavRoutesLoggedIn } from "routes";
 import useStyles from "assets/jss/material-dashboard-react/components/headerStyle";
 import { Dictionary } from "services/Dictionary/Dictionary";
-import { App } from "models/App";
-import { observer } from "mobx-react-lite";
 
-function nav(props: any, classes: any) {
+import { whiteColor } from "assets/jss/material-dashboard-react";
+
+
+const StyledMenu = withStyles({
+  paper: {},
+})((props: MenuProps) => (
+  <Menu
+    variant="menu"
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'center',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'center',
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {},
+}))(MenuItem);
+
+function nav(history: History, classes: any) {
   return (App.loggedIn ? mainNavRoutesLoggedIn : mainNavRoutes).map((route: IRoute, i: number) => {
     if(!route.path) return null;
     return (
@@ -32,7 +63,7 @@ function nav(props: any, classes: any) {
         key={i}
         color="transparent"
         className={classes.link}
-        onClick={() => props.history.push(route.auth ? `${route.layout}${route.path}` : route.path)}
+        onClick={() => history.push((route.auth ? `${route.layout}${route.path}` : route.path) as string)}
       >
         {Dictionary.value(route.name).toUpperCase()}
       </Button>
@@ -40,21 +71,46 @@ function nav(props: any, classes: any) {
   });
 }
 
-function Header({ ...props }) {
+function navMobile(history: History, cb: () => void) {
+  return (App.loggedIn ? mainNavRoutesLoggedIn : mainNavRoutes).map((route: IRoute, i: number) => {
+    if(!route.path) return null;
+    return (
+      <StyledMenuItem
+        key={i.toString()}
+        onClick={() => {
+          cb();
+          history.push((route.auth ? `${route.layout}${route.path}` : route.path) as string)
+        }}
+      >
+        <ListItemText primary={Dictionary.value(route.name)} />
+      </StyledMenuItem>
+    );
+  });
+}
+
+interface HeaderProps extends RouteComponentProps {
+  color: "primary" | "info" | "success" | "warning" | "danger";
+}
+
+const Header: React.FC<HeaderProps> = ({ color, history }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   function makeBrand() {
     const name = "MUIDITOR";
-    // props.routes.map((prop, key) => {
-    //   if (prop.url === props.location.pathname) {
-    //     name = props.rtlActive ? prop.rtlName : prop.name;
-    //   }
-    //   return null;
-    // });
     return name;
   }
+
   const classes = useStyles();
-  // const { color, history } = props;
   const appBarClasses = classNames({
-    [" " + classes[props.color as keyof typeof classes]]: props.color
+    [" " + classes[color as keyof typeof classes]]: color
   });
   return (
     <AppBar className={classes.appBar + appBarClasses}>
@@ -64,30 +120,35 @@ function Header({ ...props }) {
           <Button
             color="transparent"
             className={classes.title}
-            onClick={() => props.history.push(Constants.ROUTE_ROOT)}
+            onClick={() => history.push(Constants.ROUTE_ROOT)}
           >
             {makeBrand()}
           </Button>
         </div>
-        <Hidden smDown implementation="css">
-          {nav(props, classes)}
+        <Hidden smDown>
+          {nav(history, classes)}
         </Hidden>
-        <Hidden mdUp implementation="css">
+        <Hidden mdUp>
           <IconButton
-            color="inherit"
+            style={{color: whiteColor}}
             aria-label="open drawer"
-            onClick={props.handleDrawerToggle}
+            onClick={handleClick}
           >
-            <div />
+            <MenuIcon />
           </IconButton>
         </Hidden>
+        <StyledMenu
+          id="customized-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          {navMobile(history, handleClose)}
+        </StyledMenu>
       </Toolbar>
     </AppBar>
   );
-}
-
-Header.propTypes = {
-  color: PropTypes.oneOf(["primary", "info", "success", "warning", "danger"])
 };
 
 export default observer(Header);

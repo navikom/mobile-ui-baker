@@ -7,6 +7,8 @@ import Panel from "layouts/Panel";
 import Main from "layouts/Main";
 import Editor from "layouts/Editor";
 import Projects from "layouts/Projects";
+import Empty from "layouts/Empty";
+import Viewer from "layouts/Viewer";
 
 import theme from "assets/theme";
 
@@ -52,8 +54,16 @@ function App() {
             component={WaitingComponent(Main)}
           />
           <Route
+            path={Constants.ROUTE_RESET}
+            component={WaitingComponent(Empty)}
+          />
+          <Route
             path={Constants.ROUTE_EDITOR}
             component={WaitingComponent(Editor)}
+          />
+          <Route
+            path={Constants.ROUTE_VIEWER}
+            component={WaitingComponent(Viewer)}
           />
           <Route
             path={Constants.ROUTE_PROJECTS}

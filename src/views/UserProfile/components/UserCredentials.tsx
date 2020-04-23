@@ -14,11 +14,11 @@ import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 // core components
 import CustomInput from "components/CustomInput/CustomInput";
 import {
-  PasswordType,
   UserDetails
 } from "views/UserProfile/components/UserDetailsStore";
 import ProgressButton from "components/CustomButtons/ProgressButton";
 import useStyles from "assets/jss/material-dashboard-react/components/inputFieldStyle";
+import { PasswordType } from "models/User/ChangePasswordStore";
 
 const extraStyles = makeStyles((theme: Theme) =>
   createStyles({

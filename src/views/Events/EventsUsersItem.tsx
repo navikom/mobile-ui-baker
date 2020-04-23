@@ -6,7 +6,6 @@ import { when } from "mobx";
 // @material-ui/core components
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import {
-  Apps,
   SubtitlesOutlined,
   Devices,
   InfoOutlined

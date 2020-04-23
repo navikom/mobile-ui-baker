@@ -14,7 +14,6 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import IControl from "interfaces/IControl";
-import EditorInput from "components/CustomInput/EditorInput";
 import IconButton from "@material-ui/core/IconButton";
 import { PROPERTY_EXPANDED } from "models/Control/CSSProperty";
 import { MAIN_CSS_STYLE } from "models/Control/ControlStore";

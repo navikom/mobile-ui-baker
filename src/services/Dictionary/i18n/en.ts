@@ -325,5 +325,10 @@ export default {
   access: "Access",
   price: "Price",
   noProjects: "There are no saved projects",
-  "element-does-not-exist": "Element does not exist"
+  "element-does-not-exist": "Element does not exist",
+  sendEmail: "Send Email",
+  passwordRecovery: "Password recovery",
+  checkYourEmailBox: "We've sent you an email to recover a password",
+  newPasswordWasSaved: "New password was saved successfully",
+  resetPassword: "Reset Password"
 };

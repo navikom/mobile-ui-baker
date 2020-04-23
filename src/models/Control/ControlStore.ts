@@ -1,12 +1,12 @@
-import React from "react";
-import { action, computed, IObservableArray, observable } from "mobx";
-import IControl from "interfaces/IControl";
-import { ControlEnum } from "enums/ControlEnum";
-import { DropEnum } from "enums/DropEnum";
-import Movable from "models/Movable";
-import { ErrorHandler } from "utils/ErrorHandler";
-import ICSSProperty from "interfaces/ICSSProperty";
-import CSSProperty, { CSS_SET_VALUE, CSS_SWITCH_ENABLED, CSS_SWITCH_EXPANDED } from "models/Control/CSSProperty";
+import React from 'react';
+import { action, computed, IObservableArray, observable } from 'mobx';
+import IControl from 'interfaces/IControl';
+import { ControlEnum } from 'enums/ControlEnum';
+import { DropEnum } from 'enums/DropEnum';
+import Movable from 'models/Movable';
+import { ErrorHandler } from 'utils/ErrorHandler';
+import ICSSProperty from 'interfaces/ICSSProperty';
+import CSSProperty, { CSS_SET_VALUE, CSS_SWITCH_ENABLED, CSS_SWITCH_EXPANDED } from 'models/Control/CSSProperty';
 import {
   ACTION_DISABLE_STYLE,
   ACTION_ENABLE_STYLE,
@@ -21,7 +21,7 @@ import {
   CSS_VALUE_COLOR,
   CSS_VALUE_NUMBER,
   CSS_VALUE_SELECT
-} from "models/Constants";
+} from 'models/Constants';
 import EditorHistory, {
   ControlStatic,
   HIST_ADD_ACTION,
@@ -33,111 +33,113 @@ import EditorHistory, {
   HIST_REMOVE_ACTION,
   HIST_REMOVE_CSS_STYLE,
   HIST_RENAME_CSS_STYLE
-} from "views/Editor/store/EditorHistory";
-import IHistory from "interfaces/IHistory";
-import IProject from "interfaces/IProject";
-import { boxShadow } from "assets/jss/material-dashboard-react";
+} from 'views/Editor/store/EditorHistory';
+import IHistory from 'interfaces/IHistory';
+import IProject from 'interfaces/IProject';
+import { boxShadow } from 'assets/jss/material-dashboard-react';
 
-export const MAIN_CSS_STYLE = "Main";
+export const MAIN_CSS_STYLE = 'Main';
 
 type ModelType = IControl;
-export type ModelCtor<M extends IControl = IControl> = (new (id: string, styles?: Map<string, IObservableArray<ICSSProperty>>) => M) & ModelType;
+export type ModelCtor<M extends IControl = IControl> =
+  (new (id: string, styles?: Map<string, IObservableArray<ICSSProperty>>) => M)
+  & ModelType;
 
 const styles = [
-  new CSSProperty("position", "static", "static", CSS_CAT_ALIGN, false, CSS_VALUE_SELECT)
-    .setOptions(["static", "relative", "absolute", "sticky"])
-    .setDescription(["positionDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/position"]),
-  new CSSProperty("top", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("bottom", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("left", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("right", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["position", "absolute"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("backgroundColor", "#ffffff", "#ffffff", CSS_CAT_BACKGROUND, false,
+  new CSSProperty('position', 'static', 'static', CSS_CAT_ALIGN, false, CSS_VALUE_SELECT)
+    .setOptions(['static', 'relative', 'absolute', 'sticky'])
+    .setDescription(['positionDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/position']),
+  new CSSProperty('top', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('bottom', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('left', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('right', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('backgroundColor', '#ffffff', '#ffffff', CSS_CAT_BACKGROUND, false,
     CSS_VALUE_COLOR),
-  new CSSProperty("backgroundImage",
-    "https://res.cloudinary.com/dnfk5l75j/image/upload/v1579263129/email-editor/v2/placeholder_01.png",
-    "https://res.cloudinary.com/dnfk5l75j/image/upload/v1579263129/email-editor/v2/placeholder_01.png", CSS_CAT_BACKGROUND)
-    .makeExpandable().setInjectable("url($)")
-    .setDescription(["backgroundImageDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/background-image"]),
-  new CSSProperty("backgroundSize", "", "", CSS_CAT_BACKGROUND).setShowWhen(["backgroundImage", "expanded"])
-    .setDescription(["backgroundSizeDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/background-size"]),
-  new CSSProperty("backgroundRepeat", "no-repeat", "no-repeat", CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
-    .setShowWhen(["backgroundImage", "expanded"])
-    .setOptions(["no-repeat", "repeat", "repeat-x", "repeat-y", "space", "round", "repeat space", "repeat repeat", "round space", "no-repeat round"])
-    .setDescription(["backgroundSizeDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/background-size"]),
-  new CSSProperty("width", 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("height", 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("minWidth", 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("minHeight", 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("maxWidth", 40, 40, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("maxHeight", 20, 20, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("padding", "15px", 0, CSS_CAT_ALIGN_CHILDREN)
+  new CSSProperty('backgroundImage',
+    'https://res.cloudinary.com/dnfk5l75j/image/upload/v1579263129/email-editor/v2/placeholder_01.png',
+    'https://res.cloudinary.com/dnfk5l75j/image/upload/v1579263129/email-editor/v2/placeholder_01.png', CSS_CAT_BACKGROUND)
+    .makeExpandable().setInjectable('url($)')
+    .setDescription(['backgroundImageDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-image']),
+  new CSSProperty('backgroundSize', '', '', CSS_CAT_BACKGROUND).setShowWhen(['backgroundImage', 'expanded'])
+    .setDescription(['backgroundSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size']),
+  new CSSProperty('backgroundRepeat', 'no-repeat', 'no-repeat', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setShowWhen(['backgroundImage', 'expanded'])
+    .setOptions(['no-repeat', 'repeat', 'repeat-x', 'repeat-y', 'space', 'round', 'repeat space', 'repeat repeat', 'round space', 'no-repeat round'])
+    .setDescription(['backgroundSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size']),
+  new CSSProperty('width', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
+    .setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('height', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
+    .setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('minWidth', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
+    .setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('minHeight', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
+    .setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('maxWidth', 40, 40, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
+    .setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('maxHeight', 20, 20, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
+    .setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('padding', '15px', 0, CSS_CAT_ALIGN_CHILDREN)
     .makeExpandable(),
-  new CSSProperty("paddingTop", 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["padding", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("paddingRight", 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["padding", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("paddingBottom", 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["padding", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("paddingLeft", 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["padding", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("margin", 0, 0, CSS_CAT_ALIGN).makeExpandable(),
-  new CSSProperty("marginTop", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["margin", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("marginRight", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["margin", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("marginBottom", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["margin", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("marginLeft", 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["margin", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("border", "1px solid rgba(0,0,0,0.2)", "1px solid rgba(0,0,0,0.2)", CSS_CAT_BORDERS)
-    .makeExpandable().setDescription(["borderDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/border"]),
-  new CSSProperty("borderTop", "1px solid rgba(0,0,0,0.2)", "1px solid rgba(0,0,0,0.2)", CSS_CAT_BORDERS)
-    .setShowWhen(["border", "expanded"]),
-  new CSSProperty("borderRight", "1px solid rgba(0,0,0,0.2)", "1px solid rgba(0,0,0,0.2)", CSS_CAT_BORDERS)
-    .setShowWhen(["border", "expanded"]),
-  new CSSProperty("borderBottom", "1px solid rgba(0,0,0,0.2)", "1px solid rgba(0,0,0,0.2)", CSS_CAT_BORDERS)
-    .setShowWhen(["border", "expanded"]),
-  new CSSProperty("borderLeft", "1px solid rgba(0,0,0,0.2)", "1px solid rgba(0,0,0,0.2)", CSS_CAT_BORDERS)
-    .setShowWhen(["border", "expanded"]),
-  new CSSProperty("borderRadius", 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .makeExpandable().setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("borderTopLeftRadius", 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["borderRadius", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("borderTopRightRadius", 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["borderRadius", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("borderBottomRightRadius", 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["borderRadius", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("borderBottomLeftRadius", 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(["borderRadius", "expanded"]).setUnits("px", ["px", "%", "rem"]),
-  new CSSProperty("transform", "rotate(3turn)", "rotate(3turn)", CSS_CAT_ANIMATIONS)
-    .setDescription(["transformDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transform"]),
-  new CSSProperty("transition", "all .5s ease-out", "all .5s ease-out", CSS_CAT_ANIMATIONS)
+  new CSSProperty('paddingTop', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('paddingRight', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('paddingBottom', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('paddingLeft', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('margin', 0, 0, CSS_CAT_ALIGN).makeExpandable(),
+  new CSSProperty('marginTop', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('marginRight', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('marginBottom', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('marginLeft', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('border', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+    .makeExpandable().setDescription(['borderDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/border']),
+  new CSSProperty('borderTop', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+    .setShowWhen(['border', 'expanded']),
+  new CSSProperty('borderRight', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+    .setShowWhen(['border', 'expanded']),
+  new CSSProperty('borderBottom', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+    .setShowWhen(['border', 'expanded']),
+  new CSSProperty('borderLeft', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+    .setShowWhen(['border', 'expanded']),
+  new CSSProperty('borderRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
+    .makeExpandable().setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('borderTopLeftRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('borderTopRightRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('borderBottomRightRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('borderBottomLeftRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('transform', 'rotate(3turn)', 'rotate(3turn)', CSS_CAT_ANIMATIONS)
+    .setDescription(['transformDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform']),
+  new CSSProperty('transition', 'all .5s ease-out', 'all .5s ease-out', CSS_CAT_ANIMATIONS)
     .makeExpandable()
-    .setDescription(["transitionDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transition"]),
-  new CSSProperty("transitionProperty", "all", "all", CSS_CAT_ANIMATIONS)
-    .setDescription(["transitionPropertyDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transition-property"])
-    .setShowWhen(["transition", "expanded"]),
-  new CSSProperty("transitionDuration", 1, 1, CSS_CAT_ANIMATIONS, false, CSS_VALUE_NUMBER)
-    .setDescription(["transitionDurationDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transition-duration"])
-    .setShowWhen(["transition", "expanded"]).setUnits("s", ["s", "ms"]),
-  new CSSProperty("transitionTimingFunction", "ease-in", "ease-in", CSS_CAT_ANIMATIONS)
-    .setDescription(["transitionTimingDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function"])
-    .setShowWhen(["transition", "expanded"]),
-  new CSSProperty("transitionDelay", 0.5, 0.5, CSS_CAT_ANIMATIONS, false, CSS_VALUE_NUMBER)
-    .setDescription(["transitionDelayDescription", "https://developer.mozilla.org/en-US/docs/Web/CSS/transition-delay"])
-    .setShowWhen(["transition", "expanded"]).setUnits("s", ["s", "ms"]),
-  new CSSProperty("boxShadow", boxShadow.boxShadow, boxShadow.boxShadow, CSS_CAT_BACKGROUND)
-    .setDescription(["boxShadow", "https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow"]),
+    .setDescription(['transitionDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition']),
+  new CSSProperty('transitionProperty', 'all', 'all', CSS_CAT_ANIMATIONS)
+    .setDescription(['transitionPropertyDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition-property'])
+    .setShowWhen(['transition', 'expanded']),
+  new CSSProperty('transitionDuration', 1, 1, CSS_CAT_ANIMATIONS, false, CSS_VALUE_NUMBER)
+    .setDescription(['transitionDurationDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition-duration'])
+    .setShowWhen(['transition', 'expanded']).setUnits('s', ['s', 'ms']),
+  new CSSProperty('transitionTimingFunction', 'ease-in', 'ease-in', CSS_CAT_ANIMATIONS)
+    .setDescription(['transitionTimingDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function'])
+    .setShowWhen(['transition', 'expanded']),
+  new CSSProperty('transitionDelay', 0.5, 0.5, CSS_CAT_ANIMATIONS, false, CSS_VALUE_NUMBER)
+    .setDescription(['transitionDelayDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition-delay'])
+    .setShowWhen(['transition', 'expanded']).setUnits('s', ['s', 'ms']),
+  new CSSProperty('boxShadow', boxShadow.boxShadow, boxShadow.boxShadow, CSS_CAT_BACKGROUND)
+    .setDescription(['boxShadow', 'https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow']),
 ];
 
 class ControlStore extends Movable implements IControl {
@@ -145,7 +147,7 @@ class ControlStore extends Movable implements IControl {
   id: string;
   readonly allowChildren: boolean;
   static controls: IControl[] = [];
-  static actions: string[] = ["onPress"];
+  static actions: string[] = ['onPress'];
   @observable static history: IHistory;
   @observable static classes: IObservableArray<string> = observable([]);
   @observable title: string;
@@ -194,7 +196,7 @@ class ControlStore extends Movable implements IControl {
       })
         .forEach((prop) => {
           // @ts-ignore
-          styles[prop.key] = prop.inject ? prop.inject.replace("$", prop.value) : prop.valueWithUnit;
+          styles[prop.key] = prop.inject ? prop.inject.replace('$', prop.value) : prop.valueWithUnit;
         });
     }
     return styles;
@@ -219,7 +221,7 @@ class ControlStore extends Movable implements IControl {
     ]);
   }
 
-  setInstance(project:IProject) {
+  setInstance(project: IProject) {
     this.instance = project;
   }
 
@@ -259,7 +261,7 @@ class ControlStore extends Movable implements IControl {
   // ###### apply history start ######## //
 
   @action changeTitle = (title: string, noHistory?: boolean) => {
-    if(title.length > 1000) {
+    if (title.length > 1000) {
       return;
     }
     const undo = { control: this.id, title: this.title };
@@ -291,9 +293,9 @@ class ControlStore extends Movable implements IControl {
     if (!this.cssStyles.has(oldKey)) {
       return;
     }
-    let key = newKey.replace(/\//g, "1");
+    let key = newKey.replace(/\//g, '1');
     if (key === MAIN_CSS_STYLE || key === oldKey) {
-      key = newKey + "" + 1;
+      key = newKey + '' + 1;
     }
     this.cssStyles.set(key, this.cssStyles.get(oldKey) as IObservableArray<ICSSProperty>);
     this.cssStyles.delete(oldKey);
@@ -320,7 +322,7 @@ class ControlStore extends Movable implements IControl {
 
   @action editAction = (index: number, action: string, props: string, noHistory?: boolean) => {
     const undo = { control: this.id, action: this.actions[index].slice(), index };
-    this.actions[index].replace([action, ...props.split("/")]);
+    this.actions[index].replace([action, ...props.split('/')]);
     const redo = { control: this.id, action: [action, props], index };
     !noHistory && ControlStore.history.add([HIST_EDIT_ACTION, undo, redo]);
   };
@@ -459,7 +461,7 @@ class ControlStore extends Movable implements IControl {
   };
 
   clone(): IControl {
-    throw new ErrorHandler("Redefine in children");
+    throw new ErrorHandler('Redefine in children');
   }
 
   //######### static ##########//
@@ -486,9 +488,8 @@ class ControlStore extends Movable implements IControl {
   }
 
   static removeItem(control: IControl) {
-    const classes = this.classes.filter(e => !e.includes(control.id));
-    this.classes.replace(classes);
     this.controls.splice(this.controls.indexOf(control), 1);
+    this.clearClasses();
   }
 
   static fromJSON(instance: ModelCtor, json: IControl) {
@@ -523,6 +524,15 @@ class ControlStore extends Movable implements IControl {
     const oldClass = `${id}/${oldClassName}`;
     const newClass = `${id}/${newClassName}`;
     this.classes.splice(this.classes.indexOf(oldClass), 1, newClass);
+  }
+
+  @action
+  static clearClasses() {
+    const classes = this.classes.filter(clazz => {
+      const classPair = clazz.split('/');
+      return this.has(classPair[0]);
+    });
+    this.classes.replace(classes);
   }
 
   static clear() {

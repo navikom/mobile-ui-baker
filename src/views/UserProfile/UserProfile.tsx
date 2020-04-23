@@ -106,7 +106,7 @@ function UserProfile() {
 
   useEffect(() => {
     return () => dispose();
-  }, []);
+  }, [dispose]);
 
   return <Profile/>;
 }

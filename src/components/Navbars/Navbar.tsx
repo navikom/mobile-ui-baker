@@ -42,7 +42,7 @@ export default (props: IHeader) => {
     let name = "Page didn't find.";
     let exact = false;
     props.routes.map((prop: google.maps.DirectionsRoute & IRoute) => {
-      if(exact) return;
+      if(exact) return null;
       if (
         props.location.pathname.includes(prop.layout + prop.url) ||
         props.location.pathname.includes(prop.layout + prop.path)

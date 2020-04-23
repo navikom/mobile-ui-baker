@@ -12,7 +12,7 @@ describe("EditorHistory", () => {
   beforeEach(() => {
     jest.clearAllTimers();
     ControlStore.clear();
-    store = new EditorViewStore(undefined);
+    store = new EditorViewStore('');
     store.history.clear();
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
     control = store.currentScreen.children[store.currentScreen.children.length - 1];

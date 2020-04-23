@@ -1,4 +1,4 @@
-import { action, IObservableArray } from "mobx";
+import { action } from "mobx";
 import { v4 as uuidv4 } from 'uuid';
 import IControl, { IText } from "interfaces/IControl";
 import { ControlEnum } from "enums/ControlEnum";

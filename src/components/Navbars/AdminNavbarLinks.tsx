@@ -12,22 +12,15 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Hidden from "@material-ui/core/Hidden";
 import Poppers from "@material-ui/core/Popper";
 import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
 
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
-import Notifications from "@material-ui/icons/Notifications";
 import Dashboard from "@material-ui/icons/Dashboard";
-import Search from "@material-ui/icons/Search";
 
 // models
 import { App } from "models/App.ts";
 import { Auth } from "models/Auth/Auth.ts";
 import { ROUTE_EDITOR, ROUTE_LOGIN } from "models/Constants";
-
-// core components
-import CustomInput from "components/CustomInput/CustomInput.tsx";
-import Button from "components/CustomButtons/Button.tsx";
 
 import useStyles from "assets/jss/material-dashboard-react/components/headerLinksStyle";
 import useDropdownStyles from "assets/jss/material-dashboard-react/dropdownStyle";

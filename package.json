@@ -41,13 +41,14 @@
     "react-router-dom": "4.3.1",
     "react-scripts": "^3.3.1",
     "react-sortable": "^2.0.0",
+    "react-stripe-elements": "^6.1.2",
     "react-swipeable-views": "0.13.1",
     "typescript": "^3.6.4",
     "uuid": "^7.0.2",
     "validate.js": "^0.12.0"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "node exec.js local.env && craco start",
     "build": "craco build",
     "test": "craco test --env=jsdom",
     "eject": "react-scripts eject",

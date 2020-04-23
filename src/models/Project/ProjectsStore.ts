@@ -88,8 +88,8 @@ export default class ProjectsStore extends Pagination<IProject> {
     const formData = new FormData();
     project.description && formData.append("description", project.description);
     project.title && formData.append("title", project.title);
-    project.price != undefined && formData.append("price", project.price.toString());
-    project.data != undefined && formData.append("data", JSON.stringify(project.data));
+    (project.price !== undefined && project.price !== null) && formData.append("price", project.price.toString());
+    !!project.data && formData.append("data", JSON.stringify(project.data));
     formData.append("versionId", project.versionId.toString());
     (files || []).forEach((file: any, key: number) => formData.append("file", file));
     return formData;
@@ -108,7 +108,7 @@ export default class ProjectsStore extends Pagination<IProject> {
     const formData = new FormData();
     project.description && formData.append("description", project.description);
     project.title && formData.append("title", project.title);
-    project.price != undefined && formData.append("price", project.price.toString());
+    (project.price !== undefined && project.price !== null) && formData.append("price", project.price.toString());
     (files || []).forEach((file: any, key: number) => formData.append("file", file));
     const data = await api(Apis.Main)[method].update(project.projectId, formData);
     project.update(data);

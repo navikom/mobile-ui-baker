@@ -28,6 +28,7 @@ import CardFooter from "components/Card/CardFooter.tsx";
 
 import styles from "assets/jss/material-dashboard-react/views/singlePageStyle.tsx";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
+import { ROUTE_LOGIN, ROUTE_RECOVERY } from "models/Constants";
 
 interface FormControlInterface {
   error?: boolean;
@@ -64,7 +65,7 @@ class Login extends React.Component<LoginProps, LoginState> {
   onInput = (key: InputTypes, e: React.ChangeEvent<HTMLInputElement>) => {
     this[key] = e.target.value;
     const errors = Auth.onInput(
-      Object.assign({ email: this.email, password: this.password }, { [key]: e.target.value }), true
+      Object.assign({ email: this.email, password: this.password }, { [key]: e.target.value }), ROUTE_LOGIN
     );
     this.setState({ errors, formCompleted: errors == null });
   };
@@ -110,7 +111,7 @@ class Login extends React.Component<LoginProps, LoginState> {
     return (
       <div>
         <GridContainer justify="center">
-          <GridItem xs={6} sm={6} md={4}>
+          <GridItem xs={12} sm={6} md={4}>
             <Slide direction="down" in={true} mountOnEnter unmountOnExit>
               <Fade in={true} mountOnEnter unmountOnExit>
                 <div>
@@ -141,13 +142,12 @@ class Login extends React.Component<LoginProps, LoginState> {
                         </GridContainer>
                       )}
                       <GridContainer justify="center">
-                        <GridItem xs={12} sm={10} md={4}>
-                          <Button onClick={() => {
-                          }} link size="sm">
+                        <GridItem xs={12} sm={6} md={4}>
+                          <Button onClick={() => this.props.history.push(ROUTE_RECOVERY)} link size="sm">
                             {Dictionary.defValue(DictionaryService.keys.forgotPassword)}
                           </Button>
                         </GridItem>
-                        <GridItem xs={12} sm={10} md={7}>
+                        <GridItem xs={12} sm={6} md={7}>
                           <Button onClick={() => this.props.history.push(Constants.ROUTE_SIGN_UP)} link size="sm">
                             {Dictionary.defValue(DictionaryService.keys.doNotHaveAccount)}
                           </Button>

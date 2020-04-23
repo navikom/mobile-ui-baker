@@ -10,7 +10,7 @@ import {
   whiteColor,
   grayColor
 } from "assets/jss/material-dashboard-react";
-import { createStyles, makeStyles } from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 
 const title = {
   ...defaultFont,
@@ -26,7 +26,7 @@ const title = {
   }
 };
 
-const headerStyle = makeStyles(() =>
+const headerStyle = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
       backgroundColor: "transparent",
@@ -94,6 +94,12 @@ const headerStyle = makeStyles(() =>
       backgroundColor: dangerColor[0],
       color: whiteColor,
       ...defaultBoxShadow
+    },
+    manager: {
+      [theme.breakpoints.down("sm")]: {
+        width: "100%"
+      },
+      display: "inline-block"
     }
   })
 );

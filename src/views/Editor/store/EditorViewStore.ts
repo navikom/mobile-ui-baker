@@ -1,7 +1,7 @@
-import { action, computed, IObservableArray, observable, runInAction } from "mobx";
-import { whiteColor } from "assets/jss/material-dashboard-react";
-import EditorDictionary, { data } from "views/Editor/store/EditorDictionary";
-import { IObject } from "services/Dictionary/AbstractDictionary";
+import { action, computed, observable, runInAction } from "mobx";
+import html2canvas from "html2canvas";
+
+import EditorDictionary from "views/Editor/store/EditorDictionary";
 import IControl from "interfaces/IControl";
 import { ControlEnum } from "enums/ControlEnum";
 import { DropEnum } from "enums/DropEnum";
@@ -20,11 +20,10 @@ import {
   HIST_SETTINGS
 } from "views/Editor/store/EditorHistory";
 import { IHistoryObject, SettingsPropType } from "interfaces/IHistory";
-import IProject, { IBackgroundColor, IProjectData, IProjectVersion } from "interfaces/IProject";
+import IProject, { IBackgroundColor, IProjectVersion } from "interfaces/IProject";
 import ProjectsStore from "models/Project/ProjectsStore";
 import ProjectStore from "models/Project/ProjectStore";
 import ProjectEnum from "enums/ProjectEnum";
-import { Errors } from "models/Errors";
 import { Mode } from "enums/ModeEnum";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { App } from "models/App";
@@ -33,7 +32,8 @@ import { ERROR_ELEMENT_DOES_NOT_EXIST, ERROR_USER_DID_NOT_LOGIN, ROUTE_EDITOR } 
 import ControlStore from "models/Control/ControlStore";
 import { SharedControls } from "models/Project/ControlsStore";
 import { OwnComponents } from "models/Project/OwnComponentsStore";
-import html2canvas from "html2canvas";
+import PluginStore from 'models/PluginStore';
+import DisplayViewStore from 'models/DisplayViewStore';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -42,28 +42,18 @@ export interface DragAndDropItem {
   index?: number;
 }
 
-class EditorViewStore extends Errors {
+class EditorViewStore extends DisplayViewStore {
   static STORE_JSON = "storeJson";
   static AUTO_SAVE = "autoSave";
   static TABS = [EditorDictionary.keys.project, EditorDictionary.keys.controls];
   static CONTROLS = ControlEnum;
   @observable history = ControlStore.history;
-  @observable screens: IObservableArray<IControl>;
-  @observable currentScreen: IControl;
   @observable selectedControl?: IControl;
   @observable dictionary = new EditorDictionary();
-  @observable background: IBackgroundColor = { backgroundColor: whiteColor };
-  @observable statusBarColor: string = whiteColor;
-  @observable mode: Mode = Mode.WHITE;
   @observable tabToolsIndex: number = 0;
-  @observable portrait: boolean = true;
-  @observable ios: boolean = false;
   @observable autoSave: boolean = false;
   @observable saving: boolean = false;
-  @observable project: IProject;
-  @observable fetchingProject: boolean = false;
   @observable savingProject: boolean = false;
-  @observable successMessage: string = "";
 
   moveOpened: boolean = true;
   debug: boolean = false;
@@ -93,9 +83,9 @@ class EditorViewStore extends Errors {
         mode: this.mode,
         background: this.background,
         statusBarColor: this.statusBarColor,
-        setStatusBarColor: this.setStatusBarColor,
-        switchMode: this.switchMode,
-        setBackground: this.setBackground,
+        setStatusBarColor: (statusBar: string) => this.setStatusBarColor(statusBar),
+        switchMode: () => this.switchMode(),
+        setBackground: (background: IBackgroundColor) => this.setBackground(background),
         dictionary: this.dictionary,
         autoSave: this.autoSave,
         switchAutoSave: this.switchAutoSave,
@@ -118,26 +108,28 @@ class EditorViewStore extends Errors {
     return props[this.tabToolsIndex];
   }
 
-  constructor(newData?: typeof data & IObject) {
-    super();
-    this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
+  constructor(urlQuery: string) {
+    super(urlQuery);
+
     this.history.setFabric(CreateControl);
     this.history.setViewStore(this);
-    newData && this.dictionary.setData(newData);
-    this.screens = observable([CreateControl(ControlEnum.Grid)]);
-    this.currentScreen = this.screens[0];
     this.currentScreen.changeTitle("Screen", true);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
   }
 
   saveProject = async () => {
-
+    const json = this.toJSON;
+    this.pluginStore.postMessage(PluginStore.LISTENER_ON_SAVE_PROJECT, json);
+    if(this.pluginStore.proMode) {
+      return;
+    }
     this.setSavingProject(true);
     try {
       if (!App.loggedIn) {
         throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
       }
-      this.project.version.update({data: this.toJSON} as unknown as IProjectVersion);
+
+      this.project.version.update({data: json} as unknown as IProjectVersion);
       await ProjectsStore.save(this.project);
       runInAction(() => {
         this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, this.project.title);
@@ -153,11 +145,12 @@ class EditorViewStore extends Errors {
     } catch (err) {
       this.setError(Dictionary.defValue(DictionaryService.keys.dataSaveError, [this.project.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
+      this.pluginStore.postMessage(PluginStore.LISTENER_ON_ERROR, err.message);
     }
     this.setSavingProject(false);
   };
 
-  private makeScreenshot(control: IControl) {
+  private makeScreenshot(control: IControl): Promise<[File, string]> {
     const element = document.querySelector("#capture_" + control.id) as HTMLElement;
     return new Promise((resolve, reject) => {
       if(element) {
@@ -166,7 +159,7 @@ class EditorViewStore extends Errors {
             const file = new File([blob as BlobPart], "capture.png", {
               type: 'image/png'
             });
-            resolve(file);
+            resolve([file, canvas.toDataURL()]);
           });
         });
       } else {
@@ -182,23 +175,31 @@ class EditorViewStore extends Errors {
       control.setInstance(instance);
       instance.update({title: control.title} as IProject);
     }
+
+    const json = control.toJSON;
+    control.instance!.version.update({data: json} as IProjectVersion);
+    const [file, base64] = await this.makeScreenshot(control);
+    this.pluginStore.postMessage(PluginStore.LISTENER_ON_SAVE_COMPONENT, [json, base64]);
+    if(this.pluginStore.proMode) {
+      return;
+    }
     control.setSaving(true);
     try {
       if (!App.loggedIn) {
         throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
       }
-      control.instance!.version.update({data: control.toJSON} as IProjectVersion);
-      const blob = await this.makeScreenshot(control);
-      await ProjectsStore.save(control.instance as IProject, [blob]);
+      await ProjectsStore.save(control.instance as IProject, [file]);
       (control.instance!.type === ProjectEnum.CONTROL ? SharedControls : OwnComponents).push([control.instance!]);
       runInAction(() => {
         this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, control.title);
       });
+
       this.setSuccessRequest(true);
       this.setTimeOut(() => this.setSuccessRequest(false), 5000);
     } catch (err) {
       this.setError(Dictionary.defValue(DictionaryService.keys.dataSaveError, [control.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
+      this.pluginStore.postMessage(PluginStore.LISTENER_ON_ERROR, err.message);
     }
     control.setSaving(false);
   };
@@ -230,25 +231,14 @@ class EditorViewStore extends Errors {
     localStorage.clear();
   }
 
-  @action setFetchingProject(value: boolean) {
-    this.fetchingProject = value;
-  }
-
   @action setSavingProject(value: boolean) {
     this.savingProject = value;
   }
 
-  @action async fetchProjectData(projectId: number | null) {
-    if(!projectId) {
-      return;
-    }
+  @action async fetchProjectData(projectId: number) {
     this.setFetchingProject(true);
     try {
-      const project = await ProjectsStore.fetchFullData(projectId);
-      runInAction(() => {
-        this.project = project;
-      });
-      this.fromJSON(project.version.data as IProjectData);
+      await super.fetchProjectData(projectId);
       this.save();
     } catch (err) {
       console.log("Fetch full instance data error %s", err.message);
@@ -272,22 +262,14 @@ class EditorViewStore extends Errors {
     }
   }
 
-  @action fromJSON(data: IProjectData) {
-    this.screens.replace(data.screens.map((e) => CreateControl(ControlEnum.Grid, e)));
-    this.currentScreen = this.screens[0];
-    this.selectControl(this.currentScreen.children[0]);
-    this.mode = data.mode;
-    this.background = data.background;
-    this.statusBarColor = data.statusBarColor;
-    this.project.update({title: data.title} as IProject);
-  }
-
   @action save() {
+    const json = this.toJSON;
+    this.pluginStore.postMessage(PluginStore.LISTENER_ON_DATA, json);
     if(!this.autoSave) {
       return;
     }
     this.saving = true;
-    const json = this.toJSON;
+
     localStorage.setItem(EditorViewStore.STORE_JSON, json);
     if(!this.timer) {
       this.timer = setTimeout(() => {
@@ -298,6 +280,19 @@ class EditorViewStore extends Errors {
       }, 1000)
     }
   }
+
+  handleScreenshot = () => {
+    const element = document.querySelector('#capture') as HTMLElement;
+    element && html2canvas(element).then(canvas => {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL();
+      a.download = `${this.project.title.length ? this.project.title : 'Project'}.png`;
+      a.click();
+      setTimeout(() => {
+        a.remove();
+      }, 300);
+    })
+  };
 
   @action switchAutoSave = () => {
     this.autoSave = !this.autoSave;
@@ -334,20 +329,16 @@ class EditorViewStore extends Errors {
 
   };
 
-  @action switchPortrait = () => {
-    this.portrait = !this.portrait;
-  };
-
   @action applyHistorySettings(key: SettingsPropType, value: Mode & string & IBackgroundColor) {
     this[key] = value;
   }
 
   // ####### apply history start ######## //
 
-  @action switchMode = () => {
+  @action switchMode() {
     const undo = { control: this.currentScreen.id, key: "mode", value: this.mode } as unknown as IHistoryObject;
 
-    this.mode = this.mode === Mode.WHITE ? Mode.DARK : Mode.WHITE;
+    super.switchMode();
     const redo = { control: this.currentScreen.id, key: "mode", value: this.mode } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
   };
@@ -362,16 +353,16 @@ class EditorViewStore extends Errors {
     this.history.add([HIST_PROJECT_TITLE_CHANGE, undo, redo]);
   };
 
-  @action setBackground = (background: IBackgroundColor) => {
+  @action setBackground(background: IBackgroundColor) {
     const undo = { control: this.currentScreen.id, key: "background", value: {...this.background} } as unknown as IHistoryObject;
-    this.background = background;
+    super.setBackground(background);
     const redo = { control: this.currentScreen.id, key: "background", value: {...this.background} } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
   };
 
-  @action setStatusBarColor = (statusBarColor: string) => {
+  @action setStatusBarColor(statusBarColor: string) {
     const undo = { control: this.currentScreen.id, key: "statusBarColor", value: this.statusBarColor } as unknown as IHistoryObject;
-    this.statusBarColor = statusBarColor;
+    super.setStatusBarColor(statusBarColor);
     const redo = { control: this.currentScreen.id, key: "statusBarColor", value: this.statusBarColor } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
   };
@@ -604,9 +595,9 @@ class EditorViewStore extends Errors {
     this.history.add([HIST_HANDLE_DROP_CANVAS, undo, redo]);
   };
 
-  @action setCurrentScreen = (screen: IControl, noHistory?: boolean) => {
+  @action setCurrentScreen(screen: IControl, noHistory?: boolean) {
     const undo = {control: this.currentScreen.id};
-    this.currentScreen = screen;
+    super.setCurrentScreen(screen);
     const redo = {control: this.currentScreen.id};
     !noHistory && this.history.add([HIST_CURRENT_SCREEN, undo, redo]);
   };
@@ -657,10 +648,6 @@ class EditorViewStore extends Errors {
 
   // ####### apply history end ######## //
 
-  @action setScreen(screen: IControl) {
-    this.screens.push(screen);
-  }
-
   @action spliceScreen(screen: IControl, index: number) {
     this.screens.splice(index, 0, screen);
   }
@@ -676,11 +663,6 @@ class EditorViewStore extends Errors {
   @action handleTabTool = (_: any, index: number) => {
     this.tabToolsIndex = index;
   };
-
-  @action setIOS(value: boolean) {
-    this.ios = value;
-  }
-
 }
 
 export default EditorViewStore;

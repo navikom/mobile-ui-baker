@@ -3,6 +3,8 @@ import { observer } from "mobx-react-lite";
 import { sortable } from "react-sortable";
 import { DropzoneDialog } from "material-ui-dropzone/dist";
 import classNames from "classnames";
+import { when } from "mobx";
+
 
 // @material-ui/icons
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
@@ -15,9 +17,6 @@ import Grid from "@material-ui/core/Grid";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardActions from "@material-ui/core/CardActions";
 import Divider from "@material-ui/core/Divider";
-import Popper, { PopperPlacementType } from "@material-ui/core/Popper";
-import Fade from "@material-ui/core/Fade";
-import Paper from "@material-ui/core/Paper";
 import InputBase from "@material-ui/core/InputBase";
 
 // services
@@ -36,7 +35,6 @@ import { IImage } from "interfaces/IImage";
 import ProjectDataStore from "views/Projects/store/ProjectDataStore";
 import { matchPath } from "react-router";
 import { RouteComponentProps } from "react-router-dom";
-import { when } from "mobx";
 import { App } from "models/App";
 import { blackOpacity } from "assets/jss/material-dashboard-react";
 
@@ -296,7 +294,7 @@ const ProjectItem: React.FC<RouteComponentProps> = ({ history }) => {
     when(() => App.loggedIn, () => {
       store.fetchProjectData(id);
     });
-  }, []);
+  }, [store, id]);
 
   return <ProjectData store={store} />;
 };

@@ -19,6 +19,7 @@ import { TestSegmentPropertyType } from "interfaces/ITestStep";
 export const ROUTE_ROOT = "/";
 export const LAYOUT_PANEL = "/panel";
 export const LAYOUT_MAIN = "/main";
+export const LAYOUT_EMPTY = "/empty";
 export const ROUTE_DASHBOARD = "/panel/dashboard";
 export const ROUTE_USER_PROFILE = "/panel/user-profile";
 export const ROUTE_EVENTS_USERS_LIST = "/panel/events-users";
@@ -32,7 +33,10 @@ export const ROUTE_SMS_CAMPAIGNS = "/panel/campaigns/sms";
 export const ROUTE_IN_APP_CAMPAIGNS = "/panel/campaigns/in-app";
 export const ROUTE_PUSH_CAMPAIGNS = "/panel/campaigns/push";
 export const ROUTE_EDITOR = "/editor";
+export const ROUTE_VIEWER = "/viewer";
 export const ROUTE_PROJECTS = "/projects";
+export const ROUTE_RECOVERY = "/recovery";
+export const ROUTE_RESET = "/reset";
 
 //********* Roles **********//
 export const ROLE_USER = 3;

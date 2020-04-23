@@ -1,5 +1,5 @@
 import { action, computed, observable, runInAction } from "mobx";
-import IProject, { IProjectData } from "interfaces/IProject";
+import IProject from "interfaces/IProject";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import validate from "validate.js";
 import { IImage } from "interfaces/IImage";
@@ -45,7 +45,7 @@ export default class ProjectDataStore extends Errors {
   @observable files: any;
 
   @computed get readyToSave() {
-    return (this.changed || this.files && this.files.length) && !this.errors && !this.savingProject;
+    return ((this.changed || (this.files && this.files.length))) && !this.errors && !this.savingProject;
   }
 
   @action onInput = (key: "title" | "description" | "price") => (value: string) => {

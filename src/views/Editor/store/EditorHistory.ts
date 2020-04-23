@@ -142,11 +142,6 @@ class EditorHistory implements IHistory {
         control.renameCSSStyle(object.oldKey as string, object.key as string, true);
         break;
       case HIST_REMOVE_CSS_STYLE:
-        // "need to set style with key", {
-        //       control: this.id,
-        //       style: this.cssStyles.get(key)!.map(prop => prop.toJSON),
-        //       key
-        //     }
         control.setCSSStyle(object.key as string, object.style as { [key: string]: any }[]);
         break;
       case HIST_ADD_ACTION:
@@ -154,28 +149,14 @@ class EditorHistory implements IHistory {
         control.removeAction(object.index as number, true);
         break;
       case HIST_EDIT_ACTION:
-        // "need to replace action by index", {
-        //       control: this.id,
-        //       action: this.actions[index].slice(),
-        //       index
-        //     }
         const [action, ...props] = object.action as string[];
         control.editAction(object.index as number, action, props.join("/"), true);
         break;
       case HIST_REMOVE_ACTION:
-        // "need to replace action by index", {
-        //       control: this.id,
-        //       action: this.actions[index].slice(),
-        //       index
-        //     }
+
         control.setAction(object.index as number, object.action as string[]);
         break;
       case HIST_HANDLE_DROP_CANVAS:
-        // "remove control from the screen set parentId if no parentId remove from Control.controls", {
-        //       control: control.id,
-        //       screen: this.currentScreen.id,
-        //       index
-        //     }
 
         let screen = this.store.getById(object.screen as string);
         screen.removeChild(control);
@@ -187,24 +168,14 @@ class EditorHistory implements IHistory {
         }
         break;
       case HIST_DROP_PARENT:
-        // "remove control from the parent and add to the oldParent by the index", {
-        //             control: source.id,
-        //             parent: pParent.id,
-        //             oldParent: source.parentId,
-        //             index: removeIndex
-        //           }
+
         let parent = this.store.getById(object.parent as string) as IControl;
         let oldParent = this.store.getById(object.oldParent as string) as IControl;
         parent.removeChild(control);
         oldParent.spliceChild(object.index as number, control);
         break;
       case HIST_DROP_INDEX:
-        // "move control inside the parent from the index to the oldIndex", {
-        //             control: source.id,
-        //             parent: pParent.id,
-        //             index: sourceNewIndex,
-        //             oldIndex: sourceCurrentIndex
-        //           }
+
         parent = this.store.getById(object.parent as string) as IControl;
         parent.moveChildren(object.index as number, object.oldIndex as number);
         break;

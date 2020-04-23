@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { action, IObservableArray } from "mobx";
+import { action } from "mobx";
 import IControl, { IGrid } from "interfaces/IControl";
 import { ControlEnum } from "enums/ControlEnum";
 import CreateControl from "models/Control/ControlStores";

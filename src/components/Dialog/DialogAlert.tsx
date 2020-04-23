@@ -38,12 +38,12 @@ export default function AlertDialogSlide(
   const onOkHandler = React.useCallback(() => {
     onOk && onOk();
     handleClose();
-  }, [onOk]);
+  }, [onOk, handleClose]);
 
   const onCancelHandler = React.useCallback(() => {
     onCancel && onCancel();
     handleClose();
-  }, [onCancel]);
+  }, [onCancel, handleClose]);
 
   return (
     <Dialog

@@ -13,6 +13,8 @@ import { Errors } from "models/Errors";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 
 import { api, Apis } from "api";
+import { ChangePasswordStore } from "models/User/ChangePasswordStore";
+import { Validate } from "models/Validate";
 
 
 validate.extend(validate.validators.datetime, {
@@ -25,99 +27,38 @@ validate.extend(validate.validators.datetime, {
   },
 });
 
-const constraints = {
-  firstName: {
-    length: {
-      maximum: 50,
-      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.firstName), "50"])}`
-    }
-  },
-  lastName: {
-    length: {
-      maximum: 50,
-      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.lastName), "50"])}`
-    }
-  },
-  phone: {
-    format: {
-      // eslint-disable-next-line
-      pattern: /^[+]?(1\-|1\s|1|\d{3}\-|\d{3}\s|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4}|\d{6})$/g,
-      message: `^${Dictionary.defValue(DictionaryService.keys.invalid, Dictionary.defValue(DictionaryService.keys.phone))}`
-    },
-  }
-};
-
-const passwordConstrains = {
-  password: {
-    presence: {
-      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeEmpty, Dictionary.defValue(DictionaryService.keys.password))}`
-    },
-    length: {
-      minimum: 6,
-      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeLessThan, [Dictionary.defValue(DictionaryService.keys.password), '6'])}`
-    }
-  },
-  confirmPassword: {
-    presence: {
-      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeEmpty, Dictionary.defValue(DictionaryService.keys.confirmPassword))}`
-    },
-    equality: {
-      attribute: "newPassword",
-      message: `^${Dictionary.defValue(DictionaryService.keys.repeatNewPasswordNotEqual)}`
-    }
-  },
-  newPassword: {
-    presence: {
-      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeEmpty, Dictionary.defValue(DictionaryService.keys.newPassword))}`
-    },
-    length: {
-      minimum: 6,
-      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeLessThan, [Dictionary.defValue(DictionaryService.keys.newPassword), '6'])}`
-    }
-  }
-}
-
-
-export type PasswordType = "password" | "confirmPassword" | "newPassword";
-
-class Validate {
-  @observable errors: {[k: string]: string} = {};
-
-  @computed get isDisabled() {
-    return Object.keys(this.errors).length > 0;
-  }
-}
-
 class PersonalDataStore extends Validate {
+  constraints = {
+    firstName: {
+      length: {
+        maximum: 50,
+        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.firstName), "50"])}`
+      }
+    },
+    lastName: {
+      length: {
+        maximum: 50,
+        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.lastName), "50"])}`
+      }
+    },
+    phone: {
+      format: {
+        // eslint-disable-next-line
+        pattern: /^[+]?(1\-|1\s|1|\d{3}\-|\d{3}\s|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4}|\d{6})$/g,
+        message: `^${Dictionary.defValue(DictionaryService.keys.invalid, Dictionary.defValue(DictionaryService.keys.phone))}`
+      },
+    }
+  };
   @observable formUser: IUser = UserStore.emptyUser();
 
   @action
   onInput(data: IUser) {
     try {
-      this.errors = validate(data, constraints) || {};
+      this.errors = validate(data, this.constraints) || {};
       this.formUser.updateForm(data);
     } catch (e) {
       console.log("Validation error", e);
     }
-  }
-}
-
-class ChangePasswordStore extends Validate {
-  @observable password = "";
-  @observable confirmPassword = "";
-  @observable newPassword = "";
-
-  @action onInput(key: PasswordType, value: string) {
-    const object = {password: this.password, newPassword: this.newPassword, confirmPassword: this.confirmPassword};
-    const errors = validate(Object.assign(object, {[key]: value}), passwordConstrains) || {};
-    this.errors = errors;
-    this[key] = value;
-  }
-
-  @action clear() {
-    this.password = "";
-    this.confirmPassword = "";
-    this.newPassword = "";
   }
 }
 

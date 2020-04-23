@@ -12,7 +12,7 @@ import {
   PermPhoneMsg,
   ViewCompact,
   ConfirmationNumber,
-  PieChart
+  PieChart, Apps
 } from "@material-ui/icons";
 
 import { lazy } from "utils";
@@ -23,7 +23,7 @@ import {
   SIDEBAR_MAIN,
   SIDEBAR_OTHER,
   SIDEBAR_USER,
-  ROLE_SUPER_ADMIN, ROLE_ADMIN
+  ROLE_SUPER_ADMIN, ROLE_ADMIN, LAYOUT_EMPTY
 } from "models/Constants";
 
 const DashboardPage = lazy(() => import("views/Dashboard/Dashboard"));
@@ -35,6 +35,8 @@ const UsersItem = lazy(() => import("views/Users/UsersItem"));
 const RolesList = lazy(() => import("views/Roles/RolesList"));
 const Login = lazy(() => import("views/Login/Login"));
 const SignUp = lazy(() => import("views/SignUp/SignUp"));
+const Reminder = lazy(() => import("views/Reminder/Reminder"));
+const ResetPassword = lazy(() => import("views/ResetPassword/ResetPassword"));
 const StartPage = lazy(() => import("views/StartPage/StartPage"));
 const ProjectsList = lazy(() => import("views/Projects/ProjectsList"));
 const ProjectItem = lazy(() => import("views/Projects/ProjectItem"));
@@ -172,7 +174,7 @@ const dashboardRoutesMap = {
     path: "/projects",
     name: "Projects",
     rtlName: "ملف تعريفي للمستخدم",
-    icon: Person,
+    icon: Apps,
     component: ProjectsList,
     layout: LAYOUT_PANEL,
     auth: true,
@@ -201,6 +203,21 @@ const dashboardRoutesMap = {
     rtlName: "لوحة الادارة",
     component: SignUp,
     layout: LAYOUT_MAIN
+  },
+  recovery: {
+    path: "/recovery",
+    name: "recovery",
+    rtlName: "لوحة الادارة",
+    component: Reminder,
+    layout: LAYOUT_MAIN
+  },
+  resetPassword: {
+    path: "/reset",
+    params: "/:token",
+    name: "recovery",
+    rtlName: "لوحة الادارة",
+    component: ResetPassword,
+    layout: LAYOUT_EMPTY,
   },
   editor: {
     path: "/editor",

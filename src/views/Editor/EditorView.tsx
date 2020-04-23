@@ -1,24 +1,23 @@
-import React, { useEffect } from "react";
-import { NavLink } from "react-router-dom"
-import { matchPath } from "react-router";
-import { RouteComponentProps } from "react-router";
-import { makeStyles } from "@material-ui/core/styles";
-import { DndProvider, useDrop } from "react-dnd";
-import classNames from "classnames";
-import Backend from "react-dnd-html5-backend";
-import { observer } from "mobx-react-lite";
-import html2canvas from "html2canvas";
+import React, { useEffect } from 'react';
+import { NavLink } from 'react-router-dom'
+import { matchPath } from 'react-router';
+import { RouteComponentProps } from 'react-router';
+import { makeStyles } from '@material-ui/core/styles';
+import { DndProvider, useDrop } from 'react-dnd';
+import classNames from 'classnames';
+import Backend from 'react-dnd-html5-backend';
+import { observer } from 'mobx-react-lite';
 
 // @material-ui/core
-import { createStyles, Theme, Button } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Paper from "@material-ui/core/Paper";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
+import { createStyles, Theme, Button } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Paper from '@material-ui/core/Paper';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
 import {
   AccountCircle, AddAPhoto,
   Android,
@@ -28,41 +27,49 @@ import {
   StayCurrentLandscape,
   StayCurrentPortrait,
   Undo
-} from "@material-ui/icons";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Tooltip from "@material-ui/core/Tooltip";
+} from '@material-ui/icons';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Skeleton } from '@material-ui/lab';
 
-import DeviceComponent from "views/Editor/components/DeviceComponent";
-import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import EditorViewStore, { DragAndDropItem } from "views/Editor/store/EditorViewStore";
-import ControlTab from "views/Editor/components/tabs/ControlTab";
-import ControlItem from "views/Editor/components/control/ControlItem";
-import { ItemTypes } from "views/Editor/store/ItemTypes";
-import IControl from "interfaces/IControl";
-import { DropEnum } from "enums/DropEnum";
-import TreeComponent from "views/Editor/components/TreeComponent";
-import { ROUTE_LOGIN, ROUTE_ROOT, ROUTE_USER_PROFILE, TABS_HEIGHT } from "models/Constants";
-import ProjectTab from "views/Editor/components/tabs/ProjectTab";
-import EditorDictionary from "views/Editor/store/EditorDictionary";
-import { blackOpacity, whiteColor } from "assets/jss/material-dashboard-react";
-import { IBackgroundColor } from "interfaces/IProject";
-import AddAlert from "@material-ui/icons/AddAlert";
-import Snackbar from "components/Snackbar/Snackbar";
-import { SharedControls } from "models/Project/ControlsStore";
-import { SharedComponents } from "models/Project/SharedComponentsStore";
-import { when } from "mobx";
-import { App } from "models/App";
-import { OwnComponents } from "models/Project/OwnComponentsStore";
-import { Auth } from "models/Auth/Auth";
+import DeviceComponent from 'views/Editor/components/DeviceComponent';
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+import EditorViewStore, { DragAndDropItem } from 'views/Editor/store/EditorViewStore';
+import ControlTab from 'views/Editor/components/tabs/ControlTab';
+import ControlItem from 'views/Editor/components/control/ControlItem';
+import { ItemTypes } from 'views/Editor/store/ItemTypes';
+import IControl from 'interfaces/IControl';
+import { DropEnum } from 'enums/DropEnum';
+import TreeComponent from 'views/Editor/components/TreeComponent';
+import { ROUTE_LOGIN, ROUTE_USER_PROFILE, TABS_HEIGHT } from 'models/Constants';
+import ProjectTab from 'views/Editor/components/tabs/ProjectTab';
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
+import { blackOpacity, whiteColor, whiteOpacity } from 'assets/jss/material-dashboard-react';
+import { IBackgroundColor } from 'interfaces/IProject';
+import AddAlert from '@material-ui/icons/AddAlert';
+import Snackbar from 'components/Snackbar/Snackbar';
+import { SharedControls } from 'models/Project/ControlsStore';
+import { SharedComponents } from 'models/Project/SharedComponentsStore';
+import { when } from 'mobx';
+import { App } from 'models/App';
+import { OwnComponents } from 'models/Project/OwnComponentsStore';
+import { Auth } from 'models/Auth/Auth';
+
+import 'views/Editor/Editor.css';
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      width: "100%",
-      height: "100%",
-      overflow: "auto"
+      width: '100%',
+      height: '100%',
+      overflow: 'auto'
+    },
+    center: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
     }
   })
 );
@@ -151,7 +158,7 @@ const editorStyles = makeStyles((theme: Theme) =>
       backgroundColor: blackOpacity(0.05),
     },
     bordered: {
-      border: "1px solid " + blackOpacity(0.12),
+      border: '1px solid ' + blackOpacity(0.12),
     },
     tab: {
       minWidth: 120,
@@ -160,8 +167,25 @@ const editorStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
     },
     headerRightGroup: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    cover: {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+      backgroundColor: whiteOpacity(0.8),
       display: "flex",
-      alignItems: "center"
+      alignItems: "center",
+      justifyContent: "space-around",
+      maxHeight: "2000px"
+    },
+    coverInactive: {
+      height: 0,
+      maxHeight: 0,
+      transition: "height .15s, max-height .15s ease-out"
     }
   })
 );
@@ -169,7 +193,7 @@ const editorStyles = makeStyles((theme: Theme) =>
 function a11yProps(index: number) {
   return {
     id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
   };
 }
 
@@ -192,9 +216,9 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     const resize = () => {
       setHeight(window.innerHeight);
     };
-    window.addEventListener("resize", resize);
+    window.addEventListener('resize', resize);
     return () => {
-      window.removeEventListener("resize", resize);
+      window.removeEventListener('resize', resize);
     }
   }, [height]);
 
@@ -221,115 +245,123 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     Auth.logout();
   };
 
-  const handleScreenshot = () => {
-    const element = document.querySelector("#capture") as HTMLElement;
-    element && html2canvas(element).then(canvas => {
-      const a = document.createElement("a");
-      a.href = canvas.toDataURL();
-      a.download = `${store.project.title.length ? store.project.title : 'Project'}.png`;
-      a.click();
-      setTimeout(() => {
-        a.remove();
-      }, 300);
-    })
-  };
-
   const tabsStyle = classNames(classes.tabs);
+  const cover = classNames({
+    [classes.cover]: true,
+    [classes.coverInactive]: !store.loadingPlugin
+  });
+
   return (
     <div className={classes.root} style={{ height }}>
-      <AppBar position="static">
-        <Toolbar>
-          <NavLink to={ROUTE_ROOT}>
-            <Typography variant="h6" className={classes.title}>
-              {Dictionary.defValue(DictionaryService.keys.mobileUiEditor)}
-            </Typography>
-          </NavLink>
-          <div className={classes.headerButtons}>
-            <IconButton
-              color={store.ios ? "default" : "inherit"}
-              onClick={() => store.setIOS(false)}
-            >
-              <Android />
-            </IconButton>
-            <IconButton
-              color={store.ios ? "inherit" : "default"}
-              onClick={() => store.setIOS(true)}
-            >
-              <Apple />
-            </IconButton>
-            <IconButton color="inherit" onClick={store.switchPortrait}>
-              {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
-            </IconButton>
-            <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
-              <IconButton color="inherit" onClick={handleScreenshot}>
-                <AddAPhoto />
-              </IconButton>
-            </Tooltip>
-          </div>
-          <div className={classes.headerRightGroup}>
-            <Typography color={store.saving ? "secondary" : "primary"} style={{ transition: "all .5s ease-out" }}>
-              {Dictionary.defValue(DictionaryService.keys.projectStored)}
-            </Typography>
-            <Tooltip
-              title={store.dictionary.defValue(EditorDictionary.keys.autoSave)}
-            >
-              <IconButton
-                onClick={store.switchAutoSave}
-                color={store.autoSave ? "secondary" : "inherit"}
-              >
-                <RestorePage />
-              </IconButton>
-            </Tooltip>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={open}
-              onClose={handleClose}
-            >
+      {
+        !store.pluginStore.data.hideHeader && (
+          <AppBar position="static">
+            <Toolbar>
               {
-                App.loggedIn ?
-                  (<MenuItem
-                    onClick={navigateProfile}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
-                  (<MenuItem onClick={navigateLogin}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
+                store.loadingPlugin ? (
+                  <div style={{width: 200}}>
+                    <Skeleton animation="wave" width={200} height={10} style={{marginBottom: 5}} />
+                    <Skeleton animation="wave" width={170} height={10} />
+                  </div>
+
+                ) : (
+                  <NavLink to={store.pluginStore.data.routeLink}>
+                    <Typography variant="h6" className={classes.title}>
+                      {Dictionary.value(store.pluginStore.data.routeTitle)}
+                    </Typography>
+                  </NavLink>
+                )
               }
-              {
-                App.loggedIn &&
-                (<MenuItem onClick={logout}>{Dictionary.defValue(DictionaryService.keys.logout)}</MenuItem>)
-              }
-            </Menu>
-          </div>
-        </Toolbar>
-      </AppBar>
+
+              <div className={classes.headerButtons}>
+                <IconButton
+                  color={store.ios ? 'default' : 'inherit'}
+                  onClick={() => store.setIOS(false)}
+                >
+                  <Android />
+                </IconButton>
+                <IconButton
+                  color={store.ios ? 'inherit' : 'default'}
+                  onClick={() => store.setIOS(true)}
+                >
+                  <Apple />
+                </IconButton>
+                <IconButton color="inherit" onClick={store.switchPortrait}>
+                  {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
+                </IconButton>
+                <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
+                  <IconButton color="inherit" onClick={store.handleScreenshot}>
+                    <AddAPhoto />
+                  </IconButton>
+                </Tooltip>
+              </div>
+              <div className={classes.headerRightGroup}>
+                <Typography color={store.saving ? 'secondary' : 'primary'} style={{ transition: 'all .5s ease-out' }}>
+                  {Dictionary.defValue(DictionaryService.keys.projectStored)}
+                </Typography>
+                <Tooltip
+                  title={store.dictionary.defValue(EditorDictionary.keys.autoSave)}
+                >
+                  <IconButton
+                    onClick={store.switchAutoSave}
+                    color={store.autoSave ? 'secondary' : 'inherit'}
+                  >
+                    <RestorePage />
+                  </IconButton>
+                </Tooltip>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={handleClose}
+                >
+                  {
+                    App.loggedIn ?
+                      (<MenuItem
+                        onClick={navigateProfile}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
+                      (<MenuItem onClick={navigateLogin}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
+                  }
+                  {
+                    App.loggedIn &&
+                    (<MenuItem onClick={logout}>{Dictionary.defValue(DictionaryService.keys.logout)}</MenuItem>)
+                  }
+                </Menu>
+              </div>
+            </Toolbar>
+
+          </AppBar>
+        )
+      }
       <div>
         <DndProvider debugMode={true} backend={Backend}>
-          <Grid container style={{ height: "100%" }}>
-            <Grid item xs={2} sm={2} md={3} style={{ padding: 5, position:"relative" }}>
-              <div className={classes.bordered} style={{ overflow: "auto", height: height - TABS_HEIGHT }}>
+          <Grid container style={{ height: '100%' }}>
+            <Grid item xs={2} sm={2} md={3} style={{ padding: 5, position: 'relative' }}>
+              <div className={classes.bordered} style={{ overflow: 'auto', height: height - TABS_HEIGHT }}>
                 <TreeComponent
                   screens={store.screens}
                   moveControl={store.moveControl}
                   handleDropCanvas={store.handleDropCanvas}
                   handleDropElement={store.handleDropElement}
                   isCurrent={store.isCurrent}
-                  setCurrentScreen={store.setCurrentScreen}
+                  setCurrentScreen={(screen: IControl) => store.setCurrentScreen(screen)}
                   addScreen={store.addScreen}
                   removeScreen={store.removeScreen}
                   dictionary={store.dictionary}
@@ -339,7 +371,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   isSelected={store.isSelected}
                 />
               </div>
-              <div style={{ position: "absolute", bottom: 20, right: -130 }}>
+              <div style={{ position: 'absolute', bottom: 20, right: -130 }}>
                 <ButtonGroup color="primary" variant="outlined">
                   <Button disabled={!store.history.canUndo} onClick={() => store.history.undo()}>
                     <Undo />
@@ -351,9 +383,9 @@ const ContextComponent: React.FC<ContextComponentProps> = (
               </div>
             </Grid>
             <Grid item xs={7} sm={7} md={6} style={{ padding: 5 }}>
-              <div className={classes.bordered} style={{ overflow: "auto", height: height - TABS_HEIGHT }}>
-                <div style={{ transform: "translate3d(0, 0, 0)" }}>
-                  <div style={{ transform: "scale(1)" }}>
+              <div className={classes.bordered} style={{ overflow: 'auto', height: height - TABS_HEIGHT }}>
+                <div style={{ transform: 'translate3d(0, 0, 0)' }}>
+                  <div style={{ transform: 'scale(1)' }}>
                     <DeviceComponent
                       ios={store.ios}
                       mode={store.mode}
@@ -369,7 +401,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                         handleDropElement={store.handleDropElement}
                         selectControl={store.selectControl}
                         isSelected={store.isSelected}
-                        setCurrentScreen={store.setCurrentScreen}
+                        setCurrentScreen={(screen: IControl) => store.setCurrentScreen(screen)}
                       />
                     </DeviceComponent>
                   </div>
@@ -413,11 +445,34 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         place="br"
         color="danger"
         icon={Clear}
-        message={store.error || ""}
+        message={store.error || ''}
         open={store.hasError}
         closeNotification={() => store.setError(null)}
         close
       />
+      <div className={cover}>
+        {
+          store.loadingPlugin && (
+            <React.Fragment>
+              <div style={{width: "25%", height: "75%"}}>
+                <Skeleton variant="rect"  animation="wave" height="90%" />
+                <Skeleton animation="wave" />
+                <Skeleton animation="wave" width="75%" />
+              </div>
+              <div style={{width: "45%", height: "75%"}}>
+                <Skeleton variant="rect"  animation="wave" height="90%" />
+                <Skeleton animation="wave" />
+                <Skeleton animation="wave" width="60%" />
+              </div>
+              <div style={{width: "25%", height: "75%"}}>
+                <Skeleton variant="rect"  animation="wave" height="90%" />
+                <Skeleton animation="wave" />
+                <Skeleton animation="wave" width="60%" />
+              </div>
+            </React.Fragment>
+          )
+        }
+      </div>
     </div>
   )
 };
@@ -426,26 +481,28 @@ const Context = observer(ContextComponent);
 
 function Editor(props: RouteComponentProps) {
   const match = matchPath<{ id: string }>(props.history.location.pathname, {
-    path: "/editor/:id",
+    path: '/editor/:id',
     exact: true,
     strict: false
   });
   const id = match ? Number(match.params.id) : null;
-  const [store] = React.useState(new EditorViewStore());
+  const [store] = React.useState(new EditorViewStore(props.location.search));
   useEffect(() => {
-    console.log("EditorView mount");
     store.checkLocalStorage();
-    store.fetchProjectData(id);
-    SharedControls.fetchItems().catch(err => console.log("Shared controls fetch error %s", err.message));
-    SharedComponents.fetchItems().catch(err => console.log("Shared controls fetch error %s", err.message));
+    id && store.fetchProjectData(id);
+    SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
+    SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
     when(() => App.loggedIn, async () => {
       try {
         await OwnComponents.fetchItems();
       } catch (err) {
-        console.log("Own components error %s", err.message);
+        console.log('Own components error %s', err.message);
       }
     });
-  }, []);
+    return () => {
+      store.dispose();
+    }
+  }, [store, id]);
   return <Context store={store} />;
 }
 

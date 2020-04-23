@@ -149,7 +149,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return (
       <div>
         <GridContainer justify="center">
-          <GridItem xs={6} sm={6} md={4}>
+          <GridItem xs={12} sm={8} md={4}>
             <Slide direction="down" in={true} mountOnEnter unmountOnExit>
               <Fade in={true} mountOnEnter unmountOnExit>
                 <div>

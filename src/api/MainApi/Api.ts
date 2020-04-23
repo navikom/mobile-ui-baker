@@ -47,6 +47,14 @@ class User extends HttpBase {
   updateRole(userId: number, roleId: number) {
     return this.fetchData("post", `${userId}/update-role/${roleId}`);
   }
+
+  forgot(email: string) {
+    return this.fetchData("post", "forgot", { email });
+  }
+
+  reset(token: string, password: string, repeatPassword: string) {
+    return this.fetchData("post", `reset/${token}`, { password, repeatPassword });
+  }
 }
 
 class AEvent extends HttpBase {

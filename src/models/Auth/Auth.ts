@@ -9,6 +9,7 @@ import validate from "validate.js";
 import * as Constants from "models/Constants";
 import { ILoginResult } from "interfaces/ILoginResult";
 import { IAuthUser } from "interfaces/IAuthUser";
+import { ROUTE_LOGIN, ROUTE_ROOT } from "models/Constants";
 
 const constraints = {
   password: {
@@ -51,12 +52,24 @@ const registerConstraints = Object.assign({
   }
 }, constraints);
 
+const recoverConstraints = {
+  email: {
+    presence: {
+      message: `^${Dictionary.defValue(DictionaryService.keys.cantBeEmpty, "Email")}`
+    },
+    email: {
+      message: `^${Dictionary.defValue(DictionaryService.keys["auth:invalid-email"])}`
+    }
+  }
+};
+
 export class AuthStore extends Errors implements IFlow {
   static REMEMBER_ME = "rememberMe";
 
   @observable rememberMe = false;
   @observable anonymous = true;
   @observable sid?: string;
+  @observable successMessage: string = "";
 
   disposer?: IReactionDisposer;
 
@@ -89,6 +102,23 @@ export class AuthStore extends Errors implements IFlow {
       App.navigationHistory && App.navigationHistory.goBack();
     } catch (err) {
       this.setError(Dictionary.value(err.message));
+    }
+  }
+
+  @action async recovery(email: string) {
+    try {
+      await api(Apis.Main).user.forgot(email);
+      runInAction(() => {
+        this.successMessage = Dictionary.defValue(DictionaryService.keys.checkYourEmailBox);
+      });
+      this.setSuccessRequest(true);
+      this.setTimeOut(() => {
+        this.setSuccessRequest(false);
+        App.navigationHistory && App.navigationHistory.replace(ROUTE_ROOT);
+      }, 5000);
+    } catch (err) {
+      this.setError(Dictionary.value(err.message));
+      this.setTimeOut(() => this.setError(null), 5000);
     }
   }
 
@@ -153,11 +183,11 @@ export class AuthStore extends Errors implements IFlow {
   }
 
 
-  onInput(data: IAuthUser, login = false) {
+  onInput(data: IAuthUser, login = ROUTE_LOGIN) {
     if (this.hasError) {
       this.setError(null);
     }
-    return validate(data, login ? constraints : registerConstraints);
+    return validate(data, login ? login === ROUTE_LOGIN ? constraints : recoverConstraints : registerConstraints);
   }
 
   stop(): void {
