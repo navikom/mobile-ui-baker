@@ -1,5 +1,5 @@
 import { createStyles } from "@material-ui/core/styles";
-import { whiteColor } from "assets/jss/material-dashboard-react";
+import { defaultFont, whiteColor } from 'assets/jss/material-dashboard-react';
 
 const styles = createStyles({
   cardCategoryWhite: {
@@ -8,10 +8,24 @@ const styles = createStyles({
       margin: "0",
       fontSize: "14px",
       marginTop: "0",
-      marginBottom: "0"
+      marginBottom: "0",
     },
     "& a,& a:hover,& a:focus": {
       color: "#FFFFFF"
+    }
+  },
+  title: {
+    ...defaultFont,
+    lineHeight: '30px',
+    fontSize: '24px',
+    borderRadius: '3px',
+    color: whiteColor,
+    opacity: 0.5,
+    margin: '0',
+    '&:hover,&:focus': {
+      background: 'transparent',
+      color: whiteColor,
+      opacity: 0.7
     }
   },
   cardTitleWhite: {

@@ -5,10 +5,6 @@ import { ROUTE_VIEWER } from 'models/Constants';
 
 class ViewerViewStore extends DisplayViewStore {
 
-  constructor(urlQuery: string) {
-    super(urlQuery)
-  }
-
   @action async fetchProjectData(projectId: number) {
     this.setFetchingProject(true);
     try {

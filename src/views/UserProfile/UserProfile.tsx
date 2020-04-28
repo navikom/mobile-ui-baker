@@ -8,8 +8,10 @@ import {
   ExitToAppOutlined,
   SupervisedUserCircleOutlined,
   Clear,
-  PersonOutlined
-} from "@material-ui/icons";
+  PersonOutlined, Web
+} from '@material-ui/icons';
+import AddAlert from "@material-ui/icons/AddAlert";
+
 
 // models
 import { App } from "models/App";
@@ -22,7 +24,6 @@ import { lazy } from "utils";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { UserDetails } from "views/UserProfile/components/UserDetailsStore";
 import Snackbar from "components/Snackbar/Snackbar";
-import AddAlert from "@material-ui/icons/AddAlert";
 
 // core components
 const CustomTabs = lazy(() => import("components/CustomTabs/CustomTabs"));
@@ -32,7 +33,7 @@ const UserPersonalData = lazy(() => import("views/UserProfile/components/UserPer
 const UserCredentials = lazy(() => import("views/UserProfile/components/UserCredentials"));
 const UserReferrals = lazy(() => import("views/UserProfile/components/UserReferrals"));
 const UserReferralDetails = lazy(() => import("views/UserProfile/components/UserReferralDetails"));
-
+const UserWebpage = lazy(() => import("views/UserProfile/components/UserWebpage"));
 
 const ProfileComponent = () => {
   if (!UserDetails.user) return null;
@@ -43,15 +44,20 @@ const ProfileComponent = () => {
       tabContent: (<UserPersonalData/>)
     },
     {
+      tabName: Dictionary.defValue(DictionaryService.keys.embeddedEditorViewer),
+      tabIcon: Web,
+      tabContent: (<UserWebpage/>)
+    },
+    {
       tabName: Dictionary.defValue(DictionaryService.keys.credentials),
       tabIcon: ExitToAppOutlined,
       tabContent: (<UserCredentials/>)
     },
-    {
-      tabName: Dictionary.defValue(DictionaryService.keys.referrals),
-      tabIcon: SupervisedUserCircleOutlined,
-      tabContent: (<UserReferrals/>)
-    }
+    // {
+    //   tabName: Dictionary.defValue(DictionaryService.keys.referrals),
+    //   tabIcon: SupervisedUserCircleOutlined,
+    //   tabContent: (<UserReferrals/>)
+    // }
   ];
   if (UserDetails.currentReferral) {
     tabs.push({
@@ -73,7 +79,7 @@ const ProfileComponent = () => {
         place="br"
         color="info"
         icon={AddAlert}
-        message={Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, "User")}
+        message={Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, UserDetails.user!.fullName)}
         open={UserDetails.successRequest}
         closeNotification={() => UserDetails.setSuccessRequest(false)}
         close

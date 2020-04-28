@@ -186,6 +186,12 @@ const editorStyles = makeStyles((theme: Theme) =>
       height: 0,
       maxHeight: 0,
       transition: "height .15s, max-height .15s ease-out"
+    },
+    historyButtons: {
+      position: 'absolute',
+      bottom: 20,
+      right: -130,
+      zIndex: 99
     }
   })
 );
@@ -371,7 +377,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   isSelected={store.isSelected}
                 />
               </div>
-              <div style={{ position: 'absolute', bottom: 20, right: -130 }}>
+              <div className={classes.historyButtons}>
                 <ButtonGroup color="primary" variant="outlined">
                   <Button disabled={!store.history.canUndo} onClick={() => store.history.undo()}>
                     <Undo />

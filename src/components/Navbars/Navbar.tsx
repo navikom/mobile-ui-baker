@@ -11,7 +11,6 @@ import Hidden from "@material-ui/core/Hidden";
 import Menu from "@material-ui/icons/Menu";
 // core components
 import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks";
-import RTLNavbarLinks from "components/Navbars/RTLNavbarLinks.jsx";
 import Button from "components/CustomButtons/Button.tsx";
 
 import useStyles from "assets/jss/material-dashboard-react/components/headerStyle";
@@ -19,7 +18,6 @@ import { IRoute } from "interfaces/IRoute";
 
 interface IHeader extends RouteComponentProps {
   routes: (google.maps.DirectionsRoute & IRoute)[];
-  rtlActive: boolean;
   color:
     | "appBar"
     | "container"
@@ -47,7 +45,7 @@ export default (props: IHeader) => {
         props.location.pathname.includes(prop.layout + prop.url) ||
         props.location.pathname.includes(prop.layout + prop.path)
       ) {
-        name = props.rtlActive ? prop.rtlName : prop.name;
+        name = prop.name;
         exact = props.location.pathname === prop.layout + prop.path;
       }
       return null;
@@ -69,11 +67,7 @@ export default (props: IHeader) => {
           </Button>
         </div>
         <Hidden smDown implementation="css">
-          {props.rtlActive ? (
-            <RTLNavbarLinks history={history} />
-          ) : (
-            <AdminNavbarLinks {...props} />
-          )}
+          <AdminNavbarLinks {...props} />
         </Hidden>
         <Hidden mdUp implementation="css">
           <IconButton

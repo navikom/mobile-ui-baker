@@ -1,43 +1,36 @@
-import React from "react";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { NavLink } from "react-router-dom";
-import { RouteComponentProps } from "react-router-dom";
+import React from 'react';
+import classNames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import { NavLink } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 
 // @material-ui/core components
-import Drawer from "@material-ui/core/Drawer";
-import Hidden from "@material-ui/core/Hidden";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Icon from "@material-ui/core/Icon";
-import { SvgIconProps } from "@material-ui/core/SvgIcon";
+import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Icon from '@material-ui/core/Icon';
+import { SvgIconProps } from '@material-ui/core/SvgIcon';
 
 // interfaces
-import { IRoute } from "interfaces/IRoute";
+import { IRoute } from 'interfaces/IRoute';
 
 // models
-import { App } from "models/App.ts";
-import {
-  SIDEBAR_ENGAGE,
-  SIDEBAR_MAIN,
-  SIDEBAR_OTHER,
-  SIDEBAR_USER,
-} from "models/Constants";
+import { App } from 'models/App.ts';
 
 // core components
-import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks";
-import RTLNavbarLinks from "components/Navbars/RTLNavbarLinks.jsx";
-import { Dictionary } from "services/Dictionary/Dictionary";
+import AdminNavbarLinks from 'components/Navbars/AdminNavbarLinks';
+import { Dictionary } from 'services/Dictionary/Dictionary';
 
-import useSidebarStyle from "assets/jss/material-dashboard-react/components/sidebarStyle";
+import useSidebarStyle from 'assets/jss/material-dashboard-react/components/sidebarStyle';
 
-type ColorType = "purple" | "blue" | "green" | "orange" | "red";
+export type ColorType = 'purple' | 'blue' | 'green' | 'orange' | 'red';
 type LinkProps = {
   color: string;
   location: any;
-  rtlActive: boolean;
   routes: (google.maps.DirectionsRoute & IRoute)[];
+  categories: string[];
 }
 
 const Links = observer((props: LinkProps) => {
@@ -48,10 +41,10 @@ const Links = observer((props: LinkProps) => {
   };
 
   const color = props.color as ColorType;
-  const treeMap = [SIDEBAR_MAIN, SIDEBAR_ENGAGE, SIDEBAR_USER, SIDEBAR_OTHER]
+  const treeMap = props.categories
     .map((key) =>
       [key, props.routes.filter((route: google.maps.DirectionsRoute & IRoute) =>
-        route.category === key && route.auth && (!route.role || (App.user && App.user.hasRole(route.role))))])
+        route.category === key && (route.auth || route.docs) && (!route.role || (App.user && App.user.hasRole(route.role))))])
     .filter(e => e[1].length);
 
   return (
@@ -64,23 +57,21 @@ const Links = observer((props: LinkProps) => {
             <List className={classes.list} key={key}>
               <ListItemText
                 primary={
-                  title ? title.toUpperCase() : ""
+                  title ? title.toUpperCase() : ''
                 }
-                className={classNames(classes.itemText, classes.categoryText, {
-                  [classes.itemTextRTL]: props.rtlActive
-                })}
+                className={classNames(classes.itemText, classes.categoryText)}
               />
               {routesList[1].map((prop: google.maps.DirectionsRoute & IRoute, key: number) => {
-                if(!App.loggedIn) return null;
+                if (prop.auth && !App.loggedIn) return null;
 
                 const listItemClasses = classNames({
-                  [" " + classes[color]]: activeRoute(prop.layout + prop.path)
+                  [' ' + classes[color]]: activeRoute(prop.layout + prop.path)
                 });
                 const whiteFontClasses = classNames({
-                  [" " + classes.whiteFont]: activeRoute(prop.layout + prop.path)
+                  [' ' + classes.whiteFont]: activeRoute(prop.layout + prop.path)
                 });
 
-                const LinkItem = prop.icon as React.ComponentType<SvgIconProps>;
+                const LinkItem = prop.icon as (React.ComponentType<SvgIconProps> | undefined);
                 return (
                   <NavLink
                     to={prop.layout + prop.path}
@@ -88,31 +79,23 @@ const Links = observer((props: LinkProps) => {
                     activeClassName="active"
                     key={key}
                   >
-                    <ListItem button className={classNames(classes.itemLink, listItemClasses, {
-                      [classes.itemIconRTL]: props.rtlActive
-                    })}>
-                      {typeof prop.icon === "string" ? (
+                    <ListItem button className={classNames(classes.itemLink, listItemClasses)}>
+                      {typeof prop.icon === 'string' ? (
                         <Icon
-                          className={classNames(classes.itemIcon, whiteFontClasses, {
-                            [classes.itemIconRTL]: props.rtlActive
-                          })}
+                          className={classNames(classes.itemIcon, whiteFontClasses)}
                         >
                           {prop.icon}
                         </Icon>
-                      ) : (
+                      ) : LinkItem ? (
                         <LinkItem
-                          className={classNames(classes.itemIcon, whiteFontClasses, {
-                            [classes.itemIconRTL]: props.rtlActive
-                          })}
+                          className={classNames(classes.itemIcon, whiteFontClasses)}
                         />
-                      )}
+                      ) : null}
                       <ListItemText
                         primary={
-                          props.rtlActive ? prop.rtlName : Dictionary.value(prop.name)
+                          Dictionary.value(prop.name)
                         }
-                        className={classNames(classes.itemText, whiteFontClasses, {
-                          [classes.itemTextRTL]: props.rtlActive
-                        })}
+                        className={classNames(classes.itemText, whiteFontClasses)}
                         disableTypography={true}
                       />
                     </ListItem>
@@ -127,7 +110,7 @@ const Links = observer((props: LinkProps) => {
   )
 });
 
-const Brand = ({...props}) => {
+const Brand = ({ ...props }) => {
   const classes = props.classes;
   return (
     <div className={props.classes.logo}>
@@ -138,81 +121,75 @@ const Brand = ({...props}) => {
         })}
       >
         <div className={classes.logoImage}>
-          <img src={props.logo} alt="logo" className={classes.img}/>
+          <img src={props.logo} alt="logo" className={classes.img} />
           <div className={classes.logoText}>{props.logoText}</div>
         </div>
       </a>
     </div>
   )
-}
+};
 
 interface ISidebar extends RouteComponentProps {
   routes: (google.maps.DirectionsRoute & IRoute)[];
-  rtlActive: boolean;
+
   handleDrawerToggle(): void;
+
   logoText: string;
   open: boolean;
   logo: any;
   color: string;
   image: any;
   currentApp: string;
+  categories: string[];
 }
 
 function Sidebar(props: ISidebar) {
   const classes = useSidebarStyle();
-  const {color, logo, image, logoText, routes, history, rtlActive} = props;
+  const { color, logo, image, logoText, routes, history } = props;
 
   return (
     <div>
       <Hidden mdUp implementation="css">
         <Drawer
           variant="temporary"
-          anchor={props.rtlActive ? "left" : "right"}
+          anchor={'right'}
           open={props.open}
           classes={{
-            paper: classNames(classes.drawerPaper, {
-              [classes.drawerPaperRTL]: props.rtlActive
-            })
+            paper: classNames(classes.drawerPaper)
           }}
           onClose={props.handleDrawerToggle}
           ModalProps={{
             keepMounted: true // Better open performance on mobile.
           }}
         >
-          <Brand logo={logo} logoText={logoText} classes={classes}/>
+          <Brand logo={logo} logoText={logoText} classes={classes} />
           <div className={classes.sidebarWrapper}>
-            {props.rtlActive ? <RTLNavbarLinks history={history}/> : <AdminNavbarLinks {...props}/>}
-            <Links color={color} rtlActive={rtlActive} routes={routes} location={props.location} />
+            <AdminNavbarLinks {...props} />
+            <Links categories={props.categories} color={color} routes={routes} location={props.location} />
           </div>
-          {image !== undefined ? (
-            <div
-              className={classes.background}
-              style={{backgroundImage: "url(" + image + ")"}}
-            />
-          ) : null}
+          <div
+            className={classes.background}
+            style={image !== undefined ? { backgroundImage: 'url(' + image + ')' } : {}}
+          />
         </Drawer>
       </Hidden>
       <Hidden smDown implementation="css">
         <Drawer
-          anchor={props.rtlActive ? "right" : "left"}
+          anchor={'left'}
           variant="permanent"
           open
           classes={{
-            paper: classNames(classes.drawerPaper, {
-              [classes.drawerPaperRTL]: props.rtlActive
-            })
+            paper: classNames(classes.drawerPaper)
           }}
         >
-          <Brand logo={logo} logoText={logoText} classes={classes}/>
+          <Brand logo={logo} logoText={logoText} classes={classes} />
           <div className={classes.sidebarWrapper}>
-            <Links routes={routes} rtlActive={rtlActive} color={color} location={props.location} />
+            <Links categories={props.categories} routes={routes} color={color} location={props.location} />
           </div>
-          {image !== undefined ? (
-            <div
-              className={classes.background}
-              style={{backgroundImage: "url(" + image + ")"}}
-            />
-          ) : null}
+          <div
+            className={classes.background}
+            style={image !== undefined ? { backgroundImage: 'url(' + image + ')' } : {}}
+          />
         </Drawer>
       </Hidden>
     </div>

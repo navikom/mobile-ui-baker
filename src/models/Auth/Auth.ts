@@ -70,6 +70,7 @@ export class AuthStore extends Errors implements IFlow {
   @observable anonymous = true;
   @observable sid?: string;
   @observable successMessage: string = "";
+  @observable loading: boolean = false;
 
   disposer?: IReactionDisposer;
 
@@ -84,18 +85,25 @@ export class AuthStore extends Errors implements IFlow {
     }
   }
 
+  @action setLoading(value: boolean) {
+    this.loading = value;
+  }
+
   @action
   async signup(email: string, password: string) {
+    this.setLoading(true);
     try {
       this.update(await api(Apis.Main).user.signup(email, password));
       App.navigationHistory && App.navigationHistory.go(-2);
     } catch (err) {
       this.setError(Dictionary.value(err.message));
     }
+    this.setLoading(false);
   }
 
   @action
   async login(email: string, password: string) {
+    this.setLoading(true);
     try {
       const data = await api(Apis.Main).user.login(email, password);
       this.update(data);
@@ -103,9 +111,11 @@ export class AuthStore extends Errors implements IFlow {
     } catch (err) {
       this.setError(Dictionary.value(err.message));
     }
+    this.setLoading(false);
   }
 
   @action async recovery(email: string) {
+    this.setLoading(true);
     try {
       await api(Apis.Main).user.forgot(email);
       runInAction(() => {
@@ -120,6 +130,7 @@ export class AuthStore extends Errors implements IFlow {
       this.setError(Dictionary.value(err.message));
       this.setTimeOut(() => this.setError(null), 5000);
     }
+    this.setLoading(false);
   }
 
   @action

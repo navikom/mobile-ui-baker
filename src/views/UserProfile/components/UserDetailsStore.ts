@@ -1,28 +1,29 @@
-import { action, computed, observable, when } from "mobx";
-import moment from "moment";
-import validate from "validate.js";
+import { action, computed, observable, when } from 'mobx';
+import moment from 'moment';
+import validate from 'validate.js';
 
+import { v4 } from 'uuid';
 // interfaces
-import { IUser } from "interfaces/IUser";
 
+import { IUser } from 'interfaces/IUser';
 // models
-import { UserStore } from "models/User/UserStore";
-import { Errors } from "models/Errors";
+import { UserStore } from 'models/User/UserStore';
 
+import { Errors } from 'models/Errors';
 // services
-import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 
-import { api, Apis } from "api";
-import { ChangePasswordStore } from "models/User/ChangePasswordStore";
-import { Validate } from "models/Validate";
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+import { api, Apis } from 'api';
+import { ChangePasswordStore } from 'models/User/ChangePasswordStore';
+import { Validate } from 'models/Validate';
 
 
 validate.extend(validate.validators.datetime, {
-  parse: function(value: Date) {
+  parse: function (value: Date) {
     return +moment.utc(value);
   },
-  format: function(value: Date, options: {dateOnly: boolean}) {
-    const format = options.dateOnly ? "MM/DD/YYYY" : "YYYY-MM-DD hh:mm:ss";
+  format: function (value: Date, options: { dateOnly: boolean }) {
+    const format = options.dateOnly ? 'MM/DD/YYYY' : 'YYYY-MM-DD hh:mm:ss';
     return moment.utc(value).format(format);
   },
 });
@@ -32,13 +33,13 @@ class PersonalDataStore extends Validate {
     firstName: {
       length: {
         maximum: 50,
-        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.firstName), "50"])}`
+        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.firstName), '50'])}`
       }
     },
     lastName: {
       length: {
         maximum: 50,
-        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.lastName), "50"])}`
+        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.lastName), '50'])}`
       }
     },
     phone: {
@@ -57,9 +58,33 @@ class PersonalDataStore extends Validate {
       this.errors = validate(data, this.constraints) || {};
       this.formUser.updateForm(data);
     } catch (e) {
-      console.log("Validation error", e);
+      console.log('Validation error', e);
     }
   }
+}
+
+class WebPageStore extends Validate {
+  constraints = {
+    webpage: {
+      url: {
+        allowLocal: true,
+        message: `^${Dictionary.defValue(DictionaryService.keys.mustBeAnUrl, Dictionary.defValue(DictionaryService.keys.webpage))}`
+      },
+      length: {
+        maximum: 70,
+        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [Dictionary.defValue(DictionaryService.keys.webpage), '70'])}`
+      }
+    },
+  };
+
+  @observable webpage: string = '';
+
+  @action
+  onInput(webpage: string) {
+    this.errors = validate({ webpage }, this.constraints) || {};
+    this.webpage = webpage;
+  }
+
 }
 
 class UserDetailsStore extends Errors {
@@ -68,6 +93,7 @@ class UserDetailsStore extends Errors {
   @observable fetching = false;
   @observable passwordStore = new ChangePasswordStore();
   @observable currentReferral?: IUser;
+  @observable webpageStore = new WebPageStore();
 
   @computed get isPersonalDisabled() {
     return this.personalDataStore.isDisabled || this.hasError;
@@ -79,8 +105,11 @@ class UserDetailsStore extends Errors {
 
   @action bindUser(user?: IUser) {
     this.user = user;
-    if(user) {
-      when(() => user.fullDataLoaded, () => this.personalDataStore.formUser.updateForm(user));
+    if (user) {
+      when(() => user.fullDataLoaded, () => {
+        this.personalDataStore.formUser.updateForm(user);
+        user.webpage && this.webpageStore.onInput(user.webpage);
+      });
     }
   }
 
@@ -88,7 +117,8 @@ class UserDetailsStore extends Errors {
     this.currentReferral = this.user!.referrals.getById(parseInt(userId));
   }
 
-  @action async saveUser() {
+  @action
+  async saveUser() {
     try {
       const data = await api(Apis.Main).user.update(this.personalDataStore.formUser.userId, {
         firstName: this.personalDataStore.formUser.firstName,
@@ -109,12 +139,30 @@ class UserDetailsStore extends Errors {
     }
   }
 
-  @action async saveNewPassword() {
+  @action
+  async saveNewPassword() {
     try {
       await api(Apis.Main).user.changePassword(this.passwordStore.password, this.passwordStore.newPassword);
       this.setSuccessRequest(true);
       this.setTimeOut(() => this.setSuccessRequest(false), 5000);
       this.passwordStore.clear();
+    } catch (e) {
+      this.setError(Dictionary.value(e.message));
+      this.setTimeOut(() => this.setError(null), 10000);
+    }
+  }
+
+  @action
+  async saveWebpage() {
+    try {
+      const data = await api(Apis.Main).user.update(this.user!.userId, {
+        webpage: this.webpageStore.webpage,
+        uid: v4().replace(/-/g, ''),
+        secret: v4().replace(/-/g, '')
+      });
+      this.user!.update(data);
+      this.setSuccessRequest(true);
+      this.setTimeOut(() => this.setSuccessRequest(false), 5000);
     } catch (e) {
       this.setError(Dictionary.value(e.message));
       this.setTimeOut(() => this.setError(null), 10000);

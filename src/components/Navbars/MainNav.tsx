@@ -30,6 +30,7 @@ import useStyles from "assets/jss/material-dashboard-react/components/headerStyl
 import { Dictionary } from "services/Dictionary/Dictionary";
 
 import { whiteColor } from "assets/jss/material-dashboard-react";
+import { TITLE } from 'models/Constants';
 
 
 const StyledMenu = withStyles({
@@ -56,13 +57,18 @@ const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 function nav(history: History, classes: any) {
+
   return (App.loggedIn ? mainNavRoutesLoggedIn : mainNavRoutes).map((route: IRoute, i: number) => {
     if(!route.path) return null;
+    const link = classNames({
+      [classes.link]: true,
+      [classes.active]: route.path === history.location.pathname
+    });
     return (
       <Button
         key={i}
         color="transparent"
-        className={classes.link}
+        className={link}
         onClick={() => history.push((route.auth ? `${route.layout}${route.path}` : route.path) as string)}
       >
         {Dictionary.value(route.name).toUpperCase()}
@@ -104,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({ color, history }) => {
   };
 
   function makeBrand() {
-    const name = "MUIDITOR";
+    const name = TITLE.toUpperCase();
     return name;
   }
 

@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 // core components
 import footerStyle from "assets/jss/material-dashboard-react/components/footerStyle.ts";
+import { TITLE } from 'models/Constants';
 
 function Footer({ ...props }) {
   const { classes } = props;
@@ -15,7 +16,7 @@ function Footer({ ...props }) {
           <span>
             &copy; {new Date().getFullYear()}{" "}
             <a href="http://webinsolut.com" className={classes.a}>
-              WebInSolut
+              {TITLE.toUpperCase()}
             </a>
             , made with love for a better web
           </span>

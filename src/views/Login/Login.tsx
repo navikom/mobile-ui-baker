@@ -28,7 +28,7 @@ import CardFooter from "components/Card/CardFooter.tsx";
 
 import styles from "assets/jss/material-dashboard-react/views/singlePageStyle.tsx";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import { ROUTE_LOGIN, ROUTE_RECOVERY } from "models/Constants";
+import { ROUTE_LOGIN, ROUTE_RECOVERY, TITLE } from 'models/Constants';
 
 interface FormControlInterface {
   error?: boolean;
@@ -110,6 +110,15 @@ class Login extends React.Component<LoginProps, LoginState> {
     const { classes } = this.props;
     return (
       <div>
+        <GridContainer justify="center">
+          <Button
+            color="transparent"
+            className={classes.title}
+            onClick={() => this.props.history.replace(Constants.ROUTE_ROOT)}
+          >
+            {TITLE.toUpperCase()}
+          </Button>
+        </GridContainer>
         <GridContainer justify="center">
           <GridItem xs={12} sm={6} md={4}>
             <Slide direction="down" in={true} mountOnEnter unmountOnExit>

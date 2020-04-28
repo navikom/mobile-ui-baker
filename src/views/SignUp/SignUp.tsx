@@ -14,7 +14,7 @@ import { Auth } from "models/Auth/Auth.ts";
 // core components
 import GridItem from "components/Grid/GridItem";
 import GridContainer from "components/Grid/GridContainer.tsx";
-import Button from "components/CustomButtons/Button.tsx";
+import CustomButton from "components/CustomButtons/Button.tsx";
 import Card from "components/Card/Card.tsx";
 import CardHeader from "components/Card/CardHeader.tsx";
 import CardBody from "components/Card/CardBody.tsx";
@@ -27,6 +27,9 @@ import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import CustomCheckbox from "components/CustomCheckbox/CustomCheckbox";
 import Typography from "@material-ui/core/Typography";
 import Dialog from "@material-ui/core/Dialog";
+import { ROUTE_LOGIN } from 'models/Constants';
+import { Button } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 interface FormControlInterface {
   error?: boolean;
@@ -149,7 +152,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
     return (
       <div>
         <GridContainer justify="center">
-          <GridItem xs={12} sm={8} md={4}>
+          <GridItem xs={12} sm={8} md={5}>
             <Slide direction="down" in={true} mountOnEnter unmountOnExit>
               <Fade in={true} mountOnEnter unmountOnExit>
                 <div>
@@ -174,7 +177,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
                         </GridItem>
                       </GridContainer>
                       <GridContainer justify="center">
-                        <GridItem xs={12} sm={10} md={10}>
+                        <Grid container item xs={12} sm={10} md={10} justify="space-around">
                           <CustomCheckbox
                             error={this.state.errors && this.state.errors.terms !== undefined}
                             checked={this.terms}
@@ -182,10 +185,10 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
                             label={Dictionary.defValue(DictionaryService.keys.iAgreeWithTerms)}
                             labelPlacement="end"
                           />
-                          <Button color="transparent" onClick={this.openModal}>
+                          <Button variant="outlined" onClick={this.openModal} size="small">
                             {Dictionary.defValue(DictionaryService.keys.viewTerms)}
                           </Button>
-                        </GridItem>
+                        </Grid>
                       </GridContainer>
                       {Auth.hasError && (
                         <GridContainer justify="center">
@@ -200,17 +203,18 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
                       )}
                       <GridContainer justify="flex-end">
                         <GridItem xs={12} sm={10} md={10}>
-                          <Button onClick={() => this.props.history.goBack()} link size="sm">
+                          <CustomButton onClick={() => this.props.history.replace(ROUTE_LOGIN)} link size="sm">
                             {Dictionary.defValue(DictionaryService.keys.doYouHaveAccount)}
-                          </Button>
+                          </CustomButton>
                         </GridItem>
                       </GridContainer>
                     </CardBody>
 
                     <CardFooter justify="center" style={{ justifyContent: "center" }}>
-                      <Button color="primary" disabled={!this.state.formCompleted} onClick={this.onSubmit}>
+                      <CustomButton
+                        color="primary" disabled={!this.state.formCompleted || Auth.loading} onClick={this.onSubmit}>
                         {Dictionary.defValue(DictionaryService.keys.SignUp)}
-                      </Button>
+                      </CustomButton>
                     </CardFooter>
                   </Card>
                 </div>

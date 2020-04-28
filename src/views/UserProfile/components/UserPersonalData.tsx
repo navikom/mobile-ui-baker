@@ -1,41 +1,41 @@
-import React from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import classNames from 'classnames';
 
 // pickers
-import DateFnsUtils from "@date-io/date-fns";
+import DateFnsUtils from '@date-io/date-fns';
 import {
   MuiPickersUtilsProvider,
   DatePicker
-} from "@material-ui/pickers";
+} from '@material-ui/pickers';
 
 // @material-ui/core
-import Grid from "@material-ui/core/Grid";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import Radio from "@material-ui/core/Radio";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import Divider from "@material-ui/core/Divider";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import Grid from '@material-ui/core/Grid';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import Divider from '@material-ui/core/Divider';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 // interfaces
-import { IUser } from "interfaces/IUser";
+import { IUser } from 'interfaces/IUser';
 
 // services
-import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 
 // models
-import { FEMALE, MALE } from "models/User/UserStore";
+import { FEMALE, MALE } from 'models/User/UserStore';
 
 // core components
-import CustomInput from "components/CustomInput/CustomInput";
-import ProgressButton from "components/CustomButtons/ProgressButton";
-import useStyles from "assets/jss/material-dashboard-react/components/inputFieldStyle";
+import CustomInput from 'components/CustomInput/CustomInput';
+import ProgressButton from 'components/CustomButtons/ProgressButton';
+import useStyles from 'assets/jss/material-dashboard-react/components/inputFieldStyle';
 
 // view store
-import { UserDetails } from "views/UserProfile/components/UserDetailsStore";
+import { UserDetails } from 'views/UserProfile/components/UserDetailsStore';
 
 
 const extraStyles = makeStyles((theme: Theme) =>
@@ -77,14 +77,14 @@ const UserPersonalData = observer(() => {
         </Typography>
         <CustomInput
           formControlProps={{
-            margin: "none"
+            margin: 'none',
+            style: { width: '300px' }
           }}
           inputProps={{
             disabled: true,
-            onChange: onChange("firstName"),
-            value: user.email || ""
+            value: user.email || ''
           }}
-          labelText=""/>
+          labelText="" />
       </Grid>
       <Grid container item direction="row">
         <Typography variant="subtitle2" className={centerNote}>
@@ -92,13 +92,14 @@ const UserPersonalData = observer(() => {
         </Typography>
         <CustomInput
           formControlProps={{
-            margin: "none"
+            margin: 'none',
+            style: { width: '300px' }
           }}
           inputProps={{
-            onChange: onChange("firstName"),
-            value: user.firstName || ""
+            onChange: onChange('firstName'),
+            value: user.firstName || ''
           }}
-          labelText=""/>
+          labelText="" />
       </Grid>
       <Grid container item direction="row">
         <Typography variant="subtitle2" className={centerNote}>
@@ -106,29 +107,31 @@ const UserPersonalData = observer(() => {
         </Typography>
         <CustomInput
           formControlProps={{
-            margin: "none"
+            margin: 'none',
+            style: { width: '300px' }
           }}
           inputProps={{
-            onChange: onChange("lastName"),
-            value: user.lastName || ""
+            onChange: onChange('lastName'),
+            value: user.lastName || ''
           }}
-          labelText=""/>
+          labelText="" />
       </Grid>
       <Grid container item direction="row">
         <Typography variant="subtitle2" className={centerNote}>
           {Dictionary.defValue(DictionaryService.keys.phone)}:
         </Typography>
         <CustomInput
-          error={store.errors["phone"] !== undefined}
-          helperText={store.errors["phone"]}
+          error={store.errors['phone'] !== undefined}
+          helperText={store.errors['phone']}
           formControlProps={{
-            margin: "none"
+            margin: 'none',
+            style: { width: '300px' }
           }}
           inputProps={{
-            onChange: onChange("phone"),
-            value: user.phone || ""
+            onChange: onChange('phone'),
+            value: user.phone || ''
           }}
-          labelText=""/>
+          labelText="" />
       </Grid>
       <Grid container item direction="row" className={classes.container}>
         <Typography variant="subtitle2" className={centerNote}>
@@ -141,7 +144,7 @@ const UserPersonalData = observer(() => {
           id="date-picker-dialog"
           format="MM/dd/yyyy"
           value={user.birthday || new Date()}
-          onChange={onChangeDate("birthday")}
+          onChange={onChangeDate('birthday')}
         />
       </Grid>
       <Grid container item direction="row" className={classes.container}>
@@ -152,22 +155,22 @@ const UserPersonalData = observer(() => {
                     className={extraClasses.radioGroup}
                     name="gender"
                     value={user.gender}
-                    onChange={onChange("gender")} row>
+                    onChange={onChange('gender')} row>
           <FormControlLabel
             value={MALE}
-            control={<Radio color="primary"/>}
+            control={<Radio color="primary" />}
             label={MALE}
             labelPlacement="start"
           />
           <FormControlLabel
             value={FEMALE}
-            control={<Radio color="primary"/>}
+            control={<Radio color="primary" />}
             label={FEMALE}
             labelPlacement="start"
           />
         </RadioGroup>
       </Grid>
-      <Divider variant="middle"/>
+      <Divider variant="middle" />
       <Typography variant="subtitle1" color="inherit" align="center" className={extraClasses.title}>
         {Dictionary.defValue(DictionaryService.keys.permissions)}
       </Typography>
@@ -177,7 +180,7 @@ const UserPersonalData = observer(() => {
         </Typography>
         <Switch
           checked={user.notificationEmail}
-          onChange={onSwitch("notificationEmail")}
+          onChange={onSwitch('notificationEmail')}
           value="notificationEmail"
           color="primary"
         />
@@ -188,7 +191,7 @@ const UserPersonalData = observer(() => {
         </Typography>
         <Switch
           checked={user.notificationSms}
-          onChange={onSwitch("notificationSms")}
+          onChange={onSwitch('notificationSms')}
           value="notificationSms"
           color="primary"
         />
@@ -199,7 +202,7 @@ const UserPersonalData = observer(() => {
         </Typography>
         <Switch
           checked={user.subscription}
-          onChange={onSwitch("subscription")}
+          onChange={onSwitch('subscription')}
           value="subscription"
           color="primary"
         />
@@ -211,7 +214,7 @@ const UserPersonalData = observer(() => {
         loading={UserDetails.fetching}
         color="primary"
         text={Dictionary.defValue(DictionaryService.keys.save)}
-        startIcon={<CloudUploadIcon/>}
+        startIcon={<CloudUploadIcon />}
       />
     </MuiPickersUtilsProvider>
   );

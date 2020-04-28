@@ -1,22 +1,23 @@
-import React from "react";
-import { Redirect, Route, Router, Switch } from "react-router-dom";
-import { createBrowserHistory } from "history";
-import { ThemeProvider } from "@material-ui/core/styles";
-import WaitingComponent from "hocs/WaitingComponent";
-import Panel from "layouts/Panel";
-import Main from "layouts/Main";
-import Editor from "layouts/Editor";
-import Projects from "layouts/Projects";
-import Empty from "layouts/Empty";
-import Viewer from "layouts/Viewer";
+import React from 'react';
+import { Redirect, Route, Router, Switch } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+import { ThemeProvider } from '@material-ui/core/styles';
+import WaitingComponent from 'hocs/WaitingComponent';
+import Panel from 'layouts/Panel';
+import Documentation from 'layouts/Documentation';
+import Main from 'layouts/Main';
+import Editor from 'layouts/Editor';
+import Projects from 'layouts/Projects';
+import Empty from 'layouts/Empty';
+import Viewer from 'layouts/Viewer';
 
-import theme from "assets/theme";
+import theme from 'assets/theme';
 
 // models
-import { App as AppStore } from "models/App.ts";
-import * as Constants from "models/Constants.ts";
+import { App as AppStore } from 'models/App.ts';
+import * as Constants from 'models/Constants.ts';
 
-import "assets/css/material-dashboard-react.css";
+import 'assets/css/material-dashboard-react.css';
 
 const hist = createBrowserHistory();
 
@@ -50,17 +51,32 @@ function App() {
             component={WaitingComponent(Panel)}
           />
           <Route
-            path={Constants.ROUTE_LOGIN}
-            component={WaitingComponent(Main)}
-          />
-          <Route
-            path={Constants.ROUTE_RESET}
-            component={WaitingComponent(Empty)}
+            path={Constants.LAYOUT_DOCS}
+            component={WaitingComponent(Documentation)}
           />
           <Route
             path={Constants.ROUTE_EDITOR}
             component={WaitingComponent(Editor)}
           />
+          {
+            [Constants.ROUTE_LOGIN, Constants.ROUTE_SIGN_UP, Constants.ROUTE_RESET, Constants.ROUTE_CHECKOUT]
+              .map((route, i) => (
+                <Route
+                  key={i}
+                  path={route}
+                  component={WaitingComponent(Empty)}
+                />
+              ))
+          }
+          {
+            [Constants.ROUTE_ROOT, Constants.ROUTE_PRICES].map((route, i) => (
+              <Route
+                key={i}
+                path={route}
+                component={WaitingComponent(Main)}
+              />
+            ))
+          }
           <Route
             path={Constants.ROUTE_VIEWER}
             component={WaitingComponent(Viewer)}
@@ -69,11 +85,6 @@ function App() {
             path={Constants.ROUTE_PROJECTS}
             component={WaitingComponent(Projects)}
           />
-          <Route
-            path={Constants.ROUTE_SIGN_UP}
-            component={WaitingComponent(Main)}
-          />
-          <Route path={Constants.ROUTE_ROOT} component={WaitingComponent(Main)} />
           <Redirect to={Constants.ROUTE_START_PAGE} />
           <Route path="*" component={WaitingComponent(Panel)} />
         </Switch>

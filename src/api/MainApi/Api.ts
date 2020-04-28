@@ -1,144 +1,155 @@
-import { ApiBase } from "api/ApiBase";
-import { HttpBase } from "api/HttpBase";
-import { ILoginResult } from "interfaces/ILoginResult";
+import { ApiBase } from 'api/ApiBase';
+import { HttpBase } from 'api/HttpBase';
+import { ILoginResult } from 'interfaces/ILoginResult';
 
 class User extends HttpBase {
   constructor() {
-    super("users");
+    super('users');
   }
 
   signup(email: string, password: string): Promise<ILoginResult> {
     const body = {
       email: email,
       password: password,
-      grantType: "password"
+      grantType: 'password'
     };
-    return this.fetchData("post", "sign-up", body);
+    return this.fetchData('post', 'sign-up', body);
   }
 
   anonymous(): Promise<ILoginResult> {
-    return this.fetchData("post", "anonymous");
+    return this.fetchData('post', 'anonymous');
   }
 
   login(email: string, password: string): Promise<ILoginResult> {
     const body = {
       email: email,
       password: password,
-      grantType: "password"
+      grantType: 'password'
     };
-    return this.fetchData("post", "login", body);
+    return this.fetchData('post', 'login', body);
   }
 
   logout(): Promise<null> {
-    return this.fetchData("get", "logout");
+    return this.fetchData('get', 'logout');
   }
 
   refresh(): Promise<ILoginResult> {
     const body = {
-      grantType: "refresh"
+      grantType: 'refresh'
     };
-    return this.fetchData("post", "login", body);
+    return this.fetchData('post', 'login', body);
   }
 
   changePassword(password: string, newPassword: string) {
-    return this.fetchData("post", "change-password", { password, newPassword });
+    return this.fetchData('post', 'change-password', { password, newPassword });
   }
 
   updateRole(userId: number, roleId: number) {
-    return this.fetchData("post", `${userId}/update-role/${roleId}`);
+    return this.fetchData('post', `${userId}/update-role/${roleId}`);
   }
 
   forgot(email: string) {
-    return this.fetchData("post", "forgot", { email });
+    return this.fetchData('post', 'forgot', { email });
   }
 
   reset(token: string, password: string, repeatPassword: string) {
-    return this.fetchData("post", `reset/${token}`, { password, repeatPassword });
+    return this.fetchData('post', `reset/${token}`, { password, repeatPassword });
+  }
+
+  fetchSubscription(userId: number) {
+    return this.fetchData('get', `${userId}/subscription`);
   }
 }
 
 class AEvent extends HttpBase {
   constructor() {
-    super("events");
+    super('events');
   }
 }
 
 class Setting extends HttpBase {
   constructor() {
-    super("settings");
+    super('settings');
   }
 
   getData() {
-    return this.fetchData("get");
+    return this.fetchData('get');
   }
 }
 
 class Roles extends HttpBase {
   constructor() {
-    super("roles");
+    super('roles');
   }
 }
 
 class Segments extends HttpBase {
   constructor() {
-    super("segments");
+    super('segments');
   }
 }
 
 class Campaign extends HttpBase {
   constructor() {
-    super("campaigns");
+    super('campaigns');
   }
 }
 
 class Region extends HttpBase {
   constructor() {
-    super("regions");
+    super('regions');
+  }
+}
+
+class Payment extends HttpBase {
+  constructor() {
+    super('payments');
   }
 }
 
 export class Project extends HttpBase {
   constructor() {
-    super("projects");
-  }
-  update(projectId: number, data: any) {
-    return this.fetchData("put", projectId.toString(), data, undefined, ["Content-Type", "Accept"]);
+    super('projects');
   }
 
-  sortImages(projectId: number, data: {imageId: number, sort: number}[]) {
-    return this.fetchData("put", `${projectId}/images/sort`, data);
+  update(projectId: number, data: any) {
+    return this.fetchData('put', projectId.toString(), data, undefined, ['Content-Type', 'Accept']);
+  }
+
+  sortImages(projectId: number, data: { imageId: number, sort: number }[]) {
+    return this.fetchData('put', `${projectId}/images/sort`, data);
   }
 
   deleteImage(projectId: number, imageId: number) {
-    return this.fetchData("delete", `${projectId}/image/${imageId}`);
+    return this.fetchData('delete', `${projectId}/image/${imageId}`);
   }
 }
 
 class Control extends HttpBase {
   constructor() {
-    super("controls");
+    super('controls');
   }
 
   update(controlId: number, data: any) {
-    return this.fetchData("put", controlId.toString(), data, undefined, ["Content-Type", "Accept"]);
+    return this.fetchData('put', controlId.toString(), data, undefined, ['Content-Type', 'Accept']);
   }
 
   deleteImage(controlId: number, imageId: number) {
-    return this.fetchData("delete", `${controlId}/image/${imageId}`);
+    return this.fetchData('delete', `${controlId}/image/${imageId}`);
   }
 }
 
 class Component extends HttpBase {
   constructor() {
-    super("components");
+    super('components');
   }
 
   update(componentId: number, data: any) {
-    return this.fetchData("put", componentId.toString(), data, undefined, ["Content-Type", "Accept"]);
+    return this.fetchData('put', componentId.toString(), data, undefined, ['Content-Type', 'Accept']);
   }
 
   deleteImage(componentId: number, imageId: number) {
-    return this.fetchData("delete", `${componentId}/image/${imageId}`);
+    return this.fetchData('delete', `${componentId}/image/${imageId}`);
   }
 }
 
@@ -182,5 +193,9 @@ export default class Api extends ApiBase {
 
   get component(): Component {
     return new Component();
+  }
+
+  get payment(): Payment {
+    return new Payment();
   }
 }

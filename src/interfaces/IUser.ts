@@ -1,7 +1,7 @@
 import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
 import { IUsersEvents } from "interfaces/IUsersEvents";
 import { IPagination } from "interfaces/IPagination";
-import { IObservableArray } from "mobx";
+import { IObservableArray, observable } from 'mobx';
 import { FemaleType, MaleType } from "types/commonTypes";
 import { IRole } from "interfaces/IRole";
 import { IRegion } from "interfaces/IRegion";
@@ -34,7 +34,11 @@ export interface IUser extends WithPrimaryKey {
   location?: IRegion;
   lastEvent?: Date;
   referrals: IPagination<IUser>;
+  webpage: string | null;
+  uid: string | null;
+  secret: string | null;
   anonymous: boolean;
+  proPlan: boolean;
 
   fullDataLoaded: boolean;
 

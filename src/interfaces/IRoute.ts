@@ -7,7 +7,7 @@ export interface IRoute {
   url?: string;
   params?: string;
   name: string;
-  rtlName: string;
+  rtlName?: string;
   icon?: React.ComponentType<SvgIconProps> | string;
   component:
     | React.ComponentType<any>
@@ -16,4 +16,5 @@ export interface IRoute {
   auth?: boolean;
   category?: string;
   role?: number;
+  docs?: boolean;
 }

@@ -28,7 +28,7 @@ import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboar
 import image from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/webinsolut.png";
 import WaitingComponent from "hocs/WaitingComponent";
-import { LAYOUT_PANEL } from "models/Constants";
+import { LAYOUT_PANEL, SIDEBAR_ENGAGE, SIDEBAR_MAIN, SIDEBAR_OTHER, SIDEBAR_USER, TITLE } from 'models/Constants';
 
 const switchRoutes = (routes: IRoute[]) => (
   <Switch>
@@ -90,12 +90,13 @@ export default (props: RouteComponentProps) => {
     <div className={classes.wrapper}>
       <Sidebar
         routes={sidebarRoutes}
-        logoText={"ebInSolut"}
+        logoText={TITLE}
         logo={logo}
         image={appImage}
         handleDrawerToggle={handleDrawerToggle}
         open={mobileOpen}
         color={color}
+        categories={[SIDEBAR_MAIN, SIDEBAR_ENGAGE, SIDEBAR_USER, SIDEBAR_OTHER]}
         {...props}
       />
       <ScrollContainer>

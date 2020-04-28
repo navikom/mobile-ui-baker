@@ -58,6 +58,10 @@ export class UserStore implements IUser {
   @observable location?: IRegion;
   @observable referrals: IPagination<IUser>;
   @observable anonymous: boolean = true;
+  @observable webpage: string | null = null;
+  @observable uid: string | null = null;
+  @observable secret: string | null = null;
+  @observable proPlan: boolean = false;
   readonly roles: IObservableArray<IRole> = observable<IRole>([]);
 
 
@@ -112,8 +116,8 @@ export class UserStore implements IUser {
     !this.gender && (this.gender = MALE);
     model.regions && (this.regions = model.regions.map(region =>
       RegionStore.from({...region, createdAt: region.IUsersRegions!.createdAt})));
-    model.regions &&
-    (this.location = this.regions!.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]);
+    model.regions && model.regions.length &&
+    (this.location = model.regions.length === 1 ? this.regions![0] : this.regions!.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]);
     model.devices && (this.devices = model.devices.map(device =>
       DeviceStore.from({...device, createdAt: device.IUsersDevices!.createdAt})));
     model.email && (this.email = model.email);
@@ -134,7 +138,11 @@ export class UserStore implements IUser {
     model.anonymous !== undefined && (this.anonymous = model.anonymous);
     model.referrer && (this.referrer = model.referrer);
     model.lastEvent && (this.lastEvent = model.lastEvent);
+    model.uid && (this.uid = model.uid);
+    model.secret && (this.secret = model.secret);
+    model.webpage && (this.webpage = model.webpage);
     model.roles && this.updateRoles(model.roles);
+    model.proPlan !== undefined && (this.proPlan = model.proPlan);
   }
 
   @action updateForm(model: IUser) {
