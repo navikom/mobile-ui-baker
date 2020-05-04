@@ -5,12 +5,11 @@ export interface IBeefree {
 
 export interface ISettings {
   loaded: boolean;
-  cloudinaryPath?: string;
-  cloudinaryFolder?: string;
-  bee?: string;
-  beefree?: IBeefree;
+  cloudinaryPath: string;
+  cloudinaryFolder: string;
+  beefree: IBeefree;
   systemEventsList?: string[];
   customEventsList?: string[];
   expressions?: string[];
-  bucket?: string;
+  bucket: string;
 }

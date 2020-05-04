@@ -77,7 +77,7 @@ class WebPageStore extends Validate {
     },
   };
 
-  @observable webpage: string = '';
+  @observable webpage = '';
 
   @action
   onInput(webpage: string) {

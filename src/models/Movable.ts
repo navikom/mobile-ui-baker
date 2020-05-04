@@ -6,8 +6,8 @@ import { ErrorHandler } from "utils/ErrorHandler";
 export default class Movable implements IMovable {
   id?: string;
   @observable children: IObservableArray<IControl> = observable([]);
-  @observable opened: boolean = false;
-  @observable title: string = "Control";
+  @observable opened = false;
+  @observable title = "Control";
   timeout?: NodeJS.Timeout;
 
   hasChild(control: IControl) {
@@ -16,7 +16,7 @@ export default class Movable implements IMovable {
 
   @action changeTitle(title: string) {
     throw new ErrorHandler("Redefine in children");
-  };
+  }
 
   @action addChild(child: IControl): void {
     this.children.push(child);

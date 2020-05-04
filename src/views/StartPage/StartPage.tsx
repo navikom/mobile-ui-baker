@@ -7,7 +7,7 @@ import Slide from "@material-ui/core/Slide";
 import Fade from "@material-ui/core/Fade";
 import withStyles from "@material-ui/core/styles/withStyles";
 
-import styles from "assets/jss/material-dashboard-react/views/singlePageStyle.tsx";
+import styles from "assets/jss/material-dashboard-react/views/singlePageStyle";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import Button from "components/CustomButtons/Button";
 import Grid from "@material-ui/core/Grid";

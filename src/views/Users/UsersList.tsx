@@ -19,9 +19,9 @@ import useStyle from "assets/jss/material-dashboard-react/components/listStyle";
 
 // core components
 const Table = lazy(() => import("components/Table/TablePagination"));
-const Card = lazy(() => import("components/Card/Card.tsx"));
-const CardHeader = lazy(() => import("components/Card/CardHeader.tsx"));
-const CardBody = lazy(() => import("components/Card/CardBody.tsx"));
+const Card = lazy(() => import("components/Card/Card"));
+const CardHeader = lazy(() => import("components/Card/CardHeader"));
+const CardBody = lazy(() => import("components/Card/CardBody"));
 
 const UsersList = observer((props: RouteComponentProps) => {
   useDisposable(() => when(() => App.sessionIsReady, () => Users.fetchItems()));

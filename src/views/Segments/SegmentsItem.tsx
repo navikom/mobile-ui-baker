@@ -7,7 +7,7 @@ import SegmentViewStore from "views/Segments/store/SegmentViewStore";
 import { lazy } from "utils";
 
 const SegmentData = lazy(() =>
-  import("views/Segments/components/SegmentDetails.tsx")
+  import("views/Segments/components/SegmentDetails")
 );
 
 type SegmentMatch = {

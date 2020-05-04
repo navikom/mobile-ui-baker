@@ -17,7 +17,7 @@ interface Props {
   checked?: boolean;
   onChange?: () => void;
   labelPlacement?: "end" | "start" | "top" | "bottom";
-  error?: boolean
+  error?: boolean;
 }
 
 const CustomCheckbox: React.FC<Props> = (

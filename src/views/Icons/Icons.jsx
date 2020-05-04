@@ -4,13 +4,13 @@ import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Hidden from "@material-ui/core/Hidden";
 // core components
-import GridItem from "components/Grid/GridItem.tsx";
-import GridContainer from "components/Grid/GridContainer.tsx";
-import Card from "components/Card/Card.tsx";
-import CardHeader from "components/Card/CardHeader.tsx";
-import CardBody from "components/Card/CardBody.tsx";
+import GridItem from "components/Grid/GridItem";
+import GridContainer from "components/Grid/GridContainer";
+import Card from "components/Card/Card";
+import CardHeader from "components/Card/CardHeader";
+import CardBody from "components/Card/CardBody";
 
-import iconsStyle from "assets/jss/material-dashboard-react/views/iconsStyle.jsx";
+import iconsStyle from "assets/jss/material-dashboard-react/views/iconsStyle";
 
 function Icons(props) {
   const { classes } = props;

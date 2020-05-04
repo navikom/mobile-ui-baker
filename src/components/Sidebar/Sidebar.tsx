@@ -17,7 +17,7 @@ import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import { IRoute } from 'interfaces/IRoute';
 
 // models
-import { App } from 'models/App.ts';
+import { App } from 'models/App';
 
 // core components
 import AdminNavbarLinks from 'components/Navbars/AdminNavbarLinks';
@@ -145,7 +145,7 @@ interface ISidebar extends RouteComponentProps {
 
 function Sidebar(props: ISidebar) {
   const classes = useSidebarStyle();
-  const { color, logo, image, logoText, routes, history } = props;
+  const { color, logo, image, logoText, routes } = props;
 
   return (
     <div>

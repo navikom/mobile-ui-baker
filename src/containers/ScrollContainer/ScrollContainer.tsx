@@ -3,11 +3,11 @@ import classNames from "classnames";
 import {
   drawerWidth,
   transition
-} from "assets/jss/material-dashboard-react.ts";
+} from "assets/jss/material-dashboard-react";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-import Button from "components/CustomButtons/Button.tsx";
+import Button from "components/CustomButtons/Button";
 import Icon from "@material-ui/core/Icon";
 import RootRef from "@material-ui/core/RootRef";
 import { createStyles } from "@material-ui/core";

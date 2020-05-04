@@ -1,4 +1,4 @@
-import { hexToRgb, whiteColor } from "assets/jss/material-dashboard-react.ts";
+import { hexToRgb, whiteColor } from "assets/jss/material-dashboard-react";
 import { createStyles } from "@material-ui/core";
 
 const customTabsStyle = createStyles({

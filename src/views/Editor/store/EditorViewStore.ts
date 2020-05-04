@@ -50,13 +50,13 @@ class EditorViewStore extends DisplayViewStore {
   @observable history = ControlStore.history;
   @observable selectedControl?: IControl;
   @observable dictionary = new EditorDictionary();
-  @observable tabToolsIndex: number = 0;
-  @observable autoSave: boolean = false;
-  @observable saving: boolean = false;
-  @observable savingProject: boolean = false;
+  @observable tabToolsIndex = 0;
+  @observable autoSave = false;
+  @observable saving = false;
+  @observable savingProject = false;
 
-  moveOpened: boolean = true;
-  debug: boolean = false;
+  moveOpened = true;
+  debug = false;
   timer?: NodeJS.Timeout;
 
   isCurrent = (screen: IControl) => {
@@ -166,7 +166,7 @@ class EditorViewStore extends DisplayViewStore {
         reject(new ErrorHandler(ERROR_ELEMENT_DOES_NOT_EXIST));
       }
     });
-  };
+  }
 
   saveControl = async (control: IControl) => {
 
@@ -341,7 +341,7 @@ class EditorViewStore extends DisplayViewStore {
     super.switchMode();
     const redo = { control: this.currentScreen.id, key: "mode", value: this.mode } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
-  };
+  }
 
   @action changeProjectTitle = (value: string) => {
     if(value.length > 50) {
@@ -358,14 +358,14 @@ class EditorViewStore extends DisplayViewStore {
     super.setBackground(background);
     const redo = { control: this.currentScreen.id, key: "background", value: {...this.background} } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
-  };
+  }
 
   @action setStatusBarColor(statusBarColor: string) {
     const undo = { control: this.currentScreen.id, key: "statusBarColor", value: this.statusBarColor } as unknown as IHistoryObject;
     super.setStatusBarColor(statusBarColor);
     const redo = { control: this.currentScreen.id, key: "statusBarColor", value: this.statusBarColor } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
-  };
+  }
 
   // 2. source.parent is not null and parent.parent is not null
   //  2.1 source.parent === parent.parent
@@ -600,7 +600,7 @@ class EditorViewStore extends DisplayViewStore {
     super.setCurrentScreen(screen);
     const redo = {control: this.currentScreen.id};
     !noHistory && this.history.add([HIST_CURRENT_SCREEN, undo, redo]);
-  };
+  }
 
   @action addScreen = () => {
     const screen = CreateControl(ControlEnum.Grid);

@@ -11,7 +11,7 @@ class CheckoutStore extends Errors {
   static CLOSE_EVENT = 'cart:closed';
   static PAYMENT_FINALIZED = 'payment:finalized';
   static FULFILLMENT_FINALIZED = 'fulfillment:finalized';
-  @observable success: boolean = false;
+  @observable success = false;
   toCo: ITwoCoInlineCart = (window as any).TwoCoInlineCart;
   onCartClosed: void;
   onPaymentSuccess: void;

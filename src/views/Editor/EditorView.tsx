@@ -75,7 +75,7 @@ const contentStyles = makeStyles((theme: Theme) =>
 );
 
 interface ContentProps {
-  items: IControl[],
+  items: IControl[];
   moveControl: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   handleDropCanvas: (item: DragAndDropItem) => void;
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;

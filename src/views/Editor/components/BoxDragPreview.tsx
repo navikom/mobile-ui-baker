@@ -13,4 +13,6 @@ const BoxDragPreview: React.FC = memo(({ children }) => {
   )
 });
 
+BoxDragPreview.displayName = 'BoxDragPreview';
+
 export default BoxDragPreview

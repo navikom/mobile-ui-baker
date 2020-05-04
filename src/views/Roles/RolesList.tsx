@@ -27,8 +27,8 @@ import Snackbar from "components/Snackbar/Snackbar";
 const GridContainer = lazy(() => import("components/Grid/GridContainer"));
 const GridItem = lazy(() => import("components/Grid/GridItem"));
 const Card = lazy(() => import("components/Card/Card"));
-const CardHeader = lazy(() => import("components/Card/CardHeader.tsx"));
-const CardBody = lazy(() => import("components/Card/CardBody.tsx"));
+const CardHeader = lazy(() => import("components/Card/CardHeader"));
+const CardBody = lazy(() => import("components/Card/CardBody"));
 const Table = lazy(() => import("components/Table/Table"));
 
 export default observer(() => {

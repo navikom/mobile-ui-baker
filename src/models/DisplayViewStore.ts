@@ -17,15 +17,15 @@ class DisplayViewStore extends Errors {
   @observable background: IBackgroundColor = { backgroundColor: whiteColor };
   @observable statusBarColor: string = whiteColor;
   @observable mode: Mode = Mode.WHITE;
-  @observable portrait: boolean = true;
-  @observable ios: boolean = false;
+  @observable portrait = true;
+  @observable ios = false;
   @observable project: IProject;
-  @observable fetchingProject: boolean = false;
-  @observable successMessage: string = '';
-  @observable loadingPlugin: boolean = false;
+  @observable fetchingProject = false;
+  @observable successMessage = '';
+  @observable loadingPlugin = false;
   pluginStore: PluginStore = new PluginStore(this);
 
-  debug: boolean = false;
+  debug = false;
 
   get toJSON() {
     return JSON.stringify({
@@ -82,19 +82,19 @@ class DisplayViewStore extends Errors {
 
   @action switchMode() {
     this.mode = this.mode === Mode.WHITE ? Mode.DARK : Mode.WHITE;
-  };
+  }
 
   @action setBackground(background: IBackgroundColor) {
     this.background = background;
-  };
+  }
 
   @action setStatusBarColor(statusBarColor: string) {
     this.statusBarColor = statusBarColor;
-  };
+  }
 
   @action setCurrentScreen(screen: IControl) {
     this.currentScreen = screen;
-  };
+  }
 
   @action setScreen(screen: IControl) {
     this.screens.push(screen);

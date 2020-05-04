@@ -207,10 +207,10 @@ const DeviceComponent: React.FC<DeviceComponentProps> = (
     <Grid container className={classes.container} justify="center">
       <div className={wrapper}>
         {ios ?
-          <IOSDevice children={children} mode={mode} background={background} statusBarColor={statusBarColor}
-                     portrait={portrait} /> :
-          <AndroidDevice children={children} mode={mode} background={background} statusBarColor={statusBarColor}
-                         portrait={portrait} />}
+          <IOSDevice mode={mode} background={background} statusBarColor={statusBarColor}
+                     portrait={portrait}>{children}</IOSDevice> :
+          <AndroidDevice mode={mode} background={background} statusBarColor={statusBarColor}
+                         portrait={portrait}>{children}</AndroidDevice>}
       </div>
     </Grid>
   );

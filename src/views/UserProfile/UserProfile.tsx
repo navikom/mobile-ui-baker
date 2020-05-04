@@ -6,7 +6,6 @@ import { observer, useDisposable } from "mobx-react-lite";
 import {
   InfoOutlined,
   ExitToAppOutlined,
-  SupervisedUserCircleOutlined,
   Clear,
   PersonOutlined, Web
 } from '@material-ui/icons';

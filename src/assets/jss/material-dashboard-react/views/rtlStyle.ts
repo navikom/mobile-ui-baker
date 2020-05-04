@@ -3,7 +3,7 @@ import {
   whiteColor,
   grayColor,
   hexToRgb
-} from "assets/jss/material-dashboard-react.ts";
+} from "assets/jss/material-dashboard-react";
 import { createStyles } from "@material-ui/core";
 
 const rtlStyle = createStyles({

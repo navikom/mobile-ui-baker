@@ -1,5 +1,5 @@
 
-import { IDateFilter, INumberFilter, IStringFilter } from "interfaces/IFilters.ts";
+import { IDateFilter, INumberFilter, IStringFilter } from "interfaces/IFilters";
 import { ISegmentViewForm } from "interfaces/ISegmentViewForm";
 
 export interface ISegmentDevice {

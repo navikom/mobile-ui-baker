@@ -12,7 +12,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import Clear from "@material-ui/icons/Clear";
 import Check from "@material-ui/icons/Check";
 // core components
-import customInputStyle from "assets/jss/material-dashboard-react/components/customInputStyle.tsx";
+import customInputStyle from "assets/jss/material-dashboard-react/components/customInputStyle";
 
 function CustomInput({ ...props }) {
   const {

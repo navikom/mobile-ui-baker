@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 
 interface CSSPropertiesProps {
   dictionary: EditorDictionary;
-  control: IControl,
+  control: IControl;
   styleKey: string;
 }
 

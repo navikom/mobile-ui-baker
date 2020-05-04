@@ -34,8 +34,8 @@ import {
 } from 'models/Constants';
 
 const DashboardPage = lazy(() => import('views/Dashboard/Dashboard'));
-const EventsList = lazy(() => import('views/Events/EventsList.tsx'));
-const EventsUsersItem = lazy(() => import('views/Events/EventsUsersItem.tsx'));
+const EventsList = lazy(() => import('views/Events/EventsList'));
+const EventsUsersItem = lazy(() => import('views/Events/EventsUsersItem'));
 const UserProfile = lazy(() => import('views/UserProfile/UserProfile'));
 const UsersList = lazy(() => import('views/Users/UsersList'));
 const UsersItem = lazy(() => import('views/Users/UsersItem'));
@@ -49,7 +49,6 @@ const ProjectsList = lazy(() => import('views/Projects/ProjectsList'));
 const ProjectItem = lazy(() => import('views/Projects/ProjectItem'));
 
 const Guide = lazy(() => import('views/Guide/Guide'));
-const Build = lazy(() => import('views/Build/Build'));
 const CampaignsList = lazy(() => import('views/Campaigns/CampaignsList'));
 const CampaignsItem = lazy(() => import('views/Campaigns/CampaignsItem'));
 const SegmentsList = lazy(() => import('views/Segments/SegmentsList'));
@@ -68,17 +67,6 @@ const dashboardRoutesMap = {
     rtlName: 'يرشد',
     icon: CastForEducation,
     component: Guide,
-    layout: LAYOUT_PANEL,
-    auth: true,
-    category: SIDEBAR_OTHER,
-    role: ROLE_SUPER_ADMIN
-  },
-  build: {
-    path: '/build',
-    name: 'Build',
-    rtlName: 'يرشد',
-    icon: BuildIcon,
-    component: Build,
     layout: LAYOUT_PANEL,
     auth: true,
     category: SIDEBAR_OTHER,

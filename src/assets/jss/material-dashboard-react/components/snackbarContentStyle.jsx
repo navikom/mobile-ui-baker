@@ -16,7 +16,7 @@ import {
   primaryColor,
   warningColor,
   hexToRgb
-} from "assets/jss/material-dashboard-react.ts";
+} from "assets/jss/material-dashboard-react";
 
 const snackbarContentStyle = {
   root: {

@@ -116,7 +116,7 @@ export class Project extends HttpBase {
     return this.fetchData('put', projectId.toString(), data, undefined, ['Content-Type', 'Accept']);
   }
 
-  sortImages(projectId: number, data: { imageId: number, sort: number }[]) {
+  sortImages(projectId: number, data: { imageId: number; sort: number }[]) {
     return this.fetchData('put', `${projectId}/images/sort`, data);
   }
 

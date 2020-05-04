@@ -11,7 +11,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Menu from "@material-ui/icons/Menu";
 // core components
 import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks";
-import Button from "components/CustomButtons/Button.tsx";
+import Button from "components/CustomButtons/Button";
 
 import useStyles from "assets/jss/material-dashboard-react/components/headerStyle";
 import { IRoute } from "interfaces/IRoute";
@@ -52,7 +52,7 @@ export default (props: IHeader) => {
     });
     return name;
   };
-  const { color, history } = props;
+  const { color } = props;
   const appBarClasses = classNames({
     [" " + classes[color]]: color
   });

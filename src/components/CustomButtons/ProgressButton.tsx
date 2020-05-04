@@ -6,7 +6,7 @@ import classNames from "classnames";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 // core components
-import Button from "components/CustomButtons/Button.tsx";
+import Button from "components/CustomButtons/Button";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import { primaryColor } from "assets/jss/material-dashboard-react";
 

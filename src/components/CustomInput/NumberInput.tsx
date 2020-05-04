@@ -71,7 +71,7 @@ interface NumberInputProps {
   min?: number;
   max?: number;
   disabled?: boolean;
-  size?: "small" | "medium"
+  size?: "small" | "medium";
 }
 
 const NumberInput: React.FC<NumberInputProps> = (

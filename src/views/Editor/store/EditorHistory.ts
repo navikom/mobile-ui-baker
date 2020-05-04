@@ -34,7 +34,7 @@ export interface ControlStatic {
   controls: IControl[];
 }
 
-let debug = false;
+const debug = false;
 
 class EditorHistory implements IHistory {
   @observable stack: IObservableArray<[string, IHistoryObject, IHistoryObject]> = observable([]);
@@ -148,17 +148,17 @@ class EditorHistory implements IHistory {
         // "need to remove action by index", { control: this.id, index: this.actions.length - 1 }
         control.removeAction(object.index as number, true);
         break;
-      case HIST_EDIT_ACTION:
+      case HIST_EDIT_ACTION: {
         const [action, ...props] = object.action as string[];
         control.editAction(object.index as number, action, props.join("/"), true);
         break;
+      }
       case HIST_REMOVE_ACTION:
 
         control.setAction(object.index as number, object.action as string[]);
         break;
-      case HIST_HANDLE_DROP_CANVAS:
-
-        let screen = this.store.getById(object.screen as string);
+      case HIST_HANDLE_DROP_CANVAS: {
+        const screen = this.store.getById(object.screen as string);
         screen.removeChild(control);
         if (control.parentId && control.parentId !== screen.id) {
           const parent = this.store.getById(control.parentId);
@@ -167,24 +167,26 @@ class EditorHistory implements IHistory {
           this.store.removeItem(control);
         }
         break;
-      case HIST_DROP_PARENT:
-
-        let parent = this.store.getById(object.parent as string) as IControl;
-        let oldParent = this.store.getById(object.oldParent as string) as IControl;
+      }
+      case HIST_DROP_PARENT: {
+        const parent = this.store.getById(object.parent as string) as IControl;
+        const oldParent = this.store.getById(object.oldParent as string) as IControl;
         parent.removeChild(control);
         oldParent.spliceChild(object.index as number, control);
         break;
-      case HIST_DROP_INDEX:
-
-        parent = this.store.getById(object.parent as string) as IControl;
+      }
+      case HIST_DROP_INDEX: {
+        const parent = this.store.getById(object.parent as string) as IControl;
         parent.moveChildren(object.index as number, object.oldIndex as number);
         break;
-      case HIST_DROP:
+      }
+      case HIST_DROP: {
         // "remove control from the parent and from the Control.controls" { control, parent}
-        let parent1 = this.store.getById(object.parent as string) as IControl;
+        const parent1 = this.store.getById(object.parent as string) as IControl;
         parent1.removeChild(control);
         this.store.removeItem(control);
         break;
+      }
       case HIST_CSS_PROP:
         object.method &&
         control.applyPropertyMethod(object.key as string, object.method[0] as string, object.method[1] as string, object.method[2]);
@@ -195,11 +197,12 @@ class EditorHistory implements IHistory {
       case HIST_CURRENT_SCREEN:
         this.viewStore!.setCurrentScreen(control, true);
         break;
-      case HIST_ADD_SCREEN:
+      case HIST_ADD_SCREEN: {
         this.viewStore!.removeScreen(control, true);
-        let screen1 = this.store.getById(object.screen as string);
-        this.viewStore!.setCurrentScreen(screen1, true);
+        const screen = this.store.getById(object.screen as string);
+        this.viewStore!.setCurrentScreen(screen, true);
         break;
+      }
       case HIST_DELETE_SCREEN:
         this.viewStore!.setScreen(control);
         object.screen === control.id && this.viewStore!.setCurrentScreen(control, true);
@@ -256,16 +259,17 @@ class EditorHistory implements IHistory {
         // add action  { control: this.id, action: action.slice() }
         control.addAction(object.action as string[], true);
         break;
-      case HIST_EDIT_ACTION:
+      case HIST_EDIT_ACTION: {
         // edit action by index { control: this.id, action: action.slice(), index }
         const [action, ...props] = object.action as string[];
         control.editAction(object.index as number, action, props.join("/"), true);
         break;
+      }
       case HIST_REMOVE_ACTION:
         // remove action by index { control: this.id, index }
         control.removeAction(object.index as number, true);
         break;
-      case HIST_HANDLE_DROP_CANVAS:
+      case HIST_HANDLE_DROP_CANVAS: {
         // create control if not exists, remove from parent or screen add into the screen
         // { control: control.toJSON, screen: this.currentScreen.id }
         const screen = this.store.getById(object.screen as string) as IControl;
@@ -277,24 +281,28 @@ class EditorHistory implements IHistory {
         }
         screen.addChild(control);
         break;
-      case HIST_DROP_PARENT:
+      }
+      case HIST_DROP_PARENT: {
         // remove control from oldParent and splice to the parent by index { control: source.id, parent: parent.id, oldParent: sParent.id, index }
-        let oldParent = this.store.getById(object.oldParent as string) as IControl;
-        let parent = this.store.getById(object.parent as string) as IControl;
+        const oldParent = this.store.getById(object.oldParent as string) as IControl;
+        const parent = this.store.getById(object.parent as string) as IControl;
         oldParent.removeChild(control);
         parent.spliceChild(object.index as number, control);
         break;
-      case HIST_DROP_INDEX:
+      }
+      case HIST_DROP_INDEX: {
         // move control inside parent from oldIndex to index
         // { control: source.id, parent: pParent.id, index: sourceNewIndex, oldIndex: sourceCurrentIndex  }
-        parent = this.store.getById(object.parent as string) as IControl;
+        const parent = this.store.getById(object.parent as string) as IControl;
         parent.moveChildren(object.oldIndex as number, object.index as number);
         break;
-      case HIST_DROP:
+      }
+      case HIST_DROP: {
         // splice control into the parent by index {control: source.id, parent: pParent.id, index: newSourceIndex + 1}
-        let parent1 = this.store.getById(object.parent as string) as IControl;
-        parent1.spliceChild(object.index as number, control);
+        const parent = this.store.getById(object.parent as string) as IControl;
+        parent.spliceChild(object.index as number, control);
         break;
+      }
       case HIST_CSS_PROP:
         object.method &&
         control.applyPropertyMethod(object.key as string, object.method[0] as string, object.method[1] as string, object.method[2]);

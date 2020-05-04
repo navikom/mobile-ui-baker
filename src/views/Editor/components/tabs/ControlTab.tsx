@@ -69,7 +69,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-interface ControlTabProps extends IEditorTabsProps {}
+type ControlTabProps = IEditorTabsProps
 
 const ControlTabComponent: React.FC<ControlTabProps> = (
   { dictionary,

@@ -27,7 +27,7 @@ describe("Control", () => {
 
   it("New Control element has enabled style 'padding'", () => {
     const grid = CreateControl(ControlEnum.Grid);
-    expect(grid.styles.hasOwnProperty("padding")).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBe(false);
   });
 
   it("Add new style will add clone of the main style and makes record [control.id]/[styleName]" +
@@ -57,8 +57,8 @@ describe("Control", () => {
 
   it("Merge styles", () => {
     const grid = CreateControl(ControlEnum.Grid);
-    expect(grid.styles.hasOwnProperty("width")).toBeFalsy();
-    expect(grid.styles.hasOwnProperty("padding")).toBeFalsy();
+    expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeFalsy();
+    expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
     const width = mainStyle![9];
     expect(width.key === "width").toBeTruthy();
@@ -71,8 +71,8 @@ describe("Control", () => {
           .makeExpandable()
       ]]
     ]));
-    expect(grid.styles.hasOwnProperty("width")).toBeTruthy();
-    expect(grid.styles.hasOwnProperty("padding")).toBeFalsy();
+    expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeTruthy();
+    expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
     const width2 = mainStyle![9];
     expect(width2.enabled).toBeTruthy();
     expect(width === width2).toBeTruthy();
@@ -144,7 +144,7 @@ describe("Control", () => {
     expect(grid2 === grid).toBeFalsy();
 
     expect(grid2.cssStyles.has("Style1")).toBeTruthy();
-    expect(grid2.styles.hasOwnProperty("backgroundColor")).toBeFalsy();
+    expect(Object.prototype.hasOwnProperty.call(grid2.styles,"backgroundColor")).toBeFalsy();
     grid2.addClass("Style1");
     expect(grid2.styles.backgroundColor === "red").toBeTruthy();
   });

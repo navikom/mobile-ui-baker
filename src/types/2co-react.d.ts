@@ -2,7 +2,7 @@ declare module '2co-react' {
   interface TCOProps {
     sellerId: string;
     publishableKey: string;
-    sandbox?: boolean
+    sandbox?: boolean;
     showForm: boolean;
     showModal?: boolean;
     showLoading?: boolean;

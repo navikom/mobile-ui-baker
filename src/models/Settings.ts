@@ -20,10 +20,19 @@ class Beefree implements IBeefree {
 
 class SettingsStore implements ISettings {
  @observable loaded = false;
- @observable cloudinaryPath?: string;
- @observable cloudinaryFolder?: string;
- @observable beefree?: IBeefree;
- @observable bucket?: string;
+ beefree: IBeefree;
+ bucket: string;
+ cloudinaryFolder: string;
+ cloudinaryPath: string;
+
+ constructor() {
+  this.cloudinaryPath = process.env.REACT_APP_CLOUDINARY_PATH || '';
+  this.cloudinaryFolder = process.env.REACT_APP_CLOUDINARY_FOLDER || '';
+  this.bucket = process.env.REACT_APP_S3_BUCKET || '';
+  this.beefree = Beefree.from(
+    process.env.REACT_APP_BEE_PLUGIN_CLIENT_ID || '',
+    process.env.REACT_APP_BEE_PLUGIN_CLIENT_SECRET || '');
+ }
 
  @action
  async fetch() {
@@ -36,11 +45,6 @@ class SettingsStore implements ISettings {
  }
 
  @action update(data: ISettings) {
-  this.cloudinaryPath = data.cloudinaryPath;
-  this.cloudinaryFolder = data.cloudinaryFolder;
-  this.bucket = data.bucket;
-  const beefree = data.bee!.split("___");
-  this.beefree = Beefree.from(beefree[0], beefree[1]);
   Events.setSystemEventsList(data.systemEventsList as []);
   Events.setCustomEventsList(data.customEventsList as []);
   Segments.setExpressions(data.expressions as []);

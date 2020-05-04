@@ -15,14 +15,14 @@ import Notifications from "@material-ui/icons/Notifications";
 import Dashboard from "@material-ui/icons/Dashboard";
 import Search from "@material-ui/icons/Search";
 // core components
-import CustomInput from "components/CustomInput/CustomInput.tsx";
-import Button from "components/CustomButtons/Button.tsx";
+import CustomInput from "components/CustomInput/CustomInput";
+import Button from "components/CustomButtons/Button";
 
 import rtlHeaderLinksStyle from "assets/jss/material-dashboard-react/components/rtlHeaderLinksStyle.jsx";
 
 // models
-import { App } from "models/App.ts";
-import { Auth } from "models/Auth/Auth.ts";
+import { App } from "models/App";
+import { Auth } from "models/Auth/Auth";
 
 // api
 

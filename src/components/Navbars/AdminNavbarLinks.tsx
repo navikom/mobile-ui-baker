@@ -18,8 +18,8 @@ import Person from "@material-ui/icons/Person";
 import Dashboard from "@material-ui/icons/Dashboard";
 
 // models
-import { App } from "models/App.ts";
-import { Auth } from "models/Auth/Auth.ts";
+import { App } from "models/App";
+import { Auth } from "models/Auth/Auth";
 import { ROUTE_EDITOR, ROUTE_LOGIN } from "models/Constants";
 
 import useStyles from "assets/jss/material-dashboard-react/components/headerLinksStyle";

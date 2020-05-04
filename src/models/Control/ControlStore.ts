@@ -153,12 +153,12 @@ class ControlStore extends Movable implements IControl {
   @observable title: string;
   @observable parentId?: string;
   @observable dropTarget?: DropEnum;
-  @observable visible: boolean = true;
-  @observable lockedChildren: boolean = false;
+  @observable visible = true;
+  @observable lockedChildren = false;
   @observable cssStyles: Map<string, IObservableArray<ICSSProperty>>;
   @observable classes: IObservableArray<string> = observable([MAIN_CSS_STYLE]);
   @observable actions: IObservableArray<IObservableArray<string>> = observable([]);
-  @observable saving: boolean = false;
+  @observable saving = false;
   instance?: IProject;
 
   get toJSON() {
@@ -189,7 +189,7 @@ class ControlStore extends Movable implements IControl {
     while (l--) {
       const clazz = this.classes[i++];
       this.cssStyles.has(clazz) && this.cssStyles.get(clazz)!.filter(prop => {
-        if (!prop.enabled && styles.hasOwnProperty(prop.key)) {
+        if (!prop.enabled && Object.prototype.hasOwnProperty.call(styles, prop.key)) {
           delete styles[prop.key];
         }
         return prop.enabled;
@@ -210,7 +210,7 @@ class ControlStore extends Movable implements IControl {
     return computed(() => this.classes.includes(key)).get();
   }
 
-  constructor(type: ControlEnum, id: string, title: string, allowChildren: boolean = true) {
+  constructor(type: ControlEnum, id: string, title: string, allowChildren = true) {
     super();
     this.id = id;
     this.type = type;
@@ -421,7 +421,7 @@ class ControlStore extends Movable implements IControl {
     const sliced = props.slice();
 
     while (sliced.length) {
-      let prop = sliced.shift() as ICSSProperty;
+      const prop = sliced.shift() as ICSSProperty;
       if (!this.cssStyles.has(key)) {
         continue;
       }

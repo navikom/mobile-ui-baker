@@ -50,10 +50,10 @@ describe("EditorHistory", () => {
   });
 
   it("handleCSSProperty history records", () => {
-    expect(control.styles.hasOwnProperty("position")).toBeFalsy();
+    expect(Object.prototype.hasOwnProperty.call(control.styles,"position")).toBeFalsy();
 
     control.switchEnabled(MAIN_CSS_STYLE, "position")();
-    expect(control.styles.hasOwnProperty("position")).toBeTruthy();
+    expect(Object.prototype.hasOwnProperty.call(control.styles,"position")).toBeTruthy();
     expect(control.styles.position === "static").toBeTruthy();
 
     control.setValue(MAIN_CSS_STYLE, "position")("absolute");
@@ -71,7 +71,7 @@ describe("EditorHistory", () => {
     expect(control.styles.position === "static").toBeTruthy();
 
     store.history.undo();
-    expect(control.styles.hasOwnProperty("position")).toBeFalsy();
+    expect(Object.prototype.hasOwnProperty.call(control.styles,"position")).toBeFalsy();
 
     store.history.redo();
     expect(control.styles.position === "static").toBeTruthy();

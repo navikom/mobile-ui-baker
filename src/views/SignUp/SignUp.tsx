@@ -9,20 +9,20 @@ import Fade from "@material-ui/core/Fade";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
 // models
-import { Auth } from "models/Auth/Auth.ts";
+import { Auth } from "models/Auth/Auth";
 
 // core components
 import GridItem from "components/Grid/GridItem";
-import GridContainer from "components/Grid/GridContainer.tsx";
-import CustomButton from "components/CustomButtons/Button.tsx";
-import Card from "components/Card/Card.tsx";
-import CardHeader from "components/Card/CardHeader.tsx";
-import CardBody from "components/Card/CardBody.tsx";
-import CustomInput from "components/CustomInput/CustomInput.tsx";
-import CardFooter from "components/Card/CardFooter.tsx";
+import GridContainer from "components/Grid/GridContainer";
+import CustomButton from "components/CustomButtons/Button";
+import Card from "components/Card/Card";
+import CardHeader from "components/Card/CardHeader";
+import CardBody from "components/Card/CardBody";
+import CustomInput from "components/CustomInput/CustomInput";
+import CardFooter from "components/Card/CardFooter";
 import { RouteComponentProps } from "react-router";
 
-import styles from "assets/jss/material-dashboard-react/views/singlePageStyle.tsx";
+import styles from "assets/jss/material-dashboard-react/views/singlePageStyle";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import CustomCheckbox from "components/CustomCheckbox/CustomCheckbox";
 import Typography from "@material-ui/core/Typography";

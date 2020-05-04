@@ -9,7 +9,7 @@ import IControl from 'interfaces/IControl';
 interface ContentProps {
   ios: boolean;
   background: IBackgroundColor;
-  items: IControl[],
+  items: IControl[];
 }
 
 const ContentComponent: React.FC<ContentProps> = () => {
@@ -21,7 +21,7 @@ const ContentComponent: React.FC<ContentProps> = () => {
 const Content = observer(ContentComponent);
 
 interface ContextComponentProps {
-  store: ViewerViewStore
+  store: ViewerViewStore;
 }
 
 const ContextComponent: React.FC<ContextComponentProps> = ({store}) => {

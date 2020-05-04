@@ -69,8 +69,8 @@ export class AuthStore extends Errors implements IFlow {
   @observable rememberMe = false;
   @observable anonymous = true;
   @observable sid?: string;
-  @observable successMessage: string = "";
-  @observable loading: boolean = false;
+  @observable successMessage = "";
+  @observable loading = false;
 
   disposer?: IReactionDisposer;
 

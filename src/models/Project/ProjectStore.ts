@@ -10,16 +10,16 @@ import { Users } from "models/User/UsersStore";
 
 export default class ProjectStore implements IProject {
   createdAt: Date = new Date();
-  isBuyer: boolean = false;
+  isBuyer = false;
   owner?: IUser;
   @observable access: AccessEnum = AccessEnum.OWNER;
   @observable buyers: IObservableArray<IUser> = observable([]);
   @observable description?: string;
   @observable images: IObservableArray<IImage> = observable([]);
-  @observable price: number = 0;
-  @observable projectId: number = 0;
+  @observable price = 0;
+  @observable projectId = 0;
   @observable tags?: string;
-  @observable title: string = "Project";
+  @observable title = "Project";
   @observable versions: IObservableArray<IProjectVersion> = observable([]);
   type: ProjectEnum;
   updatedAt?: Date;
@@ -74,7 +74,7 @@ export default class ProjectStore implements IProject {
     return this;
   }
 
-  @action updateVersions(versions:IProjectVersion[]) {
+  @action updateVersions(versions: IProjectVersion[]) {
     this.versions.replace(versions.map(v => ProjectVersionStore.from(v)));
     return this;
   }

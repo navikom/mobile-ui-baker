@@ -223,6 +223,8 @@ const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
     )
   });
 
+ControlItem.displayName = 'ControlItem';
+
 const TreeItem = DropTarget(
   ItemTypes.TREE_CONTROL,
   {

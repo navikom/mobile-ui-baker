@@ -5,10 +5,10 @@ import { IFlow } from 'interfaces/IFlow';
 import { IUser } from 'interfaces/IUser';
 import { IRole } from 'interfaces/IRole';
 // models
-import { RoleStore } from 'models/Role/RoleStore.ts';
-import { UserStore } from 'models/User/UserStore.ts';
-import { Auth } from 'models/Auth/Auth.ts';
-import * as Constants from 'models/Constants.ts';
+import { RoleStore } from 'models/Role/RoleStore';
+import { UserStore } from 'models/User/UserStore';
+import { Auth } from 'models/Auth/Auth';
+import * as Constants from 'models/Constants';
 import { Settings } from 'models/Settings';
 import { Roles } from 'models/Role/RolesStore';
 import { Events } from 'models/Event/EventsStore';
@@ -16,7 +16,7 @@ import { Regions } from 'models/Region/RegionsStore';
 import CampaignViewStore from 'views/Campaigns/store/CampaignViewStore';
 import { api, Apis } from 'api';
 
-let debug = false;
+const debug = false;
 
 export class AppStore implements IFlow {
   @observable role: IRole = RoleStore.defaultRole();

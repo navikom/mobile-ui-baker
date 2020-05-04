@@ -6,7 +6,7 @@ import {
   blackColor,
   grayColor,
   hexToRgb
-} from "assets/jss/material-dashboard-react.ts";
+} from "assets/jss/material-dashboard-react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 
 const dropdownStyle = makeStyles((theme: Theme) =>

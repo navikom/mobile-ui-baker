@@ -11,20 +11,20 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import { lazy } from "utils";
 
 // core components
-const Navbar = lazy(() => import("Navbar.tsx"));
-const Footer = lazy(() => import("Footer.tsx"));
-const Sidebar = lazy(() => import("Sidebar.tsx"));
+const Navbar = lazy(() => import("Navbar"));
+const Footer = lazy(() => import("Footer"));
+const Sidebar = lazy(() => import("Sidebar"));
 const FixedPlugin = lazy(() => import("components/FixedPlugin/FixedPlugin.jsx"));
 
-import routes from "routes.ts";
+import routes from "routes";
 
-import rtlStyle from "assets/jss/material-dashboard-react/layouts/rtlStyle.jsx";
+import rtlStyle from "assets/jss/material-dashboard-react/layouts/rtlStyle";
 
 import image from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/reactlogo.png";
 
 // core containers
-const ScrollContainer = lazy(() => import("containers/ScrollContainer/ScrollContainer.tsx"));
+const ScrollContainer = lazy(() => import("containers/ScrollContainer/ScrollContainer"));
 
 const switchRoutes = (
   <Switch>

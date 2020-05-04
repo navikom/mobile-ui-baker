@@ -37,11 +37,11 @@ export default class ProjectDataStore extends Errors {
   };
   @observable project: IProject = ProjectStore.createEmpty(ProjectEnum.PROJECT);
   @observable errors?: {[key: string]: string};
-  @observable loaderOpen: boolean = false;
-  @observable fetchingProject: boolean = false;
-  @observable savingProject: boolean = false;
-  @observable changed: boolean = false;
-  @observable successMessage: string = "";
+  @observable loaderOpen = false;
+  @observable fetchingProject = false;
+  @observable savingProject = false;
+  @observable changed = false;
+  @observable successMessage = "";
   @observable files: any;
 
   @computed get readyToSave() {
@@ -115,7 +115,7 @@ export default class ProjectDataStore extends Errors {
 
   @action onDeletePreloaded(index: number) {
     this.files.splice(index, 1);
-  };
+  }
 
   @action async onSortImages(images: IImage[]) {
     const data = images.map((e,i) => ({imageId: e.imageId, sort: i}));

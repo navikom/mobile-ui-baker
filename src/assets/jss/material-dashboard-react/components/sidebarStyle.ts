@@ -14,7 +14,7 @@ import {
   blackColor,
   hexToRgb,
   whiteOpacity
-} from "assets/jss/material-dashboard-react.ts";
+} from "assets/jss/material-dashboard-react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 
 export default makeStyles((theme: Theme) =>

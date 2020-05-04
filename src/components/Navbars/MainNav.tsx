@@ -16,13 +16,13 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 
 // core components
-import Button from "components/CustomButtons/Button.tsx";
+import Button from "components/CustomButtons/Button";
 
 // interfaces
 import { IRoute } from "interfaces/IRoute";
 
 // model
-import * as Constants from "models/Constants.ts";
+import * as Constants from "models/Constants";
 import { App } from "models/App";
 
 import { mainNavRoutes, mainNavRoutesLoggedIn } from "routes";

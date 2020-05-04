@@ -4,9 +4,9 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
 // @material-ui/core components
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
-import routes from "routes.ts";
+import routes from "routes";
 
-import mainStyle from "assets/jss/material-dashboard-react/layouts/mainStyle.jsx";
+import mainStyle from "assets/jss/material-dashboard-react/layouts/mainStyle";
 
 import image from "assets/img/sidebar-2.jpg";
 import { IRoute } from "interfaces/IRoute";

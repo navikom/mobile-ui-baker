@@ -12,9 +12,9 @@ import { lazy } from "utils";
 const Nav = lazy(() => import("components/Navbars/MainNav"));
 const Footer = lazy(() => import("components/Footer/MainFooter"));
 
-import routes from "routes.ts";
+import routes from "routes";
 
-import mainStyle from "assets/jss/material-dashboard-react/layouts/mainStyle.jsx";
+import mainStyle from "assets/jss/material-dashboard-react/layouts/mainStyle";
 
 import image from "assets/img/sidebar-2.jpg";
 import { IRoute } from "interfaces/IRoute";

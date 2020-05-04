@@ -25,10 +25,10 @@ export default class CSSProperty implements ICSSProperty {
   @observable unit?: string;
 
   get title() {
-    let title = [];
+    const title = [];
     const items = Array.from(this.key);
     while (items.length) {
-      let char = items.shift() as string;
+      const char = items.shift() as string;
       title.push(char === char.toUpperCase() ? "-" + char.toLowerCase() : char);
     }
     return title.join("");
@@ -74,7 +74,7 @@ export default class CSSProperty implements ICSSProperty {
     value: string | number,
     defaultValue: string | number,
     category: string,
-    enabled: boolean = false,
+    enabled = false,
     valueType: CSSValueType = CSS_VALUE_STRING
     ) {
     this.key = key;

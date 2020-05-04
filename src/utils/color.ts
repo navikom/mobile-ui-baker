@@ -7,10 +7,8 @@ function hexToRgb(hex: string) {
   if ((hex.length < 2) || (hex.length > 6)) {
     return [0,0,0];
   }
-  let values = hex.split(''),
-    r,
-    g,
-    b;
+  const values = hex.split('');
+  let r, g, b;
 
   if (hex.length === 2) {
     r = parseInt(values[0].toString() + values[1].toString(), 16);

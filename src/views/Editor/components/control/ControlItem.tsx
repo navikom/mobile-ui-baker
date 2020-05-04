@@ -191,6 +191,8 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
     )
   });
 
+ControlItem.displayName = 'ControlItem';
+
 const Item = DropTarget(
   ItemTypes.CONTROL,
   {

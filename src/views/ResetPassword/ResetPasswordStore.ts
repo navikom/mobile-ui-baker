@@ -8,8 +8,8 @@ import { api, Apis } from "api";
 
 class ResetPasswordStore extends Errors {
   @observable store = new ChangePasswordStore();
-  @observable successMessage: string = "";
-  @observable fetching: boolean = false;
+  @observable successMessage = "";
+  @observable fetching = false;
   token: string;
 
   @computed get readyToSave() {

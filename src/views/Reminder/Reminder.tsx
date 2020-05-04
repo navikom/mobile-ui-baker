@@ -13,22 +13,21 @@ import { Auth } from "models/Auth/Auth";
 // core components
 import GridItem from "components/Grid/GridItem";
 import GridContainer from "components/Grid/GridContainer";
-import Button from "components/CustomButtons/Button.tsx";
-import Card from "components/Card/Card.tsx";
-import CardHeader from "components/Card/CardHeader.tsx";
-import CardBody from "components/Card/CardBody.tsx";
-import CustomInput from "components/CustomInput/CustomInput.tsx";
-import CardFooter from "components/Card/CardFooter.tsx";
+import Button from "components/CustomButtons/Button";
+import Card from "components/Card/Card";
+import CardHeader from "components/Card/CardHeader";
+import CardBody from "components/Card/CardBody";
+import CustomInput from "components/CustomInput/CustomInput";
+import CardFooter from "components/Card/CardFooter";
 
-import styles from "assets/jss/material-dashboard-react/views/singlePageStyle.tsx";
+import styles from "assets/jss/material-dashboard-react/views/singlePageStyle";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { ROUTE_RECOVERY } from "models/Constants";
 import Snackbar from "components/Snackbar/Snackbar";
 import AddAlert from "@material-ui/icons/AddAlert";
 import { Clear } from "@material-ui/icons";
 
-interface ReminderProps extends RouteComponentProps {
-}
+type ReminderProps = RouteComponentProps
 
 const Reminder: React.FC<ReminderProps> = ({history}) => {
   const [email, setEmail] = React.useState("");

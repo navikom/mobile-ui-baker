@@ -2,7 +2,7 @@ import {
   drawerWidth,
   transition,
   container
-} from "assets/jss/material-dashboard-react.ts";
+} from "assets/jss/material-dashboard-react";
 import { Theme, createStyles, makeStyles } from "@material-ui/core";
 
 export default makeStyles((theme: Theme) =>

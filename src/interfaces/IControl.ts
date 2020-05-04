@@ -79,8 +79,6 @@ export default interface IControl extends IMovable {
   applyPropertyMethod(styleKey: string, method: string, propName: string, value?: string | number | boolean): void;
 }
 
-export interface IGrid extends IControl {
-}
+export type IGrid = IControl
 
-export interface IText extends IControl {
-}
+export type IText = IControl

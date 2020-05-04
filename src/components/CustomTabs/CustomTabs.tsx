@@ -7,9 +7,9 @@ import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 // core components
-import Card from "components/Card/Card.tsx";
-import CardBody from "components/Card/CardBody.tsx";
-import CardHeader from "components/Card/CardHeader.tsx";
+import Card from "components/Card/Card";
+import CardBody from "components/Card/CardBody";
+import CardHeader from "components/Card/CardHeader";
 
 import customTabsStyle from "assets/jss/material-dashboard-react/components/customTabsStyle";
 

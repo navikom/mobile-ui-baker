@@ -14,7 +14,7 @@ interface IMuiConfig {
 }
 
 interface IEditorView {
-  dictionary?: { setData: <T extends typeof data>(newData: T & IObject) => void; };
+  dictionary?: { setData: <T extends typeof data>(newData: T & IObject) => void };
 
   setLoadingPlugin(value: boolean): void;
 
@@ -32,7 +32,7 @@ class EditorData {
   hideHeader: boolean;
   dictionary: typeof data;
 
-  constructor(routeLink: string, routeTitle: string, hideHeader: boolean = false, dictionary: typeof data = data) {
+  constructor(routeLink: string, routeTitle: string, hideHeader = false, dictionary: typeof data = data) {
     this.routeLink = routeLink;
     this.routeTitle = routeTitle;
     this.hideHeader = hideHeader;
@@ -56,8 +56,8 @@ class PluginStore {
   static FRAME_PRO_ACTION_SET_PROJECT = 'set_project';
   static FRAME_PRO_ACTION_MAKE_SCREENSHOT = 'make_screenshot';
 
-  proMode: boolean = false;
-  token: string = '';
+  proMode = false;
+  token = '';
   store: IEditorView;
 
   freeData: EditorData = new EditorData(ROUTE_ROOT, 'Mobile UI Editor');

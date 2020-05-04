@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Fab from "@material-ui/core/Fab";
 
-import buttonStyle from "assets/jss/material-dashboard-react/components/buttonStyle.tsx";
+import buttonStyle from "assets/jss/material-dashboard-react/components/buttonStyle";
 
 function FabButton({ ...props }) {
   const {

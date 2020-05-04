@@ -14,8 +14,8 @@ import Viewer from 'layouts/Viewer';
 import theme from 'assets/theme';
 
 // models
-import { App as AppStore } from 'models/App.ts';
-import * as Constants from 'models/Constants.ts';
+import { App as AppStore } from 'models/App';
+import * as Constants from 'models/Constants';
 
 import 'assets/css/material-dashboard-react.css';
 

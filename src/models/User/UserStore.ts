@@ -57,11 +57,11 @@ export class UserStore implements IUser {
   @observable regions?: IRegion[];
   @observable location?: IRegion;
   @observable referrals: IPagination<IUser>;
-  @observable anonymous: boolean = true;
+  @observable anonymous = true;
   @observable webpage: string | null = null;
   @observable uid: string | null = null;
   @observable secret: string | null = null;
-  @observable proPlan: boolean = false;
+  @observable proPlan = false;
   readonly roles: IObservableArray<IRole> = observable<IRole>([]);
 
 
