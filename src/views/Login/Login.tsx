@@ -109,18 +109,8 @@ class Login extends React.Component<LoginProps, LoginState> {
   render() {
     const { classes } = this.props;
     return (
-      <div>
         <GridContainer justify="center">
-          <Button
-            color="transparent"
-            className={classes.title}
-            onClick={() => this.props.history.replace(Constants.ROUTE_ROOT)}
-          >
-            {TITLE.toUpperCase()}
-          </Button>
-        </GridContainer>
-        <GridContainer justify="center">
-          <GridItem xs={12} sm={6} md={4}>
+          <GridItem xs={12} sm={8} md={5}>
             <Slide direction="down" in={true} mountOnEnter unmountOnExit>
               <Fade in={true} mountOnEnter unmountOnExit>
                 <div>
@@ -141,7 +131,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                       </GridContainer>
                       {Auth.hasError && (
                         <GridContainer justify="center">
-                          <GridItem xs={12} sm={10} md={10}>
+                          <GridItem xs={11} sm={10} md={10}>
                             <FormHelperText
                               error
                               className={classes.helper}>
@@ -184,7 +174,6 @@ class Login extends React.Component<LoginProps, LoginState> {
             </Slide>
           </GridItem>
         </GridContainer>
-      </div>
     );
   }
 }

@@ -351,5 +351,18 @@ export default {
   cardNumber: 'Card number',
   signUpForFree: 'Sign up for free',
   editorAndViewerInYourApp: 'Mobile Editor & Viewer in your web application',
-  youCanEmbedNowEditorInto: 'You can embed now Editor and Viewer into your web application'
+  youCanEmbedNowEditorInto: 'You can embed now Editor and Viewer into your web application',
+  forBetterExperience: 'for a better experience',
+  weAreMuiditor: 'We are MUIDITOR',
+  welcomeToBeautiful: 'Welcome to beautiful, fast Mobile UI creation',
+  muiditorStandsForBest: 'MUIDITOR stands for "Best Mobile UI CSS based Editor".\n' +
+    '            That\'s the ambitious goal that we set for this project.\n' +
+    '            Made with lots of passion, MUIDITOR is used both online here\n' +
+    '            at Editor and can be embedded in SaaS applications as Editor or/and Viewer',
+  muiditorFree: 'MUIDITOR Free',
+  noSignUpRequire: 'No signup required. Design a gorgeous Mobile UI instantly. Create, Edit, Save and share projects to attract people',
+  muiditorEmbedPlugin: 'MUIDITOR Embed Plugin',
+  embedMuiditorEditorAndOrViewer: 'Embed MUIDITOR Editor and/or Viewer to bring awesome Mobile UI creation and showing inside your Web app.',
+  muiditorEmbedPluginPro: 'MUIDITOR Embed Plugin Pro',
+  upgradeFromFreeToPro: 'Upgrade from Free to Pro to save, edit, copy, organize your Mobile Projects in embedded Editor and Viewer in own way.'
 };

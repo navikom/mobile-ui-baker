@@ -1,18 +1,20 @@
 import React from "react";
 // @material-ui/core components
-import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
 import Grid, { GridProps } from "@material-ui/core/Grid";
-import { createStyles } from "@material-ui/core";
+import { createStyles, makeStyles } from '@material-ui/core';
 
-const style = createStyles({
+const useStyles = makeStyles(theme => createStyles({
   grid: {
-    margin: "0 -15px !important",
-    width: "unset"
+    margin: "0 -15px",
+    width: "100%",
+    [theme.breakpoints.up("xs")]: {
+      margin: "0",
+    }
   }
-});
+}));
 
-function GridContainer(props: WithStyles<typeof style> & GridProps) {
-  const { classes, children, ...rest } = props;
+const GridContainer: React.FC<GridProps> = ({children, ...rest}) => {
+  const classes = useStyles();
   return (
     <Grid container {...rest} className={classes.grid}>
       {children}
@@ -20,4 +22,4 @@ function GridContainer(props: WithStyles<typeof style> & GridProps) {
   );
 }
 
-export default withStyles(style)(GridContainer);
+export default GridContainer;

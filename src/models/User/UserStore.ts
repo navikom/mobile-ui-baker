@@ -68,7 +68,7 @@ export class UserStore implements IUser {
   @computed
   get fullName(): string {
     const name = (this.firstName ? this.firstName : "") + (this.lastName ? " " + this.lastName : "");
-    return name.length ? name : "No name";
+    return name.length ? name : this.email;
   }
 
   @computed

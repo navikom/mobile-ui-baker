@@ -4,7 +4,6 @@ import {
   Person,
   CastForEducation,
   People,
-  Build as BuildIcon,
   SupervisedUserCircle,
   LinearScaleOutlined,
   DeviceHub,
@@ -12,7 +11,10 @@ import {
   PermPhoneMsg,
   ViewCompact,
   ConfirmationNumber,
-  PieChart, Apps
+  PieChart,
+  Apps,
+  Store,
+  Web
 } from '@material-ui/icons';
 
 import { lazy } from 'utils';
@@ -25,12 +27,11 @@ import {
   SIDEBAR_USER,
   ROLE_SUPER_ADMIN,
   ROLE_ADMIN,
-  LAYOUT_EMPTY,
   LAYOUT_EDITOR,
   LAYOUT_DOCS,
   SIDEBAR_DOCS_GET_STARTED,
   SIDEBAR_DOCS_EDITOR,
-  SIDEBAR_DOCS_VIEWER
+  SIDEBAR_DOCS_VIEWER, LAYOUT_EMPTY
 } from 'models/Constants';
 
 const DashboardPage = lazy(() => import('views/Dashboard/Dashboard'));
@@ -44,7 +45,7 @@ const Login = lazy(() => import('views/Login/Login'));
 const SignUp = lazy(() => import('views/SignUp/SignUp'));
 const Reminder = lazy(() => import('views/Reminder/Reminder'));
 const ResetPassword = lazy(() => import('views/ResetPassword/ResetPassword'));
-const StartPage = lazy(() => import('views/StartPage/StartPage'));
+const StartPage = lazy(() => import('views/LandingPage/LandingPage'));
 const ProjectsList = lazy(() => import('views/Projects/ProjectsList'));
 const ProjectItem = lazy(() => import('views/Projects/ProjectItem'));
 
@@ -193,19 +194,20 @@ const dashboardRoutesMap = {
     name: 'login',
     rtlName: 'لوحة الادارة',
     component: Login,
-    layout: LAYOUT_EMPTY
+    layout: LAYOUT_MAIN
   },
   signup: {
     path: '/sign-up',
     name: 'Sign up',
     rtlName: 'لوحة الادارة',
     component: SignUp,
-    layout: LAYOUT_EMPTY
+    layout: LAYOUT_MAIN
   },
   prices: {
     path: '/prices',
     name: 'Prices',
     rtlName: 'لوحة الادارة',
+    icon: Store,
     component: Prices,
     layout: LAYOUT_MAIN
   },
@@ -222,11 +224,12 @@ const dashboardRoutesMap = {
     name: 'recovery',
     rtlName: 'لوحة الادارة',
     component: ResetPassword,
-    layout: LAYOUT_EMPTY,
+    layout: LAYOUT_MAIN,
   },
   editor: {
     path: '/editor',
     name: 'editor',
+    icon: Web,
     rtlName: 'لوحة الادارة',
     component: Editor,
     layout: LAYOUT_EDITOR
@@ -242,6 +245,7 @@ const dashboardRoutesMap = {
   projects: {
     path: '/projects',
     name: 'projects',
+    icon: Apps,
     rtlName: 'لوحة الادارة',
     component: Projects,
     layout: LAYOUT_MAIN
@@ -250,15 +254,17 @@ const dashboardRoutesMap = {
     path: '/start-page',
     name: 'Start Page',
     rtlName: 'لوحة الادارة',
+    icon: Apps,
     component: StartPage,
-    layout: LAYOUT_MAIN
+    layout: LAYOUT_EMPTY
   },
   startPageMain: {
     path: '/',
+    icon: Apps,
     name: 'Start Page',
     rtlName: 'لوحة الادارة',
     component: StartPage,
-    layout: LAYOUT_MAIN
+    layout: LAYOUT_EMPTY
   },
   emailEngage: {
     path: '/campaigns/email',
@@ -374,8 +380,6 @@ export const documentationRoutes = [
 ];
 
 export const mainNavRoutes =
-  [dashboardRoutesMap.projects, dashboardRoutesMap.prices, dashboardRoutesMap.editor, dashboardRoutesMap.login];
-export const mainNavRoutesLoggedIn = [
-  dashboardRoutesMap.projects, dashboardRoutesMap.prices, dashboardRoutesMap.editor, dashboardRoutesMap.userProfile];
+  [dashboardRoutesMap.projects, dashboardRoutesMap.prices, dashboardRoutesMap.editor];
 
 export default Object.values(dashboardRoutesMap);

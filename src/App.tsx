@@ -7,7 +7,6 @@ import Panel from 'layouts/Panel';
 import Documentation from 'layouts/Documentation';
 import Main from 'layouts/Main';
 import Editor from 'layouts/Editor';
-import Projects from 'layouts/Projects';
 import Empty from 'layouts/Empty';
 import Viewer from 'layouts/Viewer';
 
@@ -58,33 +57,29 @@ function App() {
             path={Constants.ROUTE_EDITOR}
             component={WaitingComponent(Editor)}
           />
-          {
-            [Constants.ROUTE_LOGIN, Constants.ROUTE_SIGN_UP, Constants.ROUTE_RESET, Constants.ROUTE_CHECKOUT]
-              .map((route, i) => (
-                <Route
-                  key={i}
-                  path={route}
-                  component={WaitingComponent(Empty)}
-                />
-              ))
-          }
-          {
-            [Constants.ROUTE_ROOT, Constants.ROUTE_PRICES].map((route, i) => (
-              <Route
-                key={i}
-                path={route}
-                component={WaitingComponent(Main)}
-              />
-            ))
-          }
           <Route
             path={Constants.ROUTE_VIEWER}
             component={WaitingComponent(Viewer)}
           />
-          <Route
-            path={Constants.ROUTE_PROJECTS}
-            component={WaitingComponent(Projects)}
-          />
+          {
+            [Constants.ROUTE_LOGIN, Constants.ROUTE_SIGN_UP, Constants.ROUTE_RESET, Constants.ROUTE_PRICES, Constants.ROUTE_PROJECTS]
+              .map((route, i) => (
+                <Route
+                  key={i}
+                  path={route}
+                  component={WaitingComponent(Main)}
+                />
+              ))
+          }
+          {
+            [Constants.ROUTE_ROOT].map((route, i) => (
+              <Route
+                key={i}
+                path={route}
+                component={WaitingComponent(Empty)}
+              />
+            ))
+          }
           <Redirect to={Constants.ROUTE_START_PAGE} />
           <Route path="*" component={WaitingComponent(Panel)} />
         </Switch>

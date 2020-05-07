@@ -66,16 +66,6 @@ const ContextComponent: React.FC = () => {
     ...SharedProjects.previewList
   ];
   return (
-    <>
-      <AppBar position="fixed">
-        <Toolbar>
-          <NavLink to={ROUTE_ROOT}>
-            <Typography variant="h6" className={classes.title}>
-              {Dictionary.defValue(DictionaryService.keys.mobileUiEditor)}
-            </Typography>
-          </NavLink>
-        </Toolbar>
-      </AppBar>
       <div className={classes.root}>
         <GridList cellHeight={450} className={classes.gridList} cols={Math.min(6, tileData.length)}>
           {tileData.map((tile, i) => (
@@ -101,7 +91,6 @@ const ContextComponent: React.FC = () => {
           ))}
         </GridList>
       </div>
-    </>
   )
 };
 

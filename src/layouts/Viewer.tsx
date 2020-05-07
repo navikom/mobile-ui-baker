@@ -8,6 +8,7 @@ interface Props {
   history: History;
 }
 function ViewerLayout(props: Props) {
+  console.log(33333333);
   return <ViewerView {...props} />
 }
 

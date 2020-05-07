@@ -106,7 +106,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
 
   return (
     <div>
-      <Typography align="center" variant="subtitle1" className={classes.paragraph}>
+      <Typography align="center" variant="subtitle2" className={classes.paragraph}>
         {dictionary!.defValue(EditorDictionary.keys.elements)}
       </Typography>
       <div className={classes.container}>
@@ -116,7 +116,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
         }
         <CustomDragLayer />
       </div>
-      <Typography align="center" variant="subtitle1" className={classes.paragraph}>
+      <Typography align="center" variant="subtitle2" className={classes.paragraph}>
         {dictionary!.defValue(EditorDictionary.keys.controls)}
       </Typography>
       <div className={classes.container}>
@@ -127,7 +127,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           })
         }
       </div>
-      <Typography align="center" variant="subtitle1" className={classes.paragraph}>
+      <Typography align="center" variant="subtitle2" className={classes.paragraph}>
         {dictionary!.defValue(EditorDictionary.keys.sharedComponents)}
       </Typography>
       <div className={classes.container}>
@@ -138,7 +138,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           })
         }
       </div>
-      <Typography align="center" variant="subtitle1" className={classes.paragraph}>
+      <Typography align="center" variant="subtitle2" className={classes.paragraph}>
         {dictionary!.defValue(EditorDictionary.keys.components)}
       </Typography>
       <div className={classes.container}>

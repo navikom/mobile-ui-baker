@@ -25,13 +25,12 @@ import { IRoute } from "interfaces/IRoute";
 import * as Constants from "models/Constants";
 import { App } from "models/App";
 
-import { mainNavRoutes, mainNavRoutesLoggedIn } from "routes";
+import { mainNavRoutes } from "routes";
 import useStyles from "assets/jss/material-dashboard-react/components/headerStyle";
 import { Dictionary } from "services/Dictionary/Dictionary";
 
 import { whiteColor } from "assets/jss/material-dashboard-react";
 import { TITLE } from 'models/Constants';
-
 
 const StyledMenu = withStyles({
   paper: {},
@@ -58,7 +57,7 @@ const StyledMenuItem = withStyles((theme) => ({
 
 function nav(history: History, classes: any) {
 
-  return (App.loggedIn ? mainNavRoutesLoggedIn : mainNavRoutes).map((route: IRoute, i: number) => {
+  return (App.loggedIn ? mainNavRoutes : mainNavRoutes).map((route: IRoute, i: number) => {
     if(!route.path) return null;
     const link = classNames({
       [classes.link]: true,
@@ -78,7 +77,7 @@ function nav(history: History, classes: any) {
 }
 
 function navMobile(history: History, cb: () => void) {
-  return (App.loggedIn ? mainNavRoutesLoggedIn : mainNavRoutes).map((route: IRoute, i: number) => {
+  return (App.loggedIn ? mainNavRoutes : mainNavRoutes).map((route: IRoute, i: number) => {
     if(!route.path) return null;
     return (
       <StyledMenuItem

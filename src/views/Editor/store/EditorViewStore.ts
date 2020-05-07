@@ -50,7 +50,7 @@ class EditorViewStore extends DisplayViewStore {
   @observable history = ControlStore.history;
   @observable selectedControl?: IControl;
   @observable dictionary = new EditorDictionary();
-  @observable tabToolsIndex = 0;
+  @observable tabToolsIndex = 1;
   @observable autoSave = false;
   @observable saving = false;
   @observable savingProject = false;

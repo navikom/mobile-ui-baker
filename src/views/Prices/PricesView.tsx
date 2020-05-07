@@ -5,7 +5,7 @@ import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { StarBorder } from '@material-ui/icons';
+import { Check, Clear, StarBorder } from '@material-ui/icons';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
@@ -73,14 +73,20 @@ const PricesView: React.FC = () => {
   const classes = useStyles();
   const checkoutStore = new CheckoutStore(CheckoutStore.PRO_PLAN_CODE);
 
+  const description = (pro: boolean) => {
+    return [
+      [true, 'Embed Drag & drop editor'],
+      [true, 'Embed Mobile UI Viewer'],
+      [pro, 'Ads-free Editor'],
+      [pro, '[Editor] header & tools customization'],
+      [pro, '[Viewer] tools customization'],
+    ]
+  }
   const tiers = [
     {
       title: DictionaryService.keys.freePlan,
       price: '0',
-      description: [
-        'Embed Drag & drop editor',
-        'Embed Mobile UI Viewer',
-      ],
+      description: description(false),
       buttonText: App.loggedIn ? DictionaryService.keys.getStarted : Dictionary.defValue(DictionaryService.keys.signUpForFree),
       action: () => {
         if (App.loggedIn) {
@@ -94,14 +100,9 @@ const PricesView: React.FC = () => {
     },
     {
       title: DictionaryService.keys.proPlan,
-      subheader: 'Most popular',
+      subheader: 'Full control',
       price: '20',
-      description: [
-        'Includes all Free plan benefits',
-        'Ads-free Editor',
-        'Editor header & tools customization',
-        'Viewer tools customization',
-      ],
+      description: description(true),
       buttonText: App.loggedIn ? DictionaryService.keys.upgrade : Dictionary.defValue(DictionaryService.keys.signUpForFree),
       action: () => {
         if (App.loggedIn) {
@@ -123,7 +124,7 @@ const PricesView: React.FC = () => {
       <Grid container spacing={5} alignItems="flex-end">
         {tiers.map((tier) => (
           // Enterprise card is full width at sm breakpoint
-          <Grid item key={tier.title} xs={12} sm={6} md={6}>
+          <Grid item key={tier.title} xs={11} sm={6} md={6}>
             <Card>
               <CardHeader
                 title={Dictionary.defValue(tier.title)}
@@ -143,10 +144,18 @@ const PricesView: React.FC = () => {
                   </Typography>
                 </div>
                 <ul>
-                  {tier.description.map((line) => (
-                    <Typography component="li" variant="subtitle1" align="center" key={line}>
-                      {line}
-                    </Typography>
+                  {tier.description.map((line, i) => (
+                    <Grid container justify="center" key={i.toString()}>
+                      {line[0] ? <Check color="secondary"/> : <Clear color="error"/>}
+                      <Typography
+                        style={{marginLeft: 5}}
+                        component="li"
+                        variant="subtitle1"
+                        align="center"
+                      >
+                        {line[1]}
+                      </Typography>
+                    </Grid>
                   ))}
                 </ul>
               </CardContent>

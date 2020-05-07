@@ -69,7 +69,6 @@ const ControlTabItem: React.FC<ControlProps> = (
 
   let style;
   if(control && control.instance) {
-    console.log(11111111, control, control && control.instance);
     style = {
       backgroundImage: `url(${control.instance.preview})`,
       backgroundRepeat: "no-repeat",

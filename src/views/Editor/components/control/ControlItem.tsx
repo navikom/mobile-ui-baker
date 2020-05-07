@@ -38,19 +38,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const borders = {
   [DropEnum.Left]: {
-    borderLeft: "4px dotted rgba(0,0,0,0.2)",
+    borderLeft: "2px dotted rgba(0,0,0,0.2)",
   },
   [DropEnum.Right]: {
-    borderRight: "4px dotted rgba(0,0,0,0.2)",
+    borderRight: "2px dotted rgba(0,0,0,0.2)",
   },
   [DropEnum.Above]: {
-    borderTop: "4px dotted rgba(0,0,0,0.2)",
+    borderTop: "2px dotted rgba(0,0,0,0.2)",
   },
   [DropEnum.Below]: {
-    borderBottom: "4px dotted rgba(0,0,0,0.2)",
+    borderBottom: "2px dotted rgba(0,0,0,0.2)",
   },
   [DropEnum.Inside]: {
-    border: "4px dotted rgba(0,0,0,0.2)",
+    border: "2px dotted rgba(0,0,0,0.2)",
   }
 };
 

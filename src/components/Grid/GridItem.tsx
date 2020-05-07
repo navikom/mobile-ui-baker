@@ -1,17 +1,16 @@
 import React from "react";
 // @material-ui/core components
-import withStyles from "@material-ui/core/styles/withStyles";
-import Grid from "@material-ui/core/Grid";
-import { createStyles } from "@material-ui/core";
+import Grid, { GridProps } from "@material-ui/core/Grid";
+import { createStyles, makeStyles } from '@material-ui/core';
 
-const style = createStyles({
+const useStyles = makeStyles(() => createStyles({
   grid: {
-    padding: "0 15px !important"
+    padding: "0 15px",
   }
-});
+}));
 
-function GridItem({ ...props }) {
-  const { classes, children, ...rest } = props;
+const GridItem: React.FC<GridProps> = ({ children, ...rest }) => {
+  const classes = useStyles();
   return (
     <Grid item {...rest} className={classes.grid}>
       {children}
@@ -19,4 +18,4 @@ function GridItem({ ...props }) {
   );
 }
 
-export default withStyles(style)(GridItem);
+export default GridItem;
