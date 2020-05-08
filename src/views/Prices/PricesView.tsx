@@ -1,5 +1,6 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { useEffect } from 'react';
+import { when } from 'mobx';
+import { observer, useDisposable } from 'mobx-react-lite';
 import { Grid, Theme } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
@@ -14,6 +15,7 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
 import { ROUTE_SIGN_UP, ROUTE_USER_PROFILE } from 'models/Constants';
 import CheckoutStore from 'views/Checkout/CheckoutStore';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@global': {
@@ -69,7 +71,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const PricesView: React.FC = () => {
+const PricesViewComponent: React.FC = () => {
   const classes = useStyles();
   const checkoutStore = new CheckoutStore(CheckoutStore.PRO_PLAN_CODE);
 
@@ -96,7 +98,7 @@ const PricesView: React.FC = () => {
         }
       },
       buttonVariant: 'outlined',
-      upgraded: false
+      upgraded: App.user && App.user!.proPlan
     },
     {
       title: DictionaryService.keys.proPlan,
@@ -183,4 +185,19 @@ const PricesView: React.FC = () => {
   )
 };
 
-export default observer(PricesView);
+const PricesView = observer(PricesViewComponent);
+
+const Prices: React.FC = () => {
+  const dispose = useDisposable(() =>
+    when(() => App.loggedIn, async () => {
+      App.fetchUserSubscription();
+    })
+  );
+
+  useEffect(() => {
+    return () => dispose();
+  }, [dispose]);
+  return <PricesView/>
+}
+
+export default Prices;

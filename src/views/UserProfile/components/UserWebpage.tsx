@@ -58,12 +58,29 @@ function UserWebpage() {
         </Typography>
       </Grid>
       <Grid container item direction="row">
-        <Typography variant="subtitle1" className={classNames(classes.note, classes.center)}>
-          {Dictionary.defValue(DictionaryService.keys.freePlan)}
-        </Typography>
-        <Button color="primary" variant="outlined" onClick={handleCheckout}>
-          {Dictionary.defValue(DictionaryService.keys.upgrade)}
-        </Button>
+        {
+          UserDetails.user!.proPlan ? (
+            <React.Fragment>
+              <Typography variant="subtitle1" className={centerNote}>
+                {Dictionary.defValue(DictionaryService.keys.proPlan)}
+              </Typography>
+              <Typography variant="subtitle1" color="primary">
+                {Dictionary.defValue(DictionaryService.keys.active)}
+              </Typography>
+            </React.Fragment>
+
+          ) : (
+            <React.Fragment>
+              <Typography variant="subtitle1" className={classNames(classes.note, classes.center)}>
+                {Dictionary.defValue(DictionaryService.keys.freePlan)}
+              </Typography>
+              <Button color="primary" variant="outlined" onClick={handleCheckout}>
+                {Dictionary.defValue(DictionaryService.keys.upgrade)}
+              </Button>
+            </React.Fragment>
+          )
+        }
+
       </Grid>
       <Grid container item direction="row">
         <Typography variant="subtitle2" className={centerNote}>

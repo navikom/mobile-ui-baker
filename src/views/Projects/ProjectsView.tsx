@@ -3,9 +3,6 @@ import { when } from "mobx";
 import { observer } from "mobx-react-lite";
 import { NavLink } from "react-router-dom";
 import { App } from "models/App";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
@@ -15,7 +12,7 @@ import { Edit } from "@material-ui/icons";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { SharedProjects } from "models/Project/SharedProjectsStore";
 import { OwnProjects } from "models/Project/OwnProjectsStore";
-import { ROUTE_EDITOR, ROUTE_ROOT, TABS_HEIGHT } from "models/Constants";
+import { ROUTE_EDITOR, TABS_HEIGHT } from "models/Constants";
 import EmptyProjectImg from "assets/img/projects/empty-project.png";
 import { blackOpacity, whiteOpacity } from "assets/jss/material-dashboard-react";
 

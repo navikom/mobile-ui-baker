@@ -60,11 +60,7 @@ export class AppStore implements IFlow {
   }
 
   @action setUser(model: IUser) {
-    if (!this.user) {
-      this.user = UserStore.from(model);
-    } else {
-      this.user.update(model);
-    }
+    this.user = UserStore.from(model);
   }
 
   stop(): void {
@@ -95,9 +91,13 @@ export class AppStore implements IFlow {
     if(!this.user) {
       return;
     }
-    const userId = this.user.userId;
-    const proPlan = await api(Apis.Main).user.fetchSubscription(userId);
-    this.user.update({proPlan} as IUser);
+    try {
+      const proPlan = await api(Apis.Main).user.fetchSubscription();
+      this.user.update({proPlan} as IUser);
+    } catch (e) {
+      console.log('User subscription error %s', e.message);
+    }
+
   }
 
   setHistory(history: History) {

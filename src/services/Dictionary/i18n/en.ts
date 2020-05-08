@@ -364,5 +364,7 @@ export default {
   muiditorEmbedPlugin: 'MUIDITOR Embed Plugin',
   embedMuiditorEditorAndOrViewer: 'Embed MUIDITOR Editor and/or Viewer to bring awesome Mobile UI creation and showing inside your Web app.',
   muiditorEmbedPluginPro: 'MUIDITOR Embed Plugin Pro',
-  upgradeFromFreeToPro: 'Upgrade from Free to Pro to save, edit, copy, organize your Mobile Projects in embedded Editor and Viewer in own way.'
+  upgradeFromFreeToPro: 'Upgrade from Free to Pro to save, edit, copy, organize your Mobile Projects in embedded Editor and Viewer in own way.',
+  active: 'Active'
+
 };

@@ -30,7 +30,7 @@ const GridContainer = lazy(() => import("components/Grid/GridContainer"));
 const GridItem = lazy(() => import("components/Grid/GridItem"));
 const UserPersonalData = lazy(() => import("views/UserProfile/components/UserPersonalData"));
 const UserCredentials = lazy(() => import("views/UserProfile/components/UserCredentials"));
-const UserReferrals = lazy(() => import("views/UserProfile/components/UserReferrals"));
+// const UserReferrals = lazy(() => import("views/UserProfile/components/UserReferrals"));
 const UserReferralDetails = lazy(() => import("views/UserProfile/components/UserReferralDetails"));
 const UserWebpage = lazy(() => import("views/UserProfile/components/UserWebpage"));
 
@@ -106,6 +106,7 @@ function UserProfile() {
       UserDetails.bindUser(user);
       Users.loadFullData(user);
       Users.fetchReferrals(user);
+      App.fetchUserSubscription();
     })
   );
 

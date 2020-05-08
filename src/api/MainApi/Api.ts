@@ -56,8 +56,8 @@ class User extends HttpBase {
     return this.fetchData('post', `reset/${token}`, { password, repeatPassword });
   }
 
-  fetchSubscription(userId: number) {
-    return this.fetchData('get', `${userId}/subscription`);
+  fetchSubscription() {
+    return this.fetchData('get', 'payment-subscription');
   }
 }
 
@@ -104,6 +104,16 @@ class Region extends HttpBase {
 class Payment extends HttpBase {
   constructor() {
     super('payments');
+  }
+}
+
+class Plugin extends HttpBase {
+  constructor() {
+    super('plugin');
+  }
+
+  subscription(token: string) {
+    return this.fetchData('get', `subscription/${token}`);
   }
 }
 
@@ -197,5 +207,9 @@ export default class Api extends ApiBase {
 
   get payment(): Payment {
     return new Payment();
+  }
+
+  get plugin(): Plugin {
+    return new Plugin();
   }
 }

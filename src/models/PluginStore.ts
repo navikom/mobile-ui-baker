@@ -3,6 +3,7 @@ import { ROUTE_ROOT } from 'models/Constants';
 import { data } from 'views/Editor/store/EditorDictionary';
 import { IObject } from 'services/Dictionary/AbstractDictionary';
 import { IProjectData } from 'interfaces/IProject';
+import { api, Apis } from '../api';
 
 interface IMuiConfig {
   autosave?: boolean;
@@ -79,8 +80,7 @@ class PluginStore {
     const tokenData = query.split('=');
     this.token = tokenData[1];
     try {
-      // fetch access by token
-      const response = {subscribed: true, origin: "*"};
+      const response = await api(Apis.Main).plugin.subscription(this.token);
       this.init();
       this.store.setLoadingPlugin(false);
       this.setProMode(response.subscribed);
