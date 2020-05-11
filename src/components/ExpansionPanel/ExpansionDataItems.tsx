@@ -41,13 +41,14 @@ const useInfoStyles = makeStyles((theme: Theme) =>
 
 export const ExpansionDataItems = ({ ...props }) => {
   const classes = useInfoStyles();
+  let data = props.data;
   return (
     <Grid container className={classes.wrapper}>
       <Grid container className={classes.nested} direction="row">
         <Grid item className={classes.label}>
           {props.title}:&nbsp;
         </Grid>
-        <Grid item>{props.data}</Grid>
+        <Grid item><pre>{data}</pre></Grid>
       </Grid>
     </Grid>
   );

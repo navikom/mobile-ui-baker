@@ -50,6 +50,24 @@ const Header: React.FC<HeaderProps> = (
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   React.useEffect(() => {
+    const headerColorChange = () => {
+      const windowsScrollTop = window.pageYOffset;
+      if (changeColorOnScroll && windowsScrollTop > changeColorOnScroll.height) {
+        document.body
+          .getElementsByTagName('header')[0]
+          .classList.remove(classes[color]);
+        document.body
+          .getElementsByTagName('header')[0]
+          .classList.add(classes[changeColorOnScroll.color]);
+      } else {
+        document.body
+          .getElementsByTagName('header')[0]
+          .classList.add(classes[color]);
+        changeColorOnScroll && document.body
+          .getElementsByTagName('header')[0]
+          .classList.remove(classes[changeColorOnScroll.color]);
+      }
+    };
     if (changeColorOnScroll) {
       window.addEventListener('scroll', headerColorChange);
     }
@@ -61,24 +79,6 @@ const Header: React.FC<HeaderProps> = (
   });
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
-  };
-  const headerColorChange = () => {
-    const windowsScrollTop = window.pageYOffset;
-    if (changeColorOnScroll && windowsScrollTop > changeColorOnScroll.height) {
-      document.body
-        .getElementsByTagName('header')[0]
-        .classList.remove(classes[color]);
-      document.body
-        .getElementsByTagName('header')[0]
-        .classList.add(classes[changeColorOnScroll.color]);
-    } else {
-      document.body
-        .getElementsByTagName('header')[0]
-        .classList.add(classes[color]);
-      changeColorOnScroll && document.body
-        .getElementsByTagName('header')[0]
-        .classList.remove(classes[changeColorOnScroll.color]);
-    }
   };
   const appBarClasses = classNames({
     [classes.appBar]: true,

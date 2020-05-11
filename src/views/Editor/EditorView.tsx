@@ -214,13 +214,13 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     store,
   }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const [height, setHeight] = React.useState(window.innerHeight);
+  const [height, setHeight] = React.useState(window.innerHeight - 12);
   const classes = editorStyles();
   const open = Boolean(anchorEl);
 
   useEffect(() => {
     const resize = () => {
-      setHeight(window.innerHeight);
+      setHeight(window.innerHeight - 12);
     };
     window.addEventListener('resize', resize);
     return () => {

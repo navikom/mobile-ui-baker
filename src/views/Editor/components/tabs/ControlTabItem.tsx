@@ -49,7 +49,11 @@ const ControlTabItem: React.FC<ControlProps> = (
   const classes = controlStyles();
 
   const [_, drag, preview] = useDrag({
-    item: { type: ItemTypes.CONTROL, typeControl: type, control: control || ControlStores[type!].create() },
+    item: {
+      type: ItemTypes.CONTROL,
+      typeControl: type,
+      control: control || ControlStores[type!].create()
+    },
     begin: () => {
       const controlItem = control || ControlStores[type!].create();
       return {
@@ -68,7 +72,7 @@ const ControlTabItem: React.FC<ControlProps> = (
   }, [preview]);
 
   let style;
-  if(control && control.instance) {
+  if(control && control.instance && control.instance.hasPreview) {
     style = {
       backgroundImage: `url(${control.instance.preview})`,
       backgroundRepeat: "no-repeat",

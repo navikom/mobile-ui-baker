@@ -1,8 +1,8 @@
 import React from 'react'
 import { XYCoord, useDragLayer } from 'react-dnd'
 import BoxDragPreview from './BoxDragPreview'
-import { ItemTypes } from "views/Editor/store/ItemTypes";
-import { ControlTabItemPreview } from "views/Editor/components/tabs/ControlTabItem";
+import { ItemTypes } from 'views/Editor/store/ItemTypes';
+import { ControlTabItemPreview } from 'views/Editor/components/tabs/ControlTabItem';
 
 const layerStyles: React.CSSProperties = {
   position: 'fixed',
@@ -47,12 +47,11 @@ const CustomDragLayer: React.FC = () => {
   }));
 
   function renderItem() {
-    switch (itemType) {
-      case ItemTypes.CONTROL:
-        return <BoxDragPreview><ControlTabItemPreview type={item.control ? item.control.title : item.typeControl} /></BoxDragPreview>;
-      default:
-        return null
+    if (itemType === ItemTypes.CONTROL && !item.control.parentId) {
+      return <BoxDragPreview><ControlTabItemPreview
+        type={item.control ? item.control.title : item.typeControl} /></BoxDragPreview>;
     }
+    return null;
   }
 
   if (!isDragging) {

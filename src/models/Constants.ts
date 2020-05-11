@@ -119,6 +119,7 @@ export const OR = 'or';
 export const ERROR_USER_DID_NOT_LOGIN = 'user-did-not-login';
 export const ERROR_ACCESS_DENIED = 'access-denied';
 export const ERROR_PROJECT_DOES_NOT_EXIST = 'project-does-not-exist';
+export const ERROR_DATA_IS_INCOMPATIBLE = 'data-is-incompatible';
 export const ERROR_ELEMENT_DOES_NOT_EXIST = 'element-does-not-exist';
 export const ERROR_PAYMENT_FAILED = 'payment-failed';
 

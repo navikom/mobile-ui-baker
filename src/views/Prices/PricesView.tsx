@@ -71,9 +71,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const PricesViewComponent: React.FC = () => {
+interface PricesViewComponentProps {
+  store: CheckoutStore
+}
+
+const PricesViewComponent: React.FC<PricesViewComponentProps> = ({ store }) => {
   const classes = useStyles();
-  const checkoutStore = new CheckoutStore(CheckoutStore.PRO_PLAN_CODE);
 
   const description = (pro: boolean) => {
     return [
@@ -98,7 +101,7 @@ const PricesViewComponent: React.FC = () => {
         }
       },
       buttonVariant: 'outlined',
-      upgraded: App.user && App.user!.proPlan
+      upgraded: App.loggedIn && App.user!.proPlan
     },
     {
       title: DictionaryService.keys.proPlan,
@@ -108,13 +111,13 @@ const PricesViewComponent: React.FC = () => {
       buttonText: App.loggedIn ? DictionaryService.keys.upgrade : Dictionary.defValue(DictionaryService.keys.signUpForFree),
       action: () => {
         if (App.loggedIn) {
-          checkoutStore.startCheckout();
+          store.startCheckout();
         } else {
           App.navigationHistory && App.navigationHistory.push(ROUTE_SIGN_UP);
         }
       },
       buttonVariant: 'contained',
-      upgraded: App.user && App.user!.proPlan
+      upgraded: App.loggedIn && App.user!.proPlan
     }
   ];
 
@@ -126,7 +129,7 @@ const PricesViewComponent: React.FC = () => {
       <Grid container spacing={5} alignItems="flex-end">
         {tiers.map((tier) => (
           // Enterprise card is full width at sm breakpoint
-          <Grid item key={tier.title} xs={11} sm={6} md={6}>
+          <Grid item key={tier.title} xs={12} sm={6} md={6}>
             <Card>
               <CardHeader
                 title={Dictionary.defValue(tier.title)}
@@ -148,9 +151,9 @@ const PricesViewComponent: React.FC = () => {
                 <ul>
                   {tier.description.map((line, i) => (
                     <Grid container justify="center" key={i.toString()}>
-                      {line[0] ? <Check color="secondary"/> : <Clear color="error"/>}
+                      {line[0] ? <Check color="secondary" /> : <Clear color="error" />}
                       <Typography
-                        style={{marginLeft: 5}}
+                        style={{ marginLeft: 5 }}
                         component="li"
                         variant="subtitle1"
                         align="center"
@@ -188,6 +191,7 @@ const PricesViewComponent: React.FC = () => {
 const PricesView = observer(PricesViewComponent);
 
 const Prices: React.FC = () => {
+  const checkoutStore = new CheckoutStore(CheckoutStore.PRO_PLAN_CODE);
   const dispose = useDisposable(() =>
     when(() => App.loggedIn, async () => {
       App.fetchUserSubscription();
@@ -197,7 +201,7 @@ const Prices: React.FC = () => {
   useEffect(() => {
     return () => dispose();
   }, [dispose]);
-  return <PricesView/>
+  return <PricesView store={checkoutStore} />
 }
 
 export default Prices;

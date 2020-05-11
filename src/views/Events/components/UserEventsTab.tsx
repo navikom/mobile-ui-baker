@@ -67,7 +67,7 @@ function EventInfo(props: EventInfoType) {
           title={Dictionary.defValue(DictionaryService.keys.custom)}
           data={Object.keys(props.data.info).map(k => [
             k,
-            props.data.info && props.data.info[k] ? JSON.stringify(props.data.info[k]) : ""
+            props.data.info && props.data.info[k] ? JSON.stringify(props.data.info[k], null, ' ') : ""
           ])}
         />
       )}

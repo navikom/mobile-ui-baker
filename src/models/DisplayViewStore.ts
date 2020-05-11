@@ -27,7 +27,7 @@ class DisplayViewStore extends Errors {
 
   debug = false;
 
-  get toJSON() {
+  get toJSONString() {
     return JSON.stringify({
       screens: this.screens.map(e => e.toJSON),
       background: this.background,

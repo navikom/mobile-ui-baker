@@ -14,11 +14,12 @@ abstract class AbstractDictionary {
 
   defValue(value: string, values?: string | string[]) {
     const key = this.reversed[value];
-    return this.value(key, values);
+    return key ? this.value(key, values) : value;
   }
 
   value(key: string, values?: string | string[]) {
     let data = this.data[key];
+    if(!data) return key;
     if(values) {
       if(Array.isArray(values)) {
         values.forEach((e, i) => {

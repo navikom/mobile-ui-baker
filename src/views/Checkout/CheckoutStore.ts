@@ -26,6 +26,13 @@ class CheckoutStore extends Errors {
 
     const _dev = process.env.NODE_ENV === MODE_DEVELOPMENT;
     _dev && this.toCo.cart.setTest(true);
+
+    this.onPaymentSuccess = this.toCo.events.subscribe(CheckoutStore.PAYMENT_FINALIZED, () => {
+      this.paymentSuccess();
+    });
+  }
+
+  startCheckout() {
     if (App.loggedIn) {
       // VISA	4111111111111111
       // MasterCard	5555555555554444
@@ -56,16 +63,6 @@ class CheckoutStore extends Errors {
       this.toCo.cart.setOrderExternalRef(this.uuid);
       this.toCo.cart.setExternalCustomerReference(user!.userId.toString());
     }
-
-    this.onCartClosed = this.toCo.events.subscribe(CheckoutStore.CLOSE_EVENT, () => {
-      this.checkIsUserSubscribed();
-    });
-    this.onPaymentSuccess = this.toCo.events.subscribe(CheckoutStore.PAYMENT_FINALIZED, () => {
-      this.paymentSuccess();
-    });
-  }
-
-  startCheckout() {
     this.toCo.products.removeAll();
 
     this.toCo.products.add({
@@ -77,12 +74,14 @@ class CheckoutStore extends Errors {
   }
 
   @action checkIsUserSubscribed() {
+    App.fetchUserSubscription();
   }
 
   @action
   async paymentSuccess() {
     try {
       await api(Apis.Main).payment.add({ payment: 20, title: 'Pro plan', serviceRef: this.uuid });
+      this.checkIsUserSubscribed();
     } catch (err) {
       console.log('Save payment error: %s', err.message);
     }

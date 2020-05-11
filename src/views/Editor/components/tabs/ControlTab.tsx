@@ -1,47 +1,47 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core";
-import { observer } from "mobx-react-lite";
+import React from 'react';
+import { makeStyles } from '@material-ui/core';
+import { observer } from 'mobx-react-lite';
 import {
   CloudUpload,
   Delete,
   FilterNone,
   KeyboardArrowUp,
   Lock,
-  LockOpen,
+  LockOpen, SaveAlt,
   Visibility,
   VisibilityOff
-} from "@material-ui/icons";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import Typography from "@material-ui/core/Typography";
-import Popover from "@material-ui/core/Popover";
+} from '@material-ui/icons';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import Popover from '@material-ui/core/Popover';
 
-import { ControlEnum } from "enums/ControlEnum";
-import EditorViewStore from "views/Editor/store/EditorViewStore";
-import ControlTabItem from "views/Editor/components/tabs/ControlTabItem";
-import CustomDragLayer from "views/Editor/components/CustomDragLayer";
-import IEditorTabsProps from "interfaces/IEditorTabsProps";
-import IControl from "interfaces/IControl";
-import CSSProperties from "views/Editor/components/tabs/CSSProperties";
-import EditorDictionary from "views/Editor/store/EditorDictionary";
-import { TABS_HEIGHT } from "models/Constants";
-import ControlActions from "views/Editor/components/tabs/ControlActions";
-import TextInput from "components/CustomInput/TextInput";
-import DialogAlert from "components/Dialog/DialogAlert";
-import { App } from "models/App";
-import { blackOpacity, primaryOpacity } from "assets/jss/material-dashboard-react";
-import { SharedControls } from "models/Project/ControlsStore";
-import { SharedComponents } from "models/Project/SharedComponentsStore";
-import { CreateFromInstance } from "models/Control/ControlStores";
-import { OwnComponents } from "models/Project/OwnComponentsStore";
+import { ControlEnum } from 'enums/ControlEnum';
+import EditorViewStore from 'views/Editor/store/EditorViewStore';
+import ControlTabItem from 'views/Editor/components/tabs/ControlTabItem';
+import CustomDragLayer from 'views/Editor/components/CustomDragLayer';
+import IEditorTabsProps from 'interfaces/IEditorTabsProps';
+import IControl from 'interfaces/IControl';
+import CSSProperties from 'views/Editor/components/tabs/CSSProperties';
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
+import { TABS_HEIGHT } from 'models/Constants';
+import ControlActions from 'views/Editor/components/tabs/ControlActions';
+import TextInput from 'components/CustomInput/TextInput';
+import DialogAlert from 'components/Dialog/DialogAlert';
+import { App } from 'models/App';
+import { blackOpacity, primaryOpacity } from 'assets/jss/material-dashboard-react';
+import { SharedControls } from 'models/Project/ControlsStore';
+import { SharedComponents } from 'models/Project/SharedComponentsStore';
+import { CreateFromInstance } from 'models/Control/ControlStores';
+import { OwnComponents } from 'models/Project/OwnComponentsStore';
 
 const useStyles = makeStyles(theme => ({
   container: {
-    display: "flex",
-    flexWrap: "wrap",
-    "& > *": {
+    display: 'flex',
+    flexWrap: 'wrap',
+    '& > *': {
       margin: theme.spacing(1),
     },
   },
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: primaryOpacity(.05)
   },
   paragraph: {
-    margin: "4px 0"
+    margin: '4px 0'
   },
   title: {
     marginTop: 5,
@@ -62,20 +62,24 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     backgroundColor: blackOpacity(0.001),
-    textOverflow: "ellipsis",
+    textOverflow: 'ellipsis',
   },
   menu: {
-    borderRadius: "50%"
+    borderRadius: '50%'
   }
 }));
 
 type ControlTabProps = IEditorTabsProps
 
 const ControlTabComponent: React.FC<ControlTabProps> = (
-  { dictionary,
+  {
+    dictionary,
     selectedControl,
     selectControl,
-    deleteControl }) => {
+    deleteControl,
+    importControl,
+    importComponent
+  }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const classes = useStyles();
@@ -99,7 +103,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
     handleClose();
   };
 
-  const title = selectedControl && selectedControl.instance && selectedControl.instance.type ? ["control", "component"][selectedControl.instance.type] : "control";
+  const title = selectedControl && selectedControl.instance && selectedControl.instance.type ? ['control', 'component'][selectedControl.instance.type] : 'control';
 
   const dialogContent =
     dictionary!.defValue(EditorDictionary.keys.deleteWarning, `${dictionary!.value(title)} "${selectedControl && selectedControl.title}"`);
@@ -116,31 +120,59 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
         }
         <CustomDragLayer />
       </div>
-      <Typography align="center" variant="subtitle2" className={classes.paragraph}>
-        {dictionary!.defValue(EditorDictionary.keys.controls)}
-      </Typography>
+      <Grid container alignItems="center" justify="space-between" className={classes.tools}>
+        <Typography align="center" variant="subtitle2" className={classes.paragraph}>
+          {dictionary!.defValue(EditorDictionary.keys.controls)}
+        </Typography>
+        {
+          App.isAdmin && (
+            <Tooltip
+              title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
+              <IconButton size="small" onClick={importControl}>
+                <SaveAlt />
+              </IconButton>
+            </Tooltip>
+          )
+        }
+      </Grid>
       <div className={classes.container}>
         {
           SharedControls.items.map((instance, i) => {
             const control = CreateFromInstance(instance);
-            return <ControlTabItem key={i.toString()} control={control} handleMenu={isAdmin ? handleMenu(control) : () => {}} />
+            return <ControlTabItem key={i.toString()} control={control}
+                                   handleMenu={isAdmin ? handleMenu(control) : () => {
+                                   }} />
           })
         }
       </div>
-      <Typography align="center" variant="subtitle2" className={classes.paragraph}>
-        {dictionary!.defValue(EditorDictionary.keys.sharedComponents)}
-      </Typography>
+
+      <Grid container alignItems="center" justify="space-between" className={classes.tools}>
+        <Typography variant="subtitle2" className={classes.paragraph}>
+          {dictionary!.defValue(EditorDictionary.keys.sharedComponents)}
+        </Typography>
+      </Grid>
       <div className={classes.container}>
         {
           SharedComponents.items.map((instance, i) => {
             const control = CreateFromInstance(instance);
-            return <ControlTabItem key={i.toString()} control={control} handleMenu={isAdmin ? handleMenu(control) : () => {}}  />
+            return <ControlTabItem key={i.toString()} control={control}
+                                   handleMenu={isAdmin ? handleMenu(control) : () => {
+                                   }} />
           })
         }
       </div>
-      <Typography align="center" variant="subtitle2" className={classes.paragraph}>
-        {dictionary!.defValue(EditorDictionary.keys.components)}
-      </Typography>
+      <Grid container alignItems="center" justify="space-between" className={classes.tools}>
+        <Typography align="center" variant="subtitle2" className={classes.paragraph}>
+          {dictionary!.defValue(EditorDictionary.keys.components)}
+        </Typography>
+        <Tooltip
+          title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
+          <IconButton size="small" onClick={importComponent}>
+            <SaveAlt />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+
       <div className={classes.container}>
         {
           OwnComponents.items.map((instance, i) => {
@@ -153,8 +185,8 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
         id="menu-controls"
         anchorEl={anchorEl}
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
+          vertical: 'top',
+          horizontal: 'right',
         }}
         transformOrigin={{
           vertical: 'bottom',
@@ -166,9 +198,9 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           paper: classes.menu
         }}
       >
-       <IconButton size="small" onClick={handleDelete}>
-         <Delete />
-       </IconButton>
+        <IconButton size="small" onClick={handleDelete}>
+          <Delete />
+        </IconButton>
       </Popover>
       <DialogAlert
         open={openDialog}
@@ -195,8 +227,8 @@ interface ControlDetailsProps {
   control?: IControl;
   dictionary: EditorDictionary;
   screens: IControl[];
-  saveControl: (control: IControl) => void;
-  saveComponent: (control: IControl) => void;
+  saveControl: (control: IControl, toFile?: boolean) => void;
+  saveComponent: (control: IControl, toFile?: boolean) => void;
 }
 
 const ControlDetails: React.FC<ControlDetailsProps> = observer((
@@ -208,12 +240,12 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
     isSelected,
     saveControl,
     saveComponent,
-    screens
+    screens,
   }
 ) => {
   const classes = useStyles();
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: '100%' }}>
       <Tooltip
         title={`${dictionary.defValue(EditorDictionary.keys.goTo)} ${dictionary.defValue(EditorDictionary.keys.controls)}`}
         placement="top">
@@ -253,10 +285,26 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
             </Tooltip>
           )
         }
+        {
+          App.isAdmin && (
+            <Tooltip
+              title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.toFile)}`}>
+              <IconButton size="small" onClick={() => saveControl(control!, true)} disabled={control!.saving}>
+                <SaveAlt style={{ transform: 'rotate(180deg)' }} />
+              </IconButton>
+            </Tooltip>
+          )
+        }
         <Tooltip
           title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.component)}`}>
           <IconButton size="small" onClick={() => saveComponent(control!)} disabled={control?.saving}>
             <CloudUpload />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.component)} ${dictionary!.defValue(EditorDictionary.keys.toFile)}`}>
+          <IconButton size="small" onClick={() => saveComponent(control!, true)} disabled={control?.saving}>
+            <SaveAlt style={{ transform: 'rotate(180deg)' }} />
           </IconButton>
         </Tooltip>
         <IconButton size="small" onClick={() => {
@@ -266,7 +314,7 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           <Delete />
         </IconButton>
       </Grid>
-      <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 10}px)`, overflow: "auto" }}>
+      <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 10}px)`, overflow: 'auto' }}>
         <CSSProperties control={control as IControl} dictionary={dictionary} />
         <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
       </div>
@@ -285,13 +333,15 @@ const Control: React.FC<IEditorTabsProps> = (
     saveControl,
     saveComponent,
     screens,
-    deleteControl
+    deleteControl,
+    importControl,
+    importComponent,
   }
 ) => {
   const [element, setElement] = React.useState<IControl | undefined>();
 
   const deleteElement = () => {
-    console.log("Delete control", element);
+    console.log('Delete control', element);
     deleteControl && element && deleteControl(element);
     setElement(undefined);
   };
@@ -301,13 +351,15 @@ const Control: React.FC<IEditorTabsProps> = (
   };
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: '100%' }}>
       {
         selectedControl === undefined ?
           <ControlTab
             selectedControl={element}
             selectControl={selectElement}
             deleteControl={deleteElement}
+            importComponent={importComponent}
+            importControl={importControl}
             dictionary={dictionary} /> :
           <ControlDetails
             saveControl={saveControl as (control: IControl) => void}

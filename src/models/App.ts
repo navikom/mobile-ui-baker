@@ -93,6 +93,7 @@ export class AppStore implements IFlow {
     }
     try {
       const proPlan = await api(Apis.Main).user.fetchSubscription();
+      console.log('fetchUserSubscription', proPlan);
       this.user.update({proPlan} as IUser);
     } catch (e) {
       console.log('User subscription error %s', e.message);

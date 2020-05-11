@@ -12,7 +12,7 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import {
-  CloudUpload,
+  CloudUpload, SaveAlt,
 } from "@material-ui/icons";
 import { blackOpacity } from "assets/jss/material-dashboard-react";
 import { Mode } from "enums/ModeEnum";
@@ -37,6 +37,9 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: blackOpacity(0.001),
     textOverflow: "ellipsis",
     fontSize: 17
+  },
+  btn: {
+    marginLeft: theme.typography.pxToRem(10)
   }
 }));
 
@@ -52,7 +55,8 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     savingProject,
     project,
     changeProjectTitle,
-    dictionary
+    dictionary,
+    importProject
   }
 ) => {
   const classes = useStyles();
@@ -65,11 +69,25 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         onChange={(e) => changeProjectTitle && changeProjectTitle(e.currentTarget.value)}
       />
     </Grid>
-    <Grid container justify="space-between" className={classes.tools}>
+    <Grid container className={classes.tools}>
       <Tooltip
         title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
-        <IconButton size="small" onClick={saveProject} disabled={savingProject}>
+        <IconButton size="small" onClick={() => saveProject && saveProject()} disabled={savingProject}>
           <CloudUpload />
+        </IconButton>
+      </Tooltip>
+      <Tooltip
+        className={classes.btn}
+        title={`${dictionary!.defValue(EditorDictionary.keys.export)} ${dictionary!.defValue(EditorDictionary.keys.project)} ${dictionary!.defValue(EditorDictionary.keys.toFile)}`}>
+        <IconButton size="small" onClick={() => saveProject && saveProject(true)}>
+          <SaveAlt style={{transform: 'rotate(180deg)'}}/>
+        </IconButton>
+      </Tooltip>
+      <Tooltip
+        className={classes.btn}
+        title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.project)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
+        <IconButton size="small" onClick={importProject}>
+          <SaveAlt />
         </IconButton>
       </Tooltip>
     </Grid>

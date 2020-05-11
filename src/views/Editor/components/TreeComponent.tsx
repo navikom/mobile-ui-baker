@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     selectedInput: {
       backgroundColor: primaryOpacity(.008),
+    },
+    btn: {
+      height: '80%'
     }
   })
 );
@@ -117,8 +120,12 @@ const TreeComponent: React.FC<TreeComponentProps> = (
       </Grid>
       {screens.map((screen, i) => (
         <div key={i.toString()} style={{marginTop: 15}}>
-          <Grid container className={isCurrent(screen) ? classes.selected : undefined} style={{paddingRight: 5}}>
-            <IconButton onClick={screen.switchOpened} size="small">
+          <Grid
+            container
+            className={isCurrent(screen) ? classes.selected : undefined}
+            style={{paddingRight: 5}}
+            alignItems="center">
+            <IconButton onClick={screen.switchOpened} size="small" className={classes.btn}>
               {screen.opened ? <Remove /> : <Add />}
             </IconButton>
             <TextInput
@@ -127,12 +134,12 @@ const TreeComponent: React.FC<TreeComponentProps> = (
               onChange={(e) => screen.changeTitle(e.currentTarget.value)}
               onClick={() => setCurrentScreen(screen)}
             />
-            <IconButton size="small" onClick={() => cloneScreen(screen)} style={{marginLeft: "auto"}}>
+            <IconButton size="small" onClick={() => cloneScreen(screen)} style={{marginLeft: "auto"}}  className={classes.btn}>
               <FilterNone />
             </IconButton>
             {
               screens.length > 1 && (
-                <IconButton size="small" onClick={() => removeScreen(screen)}>
+                <IconButton size="small" onClick={() => removeScreen(screen)}  className={classes.btn}>
                   <Delete />
                 </IconButton>
               )

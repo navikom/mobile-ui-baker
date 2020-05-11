@@ -127,7 +127,7 @@ class EditorHistory implements IHistory {
         control.changeTitle(object.title as string, true);
         break;
       case HIST_DELETE_SELF:
-        // "need to add control" { control: this.toJSON, index: parent!.children.indexOf(this) }
+        // "need to add control" { control: this.toJSONString, index: parent!.children.indexOf(this) }
         if (control.parentId) {
           const parent = this.store.getById(control.parentId);
           parent!.spliceChild(object.index as number, control);
@@ -271,7 +271,7 @@ class EditorHistory implements IHistory {
         break;
       case HIST_HANDLE_DROP_CANVAS: {
         // create control if not exists, remove from parent or screen add into the screen
-        // { control: control.toJSON, screen: this.currentScreen.id }
+        // { control: control.toJSONString, screen: this.currentScreen.id }
         const screen = this.store.getById(object.screen as string) as IControl;
         if (control.parentId) {
           const parent = this.store.getById(control.parentId as string) as IControl;

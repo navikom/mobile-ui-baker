@@ -1,6 +1,7 @@
 import React, { RefObject, useImperativeHandle } from "react";
 import { DragSource, DropTarget } from "react-dnd";
 import { observer } from "mobx-react-lite";
+import classNames from "classnames";
 import { DropEnum } from "enums/DropEnum";
 import { ItemTypes } from "views/Editor/store/ItemTypes";
 import { makeStyles } from "@material-ui/core/styles";
@@ -10,7 +11,6 @@ import hover from "utils/hover";
 import TextInput from "components/CustomInput/TextInput";
 import { Add, Delete, DragIndicator, FilterNone, Remove, Visibility, VisibilityOff } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
-import classNames from "classnames";
 import Grid from "@material-ui/core/Grid";
 import IControl from "interfaces/IControl";
 import { warningOpacity } from "assets/jss/material-dashboard-react";

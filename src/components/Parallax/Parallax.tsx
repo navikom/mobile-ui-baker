@@ -36,6 +36,10 @@ const Parallax: React.FC<ParallaxProps> = (
     "translate3d(0," + windowScrollTop + "px,0)"
   );
   React.useEffect(() => {
+    const resetTransform = () => {
+      const windowScrollTop = window.pageYOffset / 3;
+      setTransform("translate3d(0," + windowScrollTop + "px,0)");
+    };
     if (window.innerWidth >= 768) {
       window.addEventListener("scroll", resetTransform);
     }
@@ -45,10 +49,7 @@ const Parallax: React.FC<ParallaxProps> = (
       }
     };
   });
-  const resetTransform = () => {
-    const windowScrollTop = window.pageYOffset / 3;
-    setTransform("translate3d(0," + windowScrollTop + "px,0)");
-  };
+
   const classes = useStyles();
   const parallaxClasses = classNames({
     [classes.parallax]: true,

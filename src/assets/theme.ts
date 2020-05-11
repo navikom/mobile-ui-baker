@@ -1,17 +1,17 @@
-import { createMuiTheme } from "@material-ui/core";
+import { createMuiTheme } from '@material-ui/core';
 import {
   blackOpacity,
   dangerColor,
   infoColor,
   primaryColor,
   whiteColor
-} from "assets/jss/material-dashboard-react";
+} from 'assets/jss/material-dashboard-react';
 
 export default createMuiTheme({
   palette: {
     primary: { main: primaryColor[0] },
     secondary: { main: infoColor[0] },
-    background: { default: "#eeeeee" },
+    background: { default: '#eeeeee' },
     error: { main: dangerColor[0] }
   },
   overrides: {
@@ -30,18 +30,21 @@ export default createMuiTheme({
     },
     MuiOutlinedInput: {
       input: {
-        padding: "11px 12px"
+        padding: '11px 12px',
+        "&:hover,&:after": {
+          borderColor: primaryColor[1]
+        }
       },
       adornedStart: {
-        paddingLeft: "none"
+        paddingLeft: 'none'
       },
       adornedEnd: {
-        paddingRight: "none"
+        paddingRight: 'none'
       }
     },
     MuiInputLabel: {
       outlined: {
-        transform: "translate(14px, 13px) scale(1)"
+        transform: 'translate(14px, 13px) scale(1)'
       }
     },
     MuiInputAdornment: {
@@ -51,10 +54,10 @@ export default createMuiTheme({
     },
     MuiBadge: {
       badge: {
-        border: "1px solid " + whiteColor
+        border: '1px solid ' + whiteColor
       },
       anchorOriginTopRightRectangle: {
-        transform: "scale(1) translate(48%, -48%)"
+        transform: 'scale(1) translate(48%, -48%)'
       }
     },
     MuiIconButton: {
@@ -64,14 +67,19 @@ export default createMuiTheme({
     },
     MuiSvgIcon: {
       fontSizeSmall: {
-        fontSize: "0.8rem"
+        fontSize: '0.8rem'
       }
     },
     MuiPaper: {
       elevation4: {
         boxShadow:
-          "0px 2px 4px -1px rgba(0,0,0,0.1), 0px 4px 5px 0px rgba(0,0,0,0.04), 0px 1px 10px 0px rgba(0,0,0,0.02)"
+          '0px 2px 4px -1px rgba(0,0,0,0.1), 0px 4px 5px 0px rgba(0,0,0,0.04), 0px 1px 10px 0px rgba(0,0,0,0.02)'
       }
     },
+    MuiFormLabel: {
+      root: {
+        fontSize: '0.8rem'
+      }
+    }
   }
 });

@@ -1,7 +1,7 @@
-import EditorDictionary from "views/Editor/store/EditorDictionary";
-import IControl from "interfaces/IControl";
-import { Mode } from "enums/ModeEnum";
-import IProject, { IBackgroundColor } from "interfaces/IProject";
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
+import IControl from 'interfaces/IControl';
+import { Mode } from 'enums/ModeEnum';
+import IProject, { IBackgroundColor } from 'interfaces/IProject';
 
 export default interface IEditorTabsProps {
   mode?: Mode;
@@ -18,11 +18,14 @@ export default interface IEditorTabsProps {
   screens?: IControl[];
   autoSave?: boolean;
   switchAutoSave?: () => void;
-  saveProject?: () => void;
+  saveProject?: (toFile?: boolean) => void;
   savingProject?: boolean;
-  saveControl?: (control: IControl) => void;
-  saveComponent?: (control: IControl) => void;
+  saveControl?: (control: IControl, toFile?: boolean) => void;
+  saveComponent?: (control: IControl, toFile?: boolean) => void;
   deleteControl?: (control: IControl) => void;
   changeProjectTitle?: (value: string) => void;
   project?: IProject;
+  importProject?: () => void;
+  importControl?: () => void;
+  importComponent?: () => void;
 }

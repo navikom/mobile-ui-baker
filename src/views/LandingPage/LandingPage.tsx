@@ -47,10 +47,10 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
             <GridItem xs={12} sm={12} md={6}>
               <h1 className={classes.title}>Create Mobile UI, fast.</h1>
               <h4>
-                Muiditor is the easiest, quickest way to design Mobile UI's
+                Muiditor is the easiest, quickest way to design Mobile UI&apos;s
                 and share them to attract people.
                 <br/>
-                Create beautiful mobile UI's or embed Editor
+                Create beautiful mobile UI&apos;s or embed Editor
                 and/or Viewer to your own web application and allow
                 your users do it.
               </h4>

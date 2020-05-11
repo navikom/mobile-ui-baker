@@ -29,6 +29,10 @@ export default class ProjectStore implements IProject {
     return this.versions[0];
   }
 
+  @computed get hasPreview() {
+    return this.images.length > 0;
+  }
+
   @computed get preview() {
     return this.images[0] && this.images[0].path(this.userId);
   }

@@ -1,11 +1,11 @@
-import { action, computed, observable, runInAction } from "mobx";
-import html2canvas from "html2canvas";
+import { action, computed, observable, runInAction } from 'mobx';
+import html2canvas from 'html2canvas';
 
-import EditorDictionary from "views/Editor/store/EditorDictionary";
-import IControl from "interfaces/IControl";
-import { ControlEnum } from "enums/ControlEnum";
-import { DropEnum } from "enums/DropEnum";
-import CreateControl from "models/Control/ControlStores";
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
+import IControl from 'interfaces/IControl';
+import { ControlEnum } from 'enums/ControlEnum';
+import { DropEnum } from 'enums/DropEnum';
+import CreateControl from 'models/Control/ControlStores';
 import {
   HIST_ADD_SCREEN,
   HIST_CLONE_CONTROL,
@@ -18,20 +18,25 @@ import {
   HIST_HANDLE_DROP_CANVAS,
   HIST_PROJECT_TITLE_CHANGE,
   HIST_SETTINGS
-} from "views/Editor/store/EditorHistory";
-import { IHistoryObject, SettingsPropType } from "interfaces/IHistory";
-import IProject, { IBackgroundColor, IProjectVersion } from "interfaces/IProject";
-import ProjectsStore from "models/Project/ProjectsStore";
-import ProjectStore from "models/Project/ProjectStore";
-import ProjectEnum from "enums/ProjectEnum";
-import { Mode } from "enums/ModeEnum";
-import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import { App } from "models/App";
-import { ErrorHandler } from "utils/ErrorHandler";
-import { ERROR_ELEMENT_DOES_NOT_EXIST, ERROR_USER_DID_NOT_LOGIN, ROUTE_EDITOR } from "models/Constants";
-import ControlStore from "models/Control/ControlStore";
-import { SharedControls } from "models/Project/ControlsStore";
-import { OwnComponents } from "models/Project/OwnComponentsStore";
+} from 'views/Editor/store/EditorHistory';
+import { IHistoryObject, SettingsPropType } from 'interfaces/IHistory';
+import IProject, { IBackgroundColor, IProjectVersion } from 'interfaces/IProject';
+import ProjectsStore from 'models/Project/ProjectsStore';
+import ProjectStore from 'models/Project/ProjectStore';
+import ProjectEnum from 'enums/ProjectEnum';
+import { Mode } from 'enums/ModeEnum';
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+import { App } from 'models/App';
+import { ErrorHandler } from 'utils/ErrorHandler';
+import {
+  ERROR_DATA_IS_INCOMPATIBLE,
+  ERROR_ELEMENT_DOES_NOT_EXIST,
+  ERROR_USER_DID_NOT_LOGIN,
+  ROUTE_EDITOR
+} from 'models/Constants';
+import ControlStore from 'models/Control/ControlStore';
+import { SharedControls } from 'models/Project/ControlsStore';
+import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import PluginStore from 'models/PluginStore';
 import DisplayViewStore from 'models/DisplayViewStore';
 
@@ -43,8 +48,8 @@ export interface DragAndDropItem {
 }
 
 class EditorViewStore extends DisplayViewStore {
-  static STORE_JSON = "storeJson";
-  static AUTO_SAVE = "autoSave";
+  static STORE_JSON = 'storeJson';
+  static AUTO_SAVE = 'autoSave';
   static TABS = [EditorDictionary.keys.project, EditorDictionary.keys.controls];
   static CONTROLS = ControlEnum;
   @observable history = ControlStore.history;
@@ -68,13 +73,17 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   get toJSON() {
-    return JSON.stringify({
+    return {
       screens: this.screens.map(e => e.toJSON),
       background: this.background,
       statusBarColor: this.statusBarColor,
       mode: this.mode,
       title: this.project.title
-    })
+    }
+  }
+
+  get toJSONString() {
+    return JSON.stringify(this.toJSON);
   }
 
   @computed get tabProps() {
@@ -91,7 +100,8 @@ class EditorViewStore extends DisplayViewStore {
         switchAutoSave: this.switchAutoSave,
         saveProject: this.saveProject,
         project: this.project,
-        changeProjectTitle: this.changeProjectTitle
+        changeProjectTitle: this.changeProjectTitle,
+        importProject: () => this.importProject()
       },
       {
         deleteControl: this.deleteControl,
@@ -102,7 +112,9 @@ class EditorViewStore extends DisplayViewStore {
         dictionary: this.dictionary,
         screens: this.screens,
         saveControl: this.saveControl,
-        saveComponent: this.saveComponent
+        saveComponent: this.saveComponent,
+        importControl: () => this.importControl(),
+        importComponent: () => this.importComponent()
       }
     ];
     return props[this.tabToolsIndex];
@@ -113,14 +125,79 @@ class EditorViewStore extends DisplayViewStore {
 
     this.history.setFabric(CreateControl);
     this.history.setViewStore(this);
-    this.currentScreen.changeTitle("Screen", true);
+    this.currentScreen.changeTitle('Screen', true);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
   }
 
-  saveProject = async () => {
-    const json = this.toJSON;
+  importData(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.onchange = (e) => {
+        const file = (e.target as HTMLInputElement).files![0];
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+
+        reader.onload = readerEvent => {
+          const content = readerEvent.target!.result as string;
+          resolve(content);
+        }
+      }
+      input.click();
+    });
+  }
+
+  async importProject() {
+    try {
+      const data = await this.importData();
+      const json = JSON.parse(data);
+      if(!json.screens) {
+        throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
+      }
+      this.fromJSON(json);
+    } catch (e) {
+      this.setError(Dictionary.value(e.message, Dictionary.defValue(DictionaryService.keys.project)));
+      this.setTimeOut(() => this.setError(null), 5000);
+    }
+  }
+
+  async importControl() {
+    try {
+      const data = await this.importData();
+      const json = JSON.parse(data);
+      if(json.versionId === undefined) {
+        throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
+      }
+      SharedControls.push([{ type: json.type, projectId: 0, versions: [json], title: json.title } as IProject]);
+    } catch (e) {
+      this.setError(Dictionary.value(e.message, Dictionary.defValue(DictionaryService.keys.control)));
+      this.setTimeOut(() => this.setError(null), 5000);
+    }
+  }
+
+  async importComponent() {
+    try {
+      const data = await this.importData();
+      const json = JSON.parse(data);
+      if(json.versionId === undefined) {
+        throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
+      }
+      OwnComponents.push([{ type: json.type, projectId: 0, versions: [json], title: json.title } as IProject]);
+    } catch (e) {
+      this.setError(Dictionary.value(e.message, Dictionary.defValue(DictionaryService.keys.component)));
+      this.setTimeOut(() => this.setError(null), 5000);
+    }
+  }
+
+  saveProject = async (toFile?: boolean) => {
+
+    if (toFile) {
+      this.importToFile(this.toJSON);
+      return;
+    }
+    const json = this.toJSONString;
     this.pluginStore.postMessage(PluginStore.LISTENER_ON_SAVE_PROJECT, json);
-    if(this.pluginStore.proMode) {
+    if (this.pluginStore.proMode) {
       return;
     }
     this.setSavingProject(true);
@@ -129,7 +206,7 @@ class EditorViewStore extends DisplayViewStore {
         throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
       }
 
-      this.project.version.update({data: json} as unknown as IProjectVersion);
+      this.project.version.update({ data: json } as unknown as IProjectVersion);
       await ProjectsStore.save(this.project);
       runInAction(() => {
         this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, this.project.title);
@@ -137,9 +214,9 @@ class EditorViewStore extends DisplayViewStore {
       this.setSuccessRequest(true);
       this.setTimeOut(() => {
         this.setSuccessRequest(false);
-        const path = ROUTE_EDITOR + "/" + this.project.projectId;
-        if(window.location.pathname !== path) {
-          App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR + "/" + this.project.projectId);
+        const path = ROUTE_EDITOR + '/' + this.project.projectId;
+        if (window.location.pathname !== path) {
+          App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR + '/' + this.project.projectId);
         }
       }, 5000);
     } catch (err) {
@@ -151,12 +228,12 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   private makeScreenshot(control: IControl): Promise<[File, string]> {
-    const element = document.querySelector("#capture_" + control.id) as HTMLElement;
+    const element = document.querySelector('#capture_' + control.id) as HTMLElement;
     return new Promise((resolve, reject) => {
-      if(element) {
+      if (element) {
         html2canvas(element).then(canvas => {
           canvas.toBlob((blob) => {
-            const file = new File([blob as BlobPart], "capture.png", {
+            const file = new File([blob as BlobPart], 'capture.png', {
               type: 'image/png'
             });
             resolve([file, canvas.toDataURL()]);
@@ -168,19 +245,22 @@ class EditorViewStore extends DisplayViewStore {
     });
   }
 
-  saveControl = async (control: IControl) => {
+  saveControl = async (control: IControl, toFile?: boolean) => {
 
-    if(!control.instance) {
+    if (!control.instance) {
       const instance = ProjectStore.createEmpty(ProjectEnum.CONTROL);
       control.setInstance(instance);
-      instance.update({title: control.title} as IProject);
+      instance.update({ title: control.title } as IProject);
     }
-
     const json = control.toJSON;
-    control.instance!.version.update({data: json} as IProjectVersion);
+    control.instance!.version.update({ data: json } as IProjectVersion);
+    if (toFile) {
+      this.importToFile({...control.instance!.JSON, type: control.instance!.type});
+      return;
+    }
     const [file, base64] = await this.makeScreenshot(control);
     this.pluginStore.postMessage(PluginStore.LISTENER_ON_SAVE_COMPONENT, [json, base64]);
-    if(this.pluginStore.proMode) {
+    if (this.pluginStore.proMode) {
       return;
     }
     control.setSaving(true);
@@ -204,14 +284,24 @@ class EditorViewStore extends DisplayViewStore {
     control.setSaving(false);
   };
 
-  saveComponent = async (control: IControl) => {
-    if(!control.instance) {
+  saveComponent = async (control: IControl, toFile?: boolean) => {
+    if (!control.instance) {
       const instance = ProjectStore.createEmpty(ProjectEnum.COMPONENT);
       control.setInstance(instance);
-      instance.update({title: control.title} as IProject);
+      instance.update({ title: control.title } as IProject);
     }
-    await this.saveControl(control);
+    await this.saveControl(control, toFile);
   };
+
+  importToFile(data: { [key: string]: any }) {
+    data.data.parentId = null;
+    const content = JSON.stringify(data, null, '\t');
+    const a = document.createElement("a");
+    const file = new Blob([content], {type: 'text/plain'});
+    a.href = URL.createObjectURL(file);
+    a.download = `${data.title}.json`;
+    a.click();
+  }
 
   deleteControl = async (control: IControl) => {
     try {
@@ -235,43 +325,45 @@ class EditorViewStore extends DisplayViewStore {
     this.savingProject = value;
   }
 
-  @action async fetchProjectData(projectId: number) {
+  @action
+  async fetchProjectData(projectId: number) {
     this.setFetchingProject(true);
     try {
       await super.fetchProjectData(projectId);
       this.save();
     } catch (err) {
-      console.log("Fetch full instance data error %s", err.message);
+      console.log('Fetch full instance data error %s', err.message);
       App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
     }
     this.setFetchingProject(false);
   }
 
-  @action async checkLocalStorage() {
+  @action
+  async checkLocalStorage() {
     const autoSave = await localStorage.getItem(EditorViewStore.AUTO_SAVE);
     autoSave && this.setAutoSave(true);
     const json = await localStorage.getItem(EditorViewStore.STORE_JSON);
 
-    if(this.autoSave && json) {
+    if (this.autoSave && json) {
       try {
         const data = JSON.parse(json);
         this.fromJSON(data);
-      } catch(err) {
-        console.log("LocalStorage json data parse error %s", err.message);
+      } catch (err) {
+        console.log('LocalStorage json data parse error %s', err.message);
       }
     }
   }
 
   @action save() {
-    const json = this.toJSON;
+    const json = this.toJSONString;
     this.pluginStore.postMessage(PluginStore.LISTENER_ON_DATA, json);
-    if(!this.autoSave) {
+    if (!this.autoSave) {
       return;
     }
     this.saving = true;
 
     localStorage.setItem(EditorViewStore.STORE_JSON, json);
-    if(!this.timer) {
+    if (!this.timer) {
       this.timer = setTimeout(() => {
         runInAction(() => {
           this.saving = false;
@@ -296,7 +388,7 @@ class EditorViewStore extends DisplayViewStore {
 
   @action switchAutoSave = () => {
     this.autoSave = !this.autoSave;
-    if(this.autoSave) {
+    if (this.autoSave) {
       localStorage.setItem(EditorViewStore.AUTO_SAVE, EditorViewStore.AUTO_SAVE);
     } else {
       localStorage.clear();
@@ -336,34 +428,50 @@ class EditorViewStore extends DisplayViewStore {
   // ####### apply history start ######## //
 
   @action switchMode() {
-    const undo = { control: this.currentScreen.id, key: "mode", value: this.mode } as unknown as IHistoryObject;
+    const undo = { control: this.currentScreen.id, key: 'mode', value: this.mode } as unknown as IHistoryObject;
 
     super.switchMode();
-    const redo = { control: this.currentScreen.id, key: "mode", value: this.mode } as unknown as IHistoryObject;
+    const redo = { control: this.currentScreen.id, key: 'mode', value: this.mode } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
   }
 
   @action changeProjectTitle = (value: string) => {
-    if(value.length > 50) {
+    if (value.length > 50) {
       return;
     }
     const undo = { control: this.currentScreen.id, value: this.project.title } as unknown as IHistoryObject;
-    this.project.update({title: value} as IProject);
+    this.project.update({ title: value } as IProject);
     const redo = { control: this.currentScreen.id, value: this.project.title } as unknown as IHistoryObject;
     this.history.add([HIST_PROJECT_TITLE_CHANGE, undo, redo]);
   };
 
   @action setBackground(background: IBackgroundColor) {
-    const undo = { control: this.currentScreen.id, key: "background", value: {...this.background} } as unknown as IHistoryObject;
+    const undo = {
+      control: this.currentScreen.id,
+      key: 'background',
+      value: { ...this.background }
+    } as unknown as IHistoryObject;
     super.setBackground(background);
-    const redo = { control: this.currentScreen.id, key: "background", value: {...this.background} } as unknown as IHistoryObject;
+    const redo = {
+      control: this.currentScreen.id,
+      key: 'background',
+      value: { ...this.background }
+    } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
   }
 
   @action setStatusBarColor(statusBarColor: string) {
-    const undo = { control: this.currentScreen.id, key: "statusBarColor", value: this.statusBarColor } as unknown as IHistoryObject;
+    const undo = {
+      control: this.currentScreen.id,
+      key: 'statusBarColor',
+      value: this.statusBarColor
+    } as unknown as IHistoryObject;
     super.setStatusBarColor(statusBarColor);
-    const redo = { control: this.currentScreen.id, key: "statusBarColor", value: this.statusBarColor } as unknown as IHistoryObject;
+    const redo = {
+      control: this.currentScreen.id,
+      key: 'statusBarColor',
+      value: this.statusBarColor
+    } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
   }
 
@@ -404,7 +512,7 @@ class EditorViewStore extends DisplayViewStore {
       if (sParent === pParent) { // 2.1.
 
         if (dropAction === DropEnum.Inside) { // 2.1.1.
-          this.debug && console.log("2.1.1 DropEnum.Inside", parent.title, source.title);
+          this.debug && console.log('2.1.1 DropEnum.Inside', parent.title, source.title);
           if (parent.allowChildren) {
             this.history.add([HIST_DROP_PARENT, {
               control: source.id,
@@ -422,7 +530,7 @@ class EditorViewStore extends DisplayViewStore {
           }
 
         } else if (dropAction === DropEnum.Above) { // 2.1.2.
-          this.debug && console.log("2.1.2 DropEnum.Above", parent.title, source.title);
+          this.debug && console.log('2.1.2 DropEnum.Above', parent.title, source.title);
           const sourceCurrentIndex = sParent.children.indexOf(source);
           const sourceNewIndex = pParent.children.indexOf(parent);
           pParent.moveChildren(sourceCurrentIndex, sourceNewIndex);
@@ -440,7 +548,7 @@ class EditorViewStore extends DisplayViewStore {
 
         } else { // 2.1.3.
           // dropAction === DropEnum.Below
-          this.debug && console.log("2.1.3 DropEnum.Below", parent.title, source.title);
+          this.debug && console.log('2.1.3 DropEnum.Below', parent.title, source.title);
           const sourceCurrentIndex = sParent.children.indexOf(source);
           const sourceNewIndex = pParent.children.indexOf(parent);
           pParent.moveChildren(sourceCurrentIndex, sourceNewIndex);
@@ -462,7 +570,7 @@ class EditorViewStore extends DisplayViewStore {
         sParent.removeChild(source);
 
         if (dropAction === DropEnum.Inside) { // 2.2.1.
-          this.debug && console.log("2.2.1 DropEnum.Inside", parent.title, source.title);
+          this.debug && console.log('2.2.1 DropEnum.Inside', parent.title, source.title);
           if (parent.allowChildren) {
             this.history.add([HIST_DROP_PARENT, {
               control: source.id,
@@ -479,7 +587,7 @@ class EditorViewStore extends DisplayViewStore {
           }
 
         } else if (dropAction === DropEnum.Above) { // 2.2.2.
-          this.debug && console.log("2.2.2 DropEnum.Above", parent.title, source.title);
+          this.debug && console.log('2.2.2 DropEnum.Above', parent.title, source.title);
 
           const newSourceIndex = pParent.children.indexOf(parent);
 
@@ -498,7 +606,7 @@ class EditorViewStore extends DisplayViewStore {
 
         } else { // 2.2.3
           //dropAction === DropEnum.Below
-          this.debug && console.log("2.2.3 DropEnum.Below", parent.title, source.title);
+          this.debug && console.log('2.2.3 DropEnum.Below', parent.title, source.title);
 
           const newSourceIndex = pParent.children.indexOf(parent);
 
@@ -521,7 +629,7 @@ class EditorViewStore extends DisplayViewStore {
     } else if (!sParent && pParent) { // 4.
 
       if (dropAction === DropEnum.Inside) { // 4.1.
-        this.debug && console.log("4.1 DropEnum.Inside", parent.title, source.title);
+        this.debug && console.log('4.1 DropEnum.Inside', parent.title, source.title);
         if (parent.allowChildren) {
           this.history.add([HIST_DROP, { control: source.id, parent: parent.id },
             { control: source.toJSON, parent: parent.id, index: parent.children.length }]);
@@ -529,7 +637,7 @@ class EditorViewStore extends DisplayViewStore {
         }
 
       } else if (dropAction === DropEnum.Above) { // 4.2.
-        this.debug && console.log("4.2 DropEnum.Above", parent.title, source.title);
+        this.debug && console.log('4.2 DropEnum.Above', parent.title, source.title);
 
         const newSourceIndex = pParent.children.indexOf(parent);
 
@@ -538,7 +646,7 @@ class EditorViewStore extends DisplayViewStore {
         pParent.spliceChild(newSourceIndex, source);
 
       } else { // 4.3.
-        this.debug && console.log("4.3 DropEnum.Below", parent.title, source.title)
+        this.debug && console.log('4.3 DropEnum.Below', parent.title, source.title)
         //dropAction === DropEnum.Below
 
         const newSourceIndex = pParent.children.indexOf(parent);
@@ -550,7 +658,7 @@ class EditorViewStore extends DisplayViewStore {
       }
     }
 
-    this.debug && console.log("document state", source.parentId, sParent && sParent.children.length, pParent && pParent.children.length);
+    this.debug && console.log('document state', source.parentId, sParent && sParent.children.length, pParent && pParent.children.length);
   };
 
   @action handleDropCanvas = (item: DragAndDropItem) => {
@@ -561,7 +669,7 @@ class EditorViewStore extends DisplayViewStore {
       control = CreateControl(control.type);
     }
 
-    if(control.instance) {
+    if (control.instance) {
       control = control.clone();
     }
 
@@ -596,27 +704,27 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   @action setCurrentScreen(screen: IControl, noHistory?: boolean) {
-    const undo = {control: this.currentScreen.id};
+    const undo = { control: this.currentScreen.id };
     super.setCurrentScreen(screen);
-    const redo = {control: this.currentScreen.id};
+    const redo = { control: this.currentScreen.id };
     !noHistory && this.history.add([HIST_CURRENT_SCREEN, undo, redo]);
   }
 
   @action addScreen = () => {
     const screen = CreateControl(ControlEnum.Grid);
-    screen.changeTitle("Screen");
+    screen.changeTitle('Screen');
     this.screens.push(screen);
-    const undo = {control: screen.id, screen: this.currentScreen.id};
+    const undo = { control: screen.id, screen: this.currentScreen.id };
     this.currentScreen = screen;
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
-    const redo = {control: this.currentScreen.toJSON};
+    const redo = { control: this.currentScreen.toJSON };
     this.history.add([HIST_ADD_SCREEN, undo, redo]);
     return screen;
   };
 
   @action removeScreen = (screen: IControl, noHistory?: boolean) => {
-    const undo = {control: screen.toJSON, screen: this.currentScreen.id};
-    const redo = {control: screen.id};
+    const undo = { control: screen.toJSON, screen: this.currentScreen.id };
+    const redo = { control: screen.id };
     this.screens.splice(this.screens.indexOf(screen), 1);
     if (this.currentScreen === screen) {
       this.currentScreen = this.screens[0];
@@ -626,17 +734,17 @@ class EditorViewStore extends DisplayViewStore {
 
   @action cloneScreen = (screen: IControl) => {
     const clone = screen.clone();
-    const undo = {control: clone.id};
+    const undo = { control: clone.id };
     const index = this.screens.indexOf(screen);
     this.screens.splice(index + 1, 0, clone);
-    const redo = {control: clone.toJSON, index: index + 1};
+    const redo = { control: clone.toJSON, index: index + 1 };
     this.history.add([HIST_CLONE_SCREEN, undo, redo]);
   };
 
   @action cloneControl = (control: IControl) => {
     const clone = control.clone();
-    const undo = {control: clone.id};
-    const redo = {control: clone.toJSON, parent: control.parentId, index: -1};
+    const undo = { control: clone.id };
+    const redo = { control: clone.toJSON, parent: control.parentId, index: -1 };
     if (control.parentId) {
       const parent = ControlStore.getById(control.parentId);
       const index = parent!.children.indexOf(control);
@@ -653,6 +761,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   @action selectControl = (control?: IControl) => {
+    this.tabToolsIndex = 1;
     this.selectedControl = control;
   };
 

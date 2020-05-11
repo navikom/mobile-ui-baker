@@ -50,6 +50,7 @@ export default interface IProject extends WithPrimaryKey {
   images?: IImage[];
   isBuyer?: boolean;
   version: IProjectVersion;
+  hasPreview?: boolean;
   preview?: string;
   previewSize?: {width?: number; height?: number};
   JSON: {title: string; description?: string; price: number; data: IProjectData | IControl; versionId: number};

@@ -382,5 +382,4 @@ describe('EditorViewStore', () => {
 
   });
 
-
 });

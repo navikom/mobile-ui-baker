@@ -1,10 +1,11 @@
 import React from "react";
 import { makeStyles, withStyles } from "@material-ui/core";
-import LabeledInput from "components/CustomInput/LabeledInput";
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    position: "relative"
+    position: "relative",
+    padding: 0
   },
   input: {
     padding: 0,
@@ -34,14 +35,16 @@ const ColorInput: React.FC<ColorInputProps> = (
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <LabeledInput
+      <TextField
         {...rest}
-        className={classes.root}
-        value={color}
-        onChange={(e) => onChange && onChange(e as string)}
+        variant="outlined"
         inputProps={{
           style: { marginLeft: 40, width: 70 }
         }}
+        value={color}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange && onChange(e.target.value)
+        }
       />
       <input type="color" className={classes.input} value={color} onChange={(e) =>
         onChange && onChange(e.currentTarget.value)} />
