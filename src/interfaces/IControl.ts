@@ -21,6 +21,7 @@ export default interface IControl extends IMovable {
   actions: IObservableArray<IObservableArray<string>>;
   instance?: IProject;
   saving: boolean;
+  setId(value: string): void;
   activeClass(style: string): boolean;
 
   cssProperty(key: string, propName: string): ICSSProperty | undefined;
@@ -67,7 +68,7 @@ export default interface IControl extends IMovable {
 
   setSaving(value: boolean): void;
 
-  setInstance(instance: IProject): void;
+  setInstance(instance?: IProject): void;
 
   /// properties
   switchExpanded(key: string, propName: string): () => void;

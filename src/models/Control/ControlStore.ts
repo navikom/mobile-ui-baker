@@ -17,7 +17,7 @@ import {
   CSS_CAT_ANIMATIONS,
   CSS_CAT_BACKGROUND,
   CSS_CAT_BORDERS,
-  CSS_CAT_DIMENSIONS,
+  CSS_CAT_DIMENSIONS, CSS_CAT_FONT,
   CSS_VALUE_COLOR,
   CSS_VALUE_NUMBER,
   CSS_VALUE_SELECT
@@ -70,6 +70,8 @@ const styles = [
     .setShowWhen(['backgroundImage', 'expanded'])
     .setOptions(['no-repeat', 'repeat', 'repeat-x', 'repeat-y', 'space', 'round', 'repeat space', 'repeat repeat', 'round space', 'no-repeat round'])
     .setDescription(['backgroundSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size']),
+  new CSSProperty('opacity', 1, 1, CSS_CAT_BACKGROUND, false, CSS_VALUE_NUMBER)
+    .setControlProps({ min: 0, max: 1, double: true }),
   new CSSProperty('width', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
     .setUnits('px', ['px', '%', 'rem']),
   new CSSProperty('height', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
@@ -101,6 +103,7 @@ const styles = [
     .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
   new CSSProperty('marginLeft', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
     .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('zIndex', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER),
   new CSSProperty('border', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
     .makeExpandable().setDescription(['borderDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/border']),
   new CSSProperty('borderTop', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
@@ -199,6 +202,7 @@ class ControlStore extends Movable implements IControl {
           styles[prop.key] = prop.inject ? prop.inject.replace('$', prop.value) : prop.valueWithUnit;
         });
     }
+
     return styles;
   }
 
@@ -221,7 +225,11 @@ class ControlStore extends Movable implements IControl {
     ]);
   }
 
-  setInstance(project: IProject) {
+  setId(id: string) {
+    this.id = id;
+  }
+
+  setInstance(project?: IProject) {
     this.instance = project;
   }
 
@@ -273,11 +281,10 @@ class ControlStore extends Movable implements IControl {
   @action deleteSelf = (noHistory?: boolean) => {
     if (this.parentId) {
       const parent = ControlStore.getById(this.parentId);
-      !noHistory && ControlStore.history.add([HIST_DELETE_SELF,
-        { control: this.toJSON, index: parent!.children.indexOf(this) },
-        { control: this.id }
-      ]);
+      const undo = { control: this.toJSON, index: parent!.children.indexOf(this) };
+      const redo = { control: this.id };
       parent && parent.removeChild(this);
+      !noHistory && ControlStore.history.add([HIST_DELETE_SELF, undo, redo]);
     }
     ControlStore.removeItem(this);
   };
@@ -399,6 +406,10 @@ class ControlStore extends Movable implements IControl {
   @action cloneProps(clone: IControl) {
     clone.title = this.title;
     clone.mergeStyles(this.cssStyles);
+    this.actions && clone.actions.replace(this.actions.map(actions => {
+      return observable([actions[0], actions[1] === this.id ? clone.id : actions[1], actions[2]]);
+    }));
+    this.classes && clone.classes.replace(this.classes);
     if (clone.cssStyles.size > 1) {
       Array.from(clone.cssStyles.keys())
         .filter(k => k !== MAIN_CSS_STYLE).forEach(k => ControlStore.addClass(clone.id, k));
@@ -478,10 +489,10 @@ class ControlStore extends Movable implements IControl {
     this.controls.push(control);
   }
 
-  static getOrCreate(instance: ModelCtor, control: IControl) {
+  static getOrCreate(instance: ModelCtor, control: IControl, isMenu?: boolean) {
     let contr = this.getById(control.id);
     if (!contr) {
-      contr = ControlStore.fromJSON(instance, control);
+      contr = ControlStore.fromJSON(instance, control, isMenu);
       this.addItem(contr);
     }
     return contr;
@@ -492,7 +503,7 @@ class ControlStore extends Movable implements IControl {
     this.clearClasses();
   }
 
-  static fromJSON(instance: ModelCtor, json: IControl) {
+  static fromJSON(instance: ModelCtor, json: IControl, isMenu?: boolean) {
     const control = new instance(json.id, json.cssStyles);
     control.title = json.title;
     control.parentId = json.parentId;
@@ -500,7 +511,7 @@ class ControlStore extends Movable implements IControl {
     json.actions && control.actions.replace(json.actions.map(actions => observable(actions)));
     json.classes && control.classes.replace(json.classes);
     control.mergeStyles(new Map(json.cssStyles));
-    if (control.cssStyles.size > 1) {
+    if (control.cssStyles.size > 1 && !isMenu) {
       Array.from(control.cssStyles.keys())
         .filter(k => k !== MAIN_CSS_STYLE).forEach(k => this.addClass(control.id, k));
     }
@@ -540,8 +551,8 @@ class ControlStore extends Movable implements IControl {
     this.classes.replace([]);
   }
 
-  static create(instance: ModelCtor, control: IControl) {
-    return this.getOrCreate(instance, control);
+  static create(instance: ModelCtor, control: IControl, isMenu?: boolean) {
+    return this.getOrCreate(instance, control, isMenu);
   }
 }
 

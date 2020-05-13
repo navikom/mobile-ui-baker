@@ -1,4 +1,4 @@
-import React, { RefObject, useImperativeHandle } from "react";
+import React, { RefObject, useEffect, useImperativeHandle } from 'react';
 import { DragSource, DropTarget } from "react-dnd";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
@@ -14,6 +14,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import IControl from "interfaces/IControl";
 import { warningOpacity } from "assets/jss/material-dashboard-react";
+import { getEmptyImage } from 'react-dnd-html5-backend';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -192,6 +193,7 @@ const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
      isOver,
      isOverCurrent,
      connectDragSource,
+     connectDragPreview,
      connectDropTarget,
      moveControl,
      handleDropElement,
@@ -201,11 +203,15 @@ const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
      isSelected
    }, ref) => {
     const elementRef = React.useRef<HTMLDivElement>(null);
-    connectDragSource && connectDragSource(elementRef);
-    connectDropTarget && connectDropTarget(elementRef);
     useImperativeHandle(ref, () => ({
       getNode: () => elementRef.current,
     }));
+
+    useEffect(() => {
+      connectDragSource && connectDragSource(elementRef);
+      connectDropTarget && connectDropTarget(elementRef);
+      connectDragPreview && connectDragPreview(getEmptyImage())
+    }, [connectDragPreview, connectDragSource, connectDropTarget]);
 
     return (
       <ElementComponent
@@ -281,6 +287,7 @@ const TreeItem = DropTarget(
     },
     (connect, monitor) => ({
       connectDragSource: connect.dragSource(),
+      connectDragPreview: connect.dragPreview(),
       isDragging: monitor.isDragging(),
     }),
   )(ControlItem),

@@ -10,15 +10,17 @@ import ProjectStore from 'models/Project/ProjectStore';
 import ProjectEnum from 'enums/ProjectEnum';
 import CreateControl from 'models/Control/ControlStores';
 import ProjectsStore from 'models/Project/ProjectsStore';
+import { DeviceEnum } from '../enums/DeviceEnum';
 
 class DisplayViewStore extends Errors {
+  @observable device: DeviceEnum = DeviceEnum.IPHONE_6;
   @observable screens: IObservableArray<IControl>;
   @observable currentScreen: IControl;
   @observable background: IBackgroundColor = { backgroundColor: whiteColor };
   @observable statusBarColor: string = whiteColor;
   @observable mode: Mode = Mode.WHITE;
   @observable portrait = true;
-  @observable ios = false;
+  @observable ios = true;
   @observable project: IProject;
   @observable fetchingProject = false;
   @observable successMessage = '';
@@ -71,6 +73,8 @@ class DisplayViewStore extends Errors {
     this.mode = data.mode;
     this.background = data.background;
     this.statusBarColor = data.statusBarColor;
+    this.ios = data.ios;
+    this.portrait = data.portrait;
     this.project.update({ title: data.title } as IProject);
   }
 
@@ -106,6 +110,7 @@ class DisplayViewStore extends Errors {
 
   @action setIOS(value: boolean) {
     this.ios = value;
+    this.device = this.ios ? DeviceEnum.IPHONE_6 : DeviceEnum.PIXEL_5;
     this.pluginStore.postMessage(PluginStore.LISTENER_ON_SWITCH_ORIENTATION, this.ios ? 'ios' : 'android');
   }
 

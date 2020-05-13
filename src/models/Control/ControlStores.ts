@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { ControlEnum } from "enums/ControlEnum";
 import GridStore from "models/Control/GridStore";
 import TextStore from "models/Control/TextStore";
@@ -10,19 +11,20 @@ export const ControlStores = {
   [ControlEnum.Text]: TextStore,
 };
 
-export default function CreateControl(type: ControlEnum, json?: IControl) {
-  const control = ControlStore.create(ControlStores[type] as unknown as ModelCtor<IControl>, json || ControlStores[type].create());
+export default function CreateControl(type: ControlEnum, json?: IControl, menu?: boolean) {
+  const control = ControlStore.create(ControlStores[type] as unknown as ModelCtor<IControl>, json || ControlStores[type].create(), menu);
   if(json && control.children.length === 0) {
     json.children.forEach(child => {
-      control.addChild(CreateControl(child.type, child));
+      control.addChild(CreateControl(child.type, child, menu));
     });
   }
   return control;
 }
 
-export function CreateFromInstance(instance: IProject) {
+export function CreateForMenu(instance: IProject) {
   const controlData = instance.version.data as IControl;
-  const control = CreateControl(controlData.type, controlData);
+  controlData.parentId = undefined;
+  const control = CreateControl(controlData.type, controlData, true);
   control.changeTitle(instance.title, true);
   control.setInstance(instance);
   return control;

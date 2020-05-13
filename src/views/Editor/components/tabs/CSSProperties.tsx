@@ -56,7 +56,7 @@ const CSSPropertiesComponent: React.FC<CSSPropertiesProps> = ({ control, styleKe
         if (prop.showWhen[1] === PROPERTY_EXPANDED && property.expanded) {
           return true;
         }
-        if (prop.showWhen[1] === property.value) {
+        if (prop.showWhen[1] === property.value && property.enabled) {
           return true;
         }
       }
@@ -126,7 +126,7 @@ const CSSMap: React.FC<CSSMapProps> = ({ control, dictionary }) => {
               {key === MAIN_CSS_STYLE ?
                 <Typography variant="subtitle2">{key}</Typography> :
                 (<Grid container alignItems="center" justify="space-between">
-                  <Grid item xs={9} sm={9} md={9}>
+                  <Grid item xs={8} sm={8} md={8}>
                     <TextInput
                       fullWidth
                       className={classes.input}
@@ -135,7 +135,7 @@ const CSSMap: React.FC<CSSMapProps> = ({ control, dictionary }) => {
                       onClick={(e) => e.stopPropagation()}
                     />
                   </Grid>
-                  <Grid container item xs={3} sm={3} md={3} justify="flex-end">
+                  <Grid container item xs={4} sm={4} md={4} justify="flex-end">
                       <Tooltip
                         title={`${dictionary.defValue(EditorDictionary.keys.switch)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
                         placement="top">

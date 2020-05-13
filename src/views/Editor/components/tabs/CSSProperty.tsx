@@ -76,6 +76,7 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
     unit,
     units,
     setUnit,
+    controlProps
     },
     setValue,
     switchExpanded,
@@ -154,13 +155,13 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
         <Grid container justify="space-between">
           {
             isNumber ? (
-              <NumberInput disabled={expanded} value={Number(value)} onChange={setValue}/>
+              <NumberInput disabled={expanded} value={Number(value)} onChange={setValue} {...controlProps} />
             ) : isString ? (
-              <LabeledInput fullWidth value={value.toString()} onChange={setValue}/>
+              <LabeledInput fullWidth value={value.toString()} onChange={setValue} />
             ) : isColor ? (
-              <ColorInput color={value.toString()} onChange={setValue}/>
+              <ColorInput color={value.toString()} onChange={setValue} />
             ) : (
-              <CustomSelect options={options || []} onChange={setValue} value={value}/>
+              <CustomSelect options={options || []} onChange={setValue} value={value} />
             )
           }
           {

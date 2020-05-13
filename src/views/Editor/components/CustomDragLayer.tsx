@@ -47,7 +47,10 @@ const CustomDragLayer: React.FC = () => {
   }));
 
   function renderItem() {
-    if (itemType === ItemTypes.CONTROL && !item.control.parentId) {
+    if (itemType === ItemTypes.CONTROL && item.type !== undefined) {
+      return <BoxDragPreview><ControlTabItemPreview
+        type={item.control ? item.control.title : item.typeControl} /></BoxDragPreview>;
+    } else if (itemType === ItemTypes.TREE_CONTROL) {
       return <BoxDragPreview><ControlTabItemPreview
         type={item.control ? item.control.title : item.typeControl} /></BoxDragPreview>;
     }

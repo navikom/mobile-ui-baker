@@ -79,7 +79,7 @@ export const ThemedInput = withStyles((theme: Theme) =>
       borderRadius: 4,
       position: "relative",
       fontSize: 16,
-      padding: "10px 26px 10px 12px",
+      padding: "7px 26px 7px 12px",
       transition: theme.transitions.create(["border-color", "box-shadow"]),
       // Use the system font instead of the default Roboto font.
       fontFamily: [

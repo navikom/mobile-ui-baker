@@ -33,6 +33,7 @@ export const data = {
   transitionDelayDescription: 'The transition-delay CSS property specifies the duration to wait before starting a property\'s transition effect when its value changes.',
   positionDescription: 'The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.',
   boxShadow: 'The box-shadow CSS property adds shadow effects around an element\'s frame. You can set multiple effects separated by commas. A box shadow is described by X and Y offsets relative to the element, blur and spread radius, and color',
+  flexDirectionDescription: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
   learnMore: 'Learn more',
   moreOptions: 'More Options',
   unit: 'unit',

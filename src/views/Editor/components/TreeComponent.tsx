@@ -11,6 +11,7 @@ import { DropEnum } from "enums/DropEnum";
 import { DragAndDropItem } from "views/Editor/store/EditorViewStore";
 import { primaryOpacity } from "assets/jss/material-dashboard-react";
 import EditorDictionary from "views/Editor/store/EditorDictionary";
+import CustomDragLayer from './CustomDragLayer';
 
 
 const useStyles = makeStyles((theme: Theme) =>

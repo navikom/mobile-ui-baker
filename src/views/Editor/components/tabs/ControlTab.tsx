@@ -34,8 +34,9 @@ import { App } from 'models/App';
 import { blackOpacity, primaryOpacity } from 'assets/jss/material-dashboard-react';
 import { SharedControls } from 'models/Project/ControlsStore';
 import { SharedComponents } from 'models/Project/SharedComponentsStore';
-import { CreateFromInstance } from 'models/Control/ControlStores';
+import { CreateForMenu } from 'models/Control/ControlStores';
 import { OwnComponents } from 'models/Project/OwnComponentsStore';
+import ProjectsStore from '../../../../models/Project/ProjectsStore';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -69,9 +70,33 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+interface ControlInstanceProps {
+  isAdmin: boolean;
+  handleMenu: (control: IControl) => (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  store: ProjectsStore;
+}
+
+const ControlInstance: React.FC<ControlInstanceProps> =
+  observer(({isAdmin, handleMenu, store}) => {
+  const classes = useStyles();
+  return (
+    <div className={classes.container}>
+      {
+        store.items.map((instance, i) => {
+          const control = CreateForMenu(instance);
+          return <ControlTabItem
+            key={i.toString()}
+            control={control}
+            handleMenu={isAdmin ? handleMenu(control) : () => {}} />
+        })
+      }
+    </div>
+  )
+});
+
 type ControlTabProps = IEditorTabsProps
 
-const ControlTabComponent: React.FC<ControlTabProps> = (
+const ControlTab: React.FC<ControlTabProps> = (
   {
     dictionary,
     selectedControl,
@@ -118,7 +143,6 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           keys.map((k, i) =>
             <ControlTabItem key={i.toString()} type={EditorViewStore.CONTROLS[k]} />)
         }
-        <CustomDragLayer />
       </div>
       <Grid container alignItems="center" justify="space-between" className={classes.tools}>
         <Typography align="center" variant="subtitle2" className={classes.paragraph}>
@@ -135,32 +159,13 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           )
         }
       </Grid>
-      <div className={classes.container}>
-        {
-          SharedControls.items.map((instance, i) => {
-            const control = CreateFromInstance(instance);
-            return <ControlTabItem key={i.toString()} control={control}
-                                   handleMenu={isAdmin ? handleMenu(control) : () => {
-                                   }} />
-          })
-        }
-      </div>
-
+      <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedControls} />
       <Grid container alignItems="center" justify="space-between" className={classes.tools}>
         <Typography variant="subtitle2" className={classes.paragraph}>
           {dictionary!.defValue(EditorDictionary.keys.sharedComponents)}
         </Typography>
       </Grid>
-      <div className={classes.container}>
-        {
-          SharedComponents.items.map((instance, i) => {
-            const control = CreateFromInstance(instance);
-            return <ControlTabItem key={i.toString()} control={control}
-                                   handleMenu={isAdmin ? handleMenu(control) : () => {
-                                   }} />
-          })
-        }
-      </div>
+      <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedComponents} />
       <Grid container alignItems="center" justify="space-between" className={classes.tools}>
         <Typography align="center" variant="subtitle2" className={classes.paragraph}>
           {dictionary!.defValue(EditorDictionary.keys.components)}
@@ -172,15 +177,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           </IconButton>
         </Tooltip>
       </Grid>
-
-      <div className={classes.container}>
-        {
-          OwnComponents.items.map((instance, i) => {
-            const control = CreateFromInstance(instance);
-            return <ControlTabItem key={i.toString()} control={control} handleMenu={handleMenu(control)} />
-          })
-        }
-      </div>
+      <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={OwnComponents} />
       <Popover
         id="menu-controls"
         anchorEl={anchorEl}
@@ -217,8 +214,6 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
     </div>
   )
 };
-
-const ControlTab = observer(ControlTabComponent);
 
 interface ControlDetailsProps {
   selectControl?: (control?: IControl) => void;
@@ -341,7 +336,6 @@ const Control: React.FC<IEditorTabsProps> = (
   const [element, setElement] = React.useState<IControl | undefined>();
 
   const deleteElement = () => {
-    console.log('Delete control', element);
     deleteControl && element && deleteControl(element);
     setElement(undefined);
   };

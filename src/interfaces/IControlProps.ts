@@ -9,6 +9,7 @@ export interface ControlProps {
   isDragging?: boolean;
   connectDragSource?: (ref: RefObject<HTMLDivElement>) => void;
   connectDropTarget?: (ref: RefObject<HTMLDivElement>) => void;
+  connectDragPreview?: (ref: HTMLImageElement, options?: {captureDraggingState: boolean}) => void;
   isOver?: boolean;
   isOverCurrent?: boolean;
   selectControl?(control?: IControl): void;

@@ -23,6 +23,7 @@ import { TITLE, ROUTE_EDITOR } from '../../models/Constants';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dictionary, DictionaryService } from '../../services/Dictionary/Dictionary';
 import { Web } from '@material-ui/icons';
+import EditorSection from './Sections/EditorSection';
 
 const useStyles = makeStyles(styles);
 
@@ -32,7 +33,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
     <React.Fragment>
       <Header
         color="transparent"
-        brand={TITLE}
+        brand={TITLE.toUpperCase()}
         rightLinks={<HeaderLinks {...props}/>}
         fixed
         changeColorOnScroll={{
@@ -70,6 +71,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
           <ProductSection />
+          <EditorSection />
         </div>
       </div>
       <Footer />

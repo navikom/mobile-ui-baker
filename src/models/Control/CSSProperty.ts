@@ -19,6 +19,7 @@ export default class CSSProperty implements ICSSProperty {
   units?: string[];
   valueType: CSSValueType;
   inject?: string;
+  controlProps: {[key: string]: any} = {};
   @observable value: string | number;
   @observable expanded?: boolean;
   @observable enabled: boolean;
@@ -61,7 +62,7 @@ export default class CSSProperty implements ICSSProperty {
       inject: this.inject,
       valueType: this.valueType,
       unit: this.unit,
-      units: this.units
+      units: this.units,
     };
   }
 
@@ -111,6 +112,11 @@ export default class CSSProperty implements ICSSProperty {
     return this;
   }
 
+  setControlProps(props: { [p: string]: any }) {
+    this.controlProps = props;
+    return this;
+  }
+
   setOptions(options?: string[]) {
     this.options = options;
     return this;
@@ -148,6 +154,7 @@ export default class CSSProperty implements ICSSProperty {
   static fromJSON(json: ICSSProperty) {
     const prop = new CSSProperty(json.key, json.value, json.defaultValue, json.category, json.enabled, json.valueType)
       .setShowWhen(json.showWhen)
+      .setControlProps(json.controlProps || {})
       .setDescription(json.description)
       .setInjectable(json.inject)
       .setOptions(json.options);

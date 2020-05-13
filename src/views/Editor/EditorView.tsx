@@ -21,7 +21,7 @@ import IconButton from '@material-ui/core/IconButton';
 import {
   AccountCircle, AddAPhoto,
   Android,
-  Apple, Clear,
+  Apple, Clear, Fullscreen, FullscreenExit,
   Redo,
   RestorePage,
   StayCurrentLandscape,
@@ -58,13 +58,15 @@ import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import { Auth } from 'models/Auth/Auth';
 
 import 'views/Editor/Editor.css';
+import { DeviceEnum } from '../../enums/DeviceEnum';
+import CustomDragLayer from './components/CustomDragLayer';
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
       height: '100%',
-      overflow: 'auto'
+      overflow: 'auto',
     },
     center: {
       display: 'flex',
@@ -84,6 +86,7 @@ interface ContentProps {
   setCurrentScreen: (screen: IControl) => void;
   background: IBackgroundColor;
   ios: boolean;
+  device: DeviceEnum;
 }
 
 const Content: React.FC<ContentProps> = observer((
@@ -96,6 +99,7 @@ const Content: React.FC<ContentProps> = observer((
     selectControl,
     background,
     ios,
+    device,
     setCurrentScreen
   }
 ) => {
@@ -122,7 +126,8 @@ const Content: React.FC<ContentProps> = observer((
     backgroundColor = blackOpacity(0.1);
   }
 
-  const root = classNames(classes.root);
+  const oldDevices = [DeviceEnum.IPHONE_6, DeviceEnum.PIXEL_5].includes(device);
+  const root = oldDevices ? classNames(classes.root) : '';
   return (
     <div ref={drop} className={root} style={{ backgroundColor: backgroundColor }}
          onClick={() => selectControl()}>
@@ -171,21 +176,21 @@ const editorStyles = makeStyles((theme: Theme) =>
       alignItems: 'center'
     },
     cover: {
-      position: "absolute",
-      width: "100%",
-      height: "100%",
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
       top: 0,
       left: 0,
       backgroundColor: whiteOpacity(0.8),
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-around",
-      maxHeight: "2000px"
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      maxHeight: '2000px'
     },
     coverInactive: {
       height: 0,
       maxHeight: 0,
-      transition: "height .15s, max-height .15s ease-out"
+      transition: 'height .15s, max-height .15s ease-out'
     },
     historyButtons: {
       position: 'absolute',
@@ -215,6 +220,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
   }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [height, setHeight] = React.useState(window.innerHeight - 12);
+  const [fullScreen, setFullScreen] = React.useState<boolean>(false);
   const classes = editorStyles();
   const open = Boolean(anchorEl);
 
@@ -222,11 +228,28 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     const resize = () => {
       setHeight(window.innerHeight - 12);
     };
-    window.addEventListener('resize', resize);
+    const exitHandler = () => {
+      if (!document.fullscreenElement) {
+        setFullScreen(false);
+      }
+    }
+    window.addEventListener('resize', resize, false);
+    document.addEventListener('fullscreenchange', exitHandler, false);
     return () => {
       window.removeEventListener('resize', resize);
+      document.removeEventListener('fullscreenchange', exitHandler);
     }
   }, [height]);
+
+  const switchFullscreen = () => {
+    setFullScreen(!fullScreen);
+    if (fullScreen) {
+      document.exitFullscreen && document.exitFullscreen();
+    } else {
+      const elem = document.documentElement;
+      elem.requestFullscreen && elem.requestFullscreen();
+    }
+  }
 
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
@@ -265,8 +288,8 @@ const ContextComponent: React.FC<ContextComponentProps> = (
             <Toolbar>
               {
                 store.loadingPlugin ? (
-                  <div style={{width: 200}}>
-                    <Skeleton animation="wave" width={200} height={10} style={{marginBottom: 5}} />
+                  <div style={{ width: 200 }}>
+                    <Skeleton animation="wave" width={200} height={10} style={{ marginBottom: 5 }} />
                     <Skeleton animation="wave" width={170} height={10} />
                   </div>
 
@@ -281,22 +304,22 @@ const ContextComponent: React.FC<ContextComponentProps> = (
 
               <div className={classes.headerButtons}>
                 <IconButton
-                  color={store.ios ? 'default' : 'inherit'}
-                  onClick={() => store.setIOS(false)}
+                  color="inherit"
+                  onClick={switchFullscreen}
                 >
-                  <Android />
+                  {fullScreen ? <FullscreenExit /> : <Fullscreen />}
                 </IconButton>
                 <IconButton
-                  color={store.ios ? 'inherit' : 'default'}
-                  onClick={() => store.setIOS(true)}
+                  color="inherit"
+                  onClick={() => store.setIOS(!store.ios)}
                 >
-                  <Apple />
+                  {store.ios ? <Android /> : <Apple />}
                 </IconButton>
                 <IconButton color="inherit" onClick={store.switchPortrait}>
                   {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
                 </IconButton>
                 <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
-                  <IconButton color="inherit" onClick={store.handleScreenshot}>
+                  <IconButton color="inherit" onClick={store.makeProjectScreenshot}>
                     <AddAPhoto />
                   </IconButton>
                 </Tooltip>
@@ -358,6 +381,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
       }
       <div>
         <DndProvider debugMode={true} backend={Backend}>
+          <CustomDragLayer />
           <Grid container style={{ height: '100%' }}>
             <Grid item xs={2} sm={2} md={3} style={{ padding: 5, position: 'relative' }}>
               <div className={classes.bordered} style={{ overflow: 'auto', height: height - TABS_HEIGHT }}>
@@ -393,12 +417,14 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                 <div style={{ transform: 'translate3d(0, 0, 0)' }}>
                   <div style={{ transform: 'scale(1)' }}>
                     <DeviceComponent
+                      device={store.device}
                       ios={store.ios}
                       mode={store.mode}
                       background={store.background}
                       statusBarColor={store.statusBarColor}
                       portrait={store.portrait}>
                       <Content
+                        device={store.device}
                         ios={store.ios}
                         background={store.background}
                         items={store.currentScreen.children}
@@ -460,18 +486,18 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         {
           store.loadingPlugin && (
             <React.Fragment>
-              <div style={{width: "25%", height: "75%"}}>
-                <Skeleton variant="rect"  animation="wave" height="90%" />
+              <div style={{ width: '25%', height: '75%' }}>
+                <Skeleton variant="rect" animation="wave" height="90%" />
                 <Skeleton animation="wave" />
                 <Skeleton animation="wave" width="75%" />
               </div>
-              <div style={{width: "45%", height: "75%"}}>
-                <Skeleton variant="rect"  animation="wave" height="90%" />
+              <div style={{ width: '45%', height: '75%' }}>
+                <Skeleton variant="rect" animation="wave" height="90%" />
                 <Skeleton animation="wave" />
                 <Skeleton animation="wave" width="60%" />
               </div>
-              <div style={{width: "25%", height: "75%"}}>
-                <Skeleton variant="rect"  animation="wave" height="90%" />
+              <div style={{ width: '25%', height: '75%' }}>
+                <Skeleton variant="rect" animation="wave" height="90%" />
                 <Skeleton animation="wave" />
                 <Skeleton animation="wave" width="60%" />
               </div>

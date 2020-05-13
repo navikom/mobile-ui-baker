@@ -11,7 +11,7 @@ const useStyles = makeStyles(styles);
 
 
 interface InfoAreaProps {
-  icon: React.FC<{className: string}>;
+  icon?: React.FC<{className: string}>;
   title: string;
   description: string;
   iconColor: 'primary' | 'warning' | 'danger' | 'success' | 'info' | 'rose' | 'gray';
@@ -39,7 +39,7 @@ const InfoArea: React.FC<InfoAreaProps> = (
   return (
     <div className={classes.infoArea}>
       <div className={iconWrapper}>
-        <rest.icon className={iconClasses} />
+        {rest.icon && <rest.icon className={iconClasses} />}
       </div>
       <div className={classes.descriptionWrapper}>
         <h4 className={classes.title}>{title}</h4>

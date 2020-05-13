@@ -78,7 +78,9 @@ class EditorViewStore extends DisplayViewStore {
       background: this.background,
       statusBarColor: this.statusBarColor,
       mode: this.mode,
-      title: this.project.title
+      title: this.project.title,
+      ios: this.ios,
+      portrait: this.portrait
     }
   }
 
@@ -151,7 +153,7 @@ class EditorViewStore extends DisplayViewStore {
     try {
       const data = await this.importData();
       const json = JSON.parse(data);
-      if(!json.screens) {
+      if (!json.screens) {
         throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
       }
       this.fromJSON(json);
@@ -165,7 +167,7 @@ class EditorViewStore extends DisplayViewStore {
     try {
       const data = await this.importData();
       const json = JSON.parse(data);
-      if(json.versionId === undefined) {
+      if (json.versionId === undefined) {
         throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
       }
       SharedControls.push([{ type: json.type, projectId: 0, versions: [json], title: json.title } as IProject]);
@@ -179,7 +181,7 @@ class EditorViewStore extends DisplayViewStore {
     try {
       const data = await this.importData();
       const json = JSON.parse(data);
-      if(json.versionId === undefined) {
+      if (json.versionId === undefined) {
         throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
       }
       OwnComponents.push([{ type: json.type, projectId: 0, versions: [json], title: json.title } as IProject]);
@@ -231,7 +233,7 @@ class EditorViewStore extends DisplayViewStore {
     const element = document.querySelector('#capture_' + control.id) as HTMLElement;
     return new Promise((resolve, reject) => {
       if (element) {
-        html2canvas(element).then(canvas => {
+        html2canvas(element, { useCORS: true }).then(canvas => {
           canvas.toBlob((blob) => {
             const file = new File([blob as BlobPart], 'capture.png', {
               type: 'image/png'
@@ -255,7 +257,7 @@ class EditorViewStore extends DisplayViewStore {
     const json = control.toJSON;
     control.instance!.version.update({ data: json } as IProjectVersion);
     if (toFile) {
-      this.importToFile({...control.instance!.JSON, type: control.instance!.type});
+      this.importToFile({ ...control.instance!.JSON, type: control.instance!.type });
       return;
     }
     const [file, base64] = await this.makeScreenshot(control);
@@ -294,10 +296,9 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   importToFile(data: { [key: string]: any }) {
-    data.data.parentId = null;
     const content = JSON.stringify(data, null, '\t');
-    const a = document.createElement("a");
-    const file = new Blob([content], {type: 'text/plain'});
+    const a = document.createElement('a');
+    const file = new Blob([content], { type: 'text/plain' });
     a.href = URL.createObjectURL(file);
     a.download = `${data.title}.json`;
     a.click();
@@ -373,11 +374,14 @@ class EditorViewStore extends DisplayViewStore {
     }
   }
 
-  handleScreenshot = () => {
+  makeProjectScreenshot = () => {
     const element = document.querySelector('#capture') as HTMLElement;
-    element && html2canvas(element).then(canvas => {
+    element && html2canvas(element, { useCORS: true }).then(canvas => {
+      const base64 = canvas.toDataURL();
+      // const w = window.open("");
+      // w!.document.write(`<img src="${base64}"/>`);
       const a = document.createElement('a');
-      a.href = canvas.toDataURL();
+      a.href = base64;
       a.download = `${this.project.title.length ? this.project.title : 'Project'}.png`;
       a.click();
       setTimeout(() => {
@@ -493,6 +497,11 @@ class EditorViewStore extends DisplayViewStore {
     if (!ControlStore.has(source.id)) {
       source = CreateControl(source.type);
     }
+
+    if (source.instance) {
+      source = source.clone();
+    }
+
     const sParent = source.parentId ? ControlStore.getById(source.parentId) : undefined;
     const pParent = parent.parentId ? ControlStore.getById(parent.parentId) : undefined;
 

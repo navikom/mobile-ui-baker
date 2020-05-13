@@ -24,6 +24,8 @@ export interface IProjectData {
   background: IBackgroundColor;
   statusBarColor: string;
   title: string;
+  ios: boolean;
+  portrait: boolean;
 }
 
 export interface IProjectVersion {
