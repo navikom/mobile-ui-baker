@@ -3,10 +3,18 @@ import { ApiMethodTypes, Pagination, RequestMethodTypes } from "models/Paginatio
 import IProject, { IProjectJSON } from "interfaces/IProject";
 import ProjectStore from "models/Project/ProjectStore";
 import { api, Apis } from "api";
-import { Dictionary } from "services/Dictionary/Dictionary";
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { Project } from "api/MainApi/Api";
 import { ROUTE_EDITOR } from "models/Constants";
 import { App } from "models/App";
+import AccessEnum from '../../enums/AccessEnum';
+
+export const Access = {
+  [AccessEnum.OWNER]: 'owner',
+  [AccessEnum.READ_BY_LINK]: 'read by link',
+  [AccessEnum.EDIT_BY_LINK]: 'edit by link',
+  [AccessEnum.SHARED]: 'shared',
+}
 
 export default class ProjectsStore extends Pagination<IProject> {
 
@@ -14,14 +22,19 @@ export default class ProjectsStore extends Pagination<IProject> {
 
   @computed get projectTableData() {
     return this.tableData((e: IProject) =>
-      [e.projectId, Dictionary.timeDateString(e.createdAt), e.title, e.access]);
+      [
+        e.projectId,
+        Dictionary.timeDateString(e.createdAt),
+        e.title,
+        Dictionary.value(Access[e.access])]
+    );
   }
 
   @computed get previewList() {
     return this.items.map(project => ({
       title: project.title,
       img: project.preview,
-      author: project.owner ? project.owner!.fullName : App.user!.fullName,
+      author: project.owner ? Dictionary.defValue(DictionaryService.keys.mobileUiEditor) : App.user!.fullName,
       route: ROUTE_EDITOR + "/" + project.projectId}));
   }
 
@@ -122,7 +135,7 @@ export default class ProjectsStore extends Pagination<IProject> {
 
   static getOrCreate(data: IProject): IProject {
     if (!this.has(data.projectId)) {
-      this.items.push(ProjectStore.from(data).update(data).setId(data.projectId).updateVersions(data.versions));
+      this.items.push(ProjectStore.from(data).update(data).setId(data.projectId).updateVersions(data.versions || []));
 
     }
 

@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface PricesViewComponentProps {
-  store: CheckoutStore
+  store: CheckoutStore;
 }
 
 const PricesViewComponent: React.FC<PricesViewComponentProps> = ({ store }) => {

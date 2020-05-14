@@ -1,18 +1,19 @@
-import { action, computed, observable, runInAction } from "mobx";
-import IProject from "interfaces/IProject";
-import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import validate from "validate.js";
-import { IImage } from "interfaces/IImage";
-import { App } from "models/App";
-import { ROUTE_PROJECTS_LIST } from "models/Constants";
-import ProjectsStore from "models/Project/ProjectsStore";
-import { Errors } from "models/Errors";
-import ProjectStore from "models/Project/ProjectStore";
-import ProjectEnum from "enums/ProjectEnum";
-import { api, Apis } from "api";
+import { action, computed, observable, runInAction } from 'mobx';
+import IProject from 'interfaces/IProject';
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+import validate from 'validate.js';
+import { IImage } from 'interfaces/IImage';
+import { App } from 'models/App';
+import { ROUTE_PROJECTS_LIST } from 'models/Constants';
+import ProjectsStore from 'models/Project/ProjectsStore';
+import { Errors } from 'models/Errors';
+import ProjectStore from 'models/Project/ProjectStore';
+import ProjectEnum from 'enums/ProjectEnum';
+import { api, Apis } from 'api';
+import AccessEnum from '../../../enums/AccessEnum';
 
 export default class ProjectDataStore extends Errors {
-   constraints = {
+  constraints = {
     title: {
       presence: {
         message: `^${Dictionary.defValue(DictionaryService.keys.cantBeEmpty, Dictionary.defValue(DictionaryService.keys.title))}`
@@ -20,37 +21,37 @@ export default class ProjectDataStore extends Errors {
       length: {
         minimum: 2,
         maximum: 50,
-        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreAndLessThan, [DictionaryService.keys.message, "50", "2"])}`
+        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreAndLessThan, [DictionaryService.keys.message, '50', '2'])}`
       }
     },
     description: {
       length: {
         maximum: 400,
-        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [DictionaryService.keys.message, "400"])}`
+        message: `^${Dictionary.defValue(DictionaryService.keys.cantBeMoreThan, [DictionaryService.keys.message, '400'])}`
       }
     },
-     price: {
-       numericality: {
-         message: `^${Dictionary.defValue(DictionaryService.keys.mustBeANumber, DictionaryService.keys.price)}`
-       }
-     }
+    price: {
+      numericality: {
+        message: `^${Dictionary.defValue(DictionaryService.keys.mustBeANumber, DictionaryService.keys.price)}`
+      }
+    }
   };
   @observable project: IProject = ProjectStore.createEmpty(ProjectEnum.PROJECT);
-  @observable errors?: {[key: string]: string};
+  @observable errors?: { [key: string]: string };
   @observable loaderOpen = false;
   @observable fetchingProject = false;
   @observable savingProject = false;
   @observable changed = false;
-  @observable successMessage = "";
+  @observable successMessage = '';
   @observable files: any;
 
   @computed get readyToSave() {
     return ((this.changed || (this.files && this.files.length))) && !this.errors && !this.savingProject;
   }
 
-  @action onInput = (key: "title" | "description" | "price") => (value: string) => {
+  @action onInput = (key: 'title' | 'description' | 'price') => (value: string) => {
     this.errors = validate(
-      {title: this.project.title, description: this.project.description, ...{[key]: value}},
+      { title: this.project.title, description: this.project.description, ...{ [key]: value } },
       this.constraints);
     this.project.update({ [key]: value } as unknown as IProject);
     this.changed = true;
@@ -88,8 +89,9 @@ export default class ProjectDataStore extends Errors {
     this.setSavingProject(false);
   }
 
-  @action async fetchProjectData(projectId: number | null) {
-    if(!projectId) {
+  @action
+  async fetchProjectData(projectId: number | null) {
+    if (!projectId) {
       return;
     }
     this.setFetchingProject(true);
@@ -99,7 +101,7 @@ export default class ProjectDataStore extends Errors {
         this.project = project;
       });
     } catch (err) {
-      console.log("Fetch full instance data error %s", err.message);
+      console.log('Fetch full instance data error %s', err.message);
       this.setError(Dictionary.defValue(DictionaryService.keys.dataFetchError, [this.project.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => {
         App.navigationHistory && App.navigationHistory.replace(ROUTE_PROJECTS_LIST);
@@ -117,22 +119,34 @@ export default class ProjectDataStore extends Errors {
     this.files.splice(index, 1);
   }
 
-  @action async onSortImages(images: IImage[]) {
-    const data = images.map((e,i) => ({imageId: e.imageId, sort: i}));
+  @action
+  async onSortImages(images: IImage[]) {
+    const data = images.map((e, i) => ({ imageId: e.imageId, sort: i }));
     try {
       await api(Apis.Main).project.sortImages(this.project.projectId, data);
       images.forEach((e, i) => e.setSort(i));
     } catch (e) {
-      console.log("Images sorting store error: %s", e.message);
+      console.log('Images sorting store error: %s', e.message);
     }
   }
 
-  @action async deleteImage(item: IImage) {
+  @action
+  async deleteImage(item: IImage) {
     try {
       await api(Apis.Main).project.deleteImage(this.project.projectId, item.imageId);
       this.project.images!.splice(this.project.images!.indexOf(item), 1);
     } catch (e) {
-      console.log("Delete App Image error: %s", e.message);
+      console.log('Delete App Image error: %s', e.message);
+    }
+  }
+
+  @action switchSharedAccess = async () => {
+    const access = this.project.access === AccessEnum.SHARED ? AccessEnum.OWNER : AccessEnum.SHARED
+    try {
+      await api(Apis.Main).project.access(this.project.projectId, access);
+      this.project.update({access} as IProject);
+    } catch (e) {
+      console.log('Change access error: %s', e.message);
     }
   }
 

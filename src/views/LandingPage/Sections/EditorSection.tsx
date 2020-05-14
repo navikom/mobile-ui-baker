@@ -26,7 +26,7 @@ export default function EditorSection() {
             </h5>
           </div>
         </GridItem>
-        <GridItem xs={12} sm={12} md={6} lg={6} style={{marginLeft: "auto"}}>
+        <GridItem xs={12} sm={12} md={6} lg={6} style={{ marginLeft: 'auto' }}>
           <div className={classes.laptopSection}>
             <LazyLoadImage
               className={classes.laptopWrapper}
@@ -37,4 +37,4 @@ export default function EditorSection() {
       </GridContainer>
     </div>
   )
-};
+}

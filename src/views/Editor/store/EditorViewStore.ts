@@ -332,6 +332,10 @@ class EditorViewStore extends DisplayViewStore {
     try {
       await super.fetchProjectData(projectId);
       this.save();
+      if(!App.user || this.project.userId !== App.user.userId) {
+        this.project.setId(0);
+        App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
+      }
     } catch (err) {
       console.log('Fetch full instance data error %s', err.message);
       App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);

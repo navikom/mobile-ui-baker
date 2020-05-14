@@ -7,6 +7,7 @@ import { IImage } from "interfaces/IImage";
 import ProjectVersionStore from "models/Project/ProjectVersionStore";
 import { ImageStore } from "models/Image/ImageStore";
 import { Users } from "models/User/UsersStore";
+import EmptyProjectImg from 'assets/img/projects/empty-project.png';
 
 export default class ProjectStore implements IProject {
   createdAt: Date = new Date();
@@ -34,7 +35,7 @@ export default class ProjectStore implements IProject {
   }
 
   @computed get preview() {
-    return this.images[0] && this.images[0].path(this.userId);
+    return this.images.length > 0 ? this.images[0].path(this.userId) : EmptyProjectImg;
   }
 
   @computed get previewSize() {
@@ -64,6 +65,7 @@ export default class ProjectStore implements IProject {
     model.updatedAt && (this.updatedAt = model.updatedAt);
     model.isBuyer !== undefined && (this.isBuyer = model.isBuyer);
     model.description && (this.description = model.description);
+    model.access && (this.access = model.access);
     model.images &&
     (this.images.replace(
       model.images.map(image => ImageStore.from(image))

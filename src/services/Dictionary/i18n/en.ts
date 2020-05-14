@@ -327,6 +327,7 @@ export default {
   iAgree: 'I agree',
   projects: 'Projects',
   access: 'Access',
+  shared: 'Shared',
   price: 'Price',
   noProjects: 'There are no saved projects',
   'element-does-not-exist': 'Element does not exist',
@@ -369,5 +370,8 @@ export default {
   'data-is-incompatible': 'Data is incompatible to the $',
   project: 'Project',
   control: 'Control',
-  component: 'Component'
+  component: 'Component',
+  owner: 'Owner',
+  'read by link': 'Read by link',
+  'edit by link': 'Edit by link',
 };

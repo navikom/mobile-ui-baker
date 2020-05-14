@@ -1,6 +1,7 @@
 import { ApiBase } from 'api/ApiBase';
 import { HttpBase } from 'api/HttpBase';
 import { ILoginResult } from 'interfaces/ILoginResult';
+import AccessEnum from '../../enums/AccessEnum';
 
 class User extends HttpBase {
   constructor() {
@@ -132,6 +133,10 @@ export class Project extends HttpBase {
 
   deleteImage(projectId: number, imageId: number) {
     return this.fetchData('delete', `${projectId}/image/${imageId}`);
+  }
+
+  access(projectId: number, access: AccessEnum) {
+    return this.fetchData('post', `${projectId}/access/${access}`);
   }
 }
 

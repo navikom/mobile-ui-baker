@@ -1,62 +1,81 @@
-import React, { useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import { sortable } from "react-sortable";
-import { DropzoneDialog } from "material-ui-dropzone/dist";
-import classNames from "classnames";
-import { when } from "mobx";
-
-
+import React, { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { sortable } from 'react-sortable';
+import { DropzoneDialog } from 'material-ui-dropzone/dist';
+import classNames from 'classnames';
+import { when } from 'mobx';
 // @material-ui/icons
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import { Delete, WallpaperOutlined } from "@material-ui/icons";
-
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import { Delete, WallpaperOutlined } from '@material-ui/icons';
 // @material-ui/core
-import { Card, createStyles, makeStyles, Theme } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import CardMedia from "@material-ui/core/CardMedia";
-import CardActions from "@material-ui/core/CardActions";
-import Divider from "@material-ui/core/Divider";
-import InputBase from "@material-ui/core/InputBase";
-
+import { Card, createStyles, makeStyles, Switch, Theme } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardActions from '@material-ui/core/CardActions';
+import Divider from '@material-ui/core/Divider';
+import InputBase from '@material-ui/core/InputBase';
 // services
-import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+// core components
+import Button from 'components/CustomButtons/Button';
+import CustomInput from 'components/CustomInput/CustomInput';
+import ProgressButton from 'components/CustomButtons/ProgressButton';
+import Fab from 'components/CustomButtons/Fab';
+
+import useStyles from 'assets/jss/material-dashboard-react/components/inputFieldStyle';
+import { IImage } from 'interfaces/IImage';
+import ProjectDataStore from 'views/Projects/store/ProjectDataStore';
+import { matchPath } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
+import { App } from 'models/App';
+import { blackOpacity } from 'assets/jss/material-dashboard-react';
+import { Access } from '../../models/Project/ProjectsStore';
+import AccessEnum from '../../enums/AccessEnum';
 
 // interfaces
 
-// core components
-import Button from "components/CustomButtons/Button";
-import CustomInput from "components/CustomInput/CustomInput";
-import ProgressButton from "components/CustomButtons/ProgressButton";
-import Fab from "components/CustomButtons/Fab";
-
-import useStyles from "assets/jss/material-dashboard-react/components/inputFieldStyle";
-import { IImage } from "interfaces/IImage";
-import ProjectDataStore from "views/Projects/store/ProjectDataStore";
-import { matchPath } from "react-router";
-import { RouteComponentProps } from "react-router-dom";
-import { App } from "models/App";
-import { blackOpacity } from "assets/jss/material-dashboard-react";
-
 const useCardStyles = makeStyles((theme: Theme) => createStyles({
   card: {
-    position: "relative",
+    position: 'relative',
     maxWidth: 200,
   },
   actions: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
-    width: "93%",
-    height: "12%",
-    justifyContent: "flex-end"
+    width: '93%',
+    height: '12%',
+    justifyContent: 'flex-end'
   },
   button: {
     opacity: .5,
-    "&:hover": {
+    '&:hover': {
       opacity: .7
     }
   }
 }));
+
+interface ProjectDataProps {
+  store: ProjectDataStore;
+}
+
+const AccessActions: React.FC<ProjectDataProps> = ({ store }) => {
+
+  const classes = useStyles();
+  const centerNote = classNames(classes.note, classes.center);
+  return (
+    <Grid container item direction="row" className={classes.container}>
+      <Typography variant="subtitle2" className={centerNote}>
+        {Dictionary.defValue(DictionaryService.keys.access)} {Dictionary.defValue(DictionaryService.keys.shared)}:
+      </Typography>
+      <Switch
+        onChange={store.switchSharedAccess}
+        checked={store.project.access === AccessEnum.SHARED}
+        color="primary"
+      />
+    </Grid>
+  )
+}
 
 const Item = ({ ...props }) => {
   return (
@@ -111,9 +130,6 @@ const ImageItem: React.FC<ImageItemType> =
     </SortableItem>;
   });
 
-interface ProjectDataProps {
-  store: ProjectDataStore;
-}
 
 const ProjectDataComponent: React.FC<ProjectDataProps> = (
   { store }) => {
@@ -139,7 +155,21 @@ const ProjectDataComponent: React.FC<ProjectDataProps> = (
           {Dictionary.defValue(DictionaryService.keys.overview)}
         </Typography>
       </Grid>
-
+      <Grid container item direction="row" className={classes.container}>
+        <Typography variant="subtitle2" className={centerNote}>
+          {Dictionary.defValue(DictionaryService.keys.access)}:
+        </Typography>
+        <InputBase
+          disabled
+          value={Dictionary.value(Access[store.project.access])}
+        />
+      </Grid>
+      {
+        App.isAdmin && <AccessActions store={store} />
+      }
+      <Grid item xs={12}>
+        <Divider variant="middle" className={classes.divider} />
+      </Grid>
       <Grid container item direction="row" className={classes.container}>
         <Typography variant="subtitle2" className={centerNote}>
           {Dictionary.defValue(DictionaryService.keys.createdAt)}:
@@ -157,11 +187,11 @@ const ProjectDataComponent: React.FC<ProjectDataProps> = (
           error={store.errors && store.errors.title !== undefined}
           helperText={store.errors && store.errors.title}
           formControlProps={{
-            margin: "none"
+            margin: 'none'
           }}
           inputProps={{
-            onChange: ({ ...e }) => store.onInput("title")(e.target.value),
-            value: (store.project.title || ""),
+            onChange: ({ ...e }) => store.onInput('title')(e.target.value),
+            value: (store.project.title || ''),
           }}
         />
       </Grid>
@@ -179,11 +209,11 @@ const ProjectDataComponent: React.FC<ProjectDataProps> = (
               style: { margin: 0 }
             }}
             inputProps={{
-              onChange: ({ ...e }) => store.onInput("description")(e.target.value),
-              value: (store.project.description || ""),
+              onChange: ({ ...e }) => store.onInput('description')(e.target.value),
+              value: (store.project.description || ''),
               placeholder: Dictionary.defValue(DictionaryService.keys.enterDescription),
               multiline: true,
-              style: { border: "1px solid " + blackOpacity(.2), marginTop: 0, padding: "5px" },
+              style: { border: '1px solid ' + blackOpacity(.2), marginTop: 0, padding: '5px' },
               rows: 4
             }}
           />
@@ -197,12 +227,12 @@ const ProjectDataComponent: React.FC<ProjectDataProps> = (
           error={store.errors && store.errors.price !== undefined}
           helperText={store.errors && store.errors.price}
           formControlProps={{
-            margin: "none"
+            margin: 'none'
           }}
           type="number"
           inputProps={{
-            onChange: ({ ...e }) => store.onInput("price")(e.target.value),
-            value: (store.project.price || ""),
+            onChange: ({ ...e }) => store.onInput('price')(e.target.value),
+            value: (store.project.price || ''),
           }}
         />
       </Grid>
@@ -266,7 +296,7 @@ const ProjectDataComponent: React.FC<ProjectDataProps> = (
         dropzoneText={Dictionary.defValue(DictionaryService.keys.dragAndDrop)}
         open={store.loaderOpen}
         onSave={(e) => store.setFiles(e)}
-        acceptedFiles={["image/jpeg", "image/png", "image/bmp"]}
+        acceptedFiles={['image/jpeg', 'image/png', 'image/bmp']}
         showPreviews={false}
         showPreviewsInDropzone={true}
         filesLimit={6}
@@ -282,7 +312,7 @@ const ProjectDataComponent: React.FC<ProjectDataProps> = (
 const ProjectData = observer(ProjectDataComponent);
 const ProjectItem: React.FC<RouteComponentProps> = ({ history }) => {
   const match = matchPath<{ id: string }>(history.location.pathname, {
-    path: "/panel/projects/:id",
+    path: '/panel/projects/:id',
     exact: true,
     strict: false
   });
@@ -290,7 +320,6 @@ const ProjectItem: React.FC<RouteComponentProps> = ({ history }) => {
   const store = new ProjectDataStore();
 
   useEffect(() => {
-    console.log("Project item mount");
     when(() => App.loggedIn, () => {
       store.fetchProjectData(id);
     });

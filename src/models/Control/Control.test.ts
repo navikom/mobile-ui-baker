@@ -60,7 +60,7 @@ describe("Control", () => {
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeFalsy();
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    const width = mainStyle![9];
+    const width = mainStyle![10];
     expect(width.key === "width").toBeTruthy();
     expect(width.enabled).toBeFalsy();
     grid.mergeStyles(new Map([
@@ -73,7 +73,7 @@ describe("Control", () => {
     ]));
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeTruthy();
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
-    const width2 = mainStyle![9];
+    const width2 = mainStyle![10];
     expect(width2.enabled).toBeTruthy();
     expect(width === width2).toBeTruthy();
   });
@@ -135,7 +135,7 @@ describe("Control", () => {
     background1.setValue("red");
 
     const json = grid.toJSON;
-    expect(json.cssStyles[0][1].length).toBe(3);
+    expect(json.cssStyles[1][1].length).toBe(1);
     expect(json.id === grid.id).toBeTruthy();
     ControlStore.removeItem(grid);
     const grid2 = CreateControl(json.type, json as IControl);

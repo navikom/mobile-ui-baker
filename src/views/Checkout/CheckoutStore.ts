@@ -4,6 +4,7 @@ import { MODE_DEVELOPMENT } from 'models/Constants';
 import { App } from 'models/App';
 import { v4 } from 'uuid';
 import { api, Apis } from 'api';
+import { IUser } from '../../interfaces/IUser';
 
 class CheckoutStore extends Errors {
   static PRO_PLAN_CODE = process.env.REACT_APP_2_PRO_PLAN || '';
@@ -79,12 +80,7 @@ class CheckoutStore extends Errors {
 
   @action
   async paymentSuccess() {
-    try {
-      await api(Apis.Main).payment.add({ payment: 20, title: 'Pro plan', serviceRef: this.uuid });
-      this.checkIsUserSubscribed();
-    } catch (err) {
-      console.log('Save payment error: %s', err.message);
-    }
+    App.user && App.user.update({proPlan: true} as IUser);
   }
 
   dispose() {

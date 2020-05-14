@@ -41,7 +41,7 @@ const useInfoStyles = makeStyles((theme: Theme) =>
 
 export const ExpansionDataItems = ({ ...props }) => {
   const classes = useInfoStyles();
-  let data = props.data;
+  const data = props.data;
   return (
     <Grid container className={classes.wrapper}>
       <Grid container className={classes.nested} direction="row">

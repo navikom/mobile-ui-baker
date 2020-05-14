@@ -1,33 +1,33 @@
 /* eslint-disable */
-import React, { Suspense, useEffect, useState } from "react";
-import { Switch, Route, RouteComponentProps } from "react-router-dom";
-import { reaction } from "mobx";
-import { observer, useDisposable } from "mobx-react-lite";
+import React, { Suspense, useEffect, useState } from 'react';
+import { Switch, Route, RouteComponentProps } from 'react-router-dom';
+import { reaction } from 'mobx';
+import { observer, useDisposable } from 'mobx-react-lite';
 
 // creates a beautiful scrollbar
-import "perfect-scrollbar/css/perfect-scrollbar.css";
+import 'perfect-scrollbar/css/perfect-scrollbar.css';
 // @material-ui/core components
 
 // interfaces
-import { IRoute } from "interfaces/IRoute";
+import { IRoute } from 'interfaces/IRoute';
 
 // utils
-import { lazy } from "utils";
+import { lazy } from 'utils';
 
 // core components
-const Navbar = lazy(() => import("components/Navbars/Navbar"));
-const Footer = lazy(() => import("components/Footer/Footer"));
-const Sidebar = lazy(() => import("components/Sidebar/Sidebar"));
+const Navbar = lazy(() => import('components/Navbars/Navbar'));
+const Footer = lazy(() => import('components/Footer/Footer'));
+const Sidebar = lazy(() => import('components/Sidebar/Sidebar'));
 
 // core containers
-import ScrollContainer from "containers/ScrollContainer/ScrollContainer";
-import routes from "routes";
+import ScrollContainer from 'containers/ScrollContainer/ScrollContainer';
+import routes from 'routes';
 
-import dashboardStyle from "assets/jss/material-dashboard-react/layouts/dashboardStyle";
+import dashboardStyle from 'assets/jss/material-dashboard-react/layouts/dashboardStyle';
 
-import image from "assets/img/sidebar-2.jpg";
-import logo from "assets/img/webinsolut.png";
-import WaitingComponent from "hocs/WaitingComponent";
+import image from 'assets/img/sidebar-2.jpg';
+import logo from 'assets/img/favicon.png';
+import WaitingComponent from 'hocs/WaitingComponent';
 import { LAYOUT_PANEL, SIDEBAR_ENGAGE, SIDEBAR_MAIN, SIDEBAR_OTHER, SIDEBAR_USER, TITLE } from 'models/Constants';
 
 const switchRoutes = (routes: IRoute[]) => (
@@ -37,7 +37,7 @@ const switchRoutes = (routes: IRoute[]) => (
         return (
           <Route
             exact
-            path={prop.layout + (prop.path || prop.url) + (prop.params ? prop.params : "")}
+            path={prop.layout + (prop.path || prop.url) + (prop.params ? prop.params : '')}
             component={WaitingComponent(prop.component)}
             key={key}
           />
@@ -48,7 +48,7 @@ const switchRoutes = (routes: IRoute[]) => (
 );
 
 export default (props: RouteComponentProps) => {
-  const [color] = useState("blue");
+  const [color] = useState('blue');
   const [appImage, setAppImage] = useState(image);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [currRoutes, setCurrRoutes] =
@@ -62,7 +62,7 @@ export default (props: RouteComponentProps) => {
   };
 
   const getRoute = () => {
-    return props.location.pathname !== "/admin/maps";
+    return props.location.pathname !== '/admin/maps';
   };
 
   const resizeFunction = () => {
@@ -72,14 +72,14 @@ export default (props: RouteComponentProps) => {
   };
 
   useEffect(() => {
-    window.addEventListener("resize", resizeFunction);
+    window.addEventListener('resize', resizeFunction);
     return () => {
-      window.removeEventListener("resize", resizeFunction);
+      window.removeEventListener('resize', resizeFunction);
     };
   }, []);
 
   useEffect(() => {
-    if(mobileOpen) {
+    if (mobileOpen) {
       setMobileOpen(false);
     }
   }, [props.history.location, props.location]);
@@ -117,7 +117,7 @@ export default (props: RouteComponentProps) => {
             {switchRoutes(currRoutes)}
           </div>
         )}
-        {getRoute() ? <Footer/> : null}
+        {getRoute() ? <Footer /> : null}
       </ScrollContainer>
     </div>
   );

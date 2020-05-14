@@ -34,7 +34,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
       <Header
         color="transparent"
         brand={TITLE.toUpperCase()}
-        rightLinks={<HeaderLinks {...props}/>}
+        rightLinks={<HeaderLinks {...props} />}
         fixed
         changeColorOnScroll={{
           height: 400,
@@ -50,7 +50,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
               <h4>
                 Muiditor is the easiest, quickest way to design Mobile UI&apos;s
                 and share them to attract people.
-                <br/>
+                <br />
                 Create beautiful mobile UI&apos;s or embed Editor
                 and/or Viewer to your own web application and allow
                 your users do it.
