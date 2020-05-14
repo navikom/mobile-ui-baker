@@ -12,11 +12,12 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import {
-  CloudUpload, SaveAlt,
+  CloudUpload, SaveAlt, LayersClear,
 } from "@material-ui/icons";
 import { blackOpacity } from "assets/jss/material-dashboard-react";
 import { Mode } from "enums/ModeEnum";
 import TextInput from "components/CustomInput/TextInput";
+import DialogAlert from '../../../../components/Dialog/DialogAlert';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -56,10 +57,18 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     project,
     changeProjectTitle,
     dictionary,
-    importProject
+    importProject,
+    clearProject
   }
 ) => {
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+  const handleDelete = () => {
+    setOpenDialog(true);
+  }
   const classes = useStyles();
+
+  const dialogContent = dictionary!.defValue(EditorDictionary.keys.deleteWarning, project!.title);
+
   return (<div className={classes.root}>
     <Grid container className={classes.title}>
       <TextInput
@@ -88,6 +97,13 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.project)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
         <IconButton size="small" onClick={importProject}>
           <SaveAlt />
+        </IconButton>
+      </Tooltip>
+      <Tooltip
+        className={classes.btn}
+        title={`${dictionary!.defValue(EditorDictionary.keys.clear)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
+        <IconButton size="small" onClick={handleDelete}>
+          <LayersClear />
         </IconButton>
       </Tooltip>
     </Grid>
@@ -120,6 +136,15 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
           label={dictionary!.defValue(EditorDictionary.keys.background)} />
       </FormControl>
     </Grid>
+    <DialogAlert
+      open={openDialog}
+      handleClose={() => setOpenDialog(false)}
+      title={`${dictionary!.defValue(EditorDictionary.keys.delete)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}
+      content={dialogContent}
+      okTitle={dictionary!.defValue(EditorDictionary.keys.yes)}
+      cancelTitle={dictionary!.defValue(EditorDictionary.keys.no)}
+      onOk={clearProject}
+    />
   </div>)
 };
 

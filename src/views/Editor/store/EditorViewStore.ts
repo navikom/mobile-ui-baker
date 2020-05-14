@@ -39,6 +39,7 @@ import { SharedControls } from 'models/Project/ControlsStore';
 import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import PluginStore from 'models/PluginStore';
 import DisplayViewStore from 'models/DisplayViewStore';
+import { whiteColor } from '../../../assets/jss/material-dashboard-react';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -103,7 +104,8 @@ class EditorViewStore extends DisplayViewStore {
         saveProject: this.saveProject,
         project: this.project,
         changeProjectTitle: this.changeProjectTitle,
-        importProject: () => this.importProject()
+        importProject: () => this.importProject(),
+        clearProject: () => this.clearProject()
       },
       {
         deleteControl: this.deleteControl,
@@ -322,6 +324,18 @@ class EditorViewStore extends DisplayViewStore {
     localStorage.clear();
   }
 
+  @action clearProject() {
+    this.clearLocalStorage();
+    this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
+    this.screens = observable([CreateControl(ControlEnum.Grid)]);
+    this.currentScreen = this.screens[0];
+    this.currentScreen.changeTitle('Screen', true);
+    this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
+    this.background = { backgroundColor: whiteColor };
+    this.statusBarColor = whiteColor;
+    App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
+  }
+
   @action setSavingProject(value: boolean) {
     this.savingProject = value;
   }
@@ -333,7 +347,8 @@ class EditorViewStore extends DisplayViewStore {
       await super.fetchProjectData(projectId);
       this.save();
       if(!App.user || this.project.userId !== App.user.userId) {
-        this.project.setId(0);
+        this.project = ProjectStore.from({...this.project, projectId: 0, userId: App.user!.userId});
+
         App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
       }
     } catch (err) {

@@ -70,7 +70,7 @@ const ContextComponent: React.FC = () => {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
-      route: ROUTE_EDITOR + '/1'
+      route: ROUTE_EDITOR
     },
     ...OwnProjects.previewList,
     ...SharedProjects.previewList

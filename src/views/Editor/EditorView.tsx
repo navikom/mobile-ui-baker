@@ -43,7 +43,7 @@ import { ItemTypes } from 'views/Editor/store/ItemTypes';
 import IControl from 'interfaces/IControl';
 import { DropEnum } from 'enums/DropEnum';
 import TreeComponent from 'views/Editor/components/TreeComponent';
-import { ROUTE_LOGIN, ROUTE_USER_PROFILE, TABS_HEIGHT } from 'models/Constants';
+import { ROUTE_LOGIN, ROUTE_PROJECTS, ROUTE_USER_PROFILE, TABS_HEIGHT } from 'models/Constants';
 import ProjectTab from 'views/Editor/components/tabs/ProjectTab';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import { blackOpacity, whiteColor, whiteOpacity } from 'assets/jss/material-dashboard-react';
@@ -259,15 +259,10 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     setAnchorEl(null);
   };
 
-  const navigateLogin = () => {
+  const navigate = (route: string) => () => {
     handleClose();
-    App.navigationHistory!.push(ROUTE_LOGIN);
-  };
-
-  const navigateProfile = () => {
-    handleClose();
-    App.navigationHistory!.push(ROUTE_USER_PROFILE);
-  };
+    App.navigationHistory!.push(route);
+  }
 
   const logout = () => {
     handleClose();
@@ -362,11 +357,12 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   open={open}
                   onClose={handleClose}
                 >
+                  <MenuItem onClick={navigate(ROUTE_PROJECTS)}>{Dictionary.defValue(DictionaryService.keys.projects)}</MenuItem>
                   {
                     App.loggedIn ?
                       (<MenuItem
-                        onClick={navigateProfile}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
-                      (<MenuItem onClick={navigateLogin}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
+                        onClick={navigate(ROUTE_USER_PROFILE)}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
+                      (<MenuItem onClick={navigate(ROUTE_LOGIN)}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
                   }
                   {
                     App.loggedIn &&

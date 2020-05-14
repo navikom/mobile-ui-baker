@@ -68,6 +68,7 @@ export const data = {
   no: 'No',
   toFile: 'to file',
   fromFile: 'from file',
+  clear: 'Clear'
 };
 
 class EditorDictionary extends AbstractDictionary {

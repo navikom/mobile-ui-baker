@@ -28,4 +28,5 @@ export default interface IEditorTabsProps {
   importProject?: () => void;
   importControl?: () => void;
   importComponent?: () => void;
+  clearProject?: () => void;
 }

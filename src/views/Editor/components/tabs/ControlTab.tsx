@@ -21,7 +21,6 @@ import Popover from '@material-ui/core/Popover';
 import { ControlEnum } from 'enums/ControlEnum';
 import EditorViewStore from 'views/Editor/store/EditorViewStore';
 import ControlTabItem from 'views/Editor/components/tabs/ControlTabItem';
-import CustomDragLayer from 'views/Editor/components/CustomDragLayer';
 import IEditorTabsProps from 'interfaces/IEditorTabsProps';
 import IControl from 'interfaces/IControl';
 import CSSProperties from 'views/Editor/components/tabs/CSSProperties';
@@ -96,7 +95,7 @@ const ControlInstance: React.FC<ControlInstanceProps> =
 
 type ControlTabProps = IEditorTabsProps
 
-const ControlTab: React.FC<ControlTabProps> = (
+const ControlTabComponent: React.FC<ControlTabProps> = (
   {
     dictionary,
     selectedControl,
@@ -144,40 +143,58 @@ const ControlTab: React.FC<ControlTabProps> = (
             <ControlTabItem key={i.toString()} type={EditorViewStore.CONTROLS[k]} />)
         }
       </div>
-      <Grid container alignItems="center" justify="space-between" className={classes.tools}>
-        <Typography align="center" variant="subtitle2" className={classes.paragraph}>
-          {dictionary!.defValue(EditorDictionary.keys.controls)}
-        </Typography>
-        {
-          App.isAdmin && (
+      {
+        SharedControls.size > 0 && (
+          <Grid container alignItems="center" justify={App.isAdmin ? 'space-between' : 'center'} className={classes.tools}>
+            <Typography align="center" variant="subtitle2" className={classes.paragraph}>
+              {dictionary!.defValue(EditorDictionary.keys.controls)}
+            </Typography>
+            {
+              App.isAdmin && (
+                <Tooltip
+                  title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
+                  <IconButton size="small" onClick={importControl}>
+                    <SaveAlt />
+                  </IconButton>
+                </Tooltip>
+              )
+            }
+          </Grid>
+        )
+      }
+      {
+        SharedControls.size > 0 && <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedControls} />
+      }
+      {
+        SharedComponents.size > 0 && (
+          <Grid container alignItems="center" justify="space-between" className={classes.tools}>
+            <Typography variant="subtitle2" className={classes.paragraph}>
+              {dictionary!.defValue(EditorDictionary.keys.sharedComponents)}
+            </Typography>
+          </Grid>
+        )
+      }
+      {
+        SharedComponents.size > 0 && <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedComponents} />
+      }
+      {
+        OwnComponents.size > 0 && (
+          <Grid container alignItems="center" justify="space-between" className={classes.tools}>
+            <Typography align="center" variant="subtitle2" className={classes.paragraph}>
+              {dictionary!.defValue(EditorDictionary.keys.components)}
+            </Typography>
             <Tooltip
               title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
-              <IconButton size="small" onClick={importControl}>
+              <IconButton size="small" onClick={importComponent}>
                 <SaveAlt />
               </IconButton>
             </Tooltip>
-          )
-        }
-      </Grid>
-      <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedControls} />
-      <Grid container alignItems="center" justify="space-between" className={classes.tools}>
-        <Typography variant="subtitle2" className={classes.paragraph}>
-          {dictionary!.defValue(EditorDictionary.keys.sharedComponents)}
-        </Typography>
-      </Grid>
-      <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedComponents} />
-      <Grid container alignItems="center" justify="space-between" className={classes.tools}>
-        <Typography align="center" variant="subtitle2" className={classes.paragraph}>
-          {dictionary!.defValue(EditorDictionary.keys.components)}
-        </Typography>
-        <Tooltip
-          title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
-          <IconButton size="small" onClick={importComponent}>
-            <SaveAlt />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-      <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={OwnComponents} />
+          </Grid>
+        )
+      }
+      {
+        OwnComponents.size > 0 && <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={OwnComponents} />
+      }
       <Popover
         id="menu-controls"
         anchorEl={anchorEl}
@@ -214,6 +231,8 @@ const ControlTab: React.FC<ControlTabProps> = (
     </div>
   )
 };
+
+const ControlTab = observer(ControlTabComponent);
 
 interface ControlDetailsProps {
   selectControl?: (control?: IControl) => void;
