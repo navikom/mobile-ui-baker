@@ -57,6 +57,7 @@ const styles = [
     .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
   new CSSProperty('right', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
     .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('background', 'linear-gradient( to bottom,rgba(0,0,0,0.01),rgba(0,0,0,0.7) )', 'linear-gradient( to bottom,rgba(0,0,0,0.01),rgba(0,0,0,0.7) )', CSS_CAT_BACKGROUND),
   new CSSProperty('backgroundColor', '#ffffff', '#ffffff', CSS_CAT_BACKGROUND, false,
     CSS_VALUE_COLOR),
   new CSSProperty('backgroundImage',

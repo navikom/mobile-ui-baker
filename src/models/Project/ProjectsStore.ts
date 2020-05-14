@@ -91,20 +91,20 @@ export default class ProjectsStore extends Pagination<IProject> {
         );
         data = await this.updateWithImages(project.projectId, project.JSON, method, files);
       } else {
-        data = await api(Apis.Main)[method].update(project.projectId, project.JSON);
+        data = await api(Apis.Main)[method].update(project.projectId, this.fillFormData(project.JSON));
       }
       project.update(data).updateVersions(data.versions);
     }
   }
 
-  static fillFormData(project: IProjectJSON, files: any) {
+  static fillFormData(project: IProjectJSON, files?: any) {
     const formData = new FormData();
     project.description && formData.append("description", project.description);
     project.title && formData.append("title", project.title);
     (project.price !== undefined && project.price !== null) && formData.append("price", project.price.toString());
     !!project.data && formData.append("data", JSON.stringify(project.data));
     formData.append("versionId", project.versionId.toString());
-    (files || []).forEach((file: any, key: number) => formData.append("file", file));
+    files && files.forEach((file: any, key: number) => formData.append("file", file));
     return formData;
   }
 

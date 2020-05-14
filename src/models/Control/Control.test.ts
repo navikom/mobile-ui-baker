@@ -60,7 +60,7 @@ describe("Control", () => {
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeFalsy();
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    const width = mainStyle![10];
+    const width = mainStyle![11];
     expect(width.key === "width").toBeTruthy();
     expect(width.enabled).toBeFalsy();
     grid.mergeStyles(new Map([
@@ -73,7 +73,7 @@ describe("Control", () => {
     ]));
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeTruthy();
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
-    const width2 = mainStyle![10];
+    const width2 = mainStyle![11];
     expect(width2.enabled).toBeTruthy();
     expect(width === width2).toBeTruthy();
   });
@@ -84,10 +84,10 @@ describe("Control", () => {
 
     grid1.addCSSStyle();
     const mainStyle = grid1.cssStyles.get(MAIN_CSS_STYLE);
-    const mainBackground = mainStyle![5];
+    const mainBackground = mainStyle![6];
     mainBackground.switchEnabled();
     const style1 = grid1.cssStyles.get("Style1");
-    const background1 = style1![5];
+    const background1 = style1![6];
     background1.switchEnabled();
     background1.setValue("red");
 
@@ -130,7 +130,7 @@ describe("Control", () => {
     const grid = CreateControl(ControlEnum.Grid);
     grid.addCSSStyle();
     const style = grid.cssStyles.get("Style1");
-    const background1 = style![5];
+    const background1 = style![6];
     background1.switchEnabled();
     background1.setValue("red");
 

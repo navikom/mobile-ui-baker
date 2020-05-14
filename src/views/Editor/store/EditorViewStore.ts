@@ -459,7 +459,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   @action changeProjectTitle = (value: string) => {
-    if (value.length > 50) {
+    if (value.length > 150) {
       return;
     }
     const undo = { control: this.currentScreen.id, value: this.project.title } as unknown as IHistoryObject;
