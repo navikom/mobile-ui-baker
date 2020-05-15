@@ -7,7 +7,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const useStyles = makeStyles(styles);
 
-const LaptopPng = '/images/laptop-basics.png';
+const LaptopPng = '/images/laptop-basics-2.png';
 
 export default function EditorSection() {
   const classes = useStyles();

@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
   },
   gridList: {
     height: 450,
-    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
     transform: 'translateZ(0)',
   },
   titleBar: {
@@ -85,7 +84,7 @@ const ContextComponent: React.FC = () => {
               tile: classes.listTile
             }}
             style={{
-              width: 250,
+              width: 255,
               padding: 5
             }}
           >

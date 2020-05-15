@@ -97,7 +97,11 @@ const ElementComponent: React.FC<ElementProps> =
         showPlaceholder = true;
         if (isSelected && isSelected(control)) {
           backgroundColor = styles.backgroundColor;
-          placeholder = <EditorInput html={title} onChange={(e) => control.changeTitle(e)} style={{...styles, opacity: 1}} />;
+          placeholder =
+            <EditorInput
+              html={title}
+              onChange={(e) => control.changeTitle(e)}
+              style={{...styles, opacity: 1, position: 'absolute'}} />;
         } else {
           // @ts-ignore
           placeholder = title;

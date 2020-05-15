@@ -8,12 +8,12 @@ const productStyle = createStyles({
     marginRight: 'auto'
   },
   laptopSection: {
-    height: '560px',
+    height: '500px',
     position: 'relative',
   },
   laptopWrapper: {
     top: 0,
-    left: '-120px',
+    left: '-121px',
     width: 'auto',
     height: '100%',
     position: 'absolute'

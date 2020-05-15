@@ -493,7 +493,7 @@ class ControlStore extends Movable implements IControl {
   static getOrCreate(instance: ModelCtor, control: IControl, isMenu?: boolean) {
     let contr = this.getById(control.id);
     if (!contr) {
-      contr = ControlStore.fromJSON(instance, control, isMenu);
+      contr = this.fromJSON(instance, control, isMenu);
       this.addItem(contr);
     }
     return contr;
@@ -554,6 +554,10 @@ class ControlStore extends Movable implements IControl {
 
   static create(instance: ModelCtor, control: IControl, isMenu?: boolean) {
     return this.getOrCreate(instance, control, isMenu);
+  }
+
+  static clone(instance: ModelCtor, control: IControl) {
+    return this.fromJSON(instance, control);
   }
 }
 

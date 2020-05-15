@@ -105,7 +105,7 @@ class EditorViewStore extends DisplayViewStore {
         project: this.project,
         changeProjectTitle: this.changeProjectTitle,
         importProject: () => this.importProject(),
-        clearProject: () => this.clearProject()
+        clearProject: () => this.newProject()
       },
       {
         deleteControl: this.deleteControl,
@@ -324,8 +324,8 @@ class EditorViewStore extends DisplayViewStore {
     localStorage.clear();
   }
 
-  @action clearProject() {
-    this.clearLocalStorage();
+  @action newProject() {
+    this.clear();
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
     this.screens = observable([CreateControl(ControlEnum.Grid)]);
     this.currentScreen = this.screens[0];
@@ -334,6 +334,12 @@ class EditorViewStore extends DisplayViewStore {
     this.background = { backgroundColor: whiteColor };
     this.statusBarColor = whiteColor;
     App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
+  }
+
+  @action clear() {
+    this.clearLocalStorage();
+    this.history.clear();
+    ControlStore.clear();
   }
 
   @action setSavingProject(value: boolean) {

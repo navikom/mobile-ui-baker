@@ -201,6 +201,161 @@ const editorStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const Preview = () => {
+  return (
+    <React.Fragment>
+      <div style={{ width: '25%', height: '75%' }}>
+        <Skeleton variant="rect" animation="wave" height="90%" />
+        <Skeleton animation="wave" />
+        <Skeleton animation="wave" width="75%" />
+      </div>
+      <div style={{ width: '45%', height: '75%' }}>
+        <Skeleton variant="rect" animation="wave" height="90%" />
+        <Skeleton animation="wave" />
+        <Skeleton animation="wave" width="60%" />
+      </div>
+      <div style={{ width: '25%', height: '75%' }}>
+        <Skeleton variant="rect" animation="wave" height="90%" />
+        <Skeleton animation="wave" />
+        <Skeleton animation="wave" width="60%" />
+      </div>
+    </React.Fragment>
+  )
+}
+
+interface ContextComponentProps {
+  store: EditorViewStore;
+}
+
+interface EditorHeaderProps extends ContextComponentProps {
+  switchFullscreen: () => void;
+  fullScreen: boolean;
+}
+
+const EditorHeaderComponent: React.FC<EditorHeaderProps> = ({ store, switchFullscreen, fullScreen }) => {
+  const classes = editorStyles();
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const navigate = (route: string) => () => {
+    handleClose();
+    App.navigationHistory!.push(route);
+  }
+
+  const logout = () => {
+    handleClose();
+    Auth.logout();
+  };
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        {
+          store.loadingPlugin ? (
+            <div style={{ width: 200 }}>
+              <Skeleton animation="wave" width={200} height={10} style={{ marginBottom: 5 }} />
+              <Skeleton animation="wave" width={170} height={10} />
+            </div>
+
+          ) : (
+            <NavLink to={store.pluginStore.data.routeLink}>
+              <Typography variant="h6" className={classes.title}>
+                {Dictionary.value(store.pluginStore.data.routeTitle)}
+              </Typography>
+            </NavLink>
+          )
+        }
+
+        <div className={classes.headerButtons}>
+          <IconButton
+            color="inherit"
+            onClick={switchFullscreen}
+          >
+            {fullScreen ? <FullscreenExit /> : <Fullscreen />}
+          </IconButton>
+          <IconButton
+            color="inherit"
+            onClick={() => store.setIOS(!store.ios)}
+          >
+            {store.ios ? <Android /> : <Apple />}
+          </IconButton>
+          <IconButton color="inherit" onClick={store.switchPortrait}>
+            {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
+          </IconButton>
+          <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
+            <IconButton color="inherit" onClick={store.makeProjectScreenshot}>
+              <AddAPhoto />
+            </IconButton>
+          </Tooltip>
+        </div>
+        <div className={classes.headerRightGroup}>
+          <Typography color={store.saving ? 'secondary' : 'primary'} style={{ transition: 'all .5s ease-out' }}>
+            {Dictionary.defValue(DictionaryService.keys.projectStored)}
+          </Typography>
+          <Tooltip
+            title={store.dictionary.defValue(EditorDictionary.keys.autoSave)}
+          >
+            <IconButton
+              onClick={store.switchAutoSave}
+              color={store.autoSave ? 'secondary' : 'inherit'}
+            >
+              <RestorePage />
+            </IconButton>
+          </Tooltip>
+          <IconButton
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleMenu}
+            color="inherit"
+          >
+            <AccountCircle />
+          </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={open}
+            onClose={handleClose}
+          >
+            <MenuItem
+              onClick={navigate(ROUTE_PROJECTS)}>{Dictionary.defValue(DictionaryService.keys.projects)}</MenuItem>
+            {
+              App.loggedIn ?
+                (<MenuItem
+                  onClick={navigate(ROUTE_USER_PROFILE)}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
+                (<MenuItem
+                  onClick={navigate(ROUTE_LOGIN)}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
+            }
+            {
+              App.loggedIn &&
+              (<MenuItem onClick={logout}>{Dictionary.defValue(DictionaryService.keys.logout)}</MenuItem>)
+            }
+          </Menu>
+        </div>
+      </Toolbar>
+
+    </AppBar>
+  )
+}
+
+const EditorHeader = observer(EditorHeaderComponent);
+
 function a11yProps(index: number) {
   return {
     id: `full-width-tab-${index}`,
@@ -210,19 +365,13 @@ function a11yProps(index: number) {
 
 const TabContent = [ProjectTab, ControlTab];
 
-interface ContextComponentProps {
-  store: EditorViewStore;
-}
-
 const ContextComponent: React.FC<ContextComponentProps> = (
   {
     store,
   }) => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [height, setHeight] = React.useState(window.innerHeight - 12);
   const [fullScreen, setFullScreen] = React.useState<boolean>(false);
   const classes = editorStyles();
-  const open = Boolean(anchorEl);
 
   useEffect(() => {
     const resize = () => {
@@ -251,24 +400,6 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     }
   }
 
-  const handleMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const navigate = (route: string) => () => {
-    handleClose();
-    App.navigationHistory!.push(route);
-  }
-
-  const logout = () => {
-    handleClose();
-    Auth.logout();
-  };
-
   const tabsStyle = classNames(classes.tabs);
   const cover = classNames({
     [classes.cover]: true,
@@ -278,102 +409,8 @@ const ContextComponent: React.FC<ContextComponentProps> = (
   return (
     <div className={classes.root} style={{ height }}>
       {
-        !store.pluginStore.data.hideHeader && (
-          <AppBar position="static">
-            <Toolbar>
-              {
-                store.loadingPlugin ? (
-                  <div style={{ width: 200 }}>
-                    <Skeleton animation="wave" width={200} height={10} style={{ marginBottom: 5 }} />
-                    <Skeleton animation="wave" width={170} height={10} />
-                  </div>
-
-                ) : (
-                  <NavLink to={store.pluginStore.data.routeLink}>
-                    <Typography variant="h6" className={classes.title}>
-                      {Dictionary.value(store.pluginStore.data.routeTitle)}
-                    </Typography>
-                  </NavLink>
-                )
-              }
-
-              <div className={classes.headerButtons}>
-                <IconButton
-                  color="inherit"
-                  onClick={switchFullscreen}
-                >
-                  {fullScreen ? <FullscreenExit /> : <Fullscreen />}
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  onClick={() => store.setIOS(!store.ios)}
-                >
-                  {store.ios ? <Android /> : <Apple />}
-                </IconButton>
-                <IconButton color="inherit" onClick={store.switchPortrait}>
-                  {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
-                </IconButton>
-                <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
-                  <IconButton color="inherit" onClick={store.makeProjectScreenshot}>
-                    <AddAPhoto />
-                  </IconButton>
-                </Tooltip>
-              </div>
-              <div className={classes.headerRightGroup}>
-                <Typography color={store.saving ? 'secondary' : 'primary'} style={{ transition: 'all .5s ease-out' }}>
-                  {Dictionary.defValue(DictionaryService.keys.projectStored)}
-                </Typography>
-                <Tooltip
-                  title={store.dictionary.defValue(EditorDictionary.keys.autoSave)}
-                >
-                  <IconButton
-                    onClick={store.switchAutoSave}
-                    color={store.autoSave ? 'secondary' : 'inherit'}
-                  >
-                    <RestorePage />
-                  </IconButton>
-                </Tooltip>
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={open}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={navigate(ROUTE_PROJECTS)}>{Dictionary.defValue(DictionaryService.keys.projects)}</MenuItem>
-                  {
-                    App.loggedIn ?
-                      (<MenuItem
-                        onClick={navigate(ROUTE_USER_PROFILE)}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
-                      (<MenuItem onClick={navigate(ROUTE_LOGIN)}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
-                  }
-                  {
-                    App.loggedIn &&
-                    (<MenuItem onClick={logout}>{Dictionary.defValue(DictionaryService.keys.logout)}</MenuItem>)
-                  }
-                </Menu>
-              </div>
-            </Toolbar>
-
-          </AppBar>
-        )
+        !store.pluginStore.data.hideHeader &&
+        <EditorHeader store={store} fullScreen={fullScreen} switchFullscreen={switchFullscreen} />
       }
       <div>
         <DndProvider debugMode={true} backend={Backend}>
@@ -480,25 +517,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
       />
       <div className={cover}>
         {
-          store.loadingPlugin && (
-            <React.Fragment>
-              <div style={{ width: '25%', height: '75%' }}>
-                <Skeleton variant="rect" animation="wave" height="90%" />
-                <Skeleton animation="wave" />
-                <Skeleton animation="wave" width="75%" />
-              </div>
-              <div style={{ width: '45%', height: '75%' }}>
-                <Skeleton variant="rect" animation="wave" height="90%" />
-                <Skeleton animation="wave" />
-                <Skeleton animation="wave" width="60%" />
-              </div>
-              <div style={{ width: '25%', height: '75%' }}>
-                <Skeleton variant="rect" animation="wave" height="90%" />
-                <Skeleton animation="wave" />
-                <Skeleton animation="wave" width="60%" />
-              </div>
-            </React.Fragment>
-          )
+          store.loadingPlugin && <Preview />
         }
       </div>
     </div>

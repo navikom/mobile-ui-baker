@@ -50,6 +50,10 @@ class DisplayViewStore extends Errors {
     this.currentScreen = this.screens[0];
   }
 
+  clear() {
+
+  }
+
   @action setLoadingPlugin(value: boolean) {
     this.loadingPlugin = value;
   }
@@ -68,6 +72,7 @@ class DisplayViewStore extends Errors {
   }
 
   @action fromJSON(data: IProjectData) {
+    this.clear();
     this.screens.replace(data.screens.map((e) => CreateControl(ControlEnum.Grid, e)));
     this.currentScreen = this.screens[0];
     this.mode = data.mode;

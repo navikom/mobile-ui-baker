@@ -21,6 +21,17 @@ export default function CreateControl(type: ControlEnum, json?: IControl, menu?:
   return control;
 }
 
+export function CloneControl(json: IControl) {
+  json.id = uuidv4();
+  const control = ControlStore.clone(ControlStores[json.type] as unknown as ModelCtor<IControl>,json);
+  if(json && control.children.length === 0) {
+    json.children.forEach(child => {
+      control.addChild(CloneControl(child));
+    });
+  }
+  return control;
+}
+
 export function CreateForMenu(instance: IProject) {
   const controlData = instance.version.data as IControl;
   controlData.parentId = undefined;
