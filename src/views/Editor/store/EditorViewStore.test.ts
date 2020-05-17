@@ -296,10 +296,18 @@ describe('EditorViewStore', () => {
   });
 
   it('Open existing project', async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(users.login), responseHeader);
+    await Auth.login('test', 'test');
+    expect(App.loggedIn).toBe(true);
+
     fetchMock.mockResponseOnce(JSON.stringify(projects.project1), responseHeader);
     const store1 = new EditorViewStore('');
     await store1.fetchProjectData(1);
     expect(store1.project.projectId).toBe(1);
+
+    fetchMock.mockResponseOnce(postResponseSuccess);
+    await Auth.logout();
+    expect(App.loggedIn).toBeFalsy();
   });
 
   it('The component manipulation', async () => {

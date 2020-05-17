@@ -32,7 +32,7 @@ import {
   ERROR_DATA_IS_INCOMPATIBLE,
   ERROR_ELEMENT_DOES_NOT_EXIST,
   ERROR_USER_DID_NOT_LOGIN,
-  ROUTE_EDITOR
+  ROUTE_EDITOR, ROUTE_VIEWER
 } from 'models/Constants';
 import ControlStore from 'models/Control/ControlStore';
 import { SharedControls } from 'models/Project/ControlsStore';
@@ -40,6 +40,8 @@ import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import PluginStore from 'models/PluginStore';
 import DisplayViewStore from 'models/DisplayViewStore';
 import { whiteColor } from '../../../assets/jss/material-dashboard-react';
+import { OwnProjects } from '../../../models/Project/OwnProjectsStore';
+import AccessEnum from '../../../enums/AccessEnum';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -55,7 +57,6 @@ class EditorViewStore extends DisplayViewStore {
   static CONTROLS = ControlEnum;
   @observable history = ControlStore.history;
   @observable selectedControl?: IControl;
-  @observable dictionary = new EditorDictionary();
   @observable tabToolsIndex = 1;
   @observable autoSave = false;
   @observable saving = false;
@@ -81,7 +82,8 @@ class EditorViewStore extends DisplayViewStore {
       mode: this.mode,
       title: this.project.title,
       ios: this.ios,
-      portrait: this.portrait
+      portrait: this.portrait,
+      projectId: this.project ? this.project.projectId : 0
     }
   }
 
@@ -105,7 +107,9 @@ class EditorViewStore extends DisplayViewStore {
         project: this.project,
         changeProjectTitle: this.changeProjectTitle,
         importProject: () => this.importProject(),
-        clearProject: () => this.newProject()
+        clearProject: () => this.newProject(),
+        deleteProject: () => this.deleteProject(),
+        setAccess: (access: AccessEnum) => this.setAccess(access)
       },
       {
         deleteControl: this.deleteControl,
@@ -212,6 +216,7 @@ class EditorViewStore extends DisplayViewStore {
 
       this.project.version.update({ data: json } as unknown as IProjectVersion);
       await ProjectsStore.save(this.project);
+      App.loggedIn && this.project.userId === App.user!.userId && OwnProjects.push([this.project]);
       runInAction(() => {
         this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, this.project.title);
       });
@@ -321,10 +326,12 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   @action clearLocalStorage() {
-    localStorage.clear();
+    localStorage.removeItem(EditorViewStore.AUTO_SAVE);
+    localStorage.removeItem(EditorViewStore.STORE_JSON);
   }
 
   @action newProject() {
+    this.clearLocalStorage();
     this.clear();
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
     this.screens = observable([CreateControl(ControlEnum.Grid)]);
@@ -336,8 +343,24 @@ class EditorViewStore extends DisplayViewStore {
     App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
   }
 
+  @action async deleteProject() {
+    try {
+      await OwnProjects.delete(this.project);
+      runInAction(() => {
+        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataDeletedSuccessfully, this.project.title);
+      });
+      this.setSuccessRequest(true);
+      this.newProject();
+      this.setTimeOut(() => {
+        this.setSuccessRequest(false);
+      }, 3000);
+    } catch (err) {
+      this.setError(Dictionary.defValue(DictionaryService.keys.dataDeleteError, [this.project.title, Dictionary.value(err.message)]));
+      this.setTimeOut(() => this.setError(null), 5000);
+    }
+  }
+
   @action clear() {
-    this.clearLocalStorage();
     this.history.clear();
     ControlStore.clear();
   }
@@ -348,15 +371,25 @@ class EditorViewStore extends DisplayViewStore {
 
   @action
   async fetchProjectData(projectId: number) {
+    if(this.project.projectId === projectId && this.autoSave) {
+      return;
+    }
     this.setFetchingProject(true);
     try {
       await super.fetchProjectData(projectId);
-      this.save();
-      if(!App.user || this.project.userId !== App.user.userId) {
-        this.project = ProjectStore.from({...this.project, projectId: 0, userId: App.user!.userId});
+      if(!App.user || !App.loggedIn || (this.project.owner && this.project.owner.userId !== App.user.userId)) {
+        if(this.project) {
+          if(this.project.access === AccessEnum.READ_BY_LINK) {
+            App.navigationHistory && App.navigationHistory.replace(`${ROUTE_VIEWER}/${this.project.projectId}/header`);
+          } else if(this.project.access === AccessEnum.EDIT_BY_LINK) {
 
-        App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
+          } else {
+            this.project = ProjectStore.from({...this.project, projectId: 0, userId: App.user!.userId});
+            App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
+          }
+        }
       }
+      this.save();
     } catch (err) {
       console.log('Fetch full instance data error %s', err.message);
       App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
@@ -364,15 +397,23 @@ class EditorViewStore extends DisplayViewStore {
     this.setFetchingProject(false);
   }
 
+  @action async setAccess(access: AccessEnum) {
+    try {
+      await ProjectsStore.setAccess(this.project, access);
+    } catch (e) {
+      console.log('Change access error: %s', e.message);
+    }
+  }
+
   @action
   async checkLocalStorage() {
     const autoSave = await localStorage.getItem(EditorViewStore.AUTO_SAVE);
     autoSave && this.setAutoSave(true);
     const json = await localStorage.getItem(EditorViewStore.STORE_JSON);
-
     if (this.autoSave && json) {
       try {
         const data = JSON.parse(json);
+        console.log(77777777, data);
         this.fromJSON(data);
       } catch (err) {
         console.log('LocalStorage json data parse error %s', err.message);
@@ -399,28 +440,12 @@ class EditorViewStore extends DisplayViewStore {
     }
   }
 
-  makeProjectScreenshot = () => {
-    const element = document.querySelector('#capture') as HTMLElement;
-    element && html2canvas(element, { useCORS: true }).then(canvas => {
-      const base64 = canvas.toDataURL();
-      // const w = window.open("");
-      // w!.document.write(`<img src="${base64}"/>`);
-      const a = document.createElement('a');
-      a.href = base64;
-      a.download = `${this.project.title.length ? this.project.title : 'Project'}.png`;
-      a.click();
-      setTimeout(() => {
-        a.remove();
-      }, 300);
-    })
-  };
-
   @action switchAutoSave = () => {
     this.autoSave = !this.autoSave;
     if (this.autoSave) {
       localStorage.setItem(EditorViewStore.AUTO_SAVE, EditorViewStore.AUTO_SAVE);
     } else {
-      localStorage.clear();
+      this.clearLocalStorage();
     }
   };
 

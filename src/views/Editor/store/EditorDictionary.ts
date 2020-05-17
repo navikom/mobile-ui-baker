@@ -64,11 +64,23 @@ export const data = {
   component: 'component',
   makeScreenshot: 'make screenshot',
   deleteWarning: '$ will be deleted forever. Are you sure?',
+  clearWarning: '$ data will be cleared forever if data did not save.',
   yes: 'Yes',
   no: 'No',
   toFile: 'to file',
   fromFile: 'from file',
-  clear: 'Clear'
+  clear: 'Clear',
+  share: 'Share',
+  linkTo: 'Link to the',
+  copy: 'Copy',
+  usersCan: 'Users can',
+  edit: 'Edit',
+  read: 'Read',
+  owner: 'Owner',
+  'read by link': 'Read by link',
+  'edit by link': 'Edit by link',
+  copyLink: 'Copy link',
+  linkCopied: 'Copied: $'
 };
 
 class EditorDictionary extends AbstractDictionary {

@@ -328,7 +328,7 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           <Delete />
         </IconButton>
       </Grid>
-      <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 10}px)`, overflow: 'auto' }}>
+      <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 35}px)`, overflow: 'auto' }}>
         <CSSProperties control={control as IControl} dictionary={dictionary} />
         <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
       </div>

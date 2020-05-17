@@ -65,7 +65,7 @@ export default class ProjectStore implements IProject {
     model.updatedAt && (this.updatedAt = model.updatedAt);
     model.isBuyer !== undefined && (this.isBuyer = model.isBuyer);
     model.description && (this.description = model.description);
-    model.access && (this.access = model.access);
+    model.access !== undefined && (this.access = model.access);
     model.images &&
     (this.images.replace(
       model.images.map(image => ImageStore.from(image))

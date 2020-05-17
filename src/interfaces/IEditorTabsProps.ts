@@ -2,6 +2,7 @@ import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import IControl from 'interfaces/IControl';
 import { Mode } from 'enums/ModeEnum';
 import IProject, { IBackgroundColor } from 'interfaces/IProject';
+import AccessEnum from '../enums/AccessEnum';
 
 export default interface IEditorTabsProps {
   mode?: Mode;
@@ -29,4 +30,6 @@ export default interface IEditorTabsProps {
   importControl?: () => void;
   importComponent?: () => void;
   clearProject?: () => void;
+  deleteProject?: () => void;
+  setAccess?: (access: AccessEnum) => void;
 }

@@ -26,6 +26,7 @@ export interface IProjectData {
   title: string;
   ios: boolean;
   portrait: boolean;
+  projectId: number;
 }
 
 export interface IProjectVersion {

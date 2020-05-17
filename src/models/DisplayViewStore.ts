@@ -11,8 +11,12 @@ import ProjectEnum from 'enums/ProjectEnum';
 import CreateControl from 'models/Control/ControlStores';
 import ProjectsStore from 'models/Project/ProjectsStore';
 import { DeviceEnum } from '../enums/DeviceEnum';
+import ControlStore from './Control/ControlStore';
+import EditorDictionary from '../views/Editor/store/EditorDictionary';
+import html2canvas from 'html2canvas';
 
 class DisplayViewStore extends Errors {
+  @observable dictionary = new EditorDictionary();
   @observable device: DeviceEnum = DeviceEnum.IPHONE_6;
   @observable screens: IObservableArray<IControl>;
   @observable currentScreen: IControl;
@@ -50,10 +54,6 @@ class DisplayViewStore extends Errors {
     this.currentScreen = this.screens[0];
   }
 
-  clear() {
-
-  }
-
   @action setLoadingPlugin(value: boolean) {
     this.loadingPlugin = value;
   }
@@ -61,6 +61,22 @@ class DisplayViewStore extends Errors {
   @action setFetchingProject(value: boolean) {
     this.fetchingProject = value;
   }
+
+  makeProjectScreenshot = () => {
+    const element = document.querySelector('#capture') as HTMLElement;
+    element && html2canvas(element, { useCORS: true }).then(canvas => {
+      const base64 = canvas.toDataURL();
+      // const w = window.open("");
+      // w!.document.write(`<img src="${base64}"/>`);
+      const a = document.createElement('a');
+      a.href = base64;
+      a.download = `${this.project.title.length ? this.project.title : 'Project'}.png`;
+      a.click();
+      setTimeout(() => {
+        a.remove();
+      }, 300);
+    })
+  };
 
   @action
   async fetchProjectData(projectId: number) {
@@ -72,7 +88,7 @@ class DisplayViewStore extends Errors {
   }
 
   @action fromJSON(data: IProjectData) {
-    this.clear();
+    ControlStore.clear();
     this.screens.replace(data.screens.map((e) => CreateControl(ControlEnum.Grid, e)));
     this.currentScreen = this.screens[0];
     this.mode = data.mode;
@@ -81,6 +97,7 @@ class DisplayViewStore extends Errors {
     this.ios = data.ios;
     this.portrait = data.portrait;
     this.project.update({ title: data.title } as IProject);
+    data.projectId !== undefined && this.project.setId(data.projectId);
   }
 
   @action switchPortrait = () => {

@@ -10,7 +10,6 @@ import { ControlProps } from "interfaces/IControlProps";
 import hover from "utils/hover";
 import classNames from "classnames";
 import { ControlEnum } from "enums/ControlEnum";
-import EditorInput from "components/CustomInput/EditorInput";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -95,17 +94,19 @@ const ElementComponent: React.FC<ElementProps> =
       let placeholder = <div className={classes.placeholder}>{title}</div>;
       if (control.type === ControlEnum.Text) {
         showPlaceholder = true;
-        if (isSelected && isSelected(control)) {
-          backgroundColor = styles.backgroundColor;
-          placeholder =
-            <EditorInput
-              html={title}
-              onChange={(e) => control.changeTitle(e)}
-              style={{...styles, opacity: 1, position: 'absolute'}} />;
-        } else {
-          // @ts-ignore
-          placeholder = title;
-        }
+        // if (isSelected && isSelected(control)) {
+        //   backgroundColor = styles.backgroundColor;
+        //   placeholder =
+        //     <EditorInput
+        //       html={title}
+        //       onChange={(e) => control.changeTitle(e)}
+        //       style={{...styles, opacity: 1}} />;
+        // } else {
+        //   // @ts-ignore
+        //   placeholder = title;
+        // }
+        // @ts-ignore
+        placeholder = title;
       }
 
       const emptyControl: React.CSSProperties = {};

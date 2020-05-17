@@ -123,29 +123,24 @@ class EditorHistory implements IHistory {
       this.fabric!(object.control.type, object.control as IControl)) as IControl;
     switch (current[0]) {
       case HIST_CHANGE_TITLE:
-        // "need to set title" { control: this.id, title: this.title }
         control.changeTitle(object.title as string, true);
         break;
       case HIST_DELETE_SELF:
-        // "need to add control" { control: this.toJSONString, index: parent!.children.indexOf(this) }
         if (control.parentId) {
           const parent = this.store.getById(control.parentId);
           parent!.spliceChild(object.index as number, control);
         }
         break;
       case HIST_ADD_CSS_STYLE:
-        // "need to delete style by key", { control: this.id, key }
         control.removeCSSStyle(object.key as string, true);
         break;
       case HIST_RENAME_CSS_STYLE:
-        // "renameCSSStyle", "need to get style by key and set by oldKey", { control: this.id, key, oldKey }
         control.renameCSSStyle(object.oldKey as string, object.key as string, true);
         break;
       case HIST_REMOVE_CSS_STYLE:
         control.setCSSStyle(object.key as string, object.style as { [key: string]: any }[]);
         break;
       case HIST_ADD_ACTION:
-        // "need to remove action by index", { control: this.id, index: this.actions.length - 1 }
         control.removeAction(object.index as number, true);
         break;
       case HIST_EDIT_ACTION: {
@@ -341,7 +336,7 @@ class EditorHistory implements IHistory {
 
   clear() {
     this.stack.replace([]);
-    this.carriage = 0;
+    this.carriage = -1;
   }
 }
 

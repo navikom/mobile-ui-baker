@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     btn: {
       height: '80%'
+    },
+    input: {
+      maxWidth: '60%'
     }
   })
 );
@@ -130,7 +133,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
               {screen.opened ? <Remove /> : <Add />}
             </IconButton>
             <TextInput
-              className={isCurrent(screen) ? classes.selectedInput : undefined}
+              className={classNames(classes.input, isCurrent(screen) ? classes.selectedInput : undefined)}
               value={screen.title}
               onChange={(e) => screen.changeTitle(e.currentTarget.value)}
               onClick={() => setCurrentScreen(screen)}

@@ -374,4 +374,6 @@ export default {
   owner: 'Owner',
   'read by link': 'Read by link',
   'edit by link': 'Edit by link',
+  copyLink: 'Copy link',
+  linkCopied: 'Copied: $'
 };

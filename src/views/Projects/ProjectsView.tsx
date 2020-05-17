@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ContextComponent: React.FC = () => {
   const classes = useStyles();
+  const paths: string[] = []
   const tileData = [
     {
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
@@ -73,7 +74,13 @@ const ContextComponent: React.FC = () => {
     },
     ...OwnProjects.previewList,
     ...SharedProjects.previewList
-  ];
+  ].filter(e => {
+    if(paths.includes(e.route)) {
+      return false;
+    }
+    paths.push(e.route);
+    return true;
+  });
   return (
     <div className={classes.root}>
       <GridList cellHeight={450} className={classes.gridList} cols={Math.min(6, tileData.length)}>

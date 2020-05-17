@@ -143,8 +143,7 @@ export default class ProjectDataStore extends Errors {
   @action switchSharedAccess = async () => {
     const access = this.project.access === AccessEnum.SHARED ? AccessEnum.OWNER : AccessEnum.SHARED
     try {
-      await api(Apis.Main).project.access(this.project.projectId, access);
-      this.project.update({access} as IProject);
+      await ProjectsStore.setAccess(this.project, access);
     } catch (e) {
       console.log('Change access error: %s', e.message);
     }

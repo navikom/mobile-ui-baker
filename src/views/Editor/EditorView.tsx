@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom'
 import { matchPath } from 'react-router';
 import { RouteComponentProps } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,31 +10,18 @@ import { observer } from 'mobx-react-lite';
 // @material-ui/core
 import { createStyles, Theme, Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import {
-  AccountCircle, AddAPhoto,
-  Android,
-  Apple, Clear, Fullscreen, FullscreenExit,
+  Clear,
   Redo,
-  RestorePage,
-  StayCurrentLandscape,
-  StayCurrentPortrait,
   Undo
 } from '@material-ui/icons';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Tooltip from '@material-ui/core/Tooltip';
 import { Skeleton } from '@material-ui/lab';
 
 import DeviceComponent from 'views/Editor/components/DeviceComponent';
-import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import EditorViewStore, { DragAndDropItem } from 'views/Editor/store/EditorViewStore';
 import ControlTab from 'views/Editor/components/tabs/ControlTab';
 import ControlItem from 'views/Editor/components/control/ControlItem';
@@ -43,9 +29,8 @@ import { ItemTypes } from 'views/Editor/store/ItemTypes';
 import IControl from 'interfaces/IControl';
 import { DropEnum } from 'enums/DropEnum';
 import TreeComponent from 'views/Editor/components/TreeComponent';
-import { ROUTE_LOGIN, ROUTE_PROJECTS, ROUTE_USER_PROFILE, TABS_HEIGHT } from 'models/Constants';
+import { TABS_HEIGHT } from 'models/Constants';
 import ProjectTab from 'views/Editor/components/tabs/ProjectTab';
-import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import { blackOpacity, whiteColor, whiteOpacity } from 'assets/jss/material-dashboard-react';
 import { IBackgroundColor } from 'interfaces/IProject';
 import AddAlert from '@material-ui/icons/AddAlert';
@@ -55,11 +40,12 @@ import { SharedComponents } from 'models/Project/SharedComponentsStore';
 import { when } from 'mobx';
 import { App } from 'models/App';
 import { OwnComponents } from 'models/Project/OwnComponentsStore';
-import { Auth } from 'models/Auth/Auth';
+
+import { DeviceEnum } from 'enums/DeviceEnum';
+import EditorHeader from 'components/Header/EditorHeader';
+import CustomDragLayer from './components/CustomDragLayer';
 
 import 'views/Editor/Editor.css';
-import { DeviceEnum } from '../../enums/DeviceEnum';
-import CustomDragLayer from './components/CustomDragLayer';
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -150,7 +136,7 @@ const Content: React.FC<ContentProps> = observer((
 const editorStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      minWidth: theme.typography.pxToRem(1400),
+      minWidth: theme.typography.pxToRem(1400)
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -223,139 +209,6 @@ const Preview = () => {
   )
 }
 
-interface ContextComponentProps {
-  store: EditorViewStore;
-}
-
-interface EditorHeaderProps extends ContextComponentProps {
-  switchFullscreen: () => void;
-  fullScreen: boolean;
-}
-
-const EditorHeaderComponent: React.FC<EditorHeaderProps> = ({ store, switchFullscreen, fullScreen }) => {
-  const classes = editorStyles();
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const open = Boolean(anchorEl);
-
-  const handleMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const navigate = (route: string) => () => {
-    handleClose();
-    App.navigationHistory!.push(route);
-  }
-
-  const logout = () => {
-    handleClose();
-    Auth.logout();
-  };
-  return (
-    <AppBar position="static">
-      <Toolbar>
-        {
-          store.loadingPlugin ? (
-            <div style={{ width: 200 }}>
-              <Skeleton animation="wave" width={200} height={10} style={{ marginBottom: 5 }} />
-              <Skeleton animation="wave" width={170} height={10} />
-            </div>
-
-          ) : (
-            <NavLink to={store.pluginStore.data.routeLink}>
-              <Typography variant="h6" className={classes.title}>
-                {Dictionary.value(store.pluginStore.data.routeTitle)}
-              </Typography>
-            </NavLink>
-          )
-        }
-
-        <div className={classes.headerButtons}>
-          <IconButton
-            color="inherit"
-            onClick={switchFullscreen}
-          >
-            {fullScreen ? <FullscreenExit /> : <Fullscreen />}
-          </IconButton>
-          <IconButton
-            color="inherit"
-            onClick={() => store.setIOS(!store.ios)}
-          >
-            {store.ios ? <Android /> : <Apple />}
-          </IconButton>
-          <IconButton color="inherit" onClick={store.switchPortrait}>
-            {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
-          </IconButton>
-          <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
-            <IconButton color="inherit" onClick={store.makeProjectScreenshot}>
-              <AddAPhoto />
-            </IconButton>
-          </Tooltip>
-        </div>
-        <div className={classes.headerRightGroup}>
-          <Typography color={store.saving ? 'secondary' : 'primary'} style={{ transition: 'all .5s ease-out' }}>
-            {Dictionary.defValue(DictionaryService.keys.projectStored)}
-          </Typography>
-          <Tooltip
-            title={store.dictionary.defValue(EditorDictionary.keys.autoSave)}
-          >
-            <IconButton
-              onClick={store.switchAutoSave}
-              color={store.autoSave ? 'secondary' : 'inherit'}
-            >
-              <RestorePage />
-            </IconButton>
-          </Tooltip>
-          <IconButton
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={open}
-            onClose={handleClose}
-          >
-            <MenuItem
-              onClick={navigate(ROUTE_PROJECTS)}>{Dictionary.defValue(DictionaryService.keys.projects)}</MenuItem>
-            {
-              App.loggedIn ?
-                (<MenuItem
-                  onClick={navigate(ROUTE_USER_PROFILE)}>{Dictionary.defValue(DictionaryService.keys.profile)}</MenuItem>) :
-                (<MenuItem
-                  onClick={navigate(ROUTE_LOGIN)}>{Dictionary.defValue(DictionaryService.keys.login)}</MenuItem>)
-            }
-            {
-              App.loggedIn &&
-              (<MenuItem onClick={logout}>{Dictionary.defValue(DictionaryService.keys.logout)}</MenuItem>)
-            }
-          </Menu>
-        </div>
-      </Toolbar>
-
-    </AppBar>
-  )
-}
-
-const EditorHeader = observer(EditorHeaderComponent);
-
 function a11yProps(index: number) {
   return {
     id: `full-width-tab-${index}`,
@@ -365,17 +218,21 @@ function a11yProps(index: number) {
 
 const TabContent = [ProjectTab, ControlTab];
 
+interface ContextComponentProps {
+  store: EditorViewStore;
+}
+
 const ContextComponent: React.FC<ContextComponentProps> = (
   {
     store,
   }) => {
-  const [height, setHeight] = React.useState(window.innerHeight - 12);
+  const [height, setHeight] = React.useState(window.innerHeight);
   const [fullScreen, setFullScreen] = React.useState<boolean>(false);
   const classes = editorStyles();
 
   useEffect(() => {
     const resize = () => {
-      setHeight(window.innerHeight - 12);
+      setHeight(window.innerHeight);
     };
     const exitHandler = () => {
       if (!document.fullscreenElement) {
@@ -490,7 +347,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   }
                 </Tabs>
               </Paper>
-              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT * 2 }}>
+              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT * 2 + 11 }}>
                 {React.createElement(TabContent[store.tabToolsIndex], store.tabProps)}
               </div>
             </Grid>
@@ -535,8 +392,9 @@ function Editor(props: RouteComponentProps) {
   const id = match ? Number(match.params.id) : null;
   const [store] = React.useState(new EditorViewStore(props.location.search));
   useEffect(() => {
-    store.checkLocalStorage();
-    id && store.fetchProjectData(id);
+    store.checkLocalStorage().then(() => {
+      id && store.fetchProjectData(id);
+    });
     SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
     SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
     when(() => App.loggedIn, async () => {

@@ -72,6 +72,11 @@ export default class ProjectsStore extends Pagination<IProject> {
     return project;
   }
 
+  static async setAccess(project: IProject, access: AccessEnum) {
+    await api(Apis.Main).project.access(project.projectId, access);
+    project.update({access} as IProject);
+  }
+
   static async save(project: IProject, files?: any) {
     const method: ApiMethodTypes = ["control", "component", "project"][project.type] as ApiMethodTypes;
     if (!project.projectId) {
