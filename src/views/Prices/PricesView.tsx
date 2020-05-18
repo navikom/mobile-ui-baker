@@ -6,7 +6,7 @@ import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Check, Clear, StarBorder } from '@material-ui/icons';
+import { Check, Clear, Lock, StarBorder } from '@material-ui/icons';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
@@ -15,7 +15,7 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
 import { ROUTE_SIGN_UP, ROUTE_USER_PROFILE } from 'models/Constants';
 import CheckoutStore from 'views/Checkout/CheckoutStore';
-
+import FontAwesome, { Path } from 'components/Icons/FontAwesome';
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@global': {
@@ -68,6 +68,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     ...theme.typography.button,
     backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
     padding: theme.spacing(1),
+  },
+  checkoutInfoWrapper: {
+    marginTop: 60,
+  },
+  icon: {
+    fontSize: theme.typography.pxToRem(17),
+    marginRight: theme.typography.pxToRem(5)
   }
 }));
 
@@ -183,6 +190,39 @@ const PricesViewComponent: React.FC<PricesViewComponentProps> = ({ store }) => {
             </Card>
           </Grid>
         ))}
+      </Grid>
+      <Grid container justify="center" className={classes.checkoutInfoWrapper}>
+        <Grid item xs={12} sm={8} md={8}>
+          <Grid container justify="center">
+            <Lock className={classes.icon} />
+            <Typography variant="body2" component="span">
+              {Dictionary.defValue(DictionaryService.keys.securedPaymentBy)}
+              <Typography variant="body2" style={{fontWeight: 'bold'}} component="span">
+                {' '}2Checkout{' '}
+              </Typography>
+              {Dictionary.defValue(DictionaryService.keys.with)}:
+            </Typography>
+          </Grid>
+          <Grid container justify="center" >
+            <FontAwesome icon={Path.VISA} style={{opacity: .9, padding: 5}}/>
+            <FontAwesome icon={Path.MASTERCARD} style={{opacity: .9, padding: 5}}/>
+            <FontAwesome icon={Path.PAYPAL} style={{opacity: .9, padding: 5}}/>
+            <FontAwesome icon={Path.AMEX} style={{opacity: .9, padding: 5}}/>
+          </Grid>
+          <Grid container justify="center">
+            <Typography variant="body2" align="center" component="span">
+              <Typography variant="body2" style={{fontWeight: 'bold'}} component="span">
+                {Dictionary.defValue(DictionaryService.keys.info)}:
+              </Typography>
+              {' '}{Dictionary.defValue(DictionaryService.keys.ifYouAreARegisteredCompany)}{' '}
+              <Typography variant="body2" component="span" style={{fontWeight: 'bold'}}>
+                "{Dictionary.defValue(DictionaryService.keys.upgrade).toUpperCase()}"
+              </Typography>
+            </Typography>
+          </Grid>
+
+        </Grid>
+
       </Grid>
     </Container>
   )

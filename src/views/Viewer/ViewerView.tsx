@@ -147,7 +147,6 @@ function Viewer(props: RouteComponentProps) {
   });
   const id = match ? Number(match.params.id) : null;
   const [store] = React.useState(new ViewerViewStore(props.location.search));
-  console.log(33333, match, id);
   useEffect(() => {
     id && store.fetchProjectData(id);
     return () => {

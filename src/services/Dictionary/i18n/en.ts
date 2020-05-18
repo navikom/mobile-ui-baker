@@ -375,5 +375,14 @@ export default {
   'read by link': 'Read by link',
   'edit by link': 'Edit by link',
   copyLink: 'Copy link',
-  linkCopied: 'Copied: $'
+  linkCopied: 'Copied: $',
+  securedPaymentBy: 'Secured Payment by',
+  with: 'with',
+  ifYouAreARegisteredCompany: 'If you are a Registered Company inside the European Union you will be able to add your VAT ID after your Press',
+  info: 'Info',
+  account: 'Account',
+  fullscreen: 'Fullscreen',
+  os: 'OS',
+  orientation: 'Orientation',
+  screenshot: 'Screenshot'
 };

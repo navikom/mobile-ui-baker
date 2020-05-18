@@ -136,7 +136,8 @@ const Content: React.FC<ContentProps> = observer((
 const editorStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      minWidth: theme.typography.pxToRem(1400)
+      minWidth: theme.typography.pxToRem(1400),
+      overflowY: 'hidden'
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -269,7 +270,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         !store.pluginStore.data.hideHeader &&
         <EditorHeader store={store} fullScreen={fullScreen} switchFullscreen={switchFullscreen} />
       }
-      <div>
+      <div style={{ marginTop: 65}}>
         <DndProvider debugMode={true} backend={Backend}>
           <CustomDragLayer />
           <Grid container style={{ height: '100%' }}>
