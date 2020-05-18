@@ -10,12 +10,11 @@ import Editor from 'layouts/Editor';
 import Empty from 'layouts/Empty';
 import Viewer from 'layouts/Viewer';
 
-import theme from 'assets/theme';
-
 // models
 import { App as AppStore } from 'models/App';
 import * as Constants from 'models/Constants';
 
+import theme from 'assets/theme';
 import 'assets/css/material-dashboard-react.css';
 
 const hist = createBrowserHistory();
@@ -57,10 +56,15 @@ function App() {
             path={Constants.ROUTE_EDITOR}
             component={WaitingComponent(Editor)}
           />
-          <Route
-            path={Constants.ROUTE_VIEWER}
-            component={WaitingComponent(Viewer)}
-          />
+          {
+            [Constants.ROUTE_VIEWER, Constants.ROUTE_SCREENS].map((route, i) => (
+              <Route
+                key={i}
+                path={route}
+                component={WaitingComponent(Viewer)}
+              />
+            ))
+          }
           {
             [Constants.ROUTE_LOGIN, Constants.ROUTE_SIGN_UP, Constants.ROUTE_RESET, Constants.ROUTE_PRICES, Constants.ROUTE_PROJECTS]
               .map((route, i) => (

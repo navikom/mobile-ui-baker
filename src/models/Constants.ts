@@ -42,6 +42,7 @@ export const ROUTE_IN_APP_CAMPAIGNS = '/panel/campaigns/in-app';
 export const ROUTE_PUSH_CAMPAIGNS = '/panel/campaigns/push';
 export const ROUTE_EDITOR = '/editor';
 export const ROUTE_VIEWER = '/viewer';
+export const ROUTE_SCREENS = '/screens';
 export const ROUTE_PROJECTS = '/projects';
 export const ROUTE_PRICES = '/prices';
 export const ROUTE_RECOVERY = '/recovery';

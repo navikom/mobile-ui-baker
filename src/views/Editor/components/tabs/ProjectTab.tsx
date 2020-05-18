@@ -124,7 +124,7 @@ const ShareProjectComponent: React.FC<IEditorTabsProps> = (
   }
 
   const copyToClipboard = () => {
-    const input = document.getElementById('copy') as HTMLInputElement & { select: () => void, setSelectionRange: (a: number, b: number) => void};
+    const input = document.getElementById('copy') as HTMLInputElement & { select: () => void; setSelectionRange: (a: number, b: number) => void};
     if (input) {
       input.select();
       input.setSelectionRange(0, 99999);

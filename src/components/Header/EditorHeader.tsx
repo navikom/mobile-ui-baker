@@ -62,7 +62,7 @@ const editorStyles = makeStyles((theme: Theme) =>
 );
 
 interface ContextComponentProps {
-  store: DisplayViewStore & {saving?: boolean, switchAutoSave?: () => void, autoSave?: boolean};
+  store: DisplayViewStore & {saving?: boolean; switchAutoSave?: () => void; autoSave?: boolean};
 }
 
 interface EditorHeaderProps extends ContextComponentProps {

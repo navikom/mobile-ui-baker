@@ -26,7 +26,7 @@ const ElementComponent: React.FC<ControlProps & {locked?: boolean}> =
       }) => {
       const { title, styles, children, lockedChildren } = control;
       const classes = useStyles();
-      let backgroundColor = styles.backgroundColor;
+      const backgroundColor = styles.backgroundColor;
 
       let placeholder;
       if (control.type === ControlEnum.Text) {

@@ -140,20 +140,21 @@ const ContextComponent: React.FC<ContextComponentProps> = ({store, header}) => {
 const Context = observer(ContextComponent);
 
 function Viewer(props: RouteComponentProps) {
-  const match = matchPath<{ id: string, header: string}>(props.history.location.pathname, {
-    path: '/viewer/:id/:header',
+  const match = matchPath<{ id: string; viewer: string}>(props.history.location.pathname, {
+    path: '/:viewer/:id',
     exact: true,
     strict: false
   });
   const id = match ? Number(match.params.id) : null;
   const [store] = React.useState(new ViewerViewStore(props.location.search));
+  console.log(33333, match, id);
   useEffect(() => {
     id && store.fetchProjectData(id);
     return () => {
       store.dispose();
     }
   }, [store, id]);
-  return <Context store={store} header={match && match.params.header !== undefined} />;
+  return <Context store={store} header={match && match.params.viewer === 'screens'} />;
 }
 
 export default Viewer;

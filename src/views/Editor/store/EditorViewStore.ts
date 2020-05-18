@@ -32,7 +32,7 @@ import {
   ERROR_DATA_IS_INCOMPATIBLE,
   ERROR_ELEMENT_DOES_NOT_EXIST,
   ERROR_USER_DID_NOT_LOGIN,
-  ROUTE_EDITOR, ROUTE_VIEWER
+  ROUTE_EDITOR, ROUTE_SCREENS, ROUTE_VIEWER
 } from 'models/Constants';
 import ControlStore from 'models/Control/ControlStore';
 import { SharedControls } from 'models/Project/ControlsStore';
@@ -380,10 +380,8 @@ class EditorViewStore extends DisplayViewStore {
       if(!App.user || !App.loggedIn || (this.project.owner && this.project.owner.userId !== App.user.userId)) {
         if(this.project) {
           if(this.project.access === AccessEnum.READ_BY_LINK) {
-            App.navigationHistory && App.navigationHistory.replace(`${ROUTE_VIEWER}/${this.project.projectId}/header`);
-          } else if(this.project.access === AccessEnum.EDIT_BY_LINK) {
-
-          } else {
+            App.navigationHistory && App.navigationHistory.replace(`${ROUTE_SCREENS}/${this.project.projectId}`);
+          } else if(this.project.access !== AccessEnum.EDIT_BY_LINK) {
             this.project = ProjectStore.from({...this.project, projectId: 0, userId: App.user!.userId});
             App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
           }
