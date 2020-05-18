@@ -49,8 +49,9 @@ const useStyles = makeStyles((theme) => ({
   },
   listTile: {
     transition: 'box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    border: '4px solid #aeb2b7',
     boxShadow: '9px 7px 22px -6px rgba(0,0,0,0.43)',
-    borderRadius: '4px',
+    borderRadius: '6px',
   },
   img: {
     transform: 'translateX(-50%) scale(1)',
@@ -83,7 +84,7 @@ const ContextComponent: React.FC = () => {
   });
   return (
     <div className={classes.root}>
-      <GridList cellHeight={450} className={classes.gridList} cols={Math.min(6, tileData.length)}>
+      <GridList cellHeight={440} className={classes.gridList} cols={Math.min(6, tileData.length)}>
         {tileData.map((tile, i) => (
           <GridListTile
             key={i.toString()}

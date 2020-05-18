@@ -90,7 +90,7 @@ interface ProfileMenuItemsProps {
   navigate: (route: string) => () => void;
   logout: () => void;
 }
-const ProfileMenuItems: React.FC<ProfileMenuItemsProps> = React.forwardRef((
+const ProfileMenuItemsComponent: React.FC<ProfileMenuItemsProps> = (
   {navigate, logout}, ref
 ) => {
   const items = [
@@ -115,7 +115,9 @@ const ProfileMenuItems: React.FC<ProfileMenuItemsProps> = React.forwardRef((
       }
     </>
   )
-})
+};
+
+const ProfileMenuItems = React.forwardRef(ProfileMenuItemsComponent);
 
 const MobileMenu: React.FC<MenuProps> = (
   {
