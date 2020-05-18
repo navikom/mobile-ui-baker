@@ -216,7 +216,7 @@ const PricesViewComponent: React.FC<PricesViewComponentProps> = ({ store }) => {
               </Typography>
               {' '}{Dictionary.defValue(DictionaryService.keys.ifYouAreARegisteredCompany)}{' '}
               <Typography variant="body2" component="span" style={{fontWeight: 'bold'}}>
-                "{Dictionary.defValue(DictionaryService.keys.upgrade).toUpperCase()}"
+                {'"'}{Dictionary.defValue(DictionaryService.keys.upgrade).toUpperCase()}{'"'}
               </Typography>
             </Typography>
           </Grid>

@@ -30,6 +30,7 @@ import Dialog from "@material-ui/core/Dialog";
 import { ROUTE_LOGIN } from 'models/Constants';
 import { Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import Terms from '../../components/Terms/Terms';
 
 interface FormControlInterface {
   error?: boolean;
@@ -223,7 +224,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
           </GridItem>
         </GridContainer>
         <Dialog
-          maxWidth="md"
+          maxWidth="lg"
           className={classes.modal}
           aria-labelledby="spring-modal-title"
           aria-describedby="spring-modal-description"
@@ -238,17 +239,7 @@ class SignUp extends React.Component<SignUpProps, SignUpState> {
                   className={classes.cardTitleWhite}>{Dictionary.defValue(DictionaryService.keys.termsAndConditions)}</h4>
               </CardHeader>
               <CardBody>
-                {
-                  [...Array(7)].map((_, i) =>
-                    <Typography key={i.toString()} className={classes.paragraph}>
-                      Dolor posuere proin blandit accumsan senectus netus nullam curae, ornare laoreet adipiscing
-                      luctus mauris adipiscing pretium eget fermentum, tristique lobortis est ut metus lobortis
-                      tortor
-                      tincidunt himenaeos habitant quis dictumst proin odio sagittis purus mi, nec taciti vestibulum
-                      quis in sit varius lorem sit metus mi.
-                    </Typography>
-                  )
-                }
+                <Terms/>
               </CardBody>
               <CardFooter right>
                 <Button onClick={this.closeModal}>Close</Button>

@@ -3,8 +3,8 @@ import { SvgIcon } from '@material-ui/core';
 
 interface IconProps {
   style?: React.CSSProperties;
-  color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error',
-  icon: Path
+  color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+  icon: Path;
 }
 
 export enum Path {
