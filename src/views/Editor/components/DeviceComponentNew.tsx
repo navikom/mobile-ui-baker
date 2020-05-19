@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   frame: {
     width: theme.typography.pxToRem(278),
     backgroundRepeat: 'no-repeat',
-    backgroundSize: '100%',
+    backgroundSize: '100% 100%',
   },
   inner: {
     position: 'absolute',
@@ -38,38 +38,37 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 const iosStyles = makeStyles((theme: Theme) => createStyles({
   wrapper: {
-    height: theme.typography.pxToRem(600),
+    height: theme.typography.pxToRem(556),
   },
   frame: {
     position: 'absolute',
     backgroundImage: `url(${IOSWrapper})`,
-    height: theme.typography.pxToRem(600),
+    height: theme.typography.pxToRem(556),
     top: 0,
     left: 0
   },
   inner: {
     height: theme.typography.pxToRem(490),
-    top: theme.typography.pxToRem(35),
+    top: theme.typography.pxToRem(25),
     left: theme.typography.pxToRem(18),
   },
   landscape: {
     backgroundImage: `url(${IOSWrapperLand})`,
     height: theme.typography.pxToRem(303),
-    width: theme.typography.pxToRem(620),
+    width: theme.typography.pxToRem(556),
   },
   landscapeInner: {
     top: theme.typography.pxToRem(18),
     left: theme.typography.pxToRem(62),
     height: theme.typography.pxToRem(271),
-    width: theme.typography.pxToRem(490),
+    width: theme.typography.pxToRem(491),
   },
   content: {
     position: 'absolute',
-    top: theme.typography.pxToRem(12),
+    top: theme.typography.pxToRem(10),
     left: theme.typography.pxToRem(19),
-    width: '86%',
-    height: '88%',
-    paddingTop: theme.typography.pxToRem(45)
+    width: '87%',
+    height: '96%',
   },
   contentWrapper: {
     width: '100%',
@@ -112,14 +111,14 @@ const IOSDevice: React.FC<DeviceComponentProps> = (
   const content = classNames(extraClasses.content);
   const frame = classNames(classes.frame, extraClasses.frame);
   return (
-    <Grid id="capture">
+    <Grid>
       <Grid container className={content} style={{ ...background }}>
         <div className={extraClasses.contentWrapper}>{children}</div>
       </Grid>
       <div className={inner}>
         <IPhone6Inner
-          antennaDX={-17}
-          width={portrait ? 240 : 490}
+          antennaDX={-19}
+          width={portrait ? 241 : 490}
           height={portrait ? undefined : 260}
           style={{ position: 'absolute' }}
           mode={mode}
@@ -157,7 +156,7 @@ const DeviceComponent: React.FC<DeviceComponentProps> = (
   });
   return (
     <Grid className={classes.container} container justify="center">
-      <div className={wrapper}>
+      <div className={wrapper} id="capture">
         {ios ?
           <IOSDevice mode={mode} background={background} statusBarColor={statusBarColor}
                      portrait={portrait}>{children}</IOSDevice> :

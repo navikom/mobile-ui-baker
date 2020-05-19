@@ -54,6 +54,9 @@ const contentStyles = makeStyles((theme: Theme) =>
       height: '100%',
       overflow: 'auto',
     },
+    newDeviceRoot: {
+      position: 'relative',
+    },
     center: {
       display: 'flex',
       alignItems: 'center',
@@ -113,7 +116,10 @@ const Content: React.FC<ContentProps> = observer((
   }
 
   const oldDevices = [DeviceEnum.IPHONE_6, DeviceEnum.PIXEL_5].includes(device);
-  const root = oldDevices ? classNames(classes.root) : '';
+  const root = classNames({
+    [classes.root]: oldDevices,
+    [classes.newDeviceRoot]: !oldDevices
+  });
   return (
     <div ref={drop} className={root} style={{ backgroundColor: backgroundColor }}
          onClick={() => selectControl()}>

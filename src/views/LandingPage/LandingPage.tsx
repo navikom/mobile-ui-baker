@@ -24,6 +24,8 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Dictionary, DictionaryService } from '../../services/Dictionary/Dictionary';
 import { Web } from '@material-ui/icons';
 import EditorSection from './Sections/EditorSection';
+import SampleSection from './Sections/ShareSection';
+import ViewerSection from './Sections/ViewerSection';
 
 const useStyles = makeStyles(styles);
 
@@ -73,6 +75,8 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
           <ProductSection />
           <EditorSection />
         </div>
+        <SampleSection />
+        <ViewerSection />
       </div>
       <Footer />
     </React.Fragment>

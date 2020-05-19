@@ -27,12 +27,14 @@ const productStyle = createStyles({
     marginTop: '60px'
   },
   subTitle: {
+    fontFamily: `"Roboto Slab", "Times New Roman", serif`,
     marginTop: '5px',
     marginBottom: '30px',
     color: '#999',
     fontWeight: 500
   },
   description: {
+    fontFamily: `"Roboto Slab", "Times New Roman", serif`
   },
 });
 

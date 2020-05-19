@@ -44,13 +44,16 @@ const Terms = () => {
         Muiditor and the Client individually also the “Party”, and collectively, the “Parties”.
       </Typography>
       <Typography align="center" variant="h6" className={classes.section}>WHEREAS</Typography>
-      <Typography component="li">
-        Muiditor is a company specialized in the digital marketing and digital communications sector;
-      </Typography>
-      <Typography component="li">
-        Client wishes to procure from Muiditor the software services described herein, and Muiditor wishes to
-        provide such services to Client, each on the terms and conditions set forth in this Agreement.
-      </Typography>
+      <ol type="i">
+        {
+          [
+            'Muiditor is a company specialized in the digital marketing and digital communications sector;',
+            'Client wishes to procure from Muiditor the software services described herein, and Muiditor wishes to provide such services to Client, each on the terms and conditions set forth in this Agreement.'
+          ].map((prop, i) => (
+            <Typography key={i.toString()} component="li">{prop}</Typography>
+          ))
+        }
+      </ol>
       <Typography align="center" variant="h6" className={classes.section}>NOW THEREFORE, <br />THE PARTIES AGREE AS
         FOLLOWS</Typography>
       <Typography variant="subtitle1">1. Definitions</Typography>

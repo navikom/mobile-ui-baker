@@ -384,5 +384,14 @@ export default {
   fullscreen: 'Fullscreen',
   os: 'OS',
   orientation: 'Orientation',
-  screenshot: 'Screenshot'
+  screenshot: 'Screenshot',
+  editorComesWithPrebuilt: 'The Editor comes with pre-built Mobile UI\'s to help you get started faster. You can change the text and images and you\'re good to go. More importantly, looking at them will give you a picture of what you can build with this powerful editor.',
+  completedWithExamples: 'Completed with examples',
+  dragNDrop: 'Drag & drop editor',
+  shareProjects: 'Share projects',
+  forReadOrEdit: 'For read or edit',
+  youCanStartCollaborate: 'You can start collaborating in real-time. Sharing projects online makes it easier for users to work together, wherever they are. Give people browse your UI Screens with or without edit functionality.',
+  embeddedViewer: 'Embedded Viewer',
+  previewMobileUIInYour: 'Preview Mobile UI\'s in your we page',
+  youNeedToPreviewAMobileInYourSite: 'You need to preview a Mobile design inside a web page on your site. Install an embedded Viewer to do it easily and give your users a rich experience using a Mobile UI that you offer them.'
 };
