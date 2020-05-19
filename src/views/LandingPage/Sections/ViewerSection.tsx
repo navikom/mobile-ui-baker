@@ -1,11 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Slide, Fade } from 'react-awesome-reveal';
 import { Grid } from '@material-ui/core';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { makeStyles } from '@material-ui/core/styles';
 import { container, grayColor, title } from 'assets/jss/material-kit-react';
+
+import Slide from 'react-reveal/Slide';
 
 const useStyles = makeStyles(theme => ({
   section: {
@@ -63,6 +64,7 @@ const useStyles = makeStyles(theme => ({
   },
   landingPre: {
     position: 'absolute',
+    opacity: '0.7!important'
   },
   landing2: {
     left: -60,
@@ -101,7 +103,7 @@ export default function ViewerSection() {
                 className={classNames(classes.landing, classes.landing1)}
                 src={Landing_1}
               />
-              <Fade direction="top" cascade fraction={0.8} style={{opacity: .5}}>
+              <Slide bottom cascade>
                 <LazyLoadImage
                   className={classNames(classes.landing, classes.landingPre, classes.landing2)}
                   src={Landing_2}
@@ -110,7 +112,7 @@ export default function ViewerSection() {
                   className={classNames(classes.landing, classes.landingPre, classes.landing3)}
                   src={Landing_3}
                 />
-              </Fade>
+              </Slide>
             </div>
           </Grid>
         </Grid>
