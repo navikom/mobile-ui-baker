@@ -90,13 +90,14 @@ interface ProfileMenuItemsProps {
   navigate: (route: string) => () => void;
   logout: () => void;
 }
+
 const ProfileMenuItemsComponent: React.FC<ProfileMenuItemsProps> = (
-  {navigate, logout}, ref
+  { navigate, logout }, ref
 ) => {
   const items = [
     [navigate(ROUTE_PROJECTS), 'projects'],
   ];
-  if(App.loggedIn) {
+  if (App.loggedIn) {
     items.push(
       [navigate(ROUTE_USER_PROFILE), 'profile'],
       [logout, 'logout']
@@ -174,21 +175,27 @@ const DesktopMenu: React.FC<MenuProps> = (
   return (
     <Hidden smDown>
       <div className={classes.headerButtons}>
-        <IconButton
-          color="inherit"
-          onClick={switchFullscreen}
+        <Tooltip
+          title={store.dictionary.defValue(EditorDictionary.keys.fullscreen)}
         >
-          {fullScreen ? <FullscreenExit /> : <Fullscreen />}
-        </IconButton>
+          <IconButton
+            color="inherit"
+            onClick={switchFullscreen}
+          >
+            {fullScreen ? <FullscreenExit /> : <Fullscreen />}
+          </IconButton>
+        </Tooltip>
         <IconButton
           color="inherit"
           onClick={() => store.setIOS(!store.ios)}
         >
           {store.ios ? <Android /> : <Apple />}
         </IconButton>
-        <IconButton color="inherit" onClick={store.switchPortrait}>
-          {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
-        </IconButton>
+        <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.orientation)}>
+          <IconButton color="inherit" onClick={store.switchPortrait}>
+            {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
+          </IconButton>
+        </Tooltip>
         <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.makeScreenshot)}>
           <IconButton color="inherit" onClick={store.makeProjectScreenshot}>
             <AddAPhoto />
@@ -332,7 +339,7 @@ const EditorHeaderComponent: React.FC<EditorHeaderProps> = (
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <ProfileMenuItems navigate={navigate} logout={logout}/>
+        <ProfileMenuItems navigate={navigate} logout={logout} />
       </Menu>
     </AppBar>
   )

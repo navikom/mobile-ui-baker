@@ -14,7 +14,8 @@ import {
   PieChart,
   Apps,
   Store,
-  Web
+  Web,
+  MenuBook
 } from '@material-ui/icons';
 
 import { lazy } from 'utils';
@@ -59,7 +60,12 @@ const Editor = lazy(() => import('views/Editor/EditorView'));
 const Projects = lazy(() => import('views/Projects/ProjectsView'));
 const Prices = lazy(() => import('views/Prices/PricesView'));
 
-const DocContent = lazy(() => import('views/Docs/DocContent'));
+const Overview = lazy(() => import('views/Docs/Overview'));
+const EditorOverview = lazy(() => import('views/Docs/EditorOverview'));
+const MuiditorPlugin = lazy(() => import('views/Docs/MuiditorPlugin'));
+const EditorPlugin = lazy(() => import('views/Docs/MuiditorPlugin'));
+const ViewerOverview = lazy(() => import('views/Docs/ViewerOverview'));
+const ViewerPlugin = lazy(() => import('views/Docs/ViewerPlugin'));
 
 const dashboardRoutesMap = {
   guide: {
@@ -349,30 +355,46 @@ const dashboardRoutesMap = {
     layout: LAYOUT_PANEL,
     role: ROLE_ADMIN,
     category: SIDEBAR_MAIN
+  },
+  docs: {
+    path: '/',
+    name: 'Docs',
+    component: Overview,
+    layout: LAYOUT_DOCS,
+    icon: MenuBook,
+    docs: true,
   }
 };
 
 export const documentationRoutes = [
   {
-    path: '/get-started',
-    name: 'Getting started',
-    component: DocContent,
+    path: '/overview',
+    name: 'Overview',
+    component: Overview,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_GET_STARTED,
+    docs: true
+  },
+  {
+    path: '/plugin',
+    name: 'MUIDITOR Plugin',
+    component: MuiditorPlugin,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_GET_STARTED,
     docs: true
   },
   {
     path: '/editor-overview',
-    name: 'Editor overview',
-    component: DocContent,
+    name: 'Overview',
+    component: EditorOverview,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_EDITOR,
     docs: true
   },
   {
     path: '/viewer-overview',
-    name: 'Viewer overview',
-    component: DocContent,
+    name: 'Overview',
+    component: ViewerOverview,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_VIEWER,
     docs: true
@@ -380,6 +402,6 @@ export const documentationRoutes = [
 ];
 
 export const mainNavRoutes =
-  [dashboardRoutesMap.projects, dashboardRoutesMap.prices, dashboardRoutesMap.editor];
+  [dashboardRoutesMap.projects, dashboardRoutesMap.prices, dashboardRoutesMap.editor, dashboardRoutesMap.docs];
 
 export default Object.values(dashboardRoutesMap);

@@ -32,11 +32,12 @@ function nav(history: History, classes: any) {
 
   return mainNavRoutes.map((route: IRoute, i: number) => {
     if (!route.path) return null;
+    const path = route.auth || route.docs ? `${route.layout}${route.path}` : route.path;
     const listItem = classNames({
       [classes.listItem]: true,
-      [classes.navLinkActive]: route.path === history.location.pathname
+      [classes.navLinkActive]: path === history.location.pathname
     });
-    const path = route.auth ? `${route.layout}${route.path}` : route.path;
+
     return (
       <ListItem className={listItem} key={i.toString()}>
         <Button
@@ -47,7 +48,7 @@ function nav(history: History, classes: any) {
           {route.icon && React.createElement(route.icon, { className: classes.icons })}
           <Link
             style={{ color: 'inherit' }}
-            to={route.auth ? `${route.layout}${route.path}` : route.path}
+            to={route.auth || route.docs ? `${route.layout}${route.path}` : route.path}
           >
             {Dictionary.value(route.name).toUpperCase()}
           </Link>

@@ -66,7 +66,7 @@ class PluginStore {
   token = '';
   store: IEditorView;
 
-  freeData: EditorData = new EditorData(ROUTE_ROOT, 'Mobile UI Editor');
+  freeData: EditorData = new EditorData(ROUTE_ROOT, 'Muiditor');
   proData?: EditorData;
   origin?: string;
 

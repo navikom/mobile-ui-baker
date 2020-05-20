@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core';
+import { createMuiTheme, Typography } from '@material-ui/core';
 import {
   blackOpacity,
   dangerColor,
@@ -6,6 +6,7 @@ import {
   primaryColor,
   whiteColor
 } from 'assets/jss/material-dashboard-react';
+import React from 'react';
 
 export default createMuiTheme({
   palette: {
@@ -31,7 +32,7 @@ export default createMuiTheme({
     MuiOutlinedInput: {
       input: {
         padding: '11px 12px',
-        "&:hover,&:after": {
+        '&:hover,&:after': {
           borderColor: primaryColor[1]
         }
       },
@@ -80,6 +81,23 @@ export default createMuiTheme({
       root: {
         fontSize: '0.8rem'
       }
+    },
+    MuiTypography: {
+      h1: {
+        fontSize: '2.8rem'
+      },
+      h2: {
+        fontSize: '2.25rem',
+        lineHeight: '1.5em'
+      },
+      h3: {
+        fontSize: '1.5625rem',
+        lineHeight: '1.4em'
+      },
+      h4: {
+        fontSize: '1.125rem',
+        lineHeight: '1.5em'
+      },
     }
   }
 });

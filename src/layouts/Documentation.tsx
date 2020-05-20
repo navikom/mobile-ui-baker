@@ -9,11 +9,11 @@ import {
   TITLE
 } from 'models/Constants';
 import dashboardStyle from 'assets/jss/material-dashboard-react/layouts/dashboardStyle';
-import logo from 'assets/img/webinsolut.png';
 import ScrollContainer from 'containers/ScrollContainer/ScrollContainer';
 import { IRoute } from 'interfaces/IRoute';
 import WaitingComponent from 'hocs/WaitingComponent';
 import { lazy } from 'utils';
+import logo from 'assets/img/apple-icon.png';
 
 // core components
 const Navbar = lazy(() => import("components/Navbars/Navbar"));
@@ -36,7 +36,7 @@ const Documentation: React.FC<RouteComponentProps> = (props) => {
 
   useEffect(() => {
     window.addEventListener('resize', resizeFunction);
-    if(props.location.pathname === LAYOUT_DOCS) {
+    if(props.location.pathname === LAYOUT_DOCS || props.location.pathname === LAYOUT_DOCS + '/') {
       props.history.replace(ROUTE_DOCS_GET_STARTED);
     }
     return () => {
@@ -56,7 +56,7 @@ const Documentation: React.FC<RouteComponentProps> = (props) => {
     <div className={classes.wrapper}>
       <Sidebar
         routes={documentationRoutes}
-        logoText={TITLE}
+        logoText={TITLE + ' Docs'}
         logo={logo}
         handleDrawerToggle={handleDrawerToggle}
         open={mobileOpen}

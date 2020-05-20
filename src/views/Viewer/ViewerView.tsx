@@ -11,7 +11,6 @@ import { DeviceEnum } from 'enums/DeviceEnum';
 import { makeStyles } from '@material-ui/core/styles';
 import { createStyles, Theme } from '@material-ui/core';
 import ElementComponent from './components/ControlItem';
-import Grid from '@material-ui/core/Grid';
 
 import 'views/Viewer/Viewer.css';
 

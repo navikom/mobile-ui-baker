@@ -80,7 +80,9 @@ export const data = {
   'read by link': 'Read by link',
   'edit by link': 'Edit by link',
   copyLink: 'Copy link',
-  linkCopied: 'Copied: $'
+  linkCopied: 'Copied: $',
+  fullscreen: 'Fullscreen',
+  orientation: 'Orientation',
 };
 
 class EditorDictionary extends AbstractDictionary {
