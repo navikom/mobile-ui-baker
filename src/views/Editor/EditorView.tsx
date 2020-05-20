@@ -190,6 +190,9 @@ const editorStyles = makeStyles((theme: Theme) =>
       bottom: 20,
       right: -130,
       zIndex: 99
+    },
+    contentWrapper: {
+      marginTop: 65
     }
   })
 );
@@ -239,13 +242,15 @@ const ContextComponent: React.FC<ContextComponentProps> = (
 
   useEffect(() => {
     const resize = () => {
-      setHeight(window.innerHeight);
+      setHeight(window.innerHeight + (store.pluginStore.data.hideHeader ? 65 : 0));
     };
     const exitHandler = () => {
       if (!document.fullscreenElement) {
         setFullScreen(false);
       }
     }
+
+    when(() => store.pluginStore.data.hideHeader, resize);
     window.addEventListener('resize', resize, false);
     document.addEventListener('fullscreenchange', exitHandler, false);
     return () => {
@@ -270,13 +275,17 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     [classes.coverInactive]: !store.loadingPlugin
   });
 
+  const contentWrapper = classNames({
+    [classes.contentWrapper]: !store.pluginStore.data.hideHeader,
+  })
+
   return (
     <div className={classes.root} style={{ height }}>
       {
         !store.pluginStore.data.hideHeader &&
         <EditorHeader store={store} fullScreen={fullScreen} switchFullscreen={switchFullscreen} />
       }
-      <div style={{ marginTop: 65}}>
+      <div className={contentWrapper}>
         <DndProvider debugMode={true} backend={Backend}>
           <CustomDragLayer />
           <Grid container style={{ height: '100%' }}>

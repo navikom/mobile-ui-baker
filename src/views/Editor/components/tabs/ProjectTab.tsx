@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import classNames from 'classnames';
 import { FormControl, makeStyles } from '@material-ui/core';
 import FormLabel from '@material-ui/core/FormLabel';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -21,8 +22,7 @@ import Switch from '@material-ui/core/Switch';
 import AccessEnum from 'enums/AccessEnum';
 import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
-import { TABS_HEIGHT } from '../../../../models/Constants';
-import classNames from 'classnames';
+import { TABS_HEIGHT } from 'models/Constants';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({

@@ -76,9 +76,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Landing_1 = '/images/landing_1.png';
-const Landing_2 = '/images/landing_2.png';
-const Landing_3 = '/images/landing_3.png';
+const Landing_1 = '/images/Landing_1.png';
+const Landing_2 = '/images/Landing_2.png';
+const Landing_3 = '/images/Landing_3.png';
 
 export default function ViewerSection() {
   const classes = useStyles();

@@ -375,6 +375,8 @@ export default {
   'read by link': 'Read by link',
   'edit by link': 'Edit by link',
   copyLink: 'Copy link',
+  copyKey: 'Copy $',
+  copy: 'Copy',
   linkCopied: 'Copied: $',
   securedPaymentBy: 'Secured Payment by',
   with: 'with',
@@ -393,5 +395,7 @@ export default {
   youCanStartCollaborate: 'You can start collaborating in real-time. Sharing projects online makes it easier for users to work together, wherever they are. Give people browse your UI Screens with or without edit functionality.',
   embeddedViewer: 'Embedded Viewer',
   previewMobileUIInYour: 'Preview Mobile UI\'s in your we page',
-  youNeedToPreviewAMobileInYourSite: 'You need to preview a Mobile design inside a web page on your site. Install an embedded Viewer to do it easily and give your users a rich experience using a Mobile UI that you offer them.'
+  youNeedToPreviewAMobileInYourSite: 'You need to preview a Mobile design inside a web page on your site. Install an embedded Viewer to do it easily and give your users a rich experience using a Mobile UI that you offer them.',
+  key: 'Key',
+  secret: 'Secret'
 };

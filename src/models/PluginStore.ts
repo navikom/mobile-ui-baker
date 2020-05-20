@@ -6,7 +6,7 @@ import { IProjectData } from 'interfaces/IProject';
 import { api, Apis } from '../api';
 
 interface IMuiConfig {
-  autosave?: boolean;
+  autoSave?: boolean;
   titleLink?: string;
   title?: string;
   dictionary?: typeof data;
@@ -16,6 +16,9 @@ interface IMuiConfig {
 
 interface IEditorView {
   dictionary?: { setData: <T extends typeof data>(newData: T & IObject) => void };
+  ios: boolean;
+  portrait: boolean;
+  autoSave: boolean;
 
   setLoadingPlugin(value: boolean): void;
 
@@ -42,6 +45,8 @@ class EditorData {
 }
 
 class PluginStore {
+  static FRAME_READY = 'frame_ready';
+
   static LISTENER_ON_DATA = 'editor_on_data';
   static LISTENER_ON_SAVE_PROJECT = 'editor_on_save_project';
   static LISTENER_ON_SAVE_COMPONENT = 'editor_on_save_component';
@@ -82,9 +87,14 @@ class PluginStore {
     try {
       const response = await api(Apis.Main).plugin.subscription(this.token);
       this.init();
-      this.store.setLoadingPlugin(false);
       this.setProMode(response.subscribed);
       this.setOrigin(response.origin);
+      this.postMessage(PluginStore.FRAME_READY, {
+        ios: this.store.ios,
+        portrait: this.store.portrait,
+        autoSave: this.store.autoSave
+      });
+      this.store.setLoadingPlugin(false);
     } catch (err) {
       console.error(err);
     }
@@ -92,12 +102,6 @@ class PluginStore {
 
   setProMode(proMode: boolean) {
     this.proMode = proMode;
-    if (this.proMode) {
-      this.proData && (this.data = this.proData);
-    } else {
-      this.data = this.freeData;
-    }
-    this.store.dictionary && this.store.dictionary.setData(this.data.dictionary)
   }
 
   setOrigin(origin: string) {
@@ -111,18 +115,18 @@ class PluginStore {
       config.hideHeader,
       config.dictionary
     );
-    config.autosave !== undefined && this.store.setAutoSave && this.store.setAutoSave(config.autosave);
     config.data && this.store.fromJSON(config.data);
+    this.data = this.proData;
+    this.store.dictionary && this.store.dictionary.setData(this.data.dictionary);
   }
 
   onMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
-    console.log('Frame store', event.data, event.origin);
-    if (data[0] === PluginStore.FRAME_DATA_CONFIG) {
-      this.setConfig(data[1]);
-    }
     if(this.proMode) {
       switch(data[0]) {
+        case PluginStore.FRAME_DATA_CONFIG:
+          this.setConfig(data[1]);
+          break;
         case PluginStore.FRAME_PRO_ACTION_SET_PROJECT:
           this.store.fromJSON(data[1]);
           break;

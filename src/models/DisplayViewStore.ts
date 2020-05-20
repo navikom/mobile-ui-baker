@@ -25,6 +25,7 @@ class DisplayViewStore extends Errors {
   @observable mode: Mode = Mode.WHITE;
   @observable portrait = true;
   @observable ios = true;
+  @observable autoSave = false;
   @observable project: IProject;
   @observable fetchingProject = false;
   @observable successMessage = '';

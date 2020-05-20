@@ -58,7 +58,6 @@ class EditorViewStore extends DisplayViewStore {
   @observable history = ControlStore.history;
   @observable selectedControl?: IControl;
   @observable tabToolsIndex = 1;
-  @observable autoSave = false;
   @observable saving = false;
   @observable savingProject = false;
 
@@ -411,7 +410,6 @@ class EditorViewStore extends DisplayViewStore {
     if (this.autoSave && json) {
       try {
         const data = JSON.parse(json);
-        console.log(77777777, data);
         this.fromJSON(data);
       } catch (err) {
         console.log('LocalStorage json data parse error %s', err.message);
