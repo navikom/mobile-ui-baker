@@ -13,9 +13,10 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
-import { ROUTE_SIGN_UP, ROUTE_USER_PROFILE } from 'models/Constants';
+import { ROUTE_DOCS_PRO_PLAN, ROUTE_SIGN_UP, ROUTE_USER_PROFILE } from 'models/Constants';
 import CheckoutStore from 'views/Checkout/CheckoutStore';
 import FontAwesome, { Path } from 'components/Icons/FontAwesome';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@global': {
@@ -112,7 +113,7 @@ const PricesViewComponent: React.FC<PricesViewComponentProps> = ({ store }) => {
     },
     {
       title: DictionaryService.keys.proPlan,
-      subheader: 'Full control',
+      subheader: <Link href={ROUTE_DOCS_PRO_PLAN} target="_blank">Full control</Link>,
       price: '20',
       description: description(true),
       buttonText: App.loggedIn ? DictionaryService.keys.upgrade : Dictionary.defValue(DictionaryService.keys.signUpForFree),

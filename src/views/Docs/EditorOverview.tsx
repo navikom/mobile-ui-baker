@@ -4,6 +4,12 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import { App } from 'models/App';
+import {
+  ROUTE_DOCS_GET_STARTED,
+  ROUTE_DOCS_VIEWER_OVERVIEW
+} from 'models/Constants';
 
 const useStyles = makeStyles(theme => ({
   img: {
@@ -16,6 +22,9 @@ const Overview2 = '/images/doc_overview_2.png';
 const Overview3 = '/images/doc_overview_3.png';
 
 const EditorOverview: React.FC = () => {
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const classes = useStyles();
   return (
     <React.Fragment>
@@ -71,6 +80,22 @@ const EditorOverview: React.FC = () => {
       <Typography variant="h3">{Dictionary.defValue(DictionaryService.keys.leftSideToolbar)}</Typography>
       <br />
       <Typography>{Dictionary.defValue(DictionaryService.keys.frequentlyWhenTheMobileUINotSimple)}</Typography>
+      <br />
+      <br />
+      <Grid container justify="space-between">
+        <Button
+          color="primary"
+          variant="text"
+          onClick={() => App.navigationHistory && App.navigationHistory.push(ROUTE_DOCS_GET_STARTED)}>
+          {Dictionary.defValue(DictionaryService.keys.goToGetStarted)}
+        </Button>
+        <Button
+          color="primary"
+          variant="text"
+          onClick={() => App.navigationHistory && App.navigationHistory.push(ROUTE_DOCS_VIEWER_OVERVIEW)}>
+          {Dictionary.defValue(DictionaryService.keys.goToViewerOverview)}
+        </Button>
+      </Grid>
     </React.Fragment>
   )
 };

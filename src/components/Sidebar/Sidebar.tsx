@@ -24,7 +24,6 @@ import AdminNavbarLinks from 'components/Navbars/AdminNavbarLinks';
 import { Dictionary } from 'services/Dictionary/Dictionary';
 
 import useSidebarStyle from 'assets/jss/material-dashboard-react/components/sidebarStyle';
-import { Typography } from '@material-ui/core';
 
 export type ColorType = 'purple' | 'blue' | 'green' | 'orange' | 'red';
 type LinkProps = {

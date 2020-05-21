@@ -147,7 +147,7 @@ export default makeStyles((theme: Theme) =>
     itemLink: {
       width: '100%',
       transition: 'all 300ms linear',
-      margin: '10px 15px 0',
+      margin: '5px 15px 0',
       borderRadius: theme.typography.pxToRem(3),
       position: 'relative',
       display: 'block',

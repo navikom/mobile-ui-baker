@@ -70,7 +70,7 @@ export default interface IControl extends IMovable {
 
   setInstance(instance?: IProject): void;
 
-  /// properties
+  /// property
   switchExpanded(key: string, propName: string): () => void;
 
   switchEnabled(key: string, propName: string): () => void;

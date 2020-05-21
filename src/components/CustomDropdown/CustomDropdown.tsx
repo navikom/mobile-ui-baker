@@ -1,7 +1,7 @@
 import React from 'react';
 // nodejs library that concatenates classes
 import classNames from 'classnames';
-// nodejs library to set properties for components
+// nodejs library to set property for components
 
 // @material-ui/core components
 import MenuItem from '@material-ui/core/MenuItem';

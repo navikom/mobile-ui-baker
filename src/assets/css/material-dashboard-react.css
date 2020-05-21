@@ -60,6 +60,7 @@
 html * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 body {
   background-color: #eeeeee;
@@ -226,7 +227,6 @@ footer ul li a:hover {
 code {
   font-size: 1.3em;
   font-weight: bold;
-
 }
 
 @media (max-width: 991px) {

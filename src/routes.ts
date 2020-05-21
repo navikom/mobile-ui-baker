@@ -32,7 +32,7 @@ import {
   LAYOUT_DOCS,
   SIDEBAR_DOCS_GET_STARTED,
   SIDEBAR_DOCS_EDITOR,
-  SIDEBAR_DOCS_VIEWER, LAYOUT_EMPTY
+  SIDEBAR_DOCS_VIEWER, LAYOUT_EMPTY, SIDEBAR_DOCS_PLUGIN
 } from 'models/Constants';
 
 const DashboardPage = lazy(() => import('views/Dashboard/Dashboard'));
@@ -63,9 +63,12 @@ const Prices = lazy(() => import('views/Prices/PricesView'));
 const Overview = lazy(() => import('views/Docs/Overview'));
 const EditorOverview = lazy(() => import('views/Docs/EditorOverview'));
 const MuiditorPlugin = lazy(() => import('views/Docs/MuiditorPlugin'));
-const EditorPlugin = lazy(() => import('views/Docs/MuiditorPlugin'));
+const EditorPlugin = lazy(() => import('views/Docs/EditorPlugin'));
 const ViewerOverview = lazy(() => import('views/Docs/ViewerOverview'));
 const ViewerPlugin = lazy(() => import('views/Docs/ViewerPlugin'));
+const ProPlanOverview = lazy(() => import('views/Docs/ProPlanOverview'));
+const PluginConfigurationParameters = lazy(() => import('views/Docs/PluginConfigurationParameters'));
+const PluginMethods = lazy(() => import('views/Docs/PluginMethods'));
 
 const dashboardRoutesMap = {
   guide: {
@@ -376,11 +379,35 @@ export const documentationRoutes = [
     docs: true
   },
   {
-    path: '/plugin',
+    path: '/plugin-overview',
     name: 'MUIDITOR Plugin',
     component: MuiditorPlugin,
     layout: LAYOUT_DOCS,
-    category: SIDEBAR_DOCS_GET_STARTED,
+    category: SIDEBAR_DOCS_PLUGIN,
+    docs: true
+  },
+  {
+    path: '/plugin-properties',
+    name: 'Plugin Properties',
+    component: PluginConfigurationParameters,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_PLUGIN,
+    docs: true
+  },
+  {
+    path: '/plugin-methods',
+    name: 'Methods & Events',
+    component: PluginMethods,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_PLUGIN,
+    docs: true
+  },
+  {
+    path: '/pro-plan-overview',
+    name: 'Pro Plan',
+    component: ProPlanOverview,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_PLUGIN,
     docs: true
   },
   {
@@ -392,9 +419,25 @@ export const documentationRoutes = [
     docs: true
   },
   {
+    path: '/editor-plugin',
+    name: 'Editor Plugin',
+    component: EditorPlugin,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_EDITOR,
+    docs: true
+  },
+  {
     path: '/viewer-overview',
     name: 'Overview',
     component: ViewerOverview,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_VIEWER,
+    docs: true
+  },
+  {
+    path: '/viewer-plugin',
+    name: 'Viewer Plugin',
+    component: ViewerPlugin,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_VIEWER,
     docs: true

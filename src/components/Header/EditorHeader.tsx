@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { observer } from 'mobx-react-lite';
 import { NavLink } from 'react-router-dom';
 import { App } from 'models/App';
 import { Auth } from 'models/Auth/Auth';
@@ -23,7 +22,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
-import { createStyles, Theme, Grid } from '@material-ui/core';
+import { createStyles, Theme } from '@material-ui/core';
 import { ROUTE_LOGIN, ROUTE_PROJECTS, ROUTE_USER_PROFILE } from 'models/Constants';
 import { blackOpacity, whiteColor } from 'assets/jss/material-dashboard-react';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';

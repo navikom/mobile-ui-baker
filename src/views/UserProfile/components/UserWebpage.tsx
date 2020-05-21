@@ -21,6 +21,7 @@ import useStyles from 'assets/jss/material-dashboard-react/components/inputField
 import Button from '@material-ui/core/Button';
 import CheckoutStore from 'views/Checkout/CheckoutStore';
 import Tooltip from '@material-ui/core/Tooltip';
+import { ROUTE_DOCS_PLUGIN } from '../../../models/Constants';
 
 const extraStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -201,7 +202,7 @@ function UserWebpage() {
         UserDetails.user && UserDetails.user.uid && (
           <Typography variant="body2"
                       color="secondary">{Dictionary.defValue(DictionaryService.keys.youCanEmbedNowEditorInto)}.
-            <Link target="_blank" href="https://github.com/navikom/muiditor-plugin"> Muiditor Plugin</Link>
+            <Link target="_blank" href={ROUTE_DOCS_PLUGIN}> Muiditor Plugin</Link>
           </Typography>
         )
       }

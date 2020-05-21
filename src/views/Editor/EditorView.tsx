@@ -257,7 +257,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
       window.removeEventListener('resize', resize);
       document.removeEventListener('fullscreenchange', exitHandler);
     }
-  }, [height]);
+  }, [setHeight, setFullScreen, store.pluginStore.data.hideHeader]);
 
   const switchFullscreen = () => {
     setFullScreen(!fullScreen);

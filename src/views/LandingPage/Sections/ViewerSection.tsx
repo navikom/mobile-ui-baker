@@ -6,7 +6,7 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { makeStyles } from '@material-ui/core/styles';
 import { container, grayColor, title } from 'assets/jss/material-kit-react';
 
-import Slide from 'react-reveal/Slide';
+import { Slide } from 'react-reveal';
 
 const useStyles = makeStyles(theme => ({
   section: {

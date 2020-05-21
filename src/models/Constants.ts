@@ -25,6 +25,14 @@ export const ROUTE_ROOT = '/';
 export const LAYOUT_PANEL = '/panel';
 export const LAYOUT_DOCS = '/docs';
 export const ROUTE_DOCS_GET_STARTED = '/docs/overview';
+export const ROUTE_DOCS_PLUGIN = '/docs/plugin-overview';
+export const ROUTE_DOCS_PRO_PLAN = '/docs/pro-plan-overview';
+export const ROUTE_DOCS_PLUGIN_PROPERTIES = '/docs/plugin-properties';
+export const ROUTE_DOCS_PLUGIN_METHODS = '/docs/plugin-methods';
+export const ROUTE_DOCS_PLUGIN_EDITOR = '/docs/plugin-editor';
+export const ROUTE_DOCS_PLUGIN_VIEWER = '/docs/plugin-viewer';
+export const ROUTE_DOCS_EDITOR_OVERVIEW = '/docs/editor-overview';
+export const ROUTE_DOCS_VIEWER_OVERVIEW = '/docs/viewer-overview';
 export const LAYOUT_MAIN = '/main';
 export const LAYOUT_EDITOR = '/editor';
 export const LAYOUT_EMPTY = '/empty';
@@ -62,6 +70,7 @@ export const SIDEBAR_ENGAGE = 'Campaign';
 
 //********** Sidebar Documentation Categories *******//
 export const SIDEBAR_DOCS_GET_STARTED = 'Getting Started';
+export const SIDEBAR_DOCS_PLUGIN = 'Plugin';
 export const SIDEBAR_DOCS_EDITOR = 'Editor';
 export const SIDEBAR_DOCS_VIEWER = 'Viewer';
 

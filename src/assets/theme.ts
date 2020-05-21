@@ -1,4 +1,4 @@
-import { createMuiTheme, Typography } from '@material-ui/core';
+import { createMuiTheme } from '@material-ui/core';
 import {
   blackOpacity,
   dangerColor,
@@ -6,7 +6,6 @@ import {
   primaryColor,
   whiteColor
 } from 'assets/jss/material-dashboard-react';
-import React from 'react';
 
 export default createMuiTheme({
   palette: {
@@ -64,6 +63,12 @@ export default createMuiTheme({
     MuiIconButton: {
       root: {
         color: blackOpacity(0.4)
+      }
+    },
+    MuiLink: {
+      button: {
+        fontSize: '1rem',
+        lineHeight: '1.5em'
       }
     },
     MuiSvgIcon: {

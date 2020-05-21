@@ -5,7 +5,7 @@ import {
   LAYOUT_DOCS,
   ROUTE_DOCS_GET_STARTED,
   SIDEBAR_DOCS_EDITOR,
-  SIDEBAR_DOCS_GET_STARTED, SIDEBAR_DOCS_VIEWER,
+  SIDEBAR_DOCS_GET_STARTED, SIDEBAR_DOCS_PLUGIN, SIDEBAR_DOCS_VIEWER,
   TITLE
 } from 'models/Constants';
 import dashboardStyle from 'assets/jss/material-dashboard-react/layouts/dashboardStyle';
@@ -42,13 +42,13 @@ const Documentation: React.FC<RouteComponentProps> = (props) => {
     return () => {
       window.removeEventListener('resize', resizeFunction);
     };
-  }, []);
+  }, [props.history, props.location.pathname]);
 
   useEffect(() => {
     if (mobileOpen) {
       setMobileOpen(false);
     }
-  }, [props.history.location, props.location]);
+  }, [setMobileOpen, mobileOpen]);
 
   const classes = dashboardStyle();
 
@@ -61,7 +61,7 @@ const Documentation: React.FC<RouteComponentProps> = (props) => {
         handleDrawerToggle={handleDrawerToggle}
         open={mobileOpen}
         color={color}
-        categories={[SIDEBAR_DOCS_GET_STARTED, SIDEBAR_DOCS_EDITOR, SIDEBAR_DOCS_VIEWER]}
+        categories={[SIDEBAR_DOCS_GET_STARTED, SIDEBAR_DOCS_PLUGIN, SIDEBAR_DOCS_EDITOR, SIDEBAR_DOCS_VIEWER]}
         {...props}
       />
       <ScrollContainer>

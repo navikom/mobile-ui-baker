@@ -3,8 +3,7 @@ import { Errors } from 'models/Errors';
 import { MODE_DEVELOPMENT } from 'models/Constants';
 import { App } from 'models/App';
 import { v4 } from 'uuid';
-import { api, Apis } from 'api';
-import { IUser } from '../../interfaces/IUser';
+import { IUser } from 'interfaces/IUser';
 
 class CheckoutStore extends Errors {
   static PRO_PLAN_CODE = process.env.REACT_APP_2_PRO_PLAN || '';

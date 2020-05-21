@@ -32,16 +32,16 @@ import {
   ERROR_DATA_IS_INCOMPATIBLE,
   ERROR_ELEMENT_DOES_NOT_EXIST,
   ERROR_USER_DID_NOT_LOGIN,
-  ROUTE_EDITOR, ROUTE_SCREENS, ROUTE_VIEWER
+  ROUTE_EDITOR, ROUTE_SCREENS
 } from 'models/Constants';
 import ControlStore from 'models/Control/ControlStore';
 import { SharedControls } from 'models/Project/ControlsStore';
 import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import PluginStore from 'models/PluginStore';
 import DisplayViewStore from 'models/DisplayViewStore';
-import { whiteColor } from '../../../assets/jss/material-dashboard-react';
-import { OwnProjects } from '../../../models/Project/OwnProjectsStore';
-import AccessEnum from '../../../enums/AccessEnum';
+import { whiteColor } from 'assets/jss/material-dashboard-react';
+import { OwnProjects } from 'models/Project/OwnProjectsStore';
+import AccessEnum from 'enums/AccessEnum';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;

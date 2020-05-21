@@ -1,5 +1,5 @@
 import React from 'react';
-// nodejs library to set properties for components
+// nodejs library to set property for components
 // nodejs library that concatenates classes
 import classNames from 'classnames';
 // @material-ui/core components

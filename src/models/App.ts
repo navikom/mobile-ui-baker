@@ -82,6 +82,7 @@ export class AppStore implements IFlow {
     if (Auth.anonymous) {
       this.clear();
       if (window.location.pathname.includes(Constants.LAYOUT_PANEL)) {
+        console.log(1111111);
         this.navigationHistory.push(Constants.ROUTE_LOGIN);
       }
     }

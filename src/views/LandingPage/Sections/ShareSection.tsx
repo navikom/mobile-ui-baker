@@ -1,9 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
-import styles from './editorStyle';
-import GridItem from 'components/Grid/GridItem';
-import GridContainer from 'components/Grid/GridContainer';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { container, title } from 'assets/jss/material-kit-react';
 import { Grid } from '@material-ui/core';
