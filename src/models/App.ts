@@ -82,7 +82,6 @@ export class AppStore implements IFlow {
     if (Auth.anonymous) {
       this.clear();
       if (window.location.pathname.includes(Constants.LAYOUT_PANEL)) {
-        console.log(1111111);
         this.navigationHistory.push(Constants.ROUTE_LOGIN);
       }
     }
@@ -94,7 +93,6 @@ export class AppStore implements IFlow {
     }
     try {
       const proPlan = await api(Apis.Main).user.fetchSubscription();
-      console.log('fetchUserSubscription', proPlan);
       this.user.update({proPlan} as IUser);
     } catch (e) {
       console.log('User subscription error %s', e.message);

@@ -32,6 +32,7 @@ export default class ProjectsStore extends Pagination<IProject> {
 
   @computed get previewList() {
     return this.items.map(project => ({
+      id: project.projectId,
       title: project.title,
       img: project.preview,
       author: project.owner ? Dictionary.defValue(DictionaryService.keys.mobileUiEditor) : App.user!.fullName,

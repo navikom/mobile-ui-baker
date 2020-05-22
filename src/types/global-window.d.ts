@@ -1,7 +1,17 @@
+declare interface IDuration {
+  unit: string;
+  length: number;
+}
+
 declare interface IToCoProduct {
-  code: string;
+  code?: string;
+  name?: string;
   type?: string;
   quantity: number;
+  price?: number;
+  externalReference?: string;
+  duration?: IDuration;
+  options?: { [key: string]: any}[];
 }
 
 declare interface IToCoProducts {
@@ -55,6 +65,7 @@ declare interface IToCoCart {
   setReset(value: boolean): void;
   setOrderExternalRef(ref: string): void;
   setExternalCustomerReference(ref: string): void;
+  setCurrency(currency: string): void;
 }
 
 declare interface IToCoEvents {

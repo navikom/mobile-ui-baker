@@ -4,6 +4,7 @@ import { MODE_DEVELOPMENT } from 'models/Constants';
 import { App } from 'models/App';
 import { v4 } from 'uuid';
 import { IUser } from 'interfaces/IUser';
+import IProject from 'interfaces/IProject';
 
 class CheckoutStore extends Errors {
   static PRO_PLAN_CODE = process.env.REACT_APP_2_PRO_PLAN || '';
@@ -11,6 +12,8 @@ class CheckoutStore extends Errors {
   static CLOSE_EVENT = 'cart:closed';
   static PAYMENT_FINALIZED = 'payment:finalized';
   static FULFILLMENT_FINALIZED = 'fulfillment:finalized';
+  static DYNAMIC = 'DYNAMIC';
+  static YEAR = 'YEAR';
   @observable success = false;
   toCo: ITwoCoInlineCart = (window as any).TwoCoInlineCart;
   onCartClosed: void;
@@ -18,18 +21,29 @@ class CheckoutStore extends Errors {
   code: string;
   uuid: string = v4().replace(/-/g, '');
 
-  constructor(code: string) {
+  constructor(code?: string) {
     super();
-    this.code = code;
+    this.code = code || '';
     this.toCo.setup.setMerchant(CheckoutStore.MERCHANT);
+
     this.toCo.register();
 
     const _dev = process.env.NODE_ENV === MODE_DEVELOPMENT;
     _dev && this.toCo.cart.setTest(true);
 
-    this.onPaymentSuccess = this.toCo.events.subscribe(CheckoutStore.PAYMENT_FINALIZED, () => {
-      this.paymentSuccess();
-    });
+    this.onPaymentSuccess = this.toCo.events.subscribe(CheckoutStore.PAYMENT_FINALIZED, this.paymentSuccess);
+  }
+
+  setUser() {
+    const user = App.user;
+    this.toCo.billing.setName(user!.fullName || '');
+    this.toCo.billing.setEmail(user!.email || '');
+
+    this.toCo.shipping.setName(user!.fullName || '');
+    this.toCo.shipping.setEmail(user!.email || '');
+
+    this.toCo.cart.setOrderExternalRef(this.uuid);
+    this.toCo.cart.setExternalCustomerReference(user!.userId.toString());
   }
 
   startCheckout() {
@@ -53,15 +67,7 @@ class CheckoutStore extends Errors {
       // Invalid card number =>> Adrian Doe
       // Invalid CVV (Security code) =>> Jack Doe
 
-      const user = App.user;
-      this.toCo.billing.setName(user!.fullName || '');
-      this.toCo.billing.setEmail(user!.email || '');
-
-      this.toCo.shipping.setName(user!.fullName || '');
-      this.toCo.shipping.setEmail(user!.email || '');
-
-      this.toCo.cart.setOrderExternalRef(this.uuid);
-      this.toCo.cart.setExternalCustomerReference(user!.userId.toString());
+      this.setUser();
     }
     this.toCo.products.removeAll();
 
@@ -73,13 +79,37 @@ class CheckoutStore extends Errors {
 
   }
 
+  startCheckoutDynamic(project: IProject) {
+    this.toCo.setup.setMode(CheckoutStore.DYNAMIC);
+    this.toCo.cart.setCurrency('USD');
+    this.toCo.events.unsubscribe(CheckoutStore.PAYMENT_FINALIZED, this.onPaymentSuccess);
+    this.onPaymentSuccess =
+      this.toCo.events.subscribe(CheckoutStore.PAYMENT_FINALIZED, this.paymentSuccess.bind(null, project));
+    if (App.loggedIn) {
+      this.setUser();
+    }
+    this.toCo.products.removeAll();
+
+    this.toCo.products.add({
+      name: project.title,
+      externalReference: project.projectId.toString(),
+      price: 30,
+      quantity: 1
+    });
+    this.toCo.cart.checkout();
+  }
+
   @action checkIsUserSubscribed() {
     App.fetchUserSubscription();
   }
 
   @action
-  async paymentSuccess() {
-    App.user && App.user.update({proPlan: true} as IUser);
+  paymentSuccess = (project?: IProject) => {
+    if(project) {
+      console.log("Purchase", App.user && App.user.userId, project);
+    } else {
+      App.user && App.user.update({proPlan: true} as IUser);
+    }
   }
 
   dispose() {

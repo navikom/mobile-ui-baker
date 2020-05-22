@@ -3,9 +3,11 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '@material-ui/core';
 import {
+  ROUTE_DOCS_EDITOR_OVERVIEW,
   ROUTE_DOCS_PLUGIN_EDITOR,
   ROUTE_DOCS_PLUGIN_METHODS,
-  ROUTE_DOCS_PLUGIN_PROPERTIES
+  ROUTE_DOCS_PLUGIN_PROPERTIES,
+  ROUTE_DOCS_VIEWER_OVERVIEW
 } from '../../models/Constants';
 import Button from '@material-ui/core/Button';
 import { App } from 'models/App';
@@ -22,14 +24,21 @@ const ProPlanOverview: React.FC = () => {
       <Typography variant="h1">{Dictionary.defValue(DictionaryService.keys.whatIsProPlan)}</Typography>
       <br />
       <br />
-      <Typography>{Dictionary.defValue(DictionaryService.keys.allTheFeatures)}</Typography>
-      <br />
-      <Typography component="li">{Dictionary.defValue(DictionaryService.keys.advertisingFreeEditorForAllUsers)}.</Typography>
-      <Typography component="li">{Dictionary.defValue(DictionaryService.keys.topToolbarCustomization)}.</Typography>
-      <Typography component="li">{Dictionary.defValue(DictionaryService.keys.theAbilityToHideTheTopToolbar)}.</Typography>
-      <Typography component="li">{Dictionary.defValue(DictionaryService.keys.notRequireUsersToBeLoggedIn)}.</Typography>
-      <Typography component="li">{Dictionary.defValue(DictionaryService.keys.extraUsefulEditorMethodsToHaveFullControl)}.</Typography>
-      <Typography component="li">{Dictionary.defValue(DictionaryService.keys.viewerToolbarMethods)}.</Typography>
+      <Typography>
+        {Dictionary.defValue(DictionaryService.keys.allTheFeatures)}{' '}
+        <Link href={ROUTE_DOCS_EDITOR_OVERVIEW} target="_blank">{Dictionary.defValue(DictionaryService.keys.editor)}</Link>
+        {' '}{Dictionary.defValue(DictionaryService.keys.and)}{' '}
+        <Link href={ROUTE_DOCS_VIEWER_OVERVIEW} target="_blank">{Dictionary.defValue(DictionaryService.keys.viewer)}</Link>
+        {' '}{Dictionary.defValue(DictionaryService.keys.plus)}...
+      </Typography>
+      <ul>
+        <Typography component="li">{Dictionary.defValue(DictionaryService.keys.advertisingFreeEditorForAllUsers)}.</Typography>
+        <Typography component="li">{Dictionary.defValue(DictionaryService.keys.topToolbarCustomization)}.</Typography>
+        <Typography component="li">{Dictionary.defValue(DictionaryService.keys.theAbilityToHideTheTopToolbar)}.</Typography>
+        <Typography component="li">{Dictionary.defValue(DictionaryService.keys.notRequireUsersToBeLoggedIn)}.</Typography>
+        <Typography component="li">{Dictionary.defValue(DictionaryService.keys.extraUsefulEditorMethodsToHaveFullControl)}.</Typography>
+        <Typography component="li">{Dictionary.defValue(DictionaryService.keys.viewerToolbarMethods)}.</Typography>
+      </ul>
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.allOfThisGivesFlexibilityAllowsToCreateOwnMarketplace)}.

@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
-import { Edit } from '@material-ui/icons';
+import { Edit, ShoppingCart } from '@material-ui/icons';
 
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { SharedProjects } from 'models/Project/SharedProjectsStore';
@@ -68,6 +68,7 @@ const ContextComponent: React.FC = () => {
   const paths: string[] = []
   const tileData = [
     {
+      id: 0,
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
       author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
@@ -76,7 +77,7 @@ const ContextComponent: React.FC = () => {
     ...OwnProjects.previewList,
     ...SharedProjects.previewList
   ].filter(e => {
-    if(paths.includes(e.route)) {
+    if (paths.includes(e.route)) {
       return false;
     }
     paths.push(e.route);
@@ -106,9 +107,11 @@ const ContextComponent: React.FC = () => {
                 title: classes.title,
               }}
               actionIcon={
-                <NavLink to={tile.route} className={classes.link}>
-                  <Edit className={classes.title} />
-                </NavLink>
+                <>
+                  <NavLink to={tile.route} className={classes.link}>
+                    <Edit className={classes.title} />
+                  </NavLink>
+                </>
               }
             />
           </GridListTile>
