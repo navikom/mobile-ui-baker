@@ -29,7 +29,7 @@ import { ItemTypes } from 'views/Editor/store/ItemTypes';
 import IControl from 'interfaces/IControl';
 import { DropEnum } from 'enums/DropEnum';
 import TreeComponent from 'views/Editor/components/TreeComponent';
-import { TABS_HEIGHT } from 'models/Constants';
+import { TABS_HEIGHT, FIRST_CONTAINER, SECOND_CONTAINER } from 'models/Constants';
 import ProjectTab from 'views/Editor/components/tabs/ProjectTab';
 import { blackOpacity, whiteColor, whiteOpacity } from 'assets/jss/material-dashboard-react';
 import { IBackgroundColor } from 'interfaces/IProject';
@@ -53,6 +53,7 @@ const contentStyles = makeStyles((theme: Theme) =>
       width: '100%',
       height: '100%',
       overflow: 'auto',
+      position: 'absolute',
     },
     newDeviceRoot: {
       position: 'relative',
@@ -61,18 +62,23 @@ const contentStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center'
+    },
+    zIndex: {
+      zIndex: 1
     }
   })
 );
 
 interface ContentProps {
-  items: IControl[];
+  firstContainerVisible: boolean;
+  firstItems: IControl[];
+  secondItems: IControl[];
   moveControl: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   handleDropCanvas: (item: DragAndDropItem) => void;
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
-  setCurrentScreen: (screen: IControl) => void;
+  setCurrentScreen: (screen: IControl, behavior?: (string | number)[]) => void;
   background: IBackgroundColor;
   ios: boolean;
   device: DeviceEnum;
@@ -80,13 +86,15 @@ interface ContentProps {
 
 const Content: React.FC<ContentProps> = observer((
   {
-    items,
+    firstItems,
+    secondItems,
     moveControl,
     handleDropCanvas,
     handleDropElement,
     isSelected,
     selectControl,
     background,
+    firstContainerVisible,
     ios,
     device,
     setCurrentScreen
@@ -118,24 +126,54 @@ const Content: React.FC<ContentProps> = observer((
   const oldDevices = [DeviceEnum.IPHONE_6, DeviceEnum.PIXEL_5].includes(device);
   const root = classNames({
     [classes.root]: oldDevices,
+    [classes.newDeviceRoot]: !oldDevices,
+    [classes.zIndex]: firstContainerVisible
+  });
+  const secondRoot = classNames({
+    [classes.root]: oldDevices,
     [classes.newDeviceRoot]: !oldDevices
   });
   return (
-    <div ref={drop} className={root} style={{ backgroundColor: backgroundColor }}
-         onClick={() => selectControl()}>
-      {
-        items.map((control, i) => {
-          return <ControlItem
-            key={control.id}
-            control={control}
-            moveControl={moveControl}
-            handleDropElement={handleDropElement}
-            isSelected={isSelected}
-            setCurrentScreen={setCurrentScreen}
-            selectControl={selectControl} />
-        })
-      }
-    </div>
+    <>
+      <div
+        id={FIRST_CONTAINER}
+        ref={drop}
+        className={root}
+        style={{ backgroundColor: backgroundColor }}
+        onClick={() => selectControl()}>
+        {
+          firstItems.map((control, i) => {
+            return <ControlItem
+              key={control.id}
+              control={control}
+              moveControl={moveControl}
+              handleDropElement={handleDropElement}
+              isSelected={isSelected}
+              setCurrentScreen={setCurrentScreen}
+              selectControl={selectControl} />
+          })
+        }
+      </div>
+      <div
+        id={SECOND_CONTAINER}
+        ref={drop}
+        className={secondRoot}
+        style={{ backgroundColor: backgroundColor }}
+        onClick={() => selectControl()}>
+        {
+          secondItems.map((control, i) => {
+            return <ControlItem
+              key={control.id}
+              control={control}
+              moveControl={moveControl}
+              handleDropElement={handleDropElement}
+              isSelected={isSelected}
+              setCurrentScreen={setCurrentScreen}
+              selectControl={selectControl} />
+          })
+        }
+      </div>
+    </>
   )
 });
 
@@ -297,7 +335,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   handleDropCanvas={store.handleDropCanvas}
                   handleDropElement={store.handleDropElement}
                   isCurrent={store.isCurrent}
-                  setCurrentScreen={(screen: IControl) => store.setCurrentScreen(screen)}
+                  setCurrentScreen={(screen: IControl, behavior?: string[]) => store.setCurrentScreen(screen, behavior)}
                   addScreen={store.addScreen}
                   removeScreen={store.removeScreen}
                   dictionary={store.dictionary}
@@ -327,19 +365,23 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                       ios={store.ios}
                       mode={store.mode}
                       background={store.background}
+                      statusBarEnabled={store.statusBarEnabled}
                       statusBarColor={store.statusBarColor}
                       portrait={store.portrait}>
                       <Content
+                        firstContainerVisible={store.firstContainerVisible}
                         device={store.device}
                         ios={store.ios}
                         background={store.background}
-                        items={store.currentScreen.children}
+                        firstItems={store.firstScreen ? store.firstScreen.children : []}
+                        secondItems={store.secondScreen ? store.secondScreen.children : []}
                         moveControl={store.moveControl}
                         handleDropCanvas={store.handleDropCanvas}
                         handleDropElement={store.handleDropElement}
                         selectControl={store.selectControl}
                         isSelected={store.isSelected}
-                        setCurrentScreen={(screen: IControl) => store.setCurrentScreen(screen)}
+                        setCurrentScreen={(screen: IControl, behavior?: (string | number)[]) =>
+                          store.setCurrentScreenAnimate(screen, behavior)}
                       />
                     </DeviceComponent>
                   </div>
@@ -363,7 +405,8 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                   }
                 </Tabs>
               </Paper>
-              <div className={classes.bordered} style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT * 2 + 11 }}>
+              <div className={classes.bordered}
+                   style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT * 2 + 11 }}>
                 {React.createElement(TabContent[store.tabToolsIndex], store.tabProps)}
               </div>
             </Grid>
@@ -410,6 +453,7 @@ function Editor(props: RouteComponentProps) {
   useEffect(() => {
     store.checkLocalStorage().then(() => {
       id && store.fetchProjectData(id);
+      store.placeSecondContainer();
     });
     SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
     SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));

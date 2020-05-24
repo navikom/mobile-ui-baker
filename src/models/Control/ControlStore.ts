@@ -37,6 +37,7 @@ import EditorHistory, {
 import IHistory from 'interfaces/IHistory';
 import IProject from 'interfaces/IProject';
 import { boxShadow } from 'assets/jss/material-dashboard-react';
+import DelayEnum from '../../enums/DelayEnum';
 
 export const MAIN_CSS_STYLE = 'Main';
 
@@ -447,20 +448,23 @@ class ControlStore extends Movable implements IControl {
     }
   }
 
-  applyActions = (cb?: (screen: IControl) => void) => {
-    this.actions.forEach(action => {
-      if (!ControlStore.has(action[1])) {
-        return;
-      }
-      const control = ControlStore.getById(action[1]) as IControl;
+  private act(actions: Array<Array<string>>, cb?: (screen: IControl, behavior: string[]) => void) {
+    const action = actions.shift();
+    if (!(action && ControlStore.has(action[1]))) {
+      return;
+    }
+    const control = ControlStore.getById(action[1]) as IControl;
+    const delay = action.length > 3 && action[3];
+    setTimeout(() => {
       if (action[0] === ACTION_NAVIGATE_TO) {
-        cb && cb(control);
+        cb && cb(control, action.slice(2));
       } else {
 
         const style = action[2];
         if (!control.cssStyles.has(style)) {
           return;
         }
+
         if (action[0] === ACTION_ENABLE_STYLE) {
           control.addClass(style);
         } else if (action[0] === ACTION_DISABLE_STYLE) {
@@ -469,7 +473,18 @@ class ControlStore extends Movable implements IControl {
           control.switchClass(style);
         }
       }
-    });
+
+      setTimeout(() => {
+        this.act(actions, cb);
+      }, delay && delay === DelayEnum.AFTER ? Number(action[4]) : 0);
+
+    }, delay && delay === DelayEnum.BEFORE ? Number(action[4]) : 0);
+
+  }
+
+  applyActions = (cb?: (screen: IControl) => void) => {
+    const actions = this.actions.slice();
+    this.act(actions, cb);
   };
 
   clone(): IControl {

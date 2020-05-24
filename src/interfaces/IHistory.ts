@@ -24,7 +24,7 @@ export interface IHistoryObject {
 export interface ViewStore {
   project: IProject;
   applyHistorySettings(key: SettingsPropType, value: Mode & string & IBackgroundColor): void;
-  setCurrentScreen(screen: IControl, noHistory?: boolean): void;
+  setCurrentScreen(screen: IControl, behavior?: string[], noHistory?: boolean): void;
   removeScreen(screen: IControl, noHistory?: boolean): void;
   setScreen(screen: IControl): void;
   spliceScreen(screen: IControl, index: number): void;

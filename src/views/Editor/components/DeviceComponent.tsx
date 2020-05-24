@@ -9,6 +9,7 @@ import DeviceComponentNew from './DeviceComponentNew';
 export interface DeviceComponentProps {
   ios?: boolean;
   mode: Mode;
+  statusBarEnabled: boolean;
   statusBarColor: string;
   background: IBackgroundColor;
   portrait: boolean;

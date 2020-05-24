@@ -24,6 +24,7 @@ import InputBase from '@material-ui/core/InputBase';
 import Button from '@material-ui/core/Button';
 import { TABS_HEIGHT } from 'models/Constants';
 import Typography from '@material-ui/core/Typography';
+import AnimationParams from '../AnimationParams';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -211,7 +212,11 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     importProject,
     clearProject,
     deleteProject,
-    setAccess
+    setAccess,
+    statusBarEnabled,
+    switchStatusBar,
+    navigation,
+    setNavigation
   }
 ) => {
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
@@ -220,6 +225,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     setDangerAction(action);
     setOpenDialog(true);
   }
+
   const handleAction = () => {
     if (dangerAction === CLEAR) {
       clearProject && clearProject();
@@ -297,11 +303,24 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         <FormControl component="fieldset">
           <FormLabel
             style={{ marginBottom: 10 }}>{dictionary!.defValue(EditorDictionary.keys.statusBar).toUpperCase()}</FormLabel>
-          <ColorInput
-            color={statusBarColor!.toString()}
-            onChange={(e) => setStatusBarColor && setStatusBarColor(e)}
-            label={dictionary!.defValue(EditorDictionary.keys.background)} />
+          <Switch checked={statusBarEnabled} color="primary" onChange={switchStatusBar} />
         </FormControl>
+      </Grid>
+      <Grid container className={classes.container} justify="space-between">
+        {
+          statusBarEnabled && (
+            <FormControl component="fieldset">
+              <FormLabel
+                style={{ marginBottom: 10 }}>
+                {`${dictionary!.defValue(EditorDictionary.keys.statusBar)} ${dictionary!.defValue(EditorDictionary.keys.background)}`.toUpperCase()}
+              </FormLabel>
+              <ColorInput
+                color={statusBarColor!.toString()}
+                onChange={(e) => setStatusBarColor && setStatusBarColor(e)}
+                label={dictionary!.defValue(EditorDictionary.keys.background)} />
+            </FormControl>
+          )
+        }
         <FormControl component="fieldset">
           <FormLabel
             style={{ marginBottom: 10 }}>{dictionary!.defValue(EditorDictionary.keys.background).toUpperCase()}</FormLabel>
@@ -315,6 +334,16 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         App.user && project && project.owner && App.user.userId === project.owner.userId &&
         <ShareProject dictionary={dictionary} project={project} setAccess={setAccess} />
       }
+      <br/>
+      <Typography variant="subtitle2" className={classes.title}>
+        {dictionary!.defValue(EditorDictionary.keys.navigationAnimations)}
+      </Typography>
+      <AnimationParams
+        isDelay={false}
+        conditions={(navigation || []) as string[]}
+        onChange={setNavigation as (e: (string | number)[]) => void}
+        dictionary={dictionary as EditorDictionary}
+      />
     </div>
     <DialogAlert
       open={openDialog}

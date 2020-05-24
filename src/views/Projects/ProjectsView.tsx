@@ -49,13 +49,13 @@ const useStyles = makeStyles((theme) => ({
   },
   listTile: {
     transition: 'box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-    border: '4px solid #aeb2b7',
+    border: '4px solid #656e79',
     boxShadow: '9px 7px 22px -6px rgba(0,0,0,0.43)',
     borderRadius: '6px',
   },
   img: {
     transform: 'translateX(-50%) scale(1)',
-    transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transition: 'all 5s cubic-bezier(0.1, 0, 0.2, 1) 0ms',
     '&:hover': {
       transform: 'translateX(-50%) scale(1.05)',
 

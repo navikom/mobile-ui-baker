@@ -190,17 +190,17 @@ class EditorHistory implements IHistory {
         this.viewStore!.applyHistorySettings(object.key as SettingsPropType, object.value as Mode & string & IBackgroundColor);
         break;
       case HIST_CURRENT_SCREEN:
-        this.viewStore!.setCurrentScreen(control, true);
+        this.viewStore!.setCurrentScreen(control, undefined, true);
         break;
       case HIST_ADD_SCREEN: {
         this.viewStore!.removeScreen(control, true);
         const screen = this.store.getById(object.screen as string);
-        this.viewStore!.setCurrentScreen(screen, true);
+        this.viewStore!.setCurrentScreen(screen, undefined, true);
         break;
       }
       case HIST_DELETE_SCREEN:
         this.viewStore!.setScreen(control);
-        object.screen === control.id && this.viewStore!.setCurrentScreen(control, true);
+        object.screen === control.id && this.viewStore!.setCurrentScreen(control, undefined, true);
         break;
       case HIST_CLONE_SCREEN:
         this.viewStore!.removeScreen(control, true);
@@ -306,11 +306,11 @@ class EditorHistory implements IHistory {
         this.viewStore!.applyHistorySettings(object.key as SettingsPropType, object.value as Mode & string & IBackgroundColor);
         break;
       case HIST_CURRENT_SCREEN:
-        this.viewStore!.setCurrentScreen(control, true);
+        this.viewStore!.setCurrentScreen(control, undefined, true);
         break;
       case HIST_ADD_SCREEN:
         this.viewStore!.setScreen(control);
-        this.viewStore!.setCurrentScreen(control, true);
+        this.viewStore!.setCurrentScreen(control, undefined, true);
         break;
       case HIST_DELETE_SCREEN:
         this.viewStore!.removeScreen(control, true);

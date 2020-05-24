@@ -121,6 +121,7 @@ const ContextComponent: React.FC<ContextComponentProps> = ({store, header}) => {
           ios={store.ios}
           mode={store.mode}
           background={store.background}
+          statusBarEnabled={store.statusBarEnabled}
           statusBarColor={store.statusBarColor}
           portrait={store.portrait}>
           <Content

@@ -92,28 +92,35 @@ describe("Control", () => {
     background1.setValue("red");
 
     expect(grid1.styles.backgroundColor).toBe("#ffffff");
+    jest.useFakeTimers();
 
     grid2.addAction([ACTION_TOGGLE_STYLE, grid1.id, "Style1"]);
     grid2.applyActions();
+    jest.runAllTimers();
     expect(grid1.styles.backgroundColor).toBe("red");
     grid2.applyActions();
+    jest.runAllTimers();
     expect(grid1.styles.backgroundColor).toBe("#ffffff");
 
     grid1.renameCSSStyle("Style1", "NewStyle");
 
     // action will not be working after style rename
     grid2.applyActions();
+    jest.runAllTimers();
     expect(grid1.styles.backgroundColor === "red").toBeFalsy();
 
     // to make it working need to edit the action
     grid2.editAction(0, ACTION_TOGGLE_STYLE, `${grid1.id}/NewStyle`);
     grid2.applyActions();
+    jest.runAllTimers();
     expect(grid1.styles.backgroundColor === "red").toBeTruthy();
     grid2.applyActions();
+    jest.runAllTimers();
     expect(grid1.styles.backgroundColor === "#ffffff").toBeTruthy();
 
     grid2.removeAction(0);
     grid2.applyActions();
+    jest.runAllTimers();
     expect(grid1.styles.backgroundColor === "red").toBeFalsy();
   });
 
@@ -122,6 +129,7 @@ describe("Control", () => {
     const grid = CreateControl(ControlEnum.Grid);
     grid.addAction([ACTION_NAVIGATE_TO, newScreen.id]);
     grid.applyActions((screen: IControl) => {
+      jest.runAllTimers();
       expect(screen === newScreen).toBeTruthy();
     })
   });

@@ -76,7 +76,9 @@ class EditorViewStore extends DisplayViewStore {
   get toJSON() {
     return {
       screens: this.screens.map(e => e.toJSON),
+      navigation: this.navigation,
       background: this.background,
+      statusBarEnabled: this.statusBarEnabled,
       statusBarColor: this.statusBarColor,
       mode: this.mode,
       title: this.project.title,
@@ -96,6 +98,7 @@ class EditorViewStore extends DisplayViewStore {
         mode: this.mode,
         background: this.background,
         statusBarColor: this.statusBarColor,
+        statusBarEnabled: this.statusBarEnabled,
         setStatusBarColor: (statusBar: string) => this.setStatusBarColor(statusBar),
         switchMode: () => this.switchMode(),
         setBackground: (background: IBackgroundColor) => this.setBackground(background),
@@ -108,7 +111,10 @@ class EditorViewStore extends DisplayViewStore {
         importProject: () => this.importProject(),
         clearProject: () => this.newProject(),
         deleteProject: () => this.deleteProject(),
-        setAccess: (access: AccessEnum) => this.setAccess(access)
+        setAccess: (access: AccessEnum) => this.setAccess(access),
+        switchStatusBar: () => this.switchStatusBar(),
+        navigation: this.navigation,
+        setNavigation: (navigation: (string | number)[]) => this.setNavigation(navigation)
       },
       {
         deleteControl: this.deleteControl,
@@ -335,6 +341,7 @@ class EditorViewStore extends DisplayViewStore {
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
     this.screens = observable([CreateControl(ControlEnum.Grid)]);
     this.currentScreen = this.screens[0];
+    this.placeContent(this.screens[0]);
     this.currentScreen.changeTitle('Screen', true);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
     this.background = { backgroundColor: whiteColor };
@@ -475,6 +482,26 @@ class EditorViewStore extends DisplayViewStore {
     this[key] = value;
   }
 
+  @action switchStatusBar() {
+    super.switchStatusBar();
+    this.save();
+  }
+
+  @action switchPortrait() {
+    super.switchPortrait();
+    this.save();
+  }
+
+  @action setIOS(ios: boolean) {
+    super.setIOS(ios);
+    this.save();
+  }
+
+  @action setNavigation(navigation: (string | number)[]) {
+    super.setNavigation(navigation);
+    this.save();
+  }
+
   // ####### apply history start ######## //
 
   @action switchMode() {
@@ -520,9 +547,10 @@ class EditorViewStore extends DisplayViewStore {
     const redo = {
       control: this.currentScreen.id,
       key: 'statusBarColor',
-      value: this.statusBarColor
+      value: statusBarColor
     } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
+
   }
 
   // 2. source.parent is not null and parent.parent is not null
@@ -758,9 +786,9 @@ class EditorViewStore extends DisplayViewStore {
     this.history.add([HIST_HANDLE_DROP_CANVAS, undo, redo]);
   };
 
-  @action setCurrentScreen(screen: IControl, noHistory?: boolean) {
+  @action setCurrentScreen(screen: IControl, behavior?: string[], noHistory?: boolean) {
     const undo = { control: this.currentScreen.id };
-    super.setCurrentScreen(screen);
+    super.setCurrentScreen(screen, behavior);
     const redo = { control: this.currentScreen.id };
     !noHistory && this.history.add([HIST_CURRENT_SCREEN, undo, redo]);
   }

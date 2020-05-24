@@ -389,3 +389,7 @@ export const EDITOR_ACTIONS = [ACTION_NAVIGATE_TO, ACTION_ENABLE_STYLE, ACTION_D
 
 //********** PAYMENT *********//
 export const PAYMENT_TITLE_UPGRADE = 'Upgrade plan';
+
+//********** EDITOR ***********//
+export const FIRST_CONTAINER = 'first-container';
+export const SECOND_CONTAINER = 'second-container';

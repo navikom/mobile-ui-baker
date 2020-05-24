@@ -50,6 +50,9 @@ const useExtraStyles = makeStyles(theme => (
       border: '1px solid ' + blackOpacity(.15),
       width: theme.typography.pxToRem(50),
       textAlign: 'center'
+    },
+    small: {
+      width: theme.typography.pxToRem(35),
     }
   }
 ));
@@ -98,7 +101,8 @@ const NumberInput: React.FC<NumberInputProps> = (
 
   const input = classNames(classes.input, eClasses.input, className, {
     [classes.fullWidth]: fullWidth,
-    [classes.error]: error
+    [classes.error]: error,
+    [eClasses.small]: size && size === 'small'
   });
 
   const handleClick = (increase?: boolean) => () => {

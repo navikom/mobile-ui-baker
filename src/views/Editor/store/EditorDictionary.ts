@@ -58,6 +58,8 @@ export const data = {
   enableStyle: 'enable style',
   disableStyle: 'disable style',
   toggleStyle: 'toggle style',
+  delay: 'delay',
+  transition: 'transition',
   elements: 'elements',
   project: 'project',
   control: 'control',
@@ -83,6 +85,9 @@ export const data = {
   linkCopied: 'Copied: $',
   fullscreen: 'Fullscreen',
   orientation: 'Orientation',
+  current: 'Current',
+  next: 'Next',
+  navigationAnimations: 'Navigation Animations'
 };
 
 class EditorDictionary extends AbstractDictionary {

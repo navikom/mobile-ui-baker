@@ -58,7 +58,8 @@ interface ElementProps extends ControlProps {
   locked?: boolean;
 }
 
-const ElementComponent: React.FC<ElementProps> =
+
+export const ElementComponent: React.FC<ElementProps> =
   observer(
     (
       {
@@ -71,7 +72,7 @@ const ElementComponent: React.FC<ElementProps> =
         isSelected,
         handleDropElement,
         locked,
-        setCurrentScreen
+        setCurrentScreen,
       }) => {
       const { title, styles, dropTarget, allowChildren, children, lockedChildren } = control;
       const classes = useStyles();

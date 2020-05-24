@@ -144,7 +144,7 @@ const MobileMenu: React.FC<MenuProps> = (
         [
           [fullScreen ? FullscreenExit : Fullscreen, 'fullscreen', switchFullscreen],
           [store.ios ? Android : Apple, 'os', () => store.setIOS(!store.ios)],
-          [!store.portrait ? StayCurrentPortrait : StayCurrentLandscape, 'orientation', store.switchPortrait],
+          [!store.portrait ? StayCurrentPortrait : StayCurrentLandscape, 'orientation', () => store.switchPortrait()],
           [AddAPhoto, 'screenshot', store.makeProjectScreenshot]
         ].map((item, i) => {
           return (
@@ -191,7 +191,7 @@ const DesktopMenu: React.FC<MenuProps> = (
           {store.ios ? <Android /> : <Apple />}
         </IconButton>
         <Tooltip title={store.dictionary.defValue(EditorDictionary.keys.orientation)}>
-          <IconButton color="inherit" onClick={store.switchPortrait}>
+          <IconButton color="inherit" onClick={() => store.switchPortrait()}>
             {!store.portrait ? <StayCurrentPortrait /> : <StayCurrentLandscape />}
           </IconButton>
         </Tooltip>
@@ -331,15 +331,19 @@ const EditorHeaderComponent: React.FC<EditorHeaderProps> = (
           />
         </Hidden>
       </Toolbar>
-      <Menu
-        id="menu-appbar"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <ProfileMenuItems navigate={navigate} logout={logout} />
-      </Menu>
+      {
+        !store.pluginStore.proMode && (
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <ProfileMenuItems navigate={navigate} logout={logout} />
+          </Menu>
+        )
+      }
     </AppBar>
   )
 }

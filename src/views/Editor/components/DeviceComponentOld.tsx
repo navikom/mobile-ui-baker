@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import AndroidWrapper from 'assets/img/device/gpixel_outer.png';
 import AndroidWrapperLand from 'assets/img/device/gpixel_outer_land.png';
-import IOSWrapper from "assets/img/device/iphone_6_outer.png";
+import IOSWrapper from 'assets/img/device/iphone_6_outer.png';
 import IOSWrapperLand from 'assets/img/device/iphone_6_outer_land.png';
 import { blackOpacity, whiteColor } from 'assets/jss/material-dashboard-react';
 import AndroidPixelInner from 'components/Icons/AndroidPixelInner';
@@ -80,6 +80,10 @@ const androidStyles = makeStyles((theme: Theme) =>
     contentLandscape: {
       marginTop: '3.7%',
       height: '93%'
+    },
+    fullHeight: {
+      marginTop: 0,
+      height: '100%'
     }
   })
 );
@@ -113,6 +117,9 @@ const iosStyles = makeStyles((theme: Theme) =>
     content: {
       width: '100%',
       height: '97%',
+    },
+    fullHeight: {
+      height: '100%',
     }
   })
 );
@@ -122,6 +129,7 @@ const IOSDevice: React.FC<DeviceComponentProps> = (
     children,
     background,
     mode,
+    statusBarEnabled,
     statusBarColor,
     portrait
   }) => {
@@ -130,16 +138,24 @@ const IOSDevice: React.FC<DeviceComponentProps> = (
   const inner = classNames(classes.inner, extraClasses.inner, {
     [extraClasses.landscapeInner]: !portrait,
   });
-  const content = classNames(extraClasses.topBar, extraClasses.content);
+  const content = classNames({
+    [extraClasses.topBar]: statusBarEnabled,
+    [extraClasses.content]: true,
+    [extraClasses.fullHeight]: statusBarEnabled
+  });
   return (
     <Grid className={inner} id="capture">
-      <IPhone6Inner
-        width={portrait ? undefined : 490}
-        height={portrait ? undefined : 260}
-        style={{ position: 'absolute' }}
-        mode={mode}
-        background={background.backgroundColor}
-        statusBarColor={statusBarColor} />
+      {
+        statusBarEnabled && (
+          <IPhone6Inner
+            width={portrait ? undefined : 490}
+            height={portrait ? undefined : 260}
+            style={{ position: 'absolute' }}
+            mode={mode}
+            background={background.backgroundColor}
+            statusBarColor={statusBarColor} />
+        )
+      }
       <Grid container className={content} justify="space-between" style={{ ...background }}>
         {children}
       </Grid>
@@ -151,6 +167,7 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
   {
     children,
     background,
+    statusBarEnabled,
     statusBarColor,
     mode,
     portrait
@@ -163,25 +180,32 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
   const time = moment().format('HH:mm');
   const timeStyle = classNames(mode === Mode.DARK ? classes.text : classes.textBlack, extraClasses.time);
   const content = classNames(extraClasses.content, {
-    [extraClasses.contentLandscape]: !portrait
+    [extraClasses.contentLandscape]: !portrait,
+    [extraClasses.fullHeight]: !statusBarEnabled
   });
   const navbar = portrait ?
     { bottom: 0 } : { transform: 'rotate(-90deg)', right: -230, height: 271 };
   return (
     <div className={inner} id="capture">
-      <AndroidPixelInner
-        width={portrait ? undefined : 490}
-        style={{ position: 'absolute' }}
-        mode={mode}
-        background={background.backgroundColor}
-        statusBarColor={statusBarColor} />
-      <AndroidPixelNavBar
-        width={portrait ? undefined : 490}
-        style={{ position: 'absolute', ...navbar }}
-        mode={mode}
-        background={background.backgroundColor}
-        statusBarColor={statusBarColor} />
-      <Typography className={timeStyle}>{time}</Typography>
+      {
+        statusBarEnabled && (
+          <>
+            <AndroidPixelInner
+              width={portrait ? undefined : 490}
+              style={{ position: 'absolute' }}
+              mode={mode}
+              background={background.backgroundColor}
+              statusBarColor={statusBarColor} />
+            <AndroidPixelNavBar
+              width={portrait ? undefined : 490}
+              style={{ position: 'absolute', ...navbar }}
+              mode={mode}
+              background={background.backgroundColor}
+              statusBarColor={statusBarColor} />
+            <Typography className={timeStyle}>{time}</Typography>
+          </>
+        )
+      }
       <div className={content} style={{ ...background }}>
         {children}
       </div>
@@ -191,7 +215,7 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
 
 
 const DeviceComponent: React.FC<DeviceComponentProps> = (
-  { ios, children, mode, statusBarColor, background, portrait }) => {
+  { ios, children, portrait, ...rest }) => {
   const classes = useStyles();
   const extraClasses = ios ? iosStyles() : androidStyles();
   const wrapper = classNames(classes.wrapper, extraClasses.wrapper, {
@@ -201,10 +225,8 @@ const DeviceComponent: React.FC<DeviceComponentProps> = (
     <Grid container className={classes.container} justify="center">
       <div className={wrapper}>
         {ios ?
-          <IOSDevice mode={mode} background={background} statusBarColor={statusBarColor}
-                     portrait={portrait}>{children}</IOSDevice> :
-          <AndroidDevice mode={mode} background={background} statusBarColor={statusBarColor}
-                         portrait={portrait}>{children}</AndroidDevice>}
+          <IOSDevice portrait={portrait} {...rest}>{children}</IOSDevice> :
+          <AndroidDevice portrait={portrait} {...rest}>{children}</AndroidDevice>}
       </div>
     </Grid>
   );

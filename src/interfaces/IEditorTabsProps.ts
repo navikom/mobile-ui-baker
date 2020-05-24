@@ -32,4 +32,8 @@ export default interface IEditorTabsProps {
   clearProject?: () => void;
   deleteProject?: () => void;
   setAccess?: (access: AccessEnum) => void;
+  statusBarEnabled?: boolean;
+  switchStatusBar?: () => void;
+  navigation?: (string | number)[];
+  setNavigation?: (navigation: (string | number)[]) => void;
 }

@@ -14,5 +14,5 @@ export interface ControlProps {
   isOverCurrent?: boolean;
   selectControl?(control?: IControl): void;
   isSelected?(control: IControl): boolean;
-  setCurrentScreen?: (screen: IControl) => void;
+  setCurrentScreen?: (screen: IControl, behavior?: (string | number)[]) => void;
 }

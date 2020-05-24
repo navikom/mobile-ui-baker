@@ -101,6 +101,7 @@ const IOSDevice: React.FC<DeviceComponentProps> = (
     background,
     mode,
     statusBarColor,
+    statusBarEnabled,
     portrait
   }) => {
   const classes = useStyles();
@@ -136,6 +137,7 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
     background,
     mode,
     statusBarColor,
+    statusBarEnabled,
     portrait
   }) => {
   const classes = useStyles();
@@ -148,7 +150,7 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
 }
 
 const DeviceComponent: React.FC<DeviceComponentProps> = (
-  { ios, children, mode, statusBarColor, background, portrait }) => {
+  { ios, children, portrait, ...rest }) => {
   const classes = useStyles();
   const extraClasses = ios ? iosStyles() : androidStyles();
   const wrapper = classNames(classes.wrapper, extraClasses.wrapper, {
@@ -158,10 +160,8 @@ const DeviceComponent: React.FC<DeviceComponentProps> = (
     <Grid className={classes.container} container justify="center">
       <div className={wrapper} id="capture">
         {ios ?
-          <IOSDevice mode={mode} background={background} statusBarColor={statusBarColor}
-                     portrait={portrait}>{children}</IOSDevice> :
-          <AndroidDevice mode={mode} background={background} statusBarColor={statusBarColor}
-                         portrait={portrait}>{children}</AndroidDevice>}
+          <IOSDevice portrait={portrait} {...rest}>{children}</IOSDevice> :
+          <AndroidDevice portrait={portrait} {...rest}>{children}</AndroidDevice>}
       </div>
     </Grid>
   );

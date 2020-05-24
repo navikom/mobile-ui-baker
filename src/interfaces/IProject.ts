@@ -20,8 +20,10 @@ export interface IBackgroundColor {
 
 export interface IProjectData {
   screens: IControl[];
+  navigation: (string | number)[];
   mode: Mode;
   background: IBackgroundColor;
+  statusBarEnabled: boolean;
   statusBarColor: string;
   title: string;
   ios: boolean;
