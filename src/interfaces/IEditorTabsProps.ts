@@ -36,4 +36,5 @@ export default interface IEditorTabsProps {
   switchStatusBar?: () => void;
   navigation?: (string | number)[];
   setNavigation?: (navigation: (string | number)[]) => void;
+  generate?: () => void;
 }

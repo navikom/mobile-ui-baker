@@ -114,7 +114,8 @@ class EditorViewStore extends DisplayViewStore {
         setAccess: (access: AccessEnum) => this.setAccess(access),
         switchStatusBar: () => this.switchStatusBar(),
         navigation: this.navigation,
-        setNavigation: (navigation: (string | number)[]) => this.setNavigation(navigation)
+        setNavigation: (navigation: (string | number)[]) => this.setNavigation(navigation),
+        generate: () => this.generate()
       },
       {
         deleteControl: this.deleteControl,
@@ -364,6 +365,10 @@ class EditorViewStore extends DisplayViewStore {
       this.setError(Dictionary.defValue(DictionaryService.keys.dataDeleteError, [this.project.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
     }
+  }
+
+  async generate() {
+
   }
 
   @action clear() {

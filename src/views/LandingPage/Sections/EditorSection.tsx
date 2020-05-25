@@ -8,7 +8,7 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 
 const useStyles = makeStyles(styles);
 
-const LaptopPng = '/images/laptop-basics-2.png';
+const LaptopPng = '/images/laptop-basics-3.png';
 
 export default function EditorSection() {
   const classes = useStyles();

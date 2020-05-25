@@ -36,7 +36,7 @@ class DisplayViewStore extends Errors {
   @observable firstScreen?: IControl;
   @observable secondScreen?: IControl;
   @observable background: IBackgroundColor = { backgroundColor: whiteColor };
-  @observable statusBarEnabled = false;
+  @observable statusBarEnabled = true;
   @observable statusBarColor: string = whiteColor;
   @observable mode: Mode = Mode.WHITE;
   @observable portrait = true;
@@ -144,7 +144,7 @@ class DisplayViewStore extends Errors {
     this.portrait = data.portrait;
     data.navigation && (this.navigation = data.navigation);
     this.project.update({ title: data.title } as IProject);
-    data.projectId !== undefined && this.project.setId(data.projectId);
+    data.projectId !== undefined && data.projectId !== 0 && this.project.setId(data.projectId);
   }
 
   @action switchStatusBar() {

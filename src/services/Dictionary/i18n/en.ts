@@ -512,7 +512,7 @@ export default {
   viewerToolbarMethods: 'Viewer toolbar methods to build own custom Viewer management',
   advertisingFreeEditorForAllUsers: 'Advertising-free Editor for all users in your site',
   translateContentOnAnotherLanguage: 'Translate content on another language',
-  allOfThisGivesFlexibilityAllowsToCreateOwnMarketplace: 'With Pro Plan you can delete Ads, customize Editor and Viewer toolbars, untie editor methods to parent muiditor.com database, override saving and switching between projects. All of this will add "Mobile UI creation" user experience into your site and even allows you to create your own Mobile UI\'s Marketplace.',
+  allOfThisGivesFlexibilityAllowsToCreateOwnMarketplace: 'With Pro Plan you and your users will use editor without Advertising, also, you can customize Editor and Viewer toolbars, untie editor methods to parent muiditor.com database, override saving and switching between projects. All of this will add "Mobile UI creation" user experience into your site and even allows you to create your own Mobile UI\'s Marketplace.',
   grabBelowDictionaryObjectChangeValuesOnYoursAndPass: 'Grab below dictionary object, change values on yours and pass this object with',
   getStartedPluginForEditor: 'Get started plugin for the Editor',
   getStartedPluginForViewer: 'Get started plugin for the Viewer',

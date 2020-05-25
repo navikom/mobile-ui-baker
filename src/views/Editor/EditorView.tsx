@@ -317,6 +317,8 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     [classes.contentWrapper]: !store.pluginStore.data.hideHeader,
   })
 
+  let tabsHeight = height - TABS_HEIGHT * 2 + 11;
+
   return (
     <div className={classes.root} style={{ height }}>
       {
@@ -406,7 +408,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                 </Tabs>
               </Paper>
               <div className={classes.bordered}
-                   style={{ padding: 5, marginTop: 5, height: height - TABS_HEIGHT * 2 + 11 }}>
+                   style={{ padding: 5, marginTop: 5, height: tabsHeight }}>
                 {React.createElement(TabContent[store.tabToolsIndex], store.tabProps)}
               </div>
             </Grid>

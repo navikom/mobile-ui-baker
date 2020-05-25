@@ -12,7 +12,7 @@ import ColorInput from 'components/CustomInput/ColorInput';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
-import { CloudUpload, Delete, LayersClear, SaveAlt, } from '@material-ui/icons';
+import { CloudUpload, Delete, LayersClear, SaveAlt, PhonelinkSetup } from '@material-ui/icons';
 import { blackOpacity, primaryOpacity, whiteOpacity } from 'assets/jss/material-dashboard-react';
 import { Mode } from 'enums/ModeEnum';
 import TextInput from 'components/CustomInput/TextInput';
@@ -98,7 +98,7 @@ const ShareProjectComponent: React.FC<IEditorTabsProps> = (
     setAccess,
   }
 ) => {
-  const [tooltip, setTooltip] = React.useState(dictionary!.defValue(EditorDictionary.keys.linkTo))
+  const [tooltip, setTooltip] = React.useState(dictionary!.defValue(EditorDictionary.keys.copy))
   const classes = useStyles();
   const section = sectionStyles();
   const shared = [AccessEnum.EDIT_BY_LINK, AccessEnum.READ_BY_LINK].includes(project!.access);
@@ -131,9 +131,9 @@ const ShareProjectComponent: React.FC<IEditorTabsProps> = (
       input.setSelectionRange(0, 99999);
       document.execCommand('copy');
 
-      setTooltip(dictionary!.defValue(EditorDictionary.keys.linkCopied, input.value));
+      setTooltip(dictionary!.defValue(EditorDictionary.keys.copied));
       setTimeout(() => {
-        setTooltip(dictionary!.defValue(EditorDictionary.keys.copyLink));
+        setTooltip(dictionary!.defValue(EditorDictionary.keys.copy));
       }, 3000);
     }
 
@@ -216,7 +216,8 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     statusBarEnabled,
     switchStatusBar,
     navigation,
-    setNavigation
+    setNavigation,
+    generate
   }
 ) => {
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
@@ -276,6 +277,17 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         </IconButton>
       </Tooltip>
       {
+        App.isAdmin && (
+          <Tooltip
+            className={classes.btn}
+            title={`${dictionary!.defValue(EditorDictionary.keys.generate)} ${dictionary!.defValue(EditorDictionary.keys.reactNativePackage)}`}>
+            <IconButton size="small" onClick={generate}>
+              <PhonelinkSetup />
+            </IconButton>
+          </Tooltip>
+        )
+      }
+      {
         App.user && project && project.owner && App.user.userId === project.owner.userId && (
           <Tooltip
             className={classes.btn}
@@ -287,7 +299,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         )
       }
     </Grid>
-    <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 40}px)`, overflow: 'auto' }}>
+    <div style={{ height: `calc(100% - ${TABS_HEIGHT + 10}px)`, overflow: 'auto' }}>
       <Grid container className={classes.container}>
         <FormControl component="fieldset">
           <FormLabel>{dictionary!.defValue(EditorDictionary.keys.mode).toUpperCase()}</FormLabel>

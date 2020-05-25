@@ -116,6 +116,7 @@ const ProPlanOverview: React.FC = () => {
   action: 'action',
   add: 'add',
   delete: 'delete',
+  generate: 'generate',
   switch: 'switch',
   goTo: 'go to',
   onPress: 'on press',
@@ -123,8 +124,11 @@ const ProPlanOverview: React.FC = () => {
   enableStyle: 'enable style',
   disableStyle: 'disable style',
   toggleStyle: 'toggle style',
+  delay: 'delay',
+  transition: 'transition',
   elements: 'elements',
   project: 'project',
+  reactNativePackage: 'React Native package',
   control: 'control',
   component: 'component',
   makeScreenshot: 'make screenshot',
@@ -136,7 +140,6 @@ const ProPlanOverview: React.FC = () => {
   fromFile: 'from file',
   clear: 'Clear',
   share: 'Share',
-  linkTo: 'Link to the',
   copy: 'Copy',
   usersCan: 'Users can',
   edit: 'Edit',
@@ -145,9 +148,13 @@ const ProPlanOverview: React.FC = () => {
   'read by link': 'Read by link',
   'edit by link': 'Edit by link',
   copyLink: 'Copy link',
-  linkCopied: 'Copied: $',
+  linkTo: 'Link to the',
+  copied: 'Copied!',
   fullscreen: 'Fullscreen',
   orientation: 'Orientation',
+  current: 'Current',
+  next: 'Next',
+  navigationAnimations: 'Navigation Animations'
 }`
         }
       />

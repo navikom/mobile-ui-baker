@@ -105,6 +105,8 @@ const styles = [
     .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
   new CSSProperty('marginLeft', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
     .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('transform', 'translate(-50%,0)', 'translate(-50%,0)', CSS_CAT_ALIGN)
+    .setDescription(['transformDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform']),
   new CSSProperty('zIndex', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER),
   new CSSProperty('border', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
     .makeExpandable().setDescription(['borderDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/border']),
@@ -126,8 +128,6 @@ const styles = [
     .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
   new CSSProperty('borderBottomLeftRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
     .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
-  new CSSProperty('transform', 'rotate(3turn)', 'rotate(3turn)', CSS_CAT_ANIMATIONS)
-    .setDescription(['transformDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform']),
   new CSSProperty('transition', 'all .5s ease-out', 'all .5s ease-out', CSS_CAT_ANIMATIONS)
     .makeExpandable()
     .setDescription(['transitionDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition']),
