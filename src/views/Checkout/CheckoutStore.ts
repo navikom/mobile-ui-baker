@@ -3,8 +3,8 @@ import { Errors } from 'models/Errors';
 import { MODE_DEVELOPMENT } from 'models/Constants';
 import { App } from 'models/App';
 import { v4 } from 'uuid';
-import { IUser } from 'interfaces/IUser';
 import IProject from 'interfaces/IProject';
+import { ITwoCoInlineCart } from 'types/global-window';
 
 class CheckoutStore extends Errors {
   static PRO_PLAN_CODE = process.env.REACT_APP_2_PRO_PLAN || '';
@@ -108,7 +108,7 @@ class CheckoutStore extends Errors {
     if(project) {
       console.log("Purchase", App.user && App.user.userId, project);
     } else {
-      App.user && App.user.update({proPlan: true} as IUser);
+      // App.user && App.user.update({plan: true} as IUser);
     }
   }
 

@@ -1,9 +1,9 @@
 import { action, observable } from 'mobx';
 import { ROUTE_ROOT } from 'models/Constants';
 import { data } from 'views/Editor/store/EditorDictionary';
-import { IObject } from 'services/Dictionary/AbstractDictionary';
 import { IProjectData } from 'interfaces/IProject';
-import { api, Apis } from '../api';
+import { api, Apis } from 'api';
+import IMobileUIView from 'interfaces/IMobileUIView';
 
 interface IMuiConfig {
   autoSave?: boolean;
@@ -12,22 +12,6 @@ interface IMuiConfig {
   dictionary?: typeof data;
   data?: IProjectData;
   hideHeader?: boolean;
-}
-
-interface IEditorView {
-  dictionary?: { setData: <T extends typeof data>(newData: T & IObject) => void };
-  ios: boolean;
-  portrait: boolean;
-  autoSave: boolean;
-
-  setLoadingPlugin(value: boolean): void;
-
-  fromJSON(data: IProjectData): void;
-  switchAutoSave?(): void;
-  handleScreenshot?(): void;
-  switchPortrait(): void;
-  setIOS(value: boolean): void;
-  setAutoSave?(value: boolean): void;
 }
 
 class EditorData {
@@ -64,7 +48,7 @@ class PluginStore {
 
   proMode = false;
   token = '';
-  store: IEditorView;
+  store: IMobileUIView;
 
   freeData: EditorData = new EditorData(ROUTE_ROOT, 'Muiditor');
   proData?: EditorData;
@@ -72,7 +56,7 @@ class PluginStore {
 
   @observable data: EditorData;
 
-  constructor(store: IEditorView) {
+  constructor(store: IMobileUIView) {
     this.store = store;
     this.data = this.freeData;
   }

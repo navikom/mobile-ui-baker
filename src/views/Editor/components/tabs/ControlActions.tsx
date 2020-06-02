@@ -25,7 +25,6 @@ import IControl from 'interfaces/IControl';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import CustomSelect from 'components/CustomSelect/CustomSelect';
 import DelayEnum from 'enums/DelayEnum';
-import AnimationEnum, { AnimationDirectionEnum } from 'enums/AnimationEnum';
 import AnimationParams from '../AnimationParams';
 import { blackOpacity } from 'assets/jss/material-dashboard-react';
 

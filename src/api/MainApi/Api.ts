@@ -60,6 +60,10 @@ class User extends HttpBase {
   fetchSubscription() {
     return this.fetchData('get', 'payment-subscription');
   }
+
+  subscriptionsFullData() {
+    return this.fetchData('get', 'subscriptions-full-data');
+  }
 }
 
 class AEvent extends HttpBase {
@@ -105,6 +109,20 @@ class Region extends HttpBase {
 class Payment extends HttpBase {
   constructor() {
     super('payments');
+  }
+
+  getBySubscriptionId(subscriptionId: number) {
+    return this.fetchData('get', `subscription/${subscriptionId}`);
+  }
+}
+
+class Paddle extends HttpBase {
+  constructor() {
+    super('paddle');
+  }
+
+  setPlan(subscriptionId: number, planId: number) {
+    return this.fetchData('post', `subscription/${subscriptionId}/plan/${planId}`);
   }
 }
 
@@ -216,5 +234,9 @@ export default class Api extends ApiBase {
 
   get plugin(): Plugin {
     return new Plugin();
+  }
+
+  get paddle(): Paddle {
+    return new Paddle();
   }
 }

@@ -19,9 +19,9 @@ import {
 import ProgressButton from 'components/CustomButtons/ProgressButton';
 import useStyles from 'assets/jss/material-dashboard-react/components/inputFieldStyle';
 import Button from '@material-ui/core/Button';
-import CheckoutStore from 'views/Checkout/CheckoutStore';
 import Tooltip from '@material-ui/core/Tooltip';
-import { ROUTE_DOCS_PLUGIN } from '../../../models/Constants';
+import { ROUTE_BILLING, ROUTE_DOCS_PLUGIN } from 'models/Constants';
+import { App } from 'models/App';
 
 const extraStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,13 +54,12 @@ function UserWebpage() {
     extraClasses.label
   );
   const store = UserDetails.webpageStore;
-  const checkoutStore = new CheckoutStore(CheckoutStore.PRO_PLAN_CODE);
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => store.onInput(e.target.value);
 
   const handleCheckout = () => {
-    checkoutStore.startCheckout();
+    App.navigationHistory && App.navigationHistory.push(ROUTE_BILLING);
   };
 
   const copyToClipboard = (index: number, id: string) => () => {
@@ -89,29 +88,12 @@ function UserWebpage() {
         </Typography>
       </Grid>
       <Grid container item direction="row">
-        {
-          UserDetails.user!.proPlan ? (
-            <React.Fragment>
-              <Typography variant="subtitle1" className={centerNote}>
-                {Dictionary.defValue(DictionaryService.keys.proPlan)}
-              </Typography>
-              <Typography variant="subtitle1" color="primary">
-                {Dictionary.defValue(DictionaryService.keys.active)}
-              </Typography>
-            </React.Fragment>
-
-          ) : (
-            <React.Fragment>
-              <Typography variant="subtitle1" className={classNames(classes.note, classes.center)}>
-                {Dictionary.defValue(DictionaryService.keys.freePlan)}
-              </Typography>
-              <Button color="primary" variant="outlined" onClick={handleCheckout}>
-                {Dictionary.defValue(DictionaryService.keys.upgrade)}
-              </Button>
-            </React.Fragment>
-          )
-        }
-
+        <Typography variant="subtitle1" color="primary" className={centerNote} style={{opacity: 0.8}}>
+          {UserDetails.user!.plan.title}
+        </Typography>
+        <Button color="primary" variant="outlined" onClick={handleCheckout}>
+          {Dictionary.value(UserDetails.user!.plan.id > 0 ? 'update' : 'upgrade')}
+        </Button>
       </Grid>
       <Grid container item direction="row">
         <Typography variant="subtitle2" className={centerNote}>

@@ -1,11 +1,14 @@
 import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
 import { IUsersEvents } from "interfaces/IUsersEvents";
 import { IPagination } from "interfaces/IPagination";
-import { IObservableArray, observable } from 'mobx';
+import { IObservableArray } from 'mobx';
 import { FemaleType, MaleType } from "types/commonTypes";
 import { IRole } from "interfaces/IRole";
 import { IRegion } from "interfaces/IRegion";
 import { IDevice } from "interfaces/IDevice";
+import ISubscriptionPlan from './ISubscriptionPlan';
+import ISubscription from './ISubscription';
+import IPayment from './IPayment';
 
 export type GenderType = MaleType | FemaleType;
 export interface IUser extends WithPrimaryKey {
@@ -38,7 +41,8 @@ export interface IUser extends WithPrimaryKey {
   uid: string | null;
   secret: string | null;
   anonymous: boolean;
-  proPlan: boolean;
+  subscriptions: ISubscription[];
+  plan: ISubscriptionPlan;
 
   fullDataLoaded: boolean;
 
@@ -51,5 +55,10 @@ export interface IUser extends WithPrimaryKey {
   setFullDataLoaded(value?: boolean): void;
   hasRole(roleId: number): boolean;
   updateRoles(roles: IRole[]): void;
+  updateSubscriptionPayments(subscription: ISubscription, payments: IPayment[]): void;
+  updateSubscriptions(subscriptions?: ISubscription[]): void;
+  updatePlanInSubscription(subscriptionId: number, planId: number): void;
+  updateStatusInSubscription(subscriptionId: number, status: string): void;
+  setPlan: (plan: string) => void;
   totalTime: string;
 }

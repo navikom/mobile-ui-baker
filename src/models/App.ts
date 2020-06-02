@@ -92,13 +92,13 @@ export class AppStore implements IFlow {
       return;
     }
     try {
-      const proPlan = await api(Apis.Main).user.fetchSubscription();
-      this.user.update({proPlan} as IUser);
+      await api(Apis.Main).user.fetchSubscription();
     } catch (e) {
       console.log('User subscription error %s', e.message);
     }
-
   }
+
+
 
   setHistory(history: History) {
     this.navigationHistory = history;

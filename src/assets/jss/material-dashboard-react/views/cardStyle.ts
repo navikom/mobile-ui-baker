@@ -16,6 +16,9 @@ export default makeStyles((theme: Theme) =>
     root: {
       paddingTop: theme.typography.pxToRem(20)
     },
+    container: {
+      flex: 1,
+    },
     cardCategoryWhite: {
       "&,& a,& a:hover,& a:focus": {
         color: "rgba(255,255,255,.62)",

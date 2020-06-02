@@ -1,230 +1,197 @@
 import React, { useEffect } from 'react';
 import { when } from 'mobx';
 import { observer, useDisposable } from 'mobx-react-lite';
-import { Grid, Theme } from '@material-ui/core';
-import Container from '@material-ui/core/Container';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Check, Clear, Lock, StarBorder } from '@material-ui/icons';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import CardActions from '@material-ui/core/CardActions';
+import classNames from 'classnames';
+import { Check, Close, InfoRounded } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
+import { Theme, TableHead, TableBody, withStyles, createStyles } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import Table from '@material-ui/core/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
-import { ROUTE_DOCS_PRO_PLAN, ROUTE_SIGN_UP, ROUTE_USER_PROFILE } from 'models/Constants';
-import CheckoutStore from 'views/Checkout/CheckoutStore';
-import FontAwesome, { Path } from 'components/Icons/FontAwesome';
-import Link from '@material-ui/core/Link';
+import SubscriptionPlans, { achievements, Plan } from 'models/SubscriptionPlans';
+import { ROUTE_BILLING } from 'models/Constants';
+import { roseColor, whiteColor } from 'assets/jss/material-dashboard-react';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  '@global': {
-    ul: {
-      margin: 0,
-      padding: 0,
-      listStyle: 'none',
-    },
-  },
   title: {
     color: theme.palette.background.paper,
     marginBottom: 30
   },
-  appBar: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
+  table: {
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: 10,
+    boxShadow: '0 2px 48px 0 rgba(255,255,255,0.2)'
   },
-  toolbar: {
-    flexWrap: 'wrap',
+  cellTitle: {
+    textAlign: 'left',
+    fontSize: 12,
+    fontWeight: 400,
+    width: '20%'
   },
-  toolbarTitle: {
-    flexGrow: 1,
+  head: {
+    backgroundColor: theme.palette.background.paper,
   },
-  link: {
-    margin: theme.spacing(1, 1.5),
+  preferred: {
+    backgroundColor: '#444',
+    color: whiteColor,
   },
-  heroContent: {
-    padding: theme.spacing(8, 0, 6),
+  button: {
+    backgroundColor: '#444',
+    color: whiteColor,
+    textTransform: 'none',
+    '&:hover': {
+      backgroundColor: '#2a2a2a',
+    }
   },
-  cardHeader: {
-    backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
+  buttonPreferred: {
+    backgroundColor: roseColor[0],
+    '&:hover': {
+      backgroundColor: '#fc0559',
+    }
   },
-  cardPricing: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'baseline',
-    marginBottom: theme.spacing(2),
+  subtitle: {
+    color: '#999',
+    fontSize: 12,
+    fontWeight: 400
   },
-  footer: {
-    borderTop: `1px solid ${theme.palette.divider}`,
-    marginTop: theme.spacing(8),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
-    [theme.breakpoints.up('sm')]: {
-      paddingTop: theme.spacing(6),
-      paddingBottom: theme.spacing(6),
-    },
+  cell: {
+    textAlign: 'center',
   },
-  upgraded: {
-    ...theme.typography.button,
-    backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
-    padding: theme.spacing(1),
+  leftTopCell: {
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+    zIndex: 1
   },
-  checkoutInfoWrapper: {
-    marginTop: 60,
+  rightTopCell: {
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
   },
-  icon: {
-    fontSize: theme.typography.pxToRem(17),
-    marginRight: theme.typography.pxToRem(5)
+  info: {
+    fontSize: 12,
+  },
+  price: {
+    fontWeight: 500,
+    margin: '15px 0'
   }
 }));
 
-interface PricesViewComponentProps {
-  store: CheckoutStore;
-}
+export const StyledTableCell = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      borderBottom: 'none',
+      verticalAlign: 'initial'
+    },
+    head: {
+      textAlign: 'center',
+      position: 'sticky',
+      paddingTop: 10,
+      top: 0
+    }
+  }),
+)(TableCell);
 
-const PricesViewComponent: React.FC<PricesViewComponentProps> = ({ store }) => {
+
+const PricesViewComponent: React.FC = () => {
   const classes = useStyles();
 
-  const description = (pro: boolean) => {
-    return [
-      [true, 'Embed Drag & drop editor'],
-      [true, 'Embed Mobile UI Viewer'],
-      [pro, 'Ads-free Editor'],
-      [pro, '[Editor] header & tools customization'],
-      [pro, '[Viewer] tools customization'],
-    ]
-  }
-  const tiers = [
-    {
-      title: DictionaryService.keys.freePlan,
-      price: '0',
-      description: description(false),
-      buttonText: App.loggedIn ? DictionaryService.keys.getStarted : Dictionary.defValue(DictionaryService.keys.signUpForFree),
-      action: () => {
-        if (App.loggedIn) {
-          App.navigationHistory && App.navigationHistory.push(ROUTE_USER_PROFILE);
-        } else {
-          App.navigationHistory && App.navigationHistory.push(ROUTE_SIGN_UP);
-        }
-      },
-      buttonVariant: 'outlined',
-      upgraded: App.loggedIn && App.user!.proPlan
-    },
-    {
-      title: DictionaryService.keys.proPlan,
-      subheader: <Link href={ROUTE_DOCS_PRO_PLAN} target="_blank">Full control</Link>,
-      price: '20',
-      description: description(true),
-      buttonText: App.loggedIn ? DictionaryService.keys.upgrade : Dictionary.defValue(DictionaryService.keys.signUpForFree),
-      action: () => {
-        if (App.loggedIn) {
-          store.startCheckout();
-        } else {
-          App.navigationHistory && App.navigationHistory.push(ROUTE_SIGN_UP);
-        }
-      },
-      buttonVariant: 'contained',
-      upgraded: App.loggedIn && App.user!.proPlan
-    }
-  ];
+  const currentPlan = App.user ? App.user.plan : Plan.free();
+
+  const plans = Array.from(new SubscriptionPlans().plans.values());
+  const onPlanClick = () =>
+    App.navigationHistory && App.navigationHistory.push(ROUTE_BILLING);
 
   return (
-    <Container maxWidth="md" component="main">
+    <Container component="main">
       <Typography variant="h4" align="center" className={classes.title}>
         {Dictionary.defValue(DictionaryService.keys.editorAndViewerInYourApp)}
       </Typography>
-      <Grid container spacing={5} alignItems="flex-end">
-        {tiers.map((tier) => (
-          // Enterprise card is full width at sm breakpoint
-          <Grid item key={tier.title} xs={12} sm={6} md={6}>
-            <Card>
-              <CardHeader
-                title={Dictionary.defValue(tier.title)}
-                subheader={tier.subheader}
-                titleTypographyProps={{ align: 'center' }}
-                subheaderTypographyProps={{ align: 'center' }}
-                action={tier.title === DictionaryService.keys.proPlan ? <StarBorder color="primary" /> : null}
-                className={classes.cardHeader}
-              />
-              <CardContent>
-                <div className={classes.cardPricing}>
-                  <Typography component="h2" variant="h3" color="textPrimary">
-                    ${tier.price}
-                  </Typography>
-                  <Typography variant="h6" color="textSecondary">
-                    /mo
-                  </Typography>
-                </div>
-                <ul>
-                  {tier.description.map((line, i) => (
-                    <Grid container justify="center" key={i.toString()}>
-                      {line[0] ? <Check color="secondary" /> : <Clear color="error" />}
-                      <Typography
-                        style={{ marginLeft: 5 }}
-                        component="li"
-                        variant="subtitle1"
-                        align="center"
-                      >
-                        {line[1]}
-                      </Typography>
-                    </Grid>
-                  ))}
-                </ul>
-              </CardContent>
-              {
-                tier.upgraded ? (
-                  <Typography variant="subtitle1" align="center" color="primary" className={classes.upgraded}>
-                    {Dictionary.defValue(DictionaryService.keys.upgraded)}
-                  </Typography>
-                ) : (
-                  <CardActions>
-                    <Button
-                      onClick={tier.action}
-                      fullWidth variant={tier.buttonVariant as 'outlined'}
-                      color="primary">
-                      {tier.buttonText}
-                    </Button>
-                  </CardActions>
-                )
-              }
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      <Grid container justify="center" className={classes.checkoutInfoWrapper}>
-        <Grid item xs={12} sm={8} md={8}>
-          <Grid container justify="center">
-            <Lock className={classes.icon} />
-            <Typography variant="body2" component="span">
-              {Dictionary.defValue(DictionaryService.keys.securedPaymentBy)}
-              <Typography variant="body2" style={{fontWeight: 'bold'}} component="span">
-                {' '}2Checkout{' '}
-              </Typography>
-              {Dictionary.defValue(DictionaryService.keys.with)}:
-            </Typography>
-          </Grid>
-          <Grid container justify="center" >
-            <FontAwesome icon={Path.VISA} style={{opacity: .9, padding: 5}}/>
-            <FontAwesome icon={Path.MASTERCARD} style={{opacity: .9, padding: 5}}/>
-            <FontAwesome icon={Path.PAYPAL} style={{opacity: .9, padding: 5}}/>
-            <FontAwesome icon={Path.AMEX} style={{opacity: .9, padding: 5}}/>
-          </Grid>
-          <Grid container justify="center">
-            <Typography variant="body2" align="center" component="span">
-              <Typography variant="body2" style={{fontWeight: 'bold'}} component="span">
-                {Dictionary.defValue(DictionaryService.keys.info)}:
-              </Typography>
-              {' '}{Dictionary.defValue(DictionaryService.keys.ifYouAreARegisteredCompany)}{' '}
-              <Typography variant="body2" component="span" style={{fontWeight: 'bold'}}>
-                {'"'}{Dictionary.defValue(DictionaryService.keys.upgrade).toUpperCase()}{'"'}
-              </Typography>
-            </Typography>
-          </Grid>
+      <Table className={classes.table}>
+        <TableHead>
+          <TableRow>
+            <StyledTableCell className={classNames(classes.head, classes.leftTopCell)}></StyledTableCell>
+            {
+              plans.map((plan, i) => {
 
-        </Grid>
+                const className = classNames({
+                  [classes.head]: true,
+                  [classes.preferred]: plan.preferred,
+                  [classes.rightTopCell]: i === 3
+                });
 
-      </Grid>
+                const buttonClassName = classNames({
+                  [classes.button]: true,
+                  [classes.buttonPreferred]: plan.preferred
+                });
+
+                return <StyledTableCell className={className} key={i.toString()}>
+                  <Typography variant="subtitle1">{Dictionary.value(plan.title)}</Typography>
+                  <Typography className={classes.subtitle}>
+                    {Dictionary.value(plan.subtitle)}
+                  </Typography>
+                  <Typography variant="h5" className={classes.price}>${plan.price.toFixed(2)}</Typography>
+                  {
+                    plan.price > 0 && (
+                      <Button
+                        onClick={onPlanClick}
+                        className={buttonClassName}
+                        fullWidth>
+                        {Dictionary.value(plan.getStatus(currentPlan.price))}
+                      </Button>
+                    )
+                  }
+                </StyledTableCell>
+              })
+            }
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {
+            achievements.map((achievement, i) => (
+              <TableRow key={i.toString()}>
+                <StyledTableCell className={classes.cellTitle} key={achievement[0]}>
+                  {achievement[0]}
+                  {
+                    achievement[1] && (
+                      <Tooltip placement="top" title={Dictionary.value(achievement[1])} arrow>
+                        <IconButton size="small">
+                          <InfoRounded className={classes.info}/>
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
+                </StyledTableCell>
+                {
+                  plans.map((plan, j) => {
+                    const className = classNames({
+                      [classes.cell]: true,
+                      [classes.preferred]: plan.preferred,
+                    });
+                    return (
+                      <StyledTableCell key={j.toString()} className={className}>
+                        {
+                          plan.achievements[i] === true ?
+                            <Check color={plan.preferred ? 'inherit' : 'primary'} /> :
+                            plan.achievements[i] === false ?
+                            <Close color="error" /> :
+                              plan.achievements[i]
+                        }
+                      </StyledTableCell>
+                    )
+                  })
+                }
+              </TableRow>
+            ))
+          }
+        </TableBody>
+      </Table>
     </Container>
   )
 };
@@ -232,17 +199,16 @@ const PricesViewComponent: React.FC<PricesViewComponentProps> = ({ store }) => {
 const PricesView = observer(PricesViewComponent);
 
 const Prices: React.FC = () => {
-  const checkoutStore = new CheckoutStore(CheckoutStore.PRO_PLAN_CODE);
   const dispose = useDisposable(() =>
     when(() => App.loggedIn, async () => {
-      App.fetchUserSubscription();
+      // App.fetchUserSubscription();
     })
   );
 
   useEffect(() => {
     return () => dispose();
   }, [dispose]);
-  return <PricesView store={checkoutStore} />
+  return <PricesView />
 }
 
 export default Prices;

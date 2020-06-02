@@ -17,10 +17,17 @@ export default interface IControl extends IMovable {
   visible: boolean;
   lockedChildren: boolean;
   toJSON: { [key: string]: any };
+  hashSumChildren: { [key: string]: any };
+  hashSumChildrenWithChildren: { [key: string]: any };
+  hashSumChildrenWithChildrenAndTitles: { [key: string]: any };
   classes: IObservableArray<string>;
   actions: IObservableArray<IObservableArray<string>>;
   instance?: IProject;
   saving: boolean;
+  hashChildren?: string;
+  hashChildrenWithStyle?: string;
+  hashChildrenWithStyleAndTitles?: string;
+  path: string[];
   setId(value: string): void;
   activeClass(style: string): boolean;
 
@@ -69,6 +76,8 @@ export default interface IControl extends IMovable {
   setSaving(value: boolean): void;
 
   setInstance(instance?: IProject): void;
+
+  setChecksum(depth: number, path: string[], cb: (depth: number, item: IControl) => void): void;
 
   /// property
   switchExpanded(key: string, propName: string): () => void;

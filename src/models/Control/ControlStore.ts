@@ -1,5 +1,6 @@
 import React from 'react';
 import { action, computed, IObservableArray, observable } from 'mobx';
+import sum from 'hash-sum';
 import IControl from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import { DropEnum } from 'enums/DropEnum';
@@ -164,9 +165,14 @@ class ControlStore extends Movable implements IControl {
   @observable classes: IObservableArray<string> = observable([MAIN_CSS_STYLE]);
   @observable actions: IObservableArray<IObservableArray<string>> = observable([]);
   @observable saving = false;
+  path: string[] = [];
+  hashChildren?: string;
+  hashChildrenWithStyle?: string;
+  hashChildrenWithStyleAndTitles?: string;
   instance?: IProject;
 
-  get toJSON() {
+
+  get cssStylesJSON() {
     const keys = Array.from(this.cssStyles.keys());
     const cssStyles = [];
     let l = keys.length, i = 0;
@@ -174,6 +180,10 @@ class ControlStore extends Movable implements IControl {
       const key = keys[i++];
       cssStyles.push([key, this.cssStyles.get(key)!.filter(prop => prop.enabled).map(prop => prop.toJSON)]);
     }
+    return cssStyles;
+  }
+
+  get toJSON() {
     return {
       type: this.type,
       title: this.title,
@@ -184,7 +194,31 @@ class ControlStore extends Movable implements IControl {
       id: this.id,
       lockedChildren: this.lockedChildren,
       allowChildren: this.allowChildren,
-      cssStyles
+      cssStyles: this.cssStylesJSON
+    }
+  }
+
+  get hashSumChildren() {
+    return {
+      type: this.type,
+      children: this.children.map(child => child.hashSumChildren),
+    }
+  }
+
+  get hashSumChildrenWithChildren() {
+    return {
+      type: this.type,
+      cssStyles: this.cssStylesJSON,
+      children: this.children.map(child => child.hashSumChildrenWithChildren)
+    }
+  }
+
+  get hashSumChildrenWithChildrenAndTitles() {
+    return {
+      title: this.title,
+      type: this.type,
+      cssStyles: this.cssStylesJSON,
+      children: this.children.map(child => child.hashSumChildrenWithChildrenAndTitles)
     }
   }
 
@@ -486,6 +520,15 @@ class ControlStore extends Movable implements IControl {
     const actions = this.actions.slice();
     this.act(actions, cb);
   };
+
+  setChecksum(depth: number, path: string[], cb: (depth: number, item: IControl) => void) {
+    this.hashChildren = sum(this.hashSumChildren);
+    this.hashChildrenWithStyle = sum(this.hashSumChildrenWithChildren);
+    this.hashChildrenWithStyleAndTitles = sum(this.hashSumChildrenWithChildrenAndTitles);
+    this.path = path;
+    cb(depth, this);
+    this.children.forEach(child => child.setChecksum(depth + 1, [...path, this.title], cb));
+  }
 
   clone(): IControl {
     throw new ErrorHandler('Redefine in children');

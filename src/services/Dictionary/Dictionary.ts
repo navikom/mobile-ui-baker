@@ -22,6 +22,11 @@ export class DictionaryService extends AbstractDictionary {
     return moment(date).format("lll");
   }
 
+  dateString(date?: Date) {
+    if(!date) return null;
+    return moment(date).format("YYYY-MM-DD");
+  }
+
   constructor(locale: "en") {
     super(settings[locale], {});
     this.locale = locales[locale];

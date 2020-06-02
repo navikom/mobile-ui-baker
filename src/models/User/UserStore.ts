@@ -11,15 +11,24 @@ import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
 import { UserEventsStore } from "models/User/UserEventsStore";
 
 import convertDate from "utils/convertDate";
-import { IPagination } from "interfaces/IPagination";
 import { UserReferralsStore } from "models/User/UserReferralsStore";
-import { ROLE_ADMIN, ROLE_SUPER_ADMIN } from "models/Constants";
+import {
+  ROLE_ADMIN,
+  ROLE_SUPER_ADMIN,
+  SUBSCRIPTION_PADDLE_STATUS_ACTIVE,
+  SUBSCRIPTION_PADDLE_STATUS_PAST_DUE
+} from 'models/Constants';
+import { RegionStore } from "models/Region/RegionStore";
+import SubscriptionPlans, { Plan } from 'models/SubscriptionPlans';
 import { Roles } from "models/Role/RolesStore";
+import { IPagination } from "interfaces/IPagination";
 import { IDevice } from "interfaces/IDevice";
 import { IRole } from "interfaces/IRole";
 import { DeviceStore } from "models/Device/DeviceStore";
 import { IRegion } from "interfaces/IRegion";
-import { RegionStore } from "models/Region/RegionStore";
+import ISubscriptionPlan from 'interfaces/ISubscriptionPlan';
+import ISubscription from 'interfaces/ISubscription';
+import IPayment from 'interfaces/IPayment';
 
 export const MALE = "Male";
 export const FEMALE = "Female";
@@ -61,7 +70,8 @@ export class UserStore implements IUser {
   @observable webpage: string | null = null;
   @observable uid: string | null = null;
   @observable secret: string | null = null;
-  @observable proPlan = false;
+  @observable plan: ISubscriptionPlan = Plan.free();
+  @observable subscriptions: ISubscription[] = [];
   readonly roles: IObservableArray<IRole> = observable<IRole>([]);
 
 
@@ -142,7 +152,36 @@ export class UserStore implements IUser {
     model.secret && (this.secret = model.secret);
     model.webpage && (this.webpage = model.webpage);
     model.roles && this.updateRoles(model.roles);
-    model.proPlan !== undefined && (this.proPlan = model.proPlan);
+    this.updateSubscriptions(model.subscriptions);
+  }
+
+  @action updateSubscriptions(subscriptions?: ISubscription[]) {
+    if(!subscriptions) {
+      return;
+    }
+    this.subscriptions = subscriptions;
+    if([SUBSCRIPTION_PADDLE_STATUS_ACTIVE, SUBSCRIPTION_PADDLE_STATUS_PAST_DUE].includes(this.subscriptions[0].status)) {
+      this.setPlan(this.subscriptions[0].planId.toString());
+    }
+  }
+
+  @action setPlan(plan: string) {
+    const plans = new SubscriptionPlans().plans;
+    this.plan = plans.get(plan) as ISubscriptionPlan;
+  }
+
+  @action updatePlanInSubscription(subscriptionId: number, planId: number) {
+    const subscription = this.subscriptions.find(sub => sub.subscriptionId === subscriptionId);
+    if(subscription) {
+      subscription.planId = planId;
+    }
+  }
+
+  @action updateStatusInSubscription(subscriptionId: number, status: string) {
+    const subscription = this.subscriptions.find(sub => sub.subscriptionId === subscriptionId);
+    if(subscription) {
+      subscription.status = status;
+    }
   }
 
   @action updateForm(model: IUser) {
@@ -153,6 +192,10 @@ export class UserStore implements IUser {
     this.roles.replace([]);
     roles.forEach((role: IRole) =>
       this.roles.push(Roles.getOrCreate({...role, createdAt: role.UsersRoles!.createdAt})));
+  }
+
+  @action updateSubscriptionPayments(subscription: ISubscription, payments: IPayment[]) {
+    subscription.payments = payments;
   }
 
   static from(model: IUser): UserStore {

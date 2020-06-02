@@ -1,3 +1,5 @@
+import { App } from '../models/App';
+
 declare interface IDuration {
   unit: string;
   length: number;
@@ -83,9 +85,61 @@ declare interface ITwoCoInlineCart {
   register(): void;
 }
 
+declare interface ICallback {
+  "checkout": {
+    "completed": boolean;
+    "id": string;
+    "coupon": string | null;
+    "prices": {
+      "customer": {
+        "currency": string;
+        "unit": string;
+        "total": string;
+      };
+      "vendor": {
+        "currency": string;
+        "unit": string;
+        "total": string;
+      };
+    };
+    "passthrough": string | null;
+    "redirect_url": string | null;
+  };
+  "product": {
+    "quantity": number;
+    "id": string;
+    "name": string;
+  };
+  "user": {
+    "country": string;
+    "email": string;
+    "id": string;
+  };
+}
+
+declare interface ICheckoutParams {
+  product?: string;
+  email?: string;
+  passthrough?: string;
+  coupon?: string;
+  override?: string;
+  successCallback?: (data: ICallback) => void;
+  closeCallback?: (data: ICallback) => void;
+}
+
+declare interface ICheckout {
+  open: (settings: ICheckoutParams) => void;
+}
+
+declare interface IPaddle {
+  Setup: (settings: {[key: string]: (string | number)}) => void;
+  Checkout: ICheckout;
+}
+
 declare global {
   interface Window {
     TwoCoInlineCart: ITwoCoInlineCart;
+    Paddle: IPaddle;
   }
 }
 

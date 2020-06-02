@@ -8,128 +8,130 @@ import {
   whiteColor,
   inheritCardHeader,
   blackOpacity
-} from "assets/jss/material-dashboard-react";
-import { createStyles } from "@material-ui/core";
+} from 'assets/jss/material-dashboard-react';
+import { createStyles } from '@material-ui/core';
 
 const cardHeaderStyle = createStyles({
   cardHeader: {
-    padding: "0.75rem 1.25rem",
-    marginBottom: "0",
-    borderBottom: "none",
-    background: "transparent",
+    padding: '0.75rem 1.25rem',
+    marginBottom: '0',
+    borderBottom: 'none',
+    background: 'transparent',
     zIndex: 3,
-    "&$cardHeaderPlain,&$cardHeaderIcon,&$cardHeaderStats,&$inheritCardHeader,&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader": {
-      margin: "0 15px",
-      padding: "0",
-      position: "relative",
+    '&$cardHeaderPlain,&$cardHeaderIcon,&$cardHeaderStats,&$inheritCardHeader,&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader': {
+      margin: '0 15px',
+      padding: '0',
+      position: 'relative',
       color: whiteColor
     },
-    "&:first-child": {
-      borderRadius: "calc(.25rem - 1px) calc(.25rem - 1px) 0 0"
+    '&:first-child': {
+      borderRadius: 'calc(.25rem - 1px) calc(.25rem - 1px) 0 0'
     },
-    "&$inheritCardHeader,&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader": {
-      "&:not($cardHeaderIcon)": {
-        borderRadius: "3px",
-        marginTop: "-20px",
-        padding: "15px"
+    '&$inheritCardHeader,&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader': {
+      '&:not($cardHeaderIcon)': {
+        borderRadius: '3px',
+        marginTop: '-20px',
+        padding: '15px'
       }
     },
-    "&$cardHeaderStats svg": {
-      fontSize: "36px",
-      lineHeight: "56px",
-      textAlign: "center",
-      width: "36px",
-      height: "36px",
-      margin: "10px 10px 4px"
+    '&$cardHeaderStats svg': {
+      fontSize: '36px',
+      lineHeight: '56px',
+      textAlign: 'center',
+      width: '36px',
+      height: '36px',
+      margin: '10px 10px 4px'
     },
-    "&$cardHeaderStats i,&$cardHeaderStats .material-icons": {
-      fontSize: "36px",
-      lineHeight: "56px",
-      width: "56px",
-      height: "56px",
-      textAlign: "center",
-      overflow: "unset",
-      marginBottom: "1px"
+    '&$cardHeaderStats i,&$cardHeaderStats .material-icons': {
+      fontSize: '36px',
+      lineHeight: '56px',
+      width: '56px',
+      height: '56px',
+      textAlign: 'center',
+      overflow: 'unset',
+      marginBottom: '1px'
     },
-    "&$cardHeaderStats$cardHeaderIcon": {
-      textAlign: "right"
+    '&$cardHeaderStats$cardHeaderIcon': {
+      textAlign: 'right'
     }
   },
   cardHeaderPlain: {
-    marginLeft: "0px !important",
-    marginRight: "0px !important"
+    marginLeft: '0px !important',
+    marginRight: '0px !important',
+    borderBottomLeftRadius: '0 !important',
+    borderBottomRightRadius: '0 !important'
   },
   cardHeaderStats: {
-    "& $cardHeaderIcon": {
-      textAlign: "right"
+    '& $cardHeaderIcon': {
+      textAlign: 'right'
     },
-    "& h1,& h2,& h3,& h4,& h5,& h6": {
-      margin: "0 !important"
+    '& h1,& h2,& h3,& h4,& h5,& h6': {
+      margin: '0 !important'
     }
   },
   cardHeaderIcon: {
-    "&$inheritCardHeader,&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader": {
-      background: "transparent",
-      boxShadow: "none"
+    '&$inheritCardHeader,&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader': {
+      background: 'transparent',
+      boxShadow: 'none'
     },
-    "& i,& .material-icons": {
-      width: "33px",
-      height: "33px",
-      textAlign: "center",
-      lineHeight: "33px"
+    '& i,& .material-icons': {
+      width: '33px',
+      height: '33px',
+      textAlign: 'center',
+      lineHeight: '33px'
     },
-    "& svg": {
-      width: "24px",
-      height: "24px",
-      textAlign: "center",
-      lineHeight: "33px",
-      margin: "5px 4px 0px"
+    '& svg': {
+      width: '24px',
+      height: '24px',
+      textAlign: 'center',
+      lineHeight: '33px',
+      margin: '5px 4px 0px'
     }
   },
   inheritCardHeader: {
     color: blackOpacity(0.6),
-    "&:not($cardHeaderIcon)": {
+    '&:not($cardHeaderIcon)': {
       ...inheritCardHeader
     },
-    "&$cardHeaderPlain": {
-      boxShadow: "none",
-      borderBottomLeftRadius: "0 !important",
-      borderBottomRightRadius: "0 !important"
+    '&$cardHeaderPlain': {
+      boxShadow: 'none',
+      borderBottomLeftRadius: '0 !important',
+      borderBottomRightRadius: '0 !important'
     }
   },
   warningCardHeader: {
     color: whiteColor,
-    "&:not($cardHeaderIcon)": {
+    '&:not($cardHeaderIcon)': {
       ...warningCardHeader
     }
   },
   successCardHeader: {
     color: whiteColor,
-    "&:not($cardHeaderIcon)": {
+    '&:not($cardHeaderIcon)': {
       ...successCardHeader
     }
   },
   dangerCardHeader: {
     color: whiteColor,
-    "&:not($cardHeaderIcon)": {
+    '&:not($cardHeaderIcon)': {
       ...dangerCardHeader
     }
   },
   infoCardHeader: {
     color: whiteColor,
-    "&:not($cardHeaderIcon)": {
+    '&:not($cardHeaderIcon)': {
       ...infoCardHeader
     }
   },
   primaryCardHeader: {
     color: whiteColor,
-    "&:not($cardHeaderIcon)": {
+    '&:not($cardHeaderIcon)': {
       ...primaryCardHeader
     }
   },
   roseCardHeader: {
     color: whiteColor,
-    "&:not($cardHeaderIcon)": {
+    '&:not($cardHeaderIcon)': {
       ...roseCardHeader
     }
   }

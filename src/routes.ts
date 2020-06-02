@@ -15,7 +15,7 @@ import {
   Apps,
   Store,
   Web,
-  MenuBook
+  MenuBook, AccountBalance, AccountBalanceWallet
 } from '@material-ui/icons';
 
 import { lazy } from 'utils';
@@ -69,6 +69,8 @@ const ViewerPlugin = lazy(() => import('views/Docs/ViewerPlugin'));
 const ProPlanOverview = lazy(() => import('views/Docs/ProPlanOverview'));
 const PluginConfigurationParameters = lazy(() => import('views/Docs/PluginConfigurationParameters'));
 const PluginMethods = lazy(() => import('views/Docs/PluginMethods'));
+const SubscriptionsList = lazy(() => import('views/Subscriptions/SubscriptionsList'));
+const SubscriptionDetails = lazy(() => import('views/Subscriptions/SubscriptionDetails'));
 
 const dashboardRoutesMap = {
   guide: {
@@ -195,6 +197,26 @@ const dashboardRoutesMap = {
     rtlName: 'ملف تعريفي للمستخدم',
     icon: Person,
     component: ProjectItem,
+    layout: LAYOUT_PANEL,
+    category: SIDEBAR_USER
+  },
+  billing: {
+    path: '/subscriptions',
+    name: 'Billing',
+    icon: AccountBalanceWallet,
+    rtlName: 'لوحة الادارة',
+    component: SubscriptionsList,
+    layout: LAYOUT_PANEL,
+    category: SIDEBAR_USER,
+    auth: true,
+  },
+  subscriptionDetails: {
+    path: '/subscriptions/details',
+    params: '/:id',
+    name: 'Subscription Details',
+    icon: AccountBalance,
+    rtlName: 'لوحة الادارة',
+    component: SubscriptionDetails,
     layout: LAYOUT_PANEL,
     category: SIDEBAR_USER
   },

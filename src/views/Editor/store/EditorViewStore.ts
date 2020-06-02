@@ -42,6 +42,7 @@ import DisplayViewStore from 'models/DisplayViewStore';
 import { whiteColor } from 'assets/jss/material-dashboard-react';
 import { OwnProjects } from 'models/Project/OwnProjectsStore';
 import AccessEnum from 'enums/AccessEnum';
+import GenerateService from '../../../services/GenerateService';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -368,7 +369,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   async generate() {
-
+    new GenerateService(this).generateRN();
   }
 
   @action clear() {

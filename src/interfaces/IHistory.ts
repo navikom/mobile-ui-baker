@@ -2,6 +2,7 @@ import { ControlEnum } from "enums/ControlEnum";
 import IControl from "interfaces/IControl";
 import { Mode } from "enums/ModeEnum";
 import IProject, { IBackgroundColor } from "interfaces/IProject";
+import IMobileUIView from './IMobileUIView';
 
 export interface IHistoryObject {
   control: string | { [key: string]: any };
@@ -21,8 +22,7 @@ export interface IHistoryObject {
   model?: { [key: string]: any };
 }
 
-export interface ViewStore {
-  project: IProject;
+export interface ViewStore extends IMobileUIView {
   applyHistorySettings(key: SettingsPropType, value: Mode & string & IBackgroundColor): void;
   setCurrentScreen(screen: IControl, behavior?: string[], noHistory?: boolean): void;
   removeScreen(screen: IControl, noHistory?: boolean): void;

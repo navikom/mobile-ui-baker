@@ -38,6 +38,8 @@ export const LAYOUT_EDITOR = '/editor';
 export const LAYOUT_EMPTY = '/empty';
 export const ROUTE_DASHBOARD = '/panel/dashboard';
 export const ROUTE_USER_PROFILE = '/panel/user-profile';
+export const ROUTE_BILLING = '/panel/subscriptions';
+export const ROUTE_SUBSCRIPTION_DETAILS = '/panel/subscriptions/details';
 export const ROUTE_EVENTS_USERS_LIST = '/panel/events-users';
 export const ROUTE_USERS_LIST = '/panel/users';
 export const ROUTE_PROJECTS_LIST = '/panel/projects';
@@ -55,7 +57,7 @@ export const ROUTE_PROJECTS = '/projects';
 export const ROUTE_PRICES = '/prices';
 export const ROUTE_RECOVERY = '/recovery';
 export const ROUTE_RESET = '/reset';
-export const ROUTE_CHECKOUT = '/checkout';
+export const ROUTE_CHECKOUT = '/subscribeToPlan';
 
 //********* Roles **********//
 export const ROLE_USER = 3;
@@ -393,3 +395,8 @@ export const PAYMENT_TITLE_UPGRADE = 'Upgrade plan';
 //********** EDITOR ***********//
 export const FIRST_CONTAINER = 'first-container';
 export const SECOND_CONTAINER = 'second-container';
+
+//********** SUBSCRIPTION PADDLE STATUS *****//
+export const SUBSCRIPTION_PADDLE_STATUS_ACTIVE = 'active';
+export const SUBSCRIPTION_PADDLE_STATUS_PAST_DUE = 'past_due';
+export const SUBSCRIPTION_PADDLE_STATUS_DELETED = 'deleted';

@@ -1,9 +1,9 @@
-import { Pagination } from "models/Pagination";
-import { action, computed } from "mobx";
-import { UserStore } from "models/User/UserStore";
-import { IUser } from "interfaces/IUser";
-import { api, Apis } from "api";
-import { Dictionary } from "services/Dictionary/Dictionary";
+import { action, computed } from 'mobx';
+import { Pagination } from 'models/Pagination';
+import { UserStore } from 'models/User/UserStore';
+import { IUser } from 'interfaces/IUser';
+import { api, Apis } from 'api';
+import { Dictionary } from 'services/Dictionary/Dictionary';
 
 export class UsersStore extends Pagination<IUser> {
 

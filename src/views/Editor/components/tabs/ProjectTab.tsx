@@ -250,12 +250,14 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     </Grid>
     <Grid container className={classes.tools}>
       <Tooltip
+        placement="top"
         title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
         <IconButton size="small" onClick={() => saveProject && saveProject()} disabled={savingProject}>
           <CloudUpload />
         </IconButton>
       </Tooltip>
       <Tooltip
+        placement="top"
         className={classes.btn}
         title={`${dictionary!.defValue(EditorDictionary.keys.export)} ${dictionary!.defValue(EditorDictionary.keys.project)} ${dictionary!.defValue(EditorDictionary.keys.toFile)}`}>
         <IconButton size="small" onClick={() => saveProject && saveProject(true)}>
@@ -263,6 +265,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         </IconButton>
       </Tooltip>
       <Tooltip
+        placement="top"
         className={classes.btn}
         title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.project)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
         <IconButton size="small" onClick={importProject}>
@@ -270,6 +273,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         </IconButton>
       </Tooltip>
       <Tooltip
+        placement="top"
         className={classes.btn}
         title={`${dictionary!.defValue(EditorDictionary.keys.clear)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
         <IconButton size="small" onClick={() => handleDangerAction(CLEAR)}>
@@ -279,6 +283,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
       {
         App.isAdmin && (
           <Tooltip
+            placement="top"
             className={classes.btn}
             title={`${dictionary!.defValue(EditorDictionary.keys.generate)} ${dictionary!.defValue(EditorDictionary.keys.reactNativePackage)}`}>
             <IconButton size="small" onClick={generate}>
@@ -290,6 +295,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
       {
         App.user && project && project.owner && App.user.userId === project.owner.userId && (
           <Tooltip
+            placement="top"
             className={classes.btn}
             title={`${dictionary!.defValue(EditorDictionary.keys.delete)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
             <IconButton size="small" onClick={() => handleDangerAction(DELETE)}>

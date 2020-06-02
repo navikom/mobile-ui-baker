@@ -317,7 +317,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
     [classes.contentWrapper]: !store.pluginStore.data.hideHeader,
   })
 
-  let tabsHeight = height - TABS_HEIGHT * 2 + 11;
+  const tabsHeight = height - TABS_HEIGHT * 2 + 11;
 
   return (
     <div className={classes.root} style={{ height }}>

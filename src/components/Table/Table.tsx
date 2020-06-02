@@ -70,12 +70,12 @@ function CustomTable({ ...props }) {
                 onClick={() => onRowClick(prop, key)}
                 key={key}
               >
-                {prop.map((prop: any[] | string, key: number) => {
+                {prop.map((data: any[] | string, key: number) => {
                   return (
-                    <StyledTableCell className={classes.tableCell} key={key}>
-                      {Array.isArray(prop)
-                        ? React.createElement(prop[0], prop[1], prop[2])
-                        : prop}
+                    <StyledTableCell className={classes.tableCell} key={key.toString()} {...((Array.isArray(data) && data.length > 3 && data[3]) || {})}>
+                      {Array.isArray(data)
+                        ? React.createElement(data[0], data[1], data[2])
+                        : data}
                     </StyledTableCell>
                   );
                 })}
