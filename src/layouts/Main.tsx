@@ -1,6 +1,8 @@
 /* eslint-disable */
 import React from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import classNames from 'classnames';
+
 // @material-ui/core
 import { makeStyles } from '@material-ui/core/styles';
 // core components
@@ -16,8 +18,8 @@ import { IRoute } from 'interfaces/IRoute';
 import WaitingComponent from 'hocs/WaitingComponent';
 
 // models
-import { TITLE } from '../models/Constants';
-
+import { TITLE } from 'models/Constants';
+import CookiePopup from 'components/CookiePopup';
 import useStyles from 'assets/jss/material-kit-react/layouts/mainStyle';
 import image from 'assets/img/bg7.jpg';
 
@@ -39,28 +41,28 @@ const switchRoutes = (
 
 const Main: React.FC<RouteComponentProps> = (props) => {
   const classes = useStyles();
+  const pageHeaderClasses = classNames(classes.pageHeader, classes.gradientLightBlue);
   return (
     <React.Fragment>
       <Header
-        absolute
+        fixed
         color="transparent"
-        brand={TITLE}
+        brand={TITLE.toUpperCase()}
         rightLinks={<HeaderLinks {...props} />}
+        changeColorOnScroll={{
+          height: 200,
+          color: 'white'
+        }}
         {...props}
       />
-      <div
-        className={classes.pageHeader}
-        style={{
-          backgroundImage: "url(" + image + ")",
-          backgroundSize: "cover",
-          backgroundPosition: "top center"
-        }}
-      >
+      <div>
+        <div className={pageHeaderClasses}/>
         <div className={classes.container}>
           {switchRoutes}
         </div>
-        <Footer whiteFont />
+        <Footer whiteFont darkBlue />
       </div>
+      <CookiePopup />
     </React.Fragment>
   )
 };

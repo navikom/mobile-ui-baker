@@ -6,16 +6,16 @@ const mainLayoutStyle = makeStyles(theme => createStyles({
     ...container,
     zIndex: 2,
     position: "relative",
-    paddingTop: "20vh",
     color: "#FFFFFF",
-    paddingBottom: "200px",
+    marginTop: '-15%',
+    paddingBottom: "150px",
     [theme.breakpoints.up("xs")]: {
       paddingLeft: "0",
       paddingRight: "0",
     }
   },
   pageHeader: {
-    minHeight: "100vh",
+    minHeight: "60vh",
     height: "auto",
     display: "inherit",
     position: "relative",
@@ -24,7 +24,7 @@ const mainLayoutStyle = makeStyles(theme => createStyles({
     border: "0",
     alignItems: "center",
     "&:before": {
-      background: "rgba(0, 0, 0, 0.5)"
+      backgroundColor: "#36275d"
     },
     "&:before,&:after": {
       position: "absolute",
@@ -45,6 +45,11 @@ const mainLayoutStyle = makeStyles(theme => createStyles({
       width: "100%"
     }
   },
+  gradientLightBlue: {
+    "&:after": {
+      background: 'linear-gradient(-45deg, rgba(156,39,176,0.83) 0%, rgba(28,206,234,0.82) 100%)',
+    }
+  }
 }));
 
 export default mainLayoutStyle;

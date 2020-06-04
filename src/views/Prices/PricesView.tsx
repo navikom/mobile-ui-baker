@@ -23,12 +23,12 @@ import { roseColor, whiteColor } from 'assets/jss/material-dashboard-react';
 const useStyles = makeStyles((theme: Theme) => ({
   title: {
     color: theme.palette.background.paper,
-    marginBottom: 30
+    marginBottom: 100
   },
   table: {
     backgroundColor: theme.palette.background.paper,
     borderRadius: 10,
-    boxShadow: '0 2px 48px 0 rgba(255,255,255,0.2)'
+    boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)'
   },
   cellTitle: {
     textAlign: 'left',
@@ -92,8 +92,8 @@ export const StyledTableCell = withStyles((theme: Theme) =>
     head: {
       textAlign: 'center',
       position: 'sticky',
-      paddingTop: 10,
-      top: 0
+      paddingTop: 30,
+      top: 70
     }
   }),
 )(TableCell);
@@ -110,7 +110,7 @@ const PricesViewComponent: React.FC = () => {
 
   return (
     <Container component="main">
-      <Typography variant="h4" align="center" className={classes.title}>
+      <Typography variant="h2" align="center" className={classes.title}>
         {Dictionary.defValue(DictionaryService.keys.editorAndViewerInYourApp)}
       </Typography>
       <Table className={classes.table}>

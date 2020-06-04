@@ -10,7 +10,7 @@ import Slide from "@material-ui/core/Slide";
 import Fade from "@material-ui/core/Fade";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
-import { FormControlLabel } from "@material-ui/core";
+import { FormControlLabel, Typography } from '@material-ui/core';
 
 // models
 import { Auth } from "models/Auth/Auth";

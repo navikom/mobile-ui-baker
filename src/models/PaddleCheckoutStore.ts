@@ -1,10 +1,11 @@
-import { observable } from 'mobx';
+import { observable, runInAction } from 'mobx';
 import { Errors } from 'models/Errors';
 import { App } from 'models/App';
 import { ERROR_USER_DID_NOT_LOGIN, MODE_DEVELOPMENT, SUBSCRIPTION_PADDLE_STATUS_DELETED } from 'models/Constants';
 import { ICheckoutParams, IPaddle } from 'types/global-window';
 import { ErrorHandler } from 'utils/ErrorHandler';
 import { api, Apis } from 'api';
+import { Users } from './User/UsersStore';
 
 class PaddleCheckoutStore extends Errors {
   static VENDOR_ID = Number(process.env.REACT_APP_PADDLE_VENDOR_ID) || 0;
@@ -28,12 +29,28 @@ class PaddleCheckoutStore extends Errors {
       successCallback: (data) => {
         console.log('onSuccess=========', data);
         App.user!.setPlan(plan);
+        this.updateUser();
+      },
+      errorCallback: (error) => {
+        console.log('onError=========', error);
       }
     } as ICheckoutParams;
     if (_dev) {
       payload.coupon = 'test1';
     }
     this.paddle.Checkout.open(payload);
+  }
+
+  updateUser() {
+    if (!App.user) return;
+    this.loading = true;
+    App.user.setFullDataLoaded(false);
+    setTimeout(async () => {
+      await Users.loadFullData(App.user!);
+      runInAction(() => {
+        this.loading = false;
+      })
+    }, 1000);
   }
 
   cancel(subscriptionId: number, url: string) {

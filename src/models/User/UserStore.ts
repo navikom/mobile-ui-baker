@@ -160,7 +160,8 @@ export class UserStore implements IUser {
       return;
     }
     this.subscriptions = subscriptions;
-    if([SUBSCRIPTION_PADDLE_STATUS_ACTIVE, SUBSCRIPTION_PADDLE_STATUS_PAST_DUE].includes(this.subscriptions[0].status)) {
+    if(subscriptions[0] &&
+      [SUBSCRIPTION_PADDLE_STATUS_ACTIVE, SUBSCRIPTION_PADDLE_STATUS_PAST_DUE].includes(this.subscriptions[0].status)) {
       this.setPlan(this.subscriptions[0].planId.toString());
     }
   }

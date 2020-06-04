@@ -8,7 +8,7 @@ import List from "@material-ui/core/List";
 import footerStyle from "assets/jss/material-dashboard-react/components/footerStyle";
 import { Dictionary, DictionaryService } from '../../services/Dictionary/Dictionary';
 import { Link } from '@material-ui/core';
-import { ROUTE_DOCS_GET_STARTED, ROUTE_EDITOR, ROUTE_PROJECTS, TITLE } from '../../models/Constants';
+import { ROUTE_DOCS_GET_STARTED, ROUTE_EDITOR, ROUTE_PROJECTS, ROUTE_TERMS, TITLE } from '../../models/Constants';
 
 function Footer({ ...props }) {
   const { classes } = props;
@@ -17,26 +17,21 @@ function Footer({ ...props }) {
       <div className={classes.container}>
         <div className={classes.left}>
           <List className={classes.list}>
-            <ListItem className={classes.inlineBlock}>
-              <Link href="/" className={classes.block}>
-                {Dictionary.defValue(DictionaryService.keys.home)}
-              </Link>
-            </ListItem>
-            <ListItem className={classes.inlineBlock}>
-              <Link href={ROUTE_PROJECTS} className={classes.block}>
-                {Dictionary.defValue(DictionaryService.keys.projects)}
-              </Link>
-            </ListItem>
-            <ListItem className={classes.inlineBlock}>
-              <Link href={ROUTE_EDITOR} className={classes.block}>
-                {Dictionary.defValue(DictionaryService.keys.editor)}
-              </Link>
-            </ListItem>
-            <ListItem className={classes.inlineBlock}>
-              <Link href={ROUTE_DOCS_GET_STARTED} className={classes.block}>
-                {Dictionary.defValue(DictionaryService.keys.documentation)}
-              </Link>
-            </ListItem>
+            {
+              [
+                ['/', DictionaryService.keys.home],
+                [ROUTE_PROJECTS, DictionaryService.keys.projects],
+                [ROUTE_EDITOR, DictionaryService.keys.editor],
+                [ROUTE_DOCS_GET_STARTED, DictionaryService.keys.documentation],
+                [ROUTE_TERMS, DictionaryService.keys.termsAndConditions]
+              ].map((route, i) => (
+                <ListItem key={i.toString()} className={classes.inlineBlock}>
+                  <Link href={route[0]} className={classes.block}>
+                    {Dictionary.defValue(route[1])}
+                  </Link>
+                </ListItem>
+              ))
+            }
           </List>
         </div>
         <p className={classes.right}>

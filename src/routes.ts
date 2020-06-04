@@ -71,6 +71,7 @@ const PluginConfigurationParameters = lazy(() => import('views/Docs/PluginConfig
 const PluginMethods = lazy(() => import('views/Docs/PluginMethods'));
 const SubscriptionsList = lazy(() => import('views/Subscriptions/SubscriptionsList'));
 const SubscriptionDetails = lazy(() => import('views/Subscriptions/SubscriptionDetails'));
+const TermsAndConditions = lazy(() => import('views/terms/TermsAndConditions'));
 
 const dashboardRoutesMap = {
   guide: {
@@ -204,7 +205,7 @@ const dashboardRoutesMap = {
     path: '/subscriptions',
     name: 'Billing',
     icon: AccountBalanceWallet,
-    rtlName: 'لوحة الادارة',
+
     component: SubscriptionsList,
     layout: LAYOUT_PANEL,
     category: SIDEBAR_USER,
@@ -215,7 +216,7 @@ const dashboardRoutesMap = {
     params: '/:id',
     name: 'Subscription Details',
     icon: AccountBalance,
-    rtlName: 'لوحة الادارة',
+
     component: SubscriptionDetails,
     layout: LAYOUT_PANEL,
     category: SIDEBAR_USER
@@ -223,21 +224,18 @@ const dashboardRoutesMap = {
   login: {
     path: '/login',
     name: 'login',
-    rtlName: 'لوحة الادارة',
     component: Login,
-    layout: LAYOUT_MAIN
+    layout: LAYOUT_EMPTY
   },
   signup: {
     path: '/sign-up',
     name: 'Sign up',
-    rtlName: 'لوحة الادارة',
     component: SignUp,
-    layout: LAYOUT_MAIN
+    layout: LAYOUT_EMPTY
   },
   prices: {
     path: '/prices',
     name: 'Prices',
-    rtlName: 'لوحة الادارة',
     icon: Store,
     component: Prices,
     layout: LAYOUT_MAIN
@@ -245,15 +243,13 @@ const dashboardRoutesMap = {
   recovery: {
     path: '/recovery',
     name: 'recovery',
-    rtlName: 'لوحة الادارة',
     component: Reminder,
-    layout: LAYOUT_MAIN
+    layout: LAYOUT_EMPTY
   },
   resetPassword: {
     path: '/reset',
     params: '/:token',
     name: 'recovery',
-    rtlName: 'لوحة الادارة',
     component: ResetPassword,
     layout: LAYOUT_MAIN,
   },
@@ -261,7 +257,6 @@ const dashboardRoutesMap = {
     path: '/editor',
     name: 'editor',
     icon: Web,
-    rtlName: 'لوحة الادارة',
     component: Editor,
     layout: LAYOUT_EDITOR
   },
@@ -269,7 +264,6 @@ const dashboardRoutesMap = {
     path: '/editor',
     params: '/:projectId',
     name: 'editor',
-    rtlName: 'لوحة الادارة',
     component: Editor,
     layout: LAYOUT_MAIN
   },
@@ -277,23 +271,19 @@ const dashboardRoutesMap = {
     path: '/projects',
     name: 'projects',
     icon: Apps,
-    rtlName: 'لوحة الادارة',
     component: Projects,
     layout: LAYOUT_MAIN
   },
-  startPage: {
-    path: '/start-page',
-    name: 'Start Page',
-    rtlName: 'لوحة الادارة',
-    icon: Apps,
-    component: StartPage,
-    layout: LAYOUT_EMPTY
+  terms: {
+    path: '/terms-and-conditions',
+    name: 'Terms',
+    component: TermsAndConditions,
+    layout: LAYOUT_MAIN
   },
   startPageMain: {
     path: '/',
     icon: Apps,
     name: 'Start Page',
-    rtlName: 'لوحة الادارة',
     component: StartPage,
     layout: LAYOUT_EMPTY
   },

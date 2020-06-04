@@ -40,12 +40,12 @@ export const ROUTE_DASHBOARD = '/panel/dashboard';
 export const ROUTE_USER_PROFILE = '/panel/user-profile';
 export const ROUTE_BILLING = '/panel/subscriptions';
 export const ROUTE_SUBSCRIPTION_DETAILS = '/panel/subscriptions/details';
+export const ROUTE_TERMS = '/terms-and-conditions';
 export const ROUTE_EVENTS_USERS_LIST = '/panel/events-users';
 export const ROUTE_USERS_LIST = '/panel/users';
 export const ROUTE_PROJECTS_LIST = '/panel/projects';
 export const ROUTE_LOGIN = '/login';
 export const ROUTE_SIGN_UP = '/sign-up';
-export const ROUTE_START_PAGE = '/start-page';
 export const ROUTE_EMAIL_CAMPAIGNS = '/panel/campaigns/email';
 export const ROUTE_SMS_CAMPAIGNS = '/panel/campaigns/sms';
 export const ROUTE_IN_APP_CAMPAIGNS = '/panel/campaigns/in-app';
@@ -400,3 +400,9 @@ export const SECOND_CONTAINER = 'second-container';
 export const SUBSCRIPTION_PADDLE_STATUS_ACTIVE = 'active';
 export const SUBSCRIPTION_PADDLE_STATUS_PAST_DUE = 'past_due';
 export const SUBSCRIPTION_PADDLE_STATUS_DELETED = 'deleted';
+
+//********** TERMS AND CONDITIONS **********//
+export const TERMS_OF_SERVICE = 'terms-of-service';
+export const PRIVACY_POLICY = 'privacy-policy';
+export const TERMS_OF_SUPPORT = 'terms-of-support';
+export const EULA = 'eula'

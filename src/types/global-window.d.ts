@@ -125,6 +125,7 @@ declare interface ICheckoutParams {
   override?: string;
   successCallback?: (data: ICallback) => void;
   closeCallback?: (data: ICallback) => void;
+  errorCallback?: (data: ICallback) => void;
 }
 
 declare interface ICheckout {

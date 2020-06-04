@@ -22,6 +22,7 @@ export class AppStore implements IFlow {
   @observable role: IRole = RoleStore.defaultRole();
   @observable user: IUser | null = null;
   @observable navigationHistory?: History;
+  @observable cookiePopup = false;
   userDisposer?: IReactionDisposer;
   anonymousDisposer: IReactionDisposer;
 
@@ -55,8 +56,14 @@ export class AppStore implements IFlow {
     Regions.addFakeRegions();
     when(() => this.loggedIn, async () => {
       await Regions.fetchItems();
-    })
+    });
+    setTimeout(() => {
+      this.setCookiePopup(true);
+    }, 3000);
+  }
 
+  @action setCookiePopup(value: boolean) {
+    this.cookiePopup = value
   }
 
   @action setUser(model: IUser) {

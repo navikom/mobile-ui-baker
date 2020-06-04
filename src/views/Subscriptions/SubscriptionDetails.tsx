@@ -285,7 +285,7 @@ const SubscriptionDetails: React.FC<ISubscriptionDetails> = ({ store }) => {
                     </TableCell>
                     <TableCell className={extraClasses.cell}>
                       <Typography>
-                        ${payment.payment}
+                        ${payment.payment.toFixed(2)}
                       </Typography>
                     </TableCell>
                     <TableCell className={extraClasses.cell}>

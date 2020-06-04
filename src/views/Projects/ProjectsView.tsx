@@ -1,70 +1,120 @@
 import React, { useEffect } from 'react';
 import { when } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { NavLink } from 'react-router-dom';
 import { App } from 'models/App';
-import { makeStyles, withStyles } from '@material-ui/core';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
+import { makeStyles } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
 import { Edit } from '@material-ui/icons';
 
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { SharedProjects } from 'models/Project/SharedProjectsStore';
 import { OwnProjects } from 'models/Project/OwnProjectsStore';
 import { ROUTE_EDITOR } from 'models/Constants';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import IconButton from '@material-ui/core/IconButton';
+import CardMedia from '@material-ui/core/CardMedia';
 import EmptyProjectImg from 'assets/img/projects/empty-project.png';
-import { blackOpacity, whiteOpacity } from 'assets/jss/material-dashboard-react';
+import nexus_6_outer from 'assets/img/device/nexus_6_outer.png';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  container: {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-    padding: 30,
-    marginTop: 40
-  },
-  gridList: {
-    transform: 'translateZ(0)',
-  },
-  titleBar: {
-    background:
-      'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+    justifyContent: 'space-between',
+    '& > *': {
+      width: 320,
+      height: 250,
+    },
   },
   title: {
     color: theme.palette.background.paper,
+    marginBottom: 50
   },
-  icon: {
-    color: whiteOpacity(.4),
-  },
-  link: {
-    padding: 5,
+  root: {
     display: 'flex',
-    '&:hover': {
-      backgroundColor: blackOpacity(.1),
-      borderRadius: '50%'
-    }
+    margin: 10,
+    justifyContent: 'space-around'
   },
-  img: {
-    transform: 'translateX(-50%) scale(1)',
-    transition: 'all 5s cubic-bezier(0.1, 0, 0.2, 1) 0ms',
-    '&:hover': {
-      transform: 'translateX(-50%) scale(1.05)',
-
-    }
-  }
+  details: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  content: {
+    flex: '1 0 auto',
+  },
+  device: {
+    position: 'relative',
+    width: '40%',
+    height: '95%',
+    transform: 'translate(0, 2%)'
+  },
+  cover: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute'
+  },
+  image: {
+    top: 26,
+    left: 9,
+    position: 'absolute',
+    width: '85%',
+    height: '79%'
+  },
+  controls: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
 }));
 
-const Tile = withStyles((theme) => ({
-  root: {
-    boxShadow: '0 2px 48px 0 rgba(255,255,255,0.1)'
-  },
-  tile: {
-    border: '4px solid #656e79',
-    borderRadius: '6px',
-  }
-}))(GridListTile)
+interface ProjectCardProps {
+  id: number;
+  title: string;
+  img: string;
+  route: string;
+  author: string;
+}
+
+const ProjectCard: React.FC<ProjectCardProps> = (
+  { id, title, img, route, author }) => {
+  const classes = useStyles();
+  return (
+    <Card className={classes.root}>
+      <div className={classes.details}>
+        <CardContent className={classes.content}>
+          <Typography component="h5" variant="h5">
+            {title}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            {author}
+          </Typography>
+        </CardContent>
+        <div className={classes.controls}>
+          <Button
+            onClick={() => App.navigationHistory && App.navigationHistory.push(route)}
+            endIcon={<Edit />}
+            color="primary"
+            variant="outlined"
+          >
+            Open in editor
+          </Button>
+        </div>
+      </div>
+      <div className={classes.device}>
+        <img src={img} className={classes.image} />
+        <img
+          className={classes.cover}
+          src={nexus_6_outer}
+          title={title}
+        />
+      </div>
+    </Card>
+  )
+}
 
 const ContextComponent: React.FC = () => {
   const classes = useStyles();
@@ -88,37 +138,22 @@ const ContextComponent: React.FC = () => {
   });
 
   return (
-    <div className={classes.root}>
-      <GridList cellHeight={440} className={classes.gridList} cols={4}>
+    <Container component="main">
+      <Typography variant="h2" align="center" className={classes.title}>
+        {Dictionary.defValue(DictionaryService.keys.mobileDesignAvailableSamples)}
+      </Typography>
+      <div className={classes.container}>
         {tileData.map((tile, i) => (
-          <Tile
+          <ProjectCard
             key={i.toString()}
-            style={{
-              width: 260,
-              padding: 10,
-            }}
-          >
-            <img src={tile.img} alt={tile.title} className={classes.img} />
-            <GridListTileBar
-              title={tile.title}
-              subtitle={<span
-                className={classes.title}>by: {tile.author}</span>}
-              classes={{
-                root: classes.titleBar,
-                title: classes.title,
-              }}
-              actionIcon={
-                <>
-                  <NavLink to={tile.route} className={classes.link}>
-                    <Edit className={classes.title} />
-                  </NavLink>
-                </>
-              }
-            />
-          </Tile>
+            author={tile.author as string}
+            id={tile.id}
+            title={tile.title}
+            img={tile.img as string}
+            route={tile.route} />
         ))}
-      </GridList>
-    </div>
+      </div>
+    </Container>
   )
 };
 

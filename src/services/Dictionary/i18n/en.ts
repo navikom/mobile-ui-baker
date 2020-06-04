@@ -328,6 +328,8 @@ export default {
   mustAgreeToTerms: 'You must agree to the service terms!',
   viewTerms: 'Terms',
   termsAndConditions: 'Terms & Conditions',
+  termsOfService: 'Terms of service',
+  support: 'Support',
   iAgree: 'I agree',
   projects: 'Projects',
   access: 'Access',
@@ -361,6 +363,7 @@ export default {
   cardNumber: 'Card number',
   signUpForFree: 'Sign up for free',
   editorAndViewerInYourApp: 'Mobile Editor & Viewer in your web application',
+  mobileDesignAvailableSamples: 'Mobile Design available samples',
   youCanEmbedNowEditorInto: 'You can embed now Editor and Viewer into your web application',
   forBetterExperience: 'for a better experience',
   weAreMuiditor: 'We are MUIDITOR',
@@ -564,5 +567,8 @@ export default {
   order: 'Order',
   view: 'View',
   totalSpent: 'Total Spent',
-  choice: 'Choice'
+  choice: 'Choice',
+  byUsingOurWebsite: 'By using our website you agree to our',
+  accept: 'Accept',
+  privacyPolicy: 'Privacy Policy'
 };

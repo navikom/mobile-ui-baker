@@ -9,6 +9,7 @@ import Main from 'layouts/Main';
 import Editor from 'layouts/Editor';
 import Empty from 'layouts/Empty';
 import Viewer from 'layouts/Viewer';
+import LandingPage from 'views/LandingPage/LandingPage';
 
 // models
 import { App as AppStore } from 'models/App';
@@ -66,7 +67,7 @@ function App() {
             ))
           }
           {
-            [Constants.ROUTE_LOGIN, Constants.ROUTE_SIGN_UP, Constants.ROUTE_RESET, Constants.ROUTE_PRICES, Constants.ROUTE_PROJECTS]
+            [Constants.ROUTE_PRICES, Constants.ROUTE_PROJECTS, Constants.ROUTE_TERMS]
               .map((route, i) => (
                 <Route
                   key={i}
@@ -76,7 +77,9 @@ function App() {
               ))
           }
           {
-            [Constants.ROUTE_ROOT].map((route, i) => (
+            [Constants.ROUTE_LOGIN,
+              Constants.ROUTE_SIGN_UP,
+              Constants.ROUTE_RESET ].map((route, i) => (
               <Route
                 key={i}
                 path={route}
@@ -84,7 +87,11 @@ function App() {
               />
             ))
           }
-          <Redirect to={Constants.ROUTE_START_PAGE} />
+          <Route
+            path={Constants.ROUTE_ROOT}
+            component={WaitingComponent(LandingPage)}
+          />
+          <Redirect to={Constants.ROUTE_ROOT} />
           <Route path="*" component={WaitingComponent(Panel)} />
         </Switch>
       </Router>

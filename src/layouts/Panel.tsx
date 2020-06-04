@@ -1,8 +1,6 @@
 /* eslint-disable */
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Switch, Route, RouteComponentProps } from 'react-router-dom';
-import { reaction } from 'mobx';
-import { observer, useDisposable } from 'mobx-react-lite';
 
 // creates a beautiful scrollbar
 import 'perfect-scrollbar/css/perfect-scrollbar.css';
@@ -14,21 +12,30 @@ import { IRoute } from 'interfaces/IRoute';
 // utils
 import { lazy } from 'utils';
 
-// core components
-const Navbar = lazy(() => import('components/Navbars/Navbar'));
-const Footer = lazy(() => import('components/Footer/Footer'));
-const Sidebar = lazy(() => import('components/Sidebar/Sidebar'));
-
 // core containers
 import ScrollContainer from 'containers/ScrollContainer/ScrollContainer';
 import routes from 'routes';
 
+import WaitingComponent from 'hocs/WaitingComponent';
+import { App } from 'models/App';
+import {
+  LAYOUT_PANEL,
+  ROUTE_LOGIN,
+  SIDEBAR_ENGAGE,
+  SIDEBAR_MAIN,
+  SIDEBAR_OTHER,
+  SIDEBAR_USER,
+  TITLE
+} from 'models/Constants';
+import CookiePopup from 'components/CookiePopup';
 import dashboardStyle from 'assets/jss/material-dashboard-react/layouts/dashboardStyle';
-
 import image from 'assets/img/sidebar-2.jpg';
 import logo from 'assets/img/favicon.png';
-import WaitingComponent from 'hocs/WaitingComponent';
-import { LAYOUT_PANEL, SIDEBAR_ENGAGE, SIDEBAR_MAIN, SIDEBAR_OTHER, SIDEBAR_USER, TITLE } from 'models/Constants';
+
+// core components
+const Navbar = lazy(() => import('components/Navbars/Navbar'));
+const Footer = lazy(() => import('components/Footer/Footer'));
+const Sidebar = lazy(() => import('components/Sidebar/Sidebar'));
 
 const switchRoutes = (routes: IRoute[]) => (
   <Switch>
@@ -49,12 +56,11 @@ const switchRoutes = (routes: IRoute[]) => (
 
 export default (props: RouteComponentProps) => {
   const [color] = useState('blue');
-  const [appImage, setAppImage] = useState(image);
+  const [appImage] = useState(image);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [currRoutes, setCurrRoutes] =
+  const [currRoutes] =
     useState([...routes.filter(prop => prop.layout === LAYOUT_PANEL)]);
-  const [sidebarRoutes, setSidebarRoutes] = useState(routes.filter(prop => prop.layout === LAYOUT_PANEL) as IRoute[]);
-  const [currentApp, setCurrentApp] = useState(null as string | null);
+  const [sidebarRoutes] = useState(routes.filter(prop => prop.layout === LAYOUT_PANEL) as IRoute[]);
 
 
   const handleDrawerToggle = () => {
@@ -73,10 +79,13 @@ export default (props: RouteComponentProps) => {
 
   useEffect(() => {
     window.addEventListener('resize', resizeFunction);
+    if(!App.loggedIn) {
+      App.navigationHistory!.push(ROUTE_LOGIN);
+    }
     return () => {
       window.removeEventListener('resize', resizeFunction);
     };
-  }, []);
+  }, [App]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -119,6 +128,7 @@ export default (props: RouteComponentProps) => {
         )}
         {getRoute() ? <Footer /> : null}
       </ScrollContainer>
+      <CookiePopup />
     </div>
   );
 };

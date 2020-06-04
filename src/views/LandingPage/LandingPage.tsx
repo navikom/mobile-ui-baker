@@ -26,6 +26,7 @@ import { Web } from '@material-ui/icons';
 import EditorSection from './Sections/EditorSection';
 import SampleSection from './Sections/ShareSection';
 import ViewerSection from './Sections/ViewerSection';
+import CookiePopup from '../../components/CookiePopup';
 
 const useStyles = makeStyles(styles);
 
@@ -79,6 +80,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
         <ViewerSection />
       </div>
       <Footer />
+      <CookiePopup />
     </React.Fragment>
   );
 };
