@@ -111,7 +111,7 @@ const Actions: React.FC<ActionsProps> = (
         onChange(index, action, `${value}/Animations`);
       }
     }
-  }, [onChange, extraParamsEnabled, index, action, value]);
+  }, [onChange, extraParamsEnabled, index, action, value, delay]);
 
   const editExtraParams = (payload: (string | number)[]) => {
     onChange(index, action, [value, ...payload].join('/'));

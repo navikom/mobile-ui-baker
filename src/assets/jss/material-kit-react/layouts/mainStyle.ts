@@ -45,6 +45,9 @@ const mainLayoutStyle = makeStyles(theme => createStyles({
       width: "100%"
     }
   },
+  mobileContainer: {
+    marginTop: '-85%',
+  },
   gradientLightBlue: {
     "&:after": {
       background: 'linear-gradient(-45deg, rgba(156,39,176,0.83) 0%, rgba(28,206,234,0.82) 100%)',

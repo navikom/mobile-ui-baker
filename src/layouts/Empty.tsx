@@ -8,12 +8,10 @@ import routes from 'routes';
 
 import { IRoute } from 'interfaces/IRoute';
 import WaitingComponent from 'hocs/WaitingComponent';
-import CookiePopup from '../components/CookiePopup';
 import { makeStyles, Typography } from '@material-ui/core';
 import { TITLE } from '../models/Constants';
-import GridContainer from '../components/Grid/GridContainer';
 import classNames from 'classnames';
-import { whiteColor } from '../assets/jss/material-dashboard-react';
+import { whiteColor } from 'assets/jss/material-dashboard-react';
 
 const useStyles = makeStyles(theme => ({
   root: {

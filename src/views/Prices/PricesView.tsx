@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { when } from 'mobx';
-import { observer, useDisposable } from 'mobx-react-lite';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
 import classNames from 'classnames';
 import { Check, Close, InfoRounded } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
@@ -19,6 +18,12 @@ import { App } from 'models/App';
 import SubscriptionPlans, { achievements, Plan } from 'models/SubscriptionPlans';
 import { ROUTE_BILLING } from 'models/Constants';
 import { roseColor, whiteColor } from 'assets/jss/material-dashboard-react';
+import ISubscriptionPlan from '../../interfaces/ISubscriptionPlan';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import Hidden from '@material-ui/core/Hidden';
 
 const useStyles = makeStyles((theme: Theme) => ({
   title: {
@@ -41,6 +46,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   preferred: {
     backgroundColor: '#444',
+    color: whiteColor,
+  },
+  textWhite: {
     color: whiteColor,
   },
   button: {
@@ -80,6 +88,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   price: {
     fontWeight: 500,
     margin: '15px 0'
+  },
+  shiftRight: {
+    marginLeft: theme.spacing(3)
   }
 }));
 
@@ -98,6 +109,182 @@ export const StyledTableCell = withStyles((theme: Theme) =>
   }),
 )(TableCell);
 
+interface PlanProps {
+  plans: ISubscriptionPlan[];
+  currentPlan: ISubscriptionPlan;
+  onPlanClick: () => void;
+}
+
+const TableView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
+  const classes = useStyles();
+  return (
+    <Table className={classes.table}>
+      <TableHead>
+        <TableRow>
+          <StyledTableCell className={classNames(classes.head, classes.leftTopCell)}></StyledTableCell>
+          {
+            plans.map((plan, i) => {
+
+              const className = classNames({
+                [classes.head]: true,
+                [classes.preferred]: plan.preferred,
+                [classes.rightTopCell]: i === 3
+              });
+
+              const buttonClassName = classNames({
+                [classes.button]: true,
+                [classes.buttonPreferred]: plan.preferred
+              });
+
+              return <StyledTableCell className={className} key={i.toString()}>
+                <Typography variant="subtitle1">{Dictionary.value(plan.title)}</Typography>
+                <Typography className={classes.subtitle}>
+                  {Dictionary.value(plan.subtitle)}
+                </Typography>
+                <Typography variant="h5" className={classes.price}>${plan.price.toFixed(2)}</Typography>
+                {
+                  plan.price > 0 && (
+                    <Button
+                      onClick={onPlanClick}
+                      className={buttonClassName}
+                      fullWidth>
+                      {Dictionary.value(plan.getStatus(currentPlan.price))}
+                    </Button>
+                  )
+                }
+              </StyledTableCell>
+            })
+          }
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {
+          achievements.map((achievement, i) => (
+            <TableRow key={i.toString()}>
+              <StyledTableCell className={classes.cellTitle} key={achievement[0]}>
+                {achievement[0]}
+                {
+                  achievement[1] && (
+                    <Tooltip placement="top" title={Dictionary.value(achievement[1])} arrow>
+                      <IconButton size="small">
+                        <InfoRounded className={classes.info}/>
+                      </IconButton>
+                    </Tooltip>
+                  )
+                }
+              </StyledTableCell>
+              {
+                plans.map((plan, j) => {
+                  const className = classNames({
+                    [classes.cell]: true,
+                    [classes.preferred]: plan.preferred,
+                  });
+                  return (
+                    <StyledTableCell key={j.toString()} className={className}>
+                      {
+                        plan.achievements[i] === true ?
+                          <Check color={plan.preferred ? 'inherit' : 'primary'} /> :
+                          plan.achievements[i] === false ?
+                            <Close color="error" /> :
+                            plan.achievements[i]
+                      }
+                    </StyledTableCell>
+                  )
+                })
+              }
+            </TableRow>
+          ))
+        }
+      </TableBody>
+    </Table>
+  )
+}
+
+const CardView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
+  const classes = useStyles();
+  return (
+    <Grid container spacing={1}>
+      {
+        plans.map((plan, i) => {
+
+          const className = classNames({
+            [classes.head]: true,
+            [classes.preferred]: plan.preferred,
+          });
+
+          const buttonClassName = classNames({
+            [classes.button]: true,
+            [classes.buttonPreferred]: plan.preferred
+          });
+          const priceClasses = classNames({
+            [classes.price]: true,
+            [classes.textWhite]: plan.preferred
+          });
+
+          return (
+            <Grid item xs={12} sm={12} md={6} key={i.toString()}>
+              <Card className={className}>
+                <CardHeader
+                  title={<Typography variant="h2" align="center">{Dictionary.value(plan.title)}</Typography>}
+                  subheader={
+                    <React.Fragment>
+                      <Typography className={classes.subtitle} align="center">
+                        {Dictionary.value(plan.subtitle)}
+                      </Typography>
+                      <Typography variant="h5" className={priceClasses} align="center">
+                        ${plan.price.toFixed(2)}
+                      </Typography>
+                      {
+                        plan.price > 0 && (
+                          <Button
+                            onClick={onPlanClick}
+                            className={buttonClassName}
+                            fullWidth>
+                            {Dictionary.value(plan.getStatus(currentPlan.price))}
+                          </Button>
+                        )
+                      }
+                    </React.Fragment>
+
+                  }
+                />
+                <CardContent>
+                  {
+                    achievements.map((achievement, j) => (
+                      <Typography key={i + '' + j} align="center">
+                        {achievement[0]}{' '}
+                        {
+                          achievement[1] && (
+                            <Tooltip placement="top" title={Dictionary.value(achievement[1])} arrow>
+                              <IconButton size="small">
+                                <InfoRounded
+                                  className={classes.info}
+                                  style={{color: plan.preferred ? 'white' : 'grey'}}/>
+                              </IconButton>
+                            </Tooltip>
+                          )
+                        }
+                        <span className={classes.shiftRight}>
+                          {
+                            plan.achievements[j] === true ?
+                              <Check color={plan.preferred ? 'inherit' : 'primary'} /> :
+                              plan.achievements[j] === false ?
+                                <Close color="error" /> :
+                                plan.achievements[j]
+                          }
+                        </span>
+                      </Typography>
+                    ))
+                  }
+                </CardContent>
+              </Card>
+            </Grid>
+          )
+        })
+      }
+    </Grid>
+  )
+}
 
 const PricesViewComponent: React.FC = () => {
   const classes = useStyles();
@@ -113,85 +300,13 @@ const PricesViewComponent: React.FC = () => {
       <Typography variant="h2" align="center" className={classes.title}>
         {Dictionary.defValue(DictionaryService.keys.editorAndViewerInYourApp)}
       </Typography>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <StyledTableCell className={classNames(classes.head, classes.leftTopCell)}></StyledTableCell>
-            {
-              plans.map((plan, i) => {
+      <Hidden smDown implementation="css">
+        <TableView plans={plans} onPlanClick={onPlanClick} currentPlan={currentPlan} />
+      </Hidden>
+      <Hidden mdUp>
+        <CardView plans={plans} onPlanClick={onPlanClick} currentPlan={currentPlan} />
+      </Hidden>
 
-                const className = classNames({
-                  [classes.head]: true,
-                  [classes.preferred]: plan.preferred,
-                  [classes.rightTopCell]: i === 3
-                });
-
-                const buttonClassName = classNames({
-                  [classes.button]: true,
-                  [classes.buttonPreferred]: plan.preferred
-                });
-
-                return <StyledTableCell className={className} key={i.toString()}>
-                  <Typography variant="subtitle1">{Dictionary.value(plan.title)}</Typography>
-                  <Typography className={classes.subtitle}>
-                    {Dictionary.value(plan.subtitle)}
-                  </Typography>
-                  <Typography variant="h5" className={classes.price}>${plan.price.toFixed(2)}</Typography>
-                  {
-                    plan.price > 0 && (
-                      <Button
-                        onClick={onPlanClick}
-                        className={buttonClassName}
-                        fullWidth>
-                        {Dictionary.value(plan.getStatus(currentPlan.price))}
-                      </Button>
-                    )
-                  }
-                </StyledTableCell>
-              })
-            }
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {
-            achievements.map((achievement, i) => (
-              <TableRow key={i.toString()}>
-                <StyledTableCell className={classes.cellTitle} key={achievement[0]}>
-                  {achievement[0]}
-                  {
-                    achievement[1] && (
-                      <Tooltip placement="top" title={Dictionary.value(achievement[1])} arrow>
-                        <IconButton size="small">
-                          <InfoRounded className={classes.info}/>
-                        </IconButton>
-                      </Tooltip>
-                    )
-                  }
-                </StyledTableCell>
-                {
-                  plans.map((plan, j) => {
-                    const className = classNames({
-                      [classes.cell]: true,
-                      [classes.preferred]: plan.preferred,
-                    });
-                    return (
-                      <StyledTableCell key={j.toString()} className={className}>
-                        {
-                          plan.achievements[i] === true ?
-                            <Check color={plan.preferred ? 'inherit' : 'primary'} /> :
-                            plan.achievements[i] === false ?
-                            <Close color="error" /> :
-                              plan.achievements[i]
-                        }
-                      </StyledTableCell>
-                    )
-                  })
-                }
-              </TableRow>
-            ))
-          }
-        </TableBody>
-      </Table>
     </Container>
   )
 };
@@ -199,15 +314,6 @@ const PricesViewComponent: React.FC = () => {
 const PricesView = observer(PricesViewComponent);
 
 const Prices: React.FC = () => {
-  const dispose = useDisposable(() =>
-    when(() => App.loggedIn, async () => {
-      // App.fetchUserSubscription();
-    })
-  );
-
-  useEffect(() => {
-    return () => dispose();
-  }, [dispose]);
   return <PricesView />
 }
 

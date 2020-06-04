@@ -1,12 +1,10 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import styles from './editorStyle';
 import GridItem from 'components/Grid/GridItem';
 import GridContainer from 'components/Grid/GridContainer';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
-
-const useStyles = makeStyles(styles);
+import useStyles from './editorStyle';
 
 const LaptopPng = '/images/laptop-basics-3.png';
 

@@ -1,16 +1,19 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import classNames from 'classnames';
 import { matchPath } from 'react-router';
+
 import { makeStyles, Theme, Typography } from '@material-ui/core';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import { PRIVACY_POLICY, ROUTE_TERMS, TERMS_OF_SERVICE, TERMS_OF_SUPPORT } from 'models/Constants';
-import { blackOpacity } from 'assets/jss/material-dashboard-react';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { lazy } from 'utils';
-import WaitingComponent from '../../hocs/WaitingComponent';
-import Grid from '@material-ui/core/Grid';
+import WaitingComponent from 'hocs/WaitingComponent';
+import { blackOpacity } from 'assets/jss/material-dashboard-react';
+import useScreenSize from '../../hooks/useScreenSize';
 
 const TermsComponent = lazy(() => import('components/Terms/Terms'));
 const Support = lazy(() => import('components/Terms/Support'));
@@ -20,9 +23,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
+    color: blackOpacity(.8),
+  },
+  vertical: {
     display: 'flex',
     minHeight: 400,
-    color: blackOpacity(.8),
   },
   title: {
     color: theme.palette.background.paper,
@@ -39,11 +44,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const tabItems = [TermsComponent, Support, Privacy];
 
-function a11yProps(index: any) {
+function a11yProps(index: any, isMobile: boolean) {
   return {
     id: `vertical-tab-${index}`,
     'aria-controls': `vertical-tabpanel-${index}`,
-    style: { width: 150 }
+    style: { width: isMobile ? 150 : '100%' }
   };
 }
 
@@ -54,6 +59,7 @@ interface TermsTabsProps {
 const TermsTabs: React.FC<TermsTabsProps> = ({ page }) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(page);
+  const isMobile = useScreenSize();
 
   const tabTitles = [DictionaryService.keys.termsOfService, DictionaryService.keys.support, DictionaryService.keys.privacyPolicy]
 
@@ -61,23 +67,32 @@ const TermsTabs: React.FC<TermsTabsProps> = ({ page }) => {
     setValue(newValue);
   };
   const title = tabTitles[value];
+
+  const root = classNames({
+    [classes.root]: true,
+    [classes.vertical]: !isMobile
+  });
+
+  const tabsClasses = classNames({
+    [classes.tabs]: !isMobile,
+  })
   return (
     <Container component="main">
       <Typography variant="h2" align="center" className={classes.title}>
         {Dictionary.defValue(DictionaryService.keys.termsAndConditions)}
       </Typography>
-      <div className={classes.root}>
+      <div className={root}>
         <Tabs
-          orientation="vertical"
+          orientation={isMobile ? 'horizontal' : 'vertical'}
           variant="scrollable"
           value={value}
           onChange={handleChange}
           aria-label="Vertical tabs example"
-          className={classes.tabs}
+          className={tabsClasses}
         >
           {
             tabTitles.map((tab, i) => (
-              <Tab key={i.toString()} label={Dictionary.defValue(tab)} {...a11yProps(i)} />
+              <Tab key={i.toString()} label={Dictionary.defValue(tab)} {...a11yProps(i, isMobile)} />
             ))
           }
         </Tabs>

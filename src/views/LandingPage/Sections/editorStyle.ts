@@ -1,7 +1,7 @@
-import { createStyles } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { grayColor, title } from '../../../assets/jss/material-kit-react';
 
-const productStyle = createStyles({
+const productStyle = makeStyles((theme: Theme) => createStyles({
   section: {
     padding: '70px 0',
     marginLeft: 'auto',
@@ -10,13 +10,19 @@ const productStyle = createStyles({
   laptopSection: {
     height: '500px',
     position: 'relative',
+    [theme.breakpoints.down("md")]: {
+      height: '200px'
+    }
   },
   laptopWrapper: {
     top: 0,
     left: '-121px',
     width: 'auto',
     height: '100%',
-    position: 'absolute'
+    position: 'absolute',
+    [theme.breakpoints.down("md")]: {
+      left: '-21px',
+    }
   },
   descriptionWrapper: {
     color: grayColor,
@@ -36,6 +42,6 @@ const productStyle = createStyles({
   description: {
     fontFamily: `"Roboto Slab", "Times New Roman", serif`
   },
-});
+}));
 
 export default productStyle;

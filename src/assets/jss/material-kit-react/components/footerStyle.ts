@@ -22,7 +22,7 @@ const footerStyle = createStyles({
     margin: '0',
   },
   footer: {
-    padding: '3.5375rem 0 .9375rem',
+    padding: '2.5375rem 1.9375rem .9375rem',
     textAlign: 'center',
     display: 'flex',
     zIndex: 2,
@@ -49,7 +49,7 @@ const footerStyle = createStyles({
   },
   list: {
     marginBottom: '0',
-    padding: '0',
+    padding: '20px 0',
     marginTop: '0'
   },
   listRight: {
@@ -65,10 +65,10 @@ const footerStyle = createStyles({
     width: 'auto'
   },
   icon: {
-    width: '18px',
+    width: '28px',
     height: '18px',
     position: 'relative',
-    top: '3px'
+    top: -3
   }
 });
 export default footerStyle;

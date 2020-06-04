@@ -27,10 +27,12 @@ import EditorSection from './Sections/EditorSection';
 import SampleSection from './Sections/ShareSection';
 import ViewerSection from './Sections/ViewerSection';
 import CookiePopup from '../../components/CookiePopup';
+import useScreenSize from '../../hooks/useScreenSize';
 
 const useStyles = makeStyles(styles);
 
 const LandingPage: React.FC<RouteComponentProps> = (props) => {
+  const isMobile = useScreenSize();
   const classes = useStyles();
   return (
     <React.Fragment>
@@ -79,7 +81,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
         <SampleSection />
         <ViewerSection />
       </div>
-      <Footer />
+      <Footer isMobile={isMobile} />
       <CookiePopup />
     </React.Fragment>
   );

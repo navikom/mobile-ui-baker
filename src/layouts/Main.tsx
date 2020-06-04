@@ -19,9 +19,9 @@ import WaitingComponent from 'hocs/WaitingComponent';
 
 // models
 import { TITLE } from 'models/Constants';
+import useScreenSize from 'hooks/useScreenSize';
 import CookiePopup from 'components/CookiePopup';
 import useStyles from 'assets/jss/material-kit-react/layouts/mainStyle';
-import image from 'assets/img/bg7.jpg';
 
 const switchRoutes = (
   <Switch>
@@ -41,7 +41,17 @@ const switchRoutes = (
 
 const Main: React.FC<RouteComponentProps> = (props) => {
   const classes = useStyles();
-  const pageHeaderClasses = classNames(classes.pageHeader, classes.gradientLightBlue);
+  const isMobile = useScreenSize();
+
+  const pageHeaderClasses = classNames({
+    [classes.pageHeader]: true,
+    [classes.gradientLightBlue]: true,
+  });
+
+  const container = classNames({
+    [classes.container]: true,
+    [classes.mobileContainer]: isMobile,
+  })
   return (
     <React.Fragment>
       <Header
@@ -57,10 +67,10 @@ const Main: React.FC<RouteComponentProps> = (props) => {
       />
       <div>
         <div className={pageHeaderClasses}/>
-        <div className={classes.container}>
+        <div className={container}>
           {switchRoutes}
         </div>
-        <Footer whiteFont darkBlue />
+        <Footer isMobile={isMobile} whiteFont darkBlue />
       </div>
       <CookiePopup />
     </React.Fragment>
