@@ -251,7 +251,7 @@ const dashboardRoutesMap = {
     params: '/:token',
     name: 'recovery',
     component: ResetPassword,
-    layout: LAYOUT_MAIN,
+    layout: LAYOUT_EMPTY,
   },
   editor: {
     path: '/editor',

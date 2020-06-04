@@ -570,5 +570,6 @@ export default {
   choice: 'Choice',
   byUsingOurWebsite: 'By using our website you agree to our',
   accept: 'Accept',
-  privacyPolicy: 'Privacy Policy'
+  privacyPolicy: 'Privacy Policy',
+  thePageYouRequestedDidNot: 'The page you requested could not be found',
 };

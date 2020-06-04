@@ -1,5 +1,6 @@
 import { container, primaryColor } from 'assets/jss/material-kit-react';
 import { createStyles } from '@material-ui/core';
+import { whiteColor } from '../../material-dashboard-react';
 
 const footerStyle = createStyles({
   block: {
@@ -22,11 +23,12 @@ const footerStyle = createStyles({
     margin: '0',
   },
   footer: {
-    padding: '2.5375rem 1.9375rem .9375rem',
+    padding: '.9375rem 1.9375rem',
     textAlign: 'center',
     display: 'flex',
     zIndex: 2,
     position: 'relative',
+    backgroundColor: whiteColor
   },
   darkBlue: {
     backgroundColor: '#36275d'
@@ -35,6 +37,9 @@ const footerStyle = createStyles({
     color: primaryColor,
     textDecoration: 'none',
     backgroundColor: 'transparent'
+  },
+  shift: {
+    margin: '0 5px'
   },
   footerWhiteFont: {
     '&,&:hover,&:focus': {
@@ -61,6 +66,7 @@ const footerStyle = createStyles({
     width: 'auto'
   },
   colBlock: {
+    color: '#3C4858',
     padding: '0px',
     width: 'auto'
   },
@@ -69,6 +75,6 @@ const footerStyle = createStyles({
     height: '18px',
     position: 'relative',
     top: -3
-  }
+  },
 });
 export default footerStyle;

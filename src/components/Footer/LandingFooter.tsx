@@ -20,7 +20,7 @@ import {
   ROUTE_TERMS,
   TERMS_OF_SERVICE,
   TERMS_OF_SUPPORT,
-  PRIVACY_POLICY
+  PRIVACY_POLICY, ROUTE_ROOT
 } from 'models/Constants';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
@@ -47,6 +47,7 @@ const Footer: React.FC<FooterProps> = (
   });
   const aClasses = classNames({
     [classes.a]: true,
+    [classes.shift]: true,
     [classes.footerWhiteFont]: whiteFont
   });
 
@@ -62,6 +63,7 @@ const Footer: React.FC<FooterProps> = (
             <List className={classes.list}>
               {
                 [
+                  [ROUTE_ROOT, DictionaryService.keys.home],
                   [ROUTE_EDITOR, DictionaryService.keys.editor],
                   [ROUTE_PRICES, DictionaryService.keys.price],
                   [ROUTE_DOCS_GET_STARTED, DictionaryService.keys.documentation],
@@ -113,14 +115,14 @@ const Footer: React.FC<FooterProps> = (
           alignItems="flex-end"
         >
           &copy; {new Date().getFullYear()} , made with{' '}
-          <Favorite className={classes.icon} /> by{' '}
+          <Favorite className={classes.icon} /> by
           <a
             href="https://www.muiditor.com"
             className={aClasses}
             target="_blank"
           >
             {TITLE}
-          </a>{' '}
+          </a>
           {Dictionary.defValue(DictionaryService.keys.forBetterExperience)}
         </Grid>
       </Grid>

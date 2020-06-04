@@ -31,7 +31,7 @@ const Support = () => {
       </ul>
       <Typography>
         <b>We do not offer human-based support for our free products.</b>{' '}
-        If you have a custom question as a user of our free products, first you{'\''}ll need to subscribe to one of our plans. However, we aim to keep all our users satisfied with the quality of our products, therefore, we have created extensive documentations to guide you through installing and using our products.
+        If you have a custom question as a user of our free products, first you{'\''}l need to subscribe to one of our plans. However, we aim to keep all our users satisfied with the quality of our products, therefore, we have created extensive documentations to guide you through installing and using our products.
       </Typography>
     </div>
   )

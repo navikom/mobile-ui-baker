@@ -53,7 +53,7 @@ const Reminder: React.FC<ReminderProps> = ({history}) => {
                 <div>
                   <Card>
                     <CardHeader color="primary" style={{ textAlign: "center" }}>
-                      <h4 className={classes.cardTitleWhite}>{Dictionary.defValue(DictionaryService.keys.resetAll)}</h4>
+                      <h4 className={classes.cardTitleWhite}>{Dictionary.defValue(DictionaryService.keys.passwordRecovery)}</h4>
                     </CardHeader>
                     <CardBody>
                       <GridContainer justify="center">
@@ -73,11 +73,9 @@ const Reminder: React.FC<ReminderProps> = ({history}) => {
                         </GridItem>
                       </GridContainer>
                       <GridContainer justify="center">
-                        <GridItem xs={12} sm={6} md={4}>
                           <Button onClick={() => history.goBack()} link size="sm">
                             {Dictionary.defValue(DictionaryService.keys.doYouHaveAccount)}
                           </Button>
-                        </GridItem>
                       </GridContainer>
                     </CardBody>
 

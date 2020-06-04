@@ -11,7 +11,7 @@ import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import InfoArea from "components/InfoArea/InfoArea";
 
-import styles from "./productStyle";
+import styles from "./whiteSectionStyle";
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 
 const useStyles = makeStyles(styles);

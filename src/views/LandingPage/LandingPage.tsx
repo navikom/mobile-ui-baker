@@ -1,8 +1,11 @@
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+
 // nodejs library that concatenates classes
 import classNames from 'classnames';
 // @material-ui/core components
 import { makeStyles } from '@material-ui/core/styles';
+import { Web } from '@material-ui/icons';
 
 // @material-ui/icons
 
@@ -19,15 +22,14 @@ import styles from 'assets/jss/material-kit-react/views/landingPage';
 import ProductSection from './Sections/ProductSection';
 import GridContainer from 'components/Grid/GridContainer';
 import GridItem from 'components/Grid/GridItem';
-import { TITLE, ROUTE_EDITOR } from '../../models/Constants';
-import { RouteComponentProps } from 'react-router-dom';
-import { Dictionary, DictionaryService } from '../../services/Dictionary/Dictionary';
-import { Web } from '@material-ui/icons';
+import { TITLE, ROUTE_EDITOR } from 'models/Constants';
 import EditorSection from './Sections/EditorSection';
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import SampleSection from './Sections/ShareSection';
 import ViewerSection from './Sections/ViewerSection';
-import CookiePopup from '../../components/CookiePopup';
-import useScreenSize from '../../hooks/useScreenSize';
+import CookiePopup from 'components/CookiePopup';
+import useScreenSize from 'hooks/useScreenSize';
+import ContactSection from './Sections/ContactSection';
 
 const useStyles = makeStyles(styles);
 
@@ -81,6 +83,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
         <SampleSection />
         <ViewerSection />
       </div>
+      <ContactSection />
       <Footer isMobile={isMobile} />
       <CookiePopup />
     </React.Fragment>

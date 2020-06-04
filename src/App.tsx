@@ -9,14 +9,16 @@ import Main from 'layouts/Main';
 import Editor from 'layouts/Editor';
 import Empty from 'layouts/Empty';
 import Viewer from 'layouts/Viewer';
-import LandingPage from 'views/LandingPage/LandingPage';
-
 // models
 import { App as AppStore } from 'models/App';
 import * as Constants from 'models/Constants';
 
 import theme from 'assets/theme';
 import 'assets/css/material-dashboard-react.css';
+import { lazy } from './utils';
+
+const LandingPage = lazy(() => import('views/LandingPage/LandingPage'));
+const PageDidNotFound = lazy(() => import('views/PageDidNotFound/404'));
 
 const hist = createBrowserHistory();
 
@@ -79,6 +81,7 @@ function App() {
           {
             [Constants.ROUTE_LOGIN,
               Constants.ROUTE_SIGN_UP,
+              Constants.ROUTE_RECOVERY,
               Constants.ROUTE_RESET ].map((route, i) => (
               <Route
                 key={i}
@@ -88,11 +91,11 @@ function App() {
             ))
           }
           <Route
+            exact
             path={Constants.ROUTE_ROOT}
             component={WaitingComponent(LandingPage)}
           />
-          <Redirect to={Constants.ROUTE_ROOT} />
-          <Route path="*" component={WaitingComponent(Panel)} />
+          <Route component={WaitingComponent(PageDidNotFound)} />
         </Switch>
       </Router>
     </ThemeProvider>
