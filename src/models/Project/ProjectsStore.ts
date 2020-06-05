@@ -35,7 +35,7 @@ export default class ProjectsStore extends Pagination<IProject> {
       id: project.projectId,
       title: project.title,
       img: project.preview,
-      author: project.owner ? Dictionary.defValue(DictionaryService.keys.mobileUiEditor) : App.user!.fullName,
+      author: project.owner ? Dictionary.defValue(DictionaryService.keys.muiditorTeam) : App.user!.fullName,
       route: ROUTE_EDITOR + "/" + project.projectId}));
   }
 

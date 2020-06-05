@@ -24,13 +24,13 @@ const styles = [
   new CSSProperty('flexWrap', 'nowrap', 'nowrap', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
     .setOptions(['nowrap', 'wrap', 'wrap-reverse']).setShowWhen(['display', 'flex'])
     .setDescription(['flexWrapDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap']),
-  new CSSProperty('overflow', 'visible', 'visible', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
-    .setOptions(['visible', 'hidden', 'clip', 'scroll']).makeExpandable()
+  new CSSProperty('overflow', 'auto', 'auto', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
+    .setOptions(['auto', 'visible', 'hidden', 'clip', 'scroll']).makeExpandable()
     .setDescription(['overflowDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/overflow']),
-  new CSSProperty('overflowX', 'visible', 'visible', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
-    .setOptions(['visible', 'hidden', 'clip', 'scroll']).setShowWhen(['overflow', 'expanded']),
-  new CSSProperty('overflowY', 'visible', 'visible', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
-    .setOptions(['visible', 'hidden', 'clip', 'scroll']).setShowWhen(['overflow', 'expanded']),
+  new CSSProperty('overflowX', 'auto', 'auto', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
+    .setOptions(['auto', 'visible', 'hidden', 'clip', 'scroll']).setShowWhen(['overflow', 'expanded']),
+  new CSSProperty('overflowY', 'auto', 'auto', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
+    .setOptions(['auto', 'visible', 'hidden', 'clip', 'scroll']).setShowWhen(['overflow', 'expanded']),
   new CSSProperty('whiteSpace', 'normal', 'normal', CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_SELECT)
     .setOptions(['normal', 'nowrap', 'pre', 'pre-wrap', 'pre-line'])
     .setDescription(['whiteSpaceDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/white-space'])

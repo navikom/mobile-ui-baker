@@ -572,4 +572,6 @@ export default {
   accept: 'Accept',
   privacyPolicy: 'Privacy Policy',
   thePageYouRequestedDidNot: 'The page you requested could not be found',
+  muiditorTeam: 'Muiditor team',
+  author: 'Author'
 };

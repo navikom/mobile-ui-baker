@@ -89,7 +89,7 @@ const ProjectCard: React.FC<ProjectCardProps> = (
             {title}
           </Typography>
           <Typography variant="body2" color="textSecondary">
-            {author}
+            {Dictionary.defValue(DictionaryService.keys.author)}: {author}
           </Typography>
         </CardContent>
         <div className={classes.controls}>
@@ -123,7 +123,7 @@ const ContextComponent: React.FC = () => {
       id: 0,
       title: Dictionary.defValue(DictionaryService.keys.emptyProject),
       img: EmptyProjectImg,
-      author: Dictionary.defValue(DictionaryService.keys.mobileUiEditor),
+      author: Dictionary.defValue(DictionaryService.keys.muiditorTeam),
       route: ROUTE_EDITOR
     },
     ...OwnProjects.previewList,
