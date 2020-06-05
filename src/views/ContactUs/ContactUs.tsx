@@ -52,7 +52,7 @@ const CustomSnack = withStyles(theme => ({
 }))(Snackbar)
 
 interface ContactUsProps {
-  store: ContactUsStore
+  store: ContactUsStore;
 }
 
 const ContactUsComponent: React.FC<ContactUsProps> = ({store}) => {

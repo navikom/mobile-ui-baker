@@ -42,11 +42,11 @@ class ContactUsStore extends Errors {
     }
   };
   @observable loading = false;
-  @observable name: string = '';
-  @observable email: string = '';
-  @observable message: string = ''
+  @observable name = '';
+  @observable email = '';
+  @observable message = ''
   @observable errors: {[key: string]: string} = {};
-  @observable captchaChecked: boolean = false;
+  @observable captchaChecked = false;
   fields: string[] = [];
 
   @computed get readyToSend(): boolean {
