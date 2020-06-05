@@ -2,19 +2,20 @@ import React, { RefObject, useEffect, useImperativeHandle } from 'react';
 import { DragSource, DropTarget } from "react-dnd";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
-import { DropEnum } from "enums/DropEnum";
-import { ItemTypes } from "views/Editor/store/ItemTypes";
+import { getEmptyImage } from 'react-dnd-html5-backend';
+
 import { makeStyles } from "@material-ui/core/styles";
 import { createStyles, Theme } from "@material-ui/core";
-import { ControlProps } from "interfaces/IControlProps";
-import hover from "utils/hover";
-import TextInput from "components/CustomInput/TextInput";
 import { Add, Delete, DragIndicator, FilterNone, Remove, Visibility, VisibilityOff } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
+import { DropEnum } from "enums/DropEnum";
+import { ItemTypes } from "views/Editor/store/ItemTypes";
+import { ControlProps } from "interfaces/IControlProps";
+import hover from "utils/hover";
+import TextInput from "components/CustomInput/TextInput";
 import IControl from "interfaces/IControl";
 import { warningOpacity } from "assets/jss/material-dashboard-react";
-import { getEmptyImage } from 'react-dnd-html5-backend';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

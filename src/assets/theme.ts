@@ -66,6 +66,9 @@ export default createMuiTheme({
       }
     },
     MuiLink: {
+      root: {
+        cursor: 'pointer'
+      },
       button: {
         fontSize: '1rem',
         lineHeight: '1.5em'

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import classNames from 'classnames';
 import { Check, Close, InfoRounded } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
-import { Theme, TableHead, TableBody, withStyles, createStyles } from '@material-ui/core';
+import { Theme, TableHead, TableBody, withStyles, createStyles, Link } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
@@ -16,9 +16,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
 import SubscriptionPlans, { achievements, Plan } from 'models/SubscriptionPlans';
-import { ROUTE_BILLING } from 'models/Constants';
+import { ROUTE_BILLING, ROUTE_DOCS_PRO_PLAN } from 'models/Constants';
 import { roseColor, whiteColor } from 'assets/jss/material-dashboard-react';
-import ISubscriptionPlan from '../../interfaces/ISubscriptionPlan';
+import ISubscriptionPlan from 'interfaces/ISubscriptionPlan';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -63,6 +63,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: roseColor[0],
     '&:hover': {
       backgroundColor: '#fc0559',
+    }
+  },
+  link: {
+    color: '#00BBFF',
+    '&:hover': {
+      color: 'rgba(0,187,255,0.7)',
+    }
+  },
+  linkPreferred: {
+    color: '#bfbebe',
+    '&:hover': {
+      color: 'rgba(191,190,190,0.7)',
     }
   },
   subtitle: {
@@ -136,11 +148,23 @@ const TableView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
                 [classes.buttonPreferred]: plan.preferred
               });
 
+              const linkClassName = classNames({
+                [classes.link]: true,
+                [classes.linkPreferred]: plan.preferred
+              });
+
               return <StyledTableCell className={className} key={i.toString()}>
                 <Typography variant="subtitle1">{Dictionary.value(plan.title)}</Typography>
                 <Typography className={classes.subtitle}>
                   {Dictionary.value(plan.subtitle)}
                 </Typography>
+                {
+                  plan.price > 0 && (
+                    <Link href={ROUTE_DOCS_PRO_PLAN} target="_blank" className={linkClassName}>
+                      {Dictionary.defValue(DictionaryService.keys.proPlan)}
+                    </Link>
+                  )
+                }
                 <Typography variant="h5" className={classes.price}>${plan.price.toFixed(2)}</Typography>
                 {
                   plan.price > 0 && (
@@ -221,6 +245,11 @@ const CardView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
             [classes.textWhite]: plan.preferred
           });
 
+          const linkClassName = classNames({
+            [classes.link]: true,
+            [classes.linkPreferred]: plan.preferred
+          });
+
           return (
             <Grid item xs={12} sm={12} md={6} key={i.toString()}>
               <Card className={className}>
@@ -231,6 +260,13 @@ const CardView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
                       <Typography className={classes.subtitle} align="center">
                         {Dictionary.value(plan.subtitle)}
                       </Typography>
+                      {
+                        plan.price > 0 && (
+                          <Link href={ROUTE_DOCS_PRO_PLAN} target="_blank" className={linkClassName}>
+                            {Dictionary.defValue(DictionaryService.keys.proPlan)}
+                          </Link>
+                        )
+                      }
                       <Typography variant="h5" className={priceClasses} align="center">
                         ${plan.price.toFixed(2)}
                       </Typography>

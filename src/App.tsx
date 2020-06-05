@@ -69,7 +69,7 @@ function App() {
             ))
           }
           {
-            [Constants.ROUTE_PRICES, Constants.ROUTE_PROJECTS, Constants.ROUTE_TERMS]
+            [Constants.ROUTE_PRICES, Constants.ROUTE_PROJECTS, Constants.ROUTE_TERMS, Constants.ROUTE_CONTACT_US]
               .map((route, i) => (
                 <Route
                   key={i}

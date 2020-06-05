@@ -96,7 +96,7 @@ export const ThemedInput = withStyles((theme: Theme) =>
       ].join(","),
       "&:focus": {
         borderRadius: 4,
-        borderWidth: 2,
+        borderWidth: 1,
         backgroundColor: whiteColor,
         borderColor: primaryColor[0]
       }

@@ -72,6 +72,7 @@ const PluginMethods = lazy(() => import('views/Docs/PluginMethods'));
 const SubscriptionsList = lazy(() => import('views/Subscriptions/SubscriptionsList'));
 const SubscriptionDetails = lazy(() => import('views/Subscriptions/SubscriptionDetails'));
 const TermsAndConditions = lazy(() => import('views/terms/TermsAndConditions'));
+const ContactUs = lazy(() => import('views/ContactUs/ContactUs'));
 
 const dashboardRoutesMap = {
   guide: {
@@ -205,7 +206,6 @@ const dashboardRoutesMap = {
     path: '/subscriptions',
     name: 'Billing',
     icon: AccountBalanceWallet,
-
     component: SubscriptionsList,
     layout: LAYOUT_PANEL,
     category: SIDEBAR_USER,
@@ -216,7 +216,6 @@ const dashboardRoutesMap = {
     params: '/:id',
     name: 'Subscription Details',
     icon: AccountBalance,
-
     component: SubscriptionDetails,
     layout: LAYOUT_PANEL,
     category: SIDEBAR_USER
@@ -278,6 +277,12 @@ const dashboardRoutesMap = {
     path: '/terms-and-conditions',
     name: 'Terms',
     component: TermsAndConditions,
+    layout: LAYOUT_MAIN
+  },
+  contactUs: {
+    path: '/contact-us',
+    name: 'Contact Us',
+    component: ContactUs,
     layout: LAYOUT_MAIN
   },
   startPageMain: {

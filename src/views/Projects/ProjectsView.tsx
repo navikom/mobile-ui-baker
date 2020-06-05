@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { when } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import classNames from 'classnames';
+
 import { App } from 'models/App';
 import { makeStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
@@ -68,6 +70,15 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(1),
     paddingBottom: theme.spacing(1),
   },
+  description: {
+    margin: '10px 0 0',
+    overflow: 'hidden',
+    display: '-webkit-box',
+    textOverflow: 'ellipsis',
+    maxHeight: '3em',
+    boxOrient: 'vertical',
+    lineClamp: 2
+  }
 }));
 
 interface ProjectCardProps {
@@ -76,11 +87,15 @@ interface ProjectCardProps {
   img: string;
   route: string;
   author: string;
+  description: string;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = (
-  { id, title, img, route, author }) => {
+  { id, title, img, route, author, description }) => {
   const classes = useStyles();
+  const descriptionClasses = classNames({
+    [classes.description]: true
+  })
   return (
     <Card className={classes.root}>
       <div className={classes.details}>
@@ -88,7 +103,10 @@ const ProjectCard: React.FC<ProjectCardProps> = (
           <Typography component="h5" variant="h5">
             {title}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" className={descriptionClasses}>
+            {description}
+          </Typography>
+          <Typography variant="caption" color="textSecondary">
             {Dictionary.defValue(DictionaryService.keys.author)}: {author}
           </Typography>
         </CardContent>
@@ -121,8 +139,9 @@ const ContextComponent: React.FC = () => {
   const tileData = [
     {
       id: 0,
-      title: Dictionary.defValue(DictionaryService.keys.emptyProject),
+      title: Dictionary.defValue(DictionaryService.keys.newApp),
       img: EmptyProjectImg,
+      description: Dictionary.defValue(DictionaryService.keys.startFromWhitePage),
       author: Dictionary.defValue(DictionaryService.keys.muiditorTeam),
       route: ROUTE_EDITOR
     },
@@ -145,6 +164,7 @@ const ContextComponent: React.FC = () => {
         {tileData.map((tile, i) => (
           <ProjectCard
             key={i.toString()}
+            description={tile.description || ''}
             author={tile.author as string}
             id={tile.id}
             title={tile.title}

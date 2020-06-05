@@ -64,6 +64,10 @@ class User extends HttpBase {
   subscriptionsFullData() {
     return this.fetchData('get', 'subscriptions-full-data');
   }
+
+  sendEmailMessage(name: string, email: string, message: string) {
+    return this.fetchData('post', 'send-email', {name, email, message});
+  }
 }
 
 class AEvent extends HttpBase {

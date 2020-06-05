@@ -86,7 +86,7 @@ export default function ShareSection() {
           </Grid>
           <Grid item xs={12} sm={5} md={4} className={classes.wrapper}>
             <div className={classes.descriptionWrapper}>
-              <h3 className={classes.title}>{Dictionary.defValue(DictionaryService.keys.embeddedViewer)}</h3>
+              <h3 className={classes.title}>{Dictionary.defValue(DictionaryService.keys.embeddedEditor)}</h3>
               <h6 className={classes.subTitle}>
                 {Dictionary.defValue(DictionaryService.keys.forReadOrEdit).toUpperCase()}
               </h6>

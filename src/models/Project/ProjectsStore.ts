@@ -34,6 +34,7 @@ export default class ProjectsStore extends Pagination<IProject> {
     return this.items.map(project => ({
       id: project.projectId,
       title: project.title,
+      description: project.description,
       img: project.preview,
       author: project.owner ? Dictionary.defValue(DictionaryService.keys.muiditorTeam) : App.user!.fullName,
       route: ROUTE_EDITOR + "/" + project.projectId}));

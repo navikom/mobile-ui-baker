@@ -13,7 +13,7 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { lazy } from 'utils';
 import WaitingComponent from 'hocs/WaitingComponent';
 import { blackOpacity } from 'assets/jss/material-dashboard-react';
-import useScreenSize from '../../hooks/useScreenSize';
+import useScreenSize from 'hooks/useScreenSize';
 
 const TermsComponent = lazy(() => import('components/Terms/Terms'));
 const Support = lazy(() => import('components/Terms/Support'));

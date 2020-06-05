@@ -20,7 +20,7 @@ import {
   ROUTE_TERMS,
   TERMS_OF_SERVICE,
   TERMS_OF_SUPPORT,
-  PRIVACY_POLICY, ROUTE_ROOT
+  PRIVACY_POLICY, ROUTE_ROOT, ROUTE_CONTACT_US
 } from 'models/Constants';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
@@ -85,6 +85,7 @@ const Footer: React.FC<FooterProps> = (
             <List className={classNames(classes.list, classes.listRight)}>
               {
                 [
+                  [ROUTE_CONTACT_US, DictionaryService.keys.contactUs],
                   [ROUTE_TERMS + '/' + TERMS_OF_SERVICE, DictionaryService.keys.termsOfService],
                   [ROUTE_TERMS + '/' + PRIVACY_POLICY, DictionaryService.keys.privacyPolicy],
                   [ROUTE_TERMS + '/' + TERMS_OF_SUPPORT, DictionaryService.keys.support],

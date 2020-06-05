@@ -26,7 +26,7 @@ const footerStyle = createStyles({
     padding: '.9375rem 1.9375rem',
     textAlign: 'center',
     display: 'flex',
-    zIndex: 2,
+    zIndex: 1,
     position: 'relative',
     backgroundColor: whiteColor
   },
@@ -58,7 +58,7 @@ const footerStyle = createStyles({
     marginTop: '0'
   },
   listRight: {
-    marginLeft: 15
+    marginLeft: 35
   },
   inlineBlock: {
     display: 'inline-block',

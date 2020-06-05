@@ -41,6 +41,7 @@ export const ROUTE_USER_PROFILE = '/panel/user-profile';
 export const ROUTE_BILLING = '/panel/subscriptions';
 export const ROUTE_SUBSCRIPTION_DETAILS = '/panel/subscriptions/details';
 export const ROUTE_TERMS = '/terms-and-conditions';
+export const ROUTE_CONTACT_US = '/contact-us';
 export const ROUTE_EVENTS_USERS_LIST = '/panel/events-users';
 export const ROUTE_USERS_LIST = '/panel/users';
 export const ROUTE_PROJECTS_LIST = '/panel/projects';
