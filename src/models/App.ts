@@ -82,7 +82,7 @@ export class AppStore implements IFlow {
   }
 
   ifUserChanged() {
-    debug && console.log(2323232323, this.user);
+    debug && console.log(2323232323, this.user, window.location.pathname.includes(Constants.LAYOUT_PANEL), Auth.anonymous);
     if (!this.navigationHistory || !this.user) {
       return;
     }

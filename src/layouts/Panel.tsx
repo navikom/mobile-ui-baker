@@ -79,9 +79,6 @@ export default (props: RouteComponentProps) => {
 
   useEffect(() => {
     window.addEventListener('resize', resizeFunction);
-    if(!App.loggedIn) {
-      App.navigationHistory!.push(ROUTE_LOGIN);
-    }
     return () => {
       window.removeEventListener('resize', resizeFunction);
     };

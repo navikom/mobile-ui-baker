@@ -67,12 +67,45 @@ const styles = [
     'https://res.cloudinary.com/dnfk5l75j/image/upload/v1579263129/email-editor/v2/placeholder_01.png', CSS_CAT_BACKGROUND)
     .makeExpandable().setInjectable('url($)')
     .setDescription(['backgroundImageDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-image']),
-  new CSSProperty('backgroundSize', '', '', CSS_CAT_BACKGROUND).setShowWhen(['backgroundImage', 'expanded'])
+  new CSSProperty('backgroundSize', '100% 100%', '100% 100%', CSS_CAT_BACKGROUND).setShowWhen(['backgroundImage', 'expanded'])
     .setDescription(['backgroundSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size']),
   new CSSProperty('backgroundRepeat', 'no-repeat', 'no-repeat', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
     .setShowWhen(['backgroundImage', 'expanded'])
     .setOptions(['no-repeat', 'repeat', 'repeat-x', 'repeat-y', 'space', 'round', 'repeat space', 'repeat repeat', 'round space', 'no-repeat round'])
     .setDescription(['backgroundSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size']),
+  new CSSProperty('mask', 'url(https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg) 40px 20px', 'url(https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg) 40px 20px', CSS_CAT_BACKGROUND)
+    .setDescription(['maskDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask']),
+  new CSSProperty('maskImage',
+    'https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg',
+    'https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg', CSS_CAT_BACKGROUND)
+    .makeExpandable().setInjectable('url($)')
+    .setDescription(['maskImageDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image']),
+  new CSSProperty('maskMode', 'luminance', 'luminance', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setShowWhen(['maskImage', 'expanded'])
+    .setOptions(['alpha', 'luminance', 'match-source', 'alpha, match-source', 'alpha, luminance', 'alpha, luminance, match-source'])
+    .setDescription(['maskModeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-mode']),
+  new CSSProperty('maskRepeat', 'no-repeat', 'no-repeat', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setShowWhen(['maskImage', 'expanded'])
+    .setOptions(['no-repeat', 'round', 'space', 'repeat', 'repeat-y', 'repeat-x', 'repeat space', 'repeat repeat', 'round space', 'no-repeat round', 'space round, no-repeat', 'round repeat, space, repeat-x'])
+    .setDescription(['maskRepeatDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-repeat']),
+  new CSSProperty('maskPosition', '100% 100%', '100% 100%', CSS_CAT_BACKGROUND)
+    .setShowWhen(['maskImage', 'expanded'])
+    .setDescription(['maskPositionDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-position']),
+  new CSSProperty('maskClip', 'content-box', 'content-box', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setShowWhen(['maskImage', 'expanded'])
+    .setOptions(['content-box', 'padding-box', 'border-box', 'margin-box', 'fill-box', 'stroke-box', 'view-box', 'no-clip', 'padding-box, no-clip', 'view-box, fill-box, border-box'])
+    .setDescription(['maskClipDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-clip']),
+  new CSSProperty('maskOrigin', 'content-box', 'content-box', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setShowWhen(['maskImage', 'expanded'])
+    .setOptions(['content-box', 'padding-box', 'border-box', 'margin-box', 'fill-box', 'stroke-box', 'view-box', 'padding-box, content-box', 'view-box, fill-box, border-box'])
+    .setDescription(['maskOriginDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-origin']),
+  new CSSProperty('maskSize', 'cover', 'cover', CSS_CAT_BACKGROUND)
+    .setShowWhen(['maskImage', 'expanded'])
+    .setDescription(['maskSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-size']),
+  new CSSProperty('maskComposite', 'add', 'add', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setShowWhen(['maskImage', 'expanded'])
+    .setOptions(['add', 'subtract', 'intersect', 'exclude'])
+    .setDescription(['maskCompositeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-composite']),
   new CSSProperty('opacity', 1, 1, CSS_CAT_BACKGROUND, false, CSS_VALUE_NUMBER)
     .setControlProps({ min: 0, max: 1, double: true }),
   new CSSProperty('width', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
@@ -236,9 +269,13 @@ class ControlStore extends Movable implements IControl {
         .forEach((prop) => {
           // @ts-ignore
           styles[prop.key] = prop.inject ? prop.inject.replace('$', prop.value) : prop.valueWithUnit;
+          if(prop.key.includes('mask') || prop.key === 'mask') {
+            const key = prop.key.substring(1);
+            // @ts-ignore
+            styles[`WebkitM${key}`] = prop.inject ? prop.inject.replace('$', prop.value) : prop.valueWithUnit;
+          }
         });
     }
-
     return styles;
   }
 
