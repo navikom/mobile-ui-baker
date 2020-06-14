@@ -16,7 +16,7 @@ import EditorDictionary from '../views/Editor/store/EditorDictionary';
 import html2canvas from 'html2canvas';
 import AnimationEnum, { AnimationDirectionEnum } from '../enums/AnimationEnum';
 import { FIRST_CONTAINER, SECOND_CONTAINER } from './Constants';
-import ScreenSwitcherEnum from '../enums/ScreenSwitcherEnum';
+import ScreenSwitcherEnum from 'enums/ScreenSwitcherEnum';
 
 export const getSwitcherParams = (list: (string | number)[], screenSwitcher: ScreenSwitcherEnum) => {
   if (Number(list[0]) === screenSwitcher) {
@@ -109,7 +109,7 @@ class DisplayViewStore extends Errors {
       setTimeout(() => {
         a.remove();
       }, 300);
-    })
+    });
   };
 
   @action

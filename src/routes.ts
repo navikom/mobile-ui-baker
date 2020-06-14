@@ -64,6 +64,7 @@ const Overview = lazy(() => import('views/Docs/Overview'));
 const EditorOverview = lazy(() => import('views/Docs/EditorOverview'));
 const MuiditorPlugin = lazy(() => import('views/Docs/MuiditorPlugin'));
 const EditorPlugin = lazy(() => import('views/Docs/EditorPlugin'));
+const EditorSample = lazy(() => import('views/Docs/ProjectSample'));
 const ViewerOverview = lazy(() => import('views/Docs/ViewerOverview'));
 const ViewerPlugin = lazy(() => import('views/Docs/ViewerPlugin'));
 const ProPlanOverview = lazy(() => import('views/Docs/ProPlanOverview'));
@@ -431,6 +432,14 @@ export const documentationRoutes = [
     path: '/editor-overview',
     name: 'Overview',
     component: EditorOverview,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_EDITOR,
+    docs: true
+  },
+  {
+    path: '/editor-sample',
+    name: 'Project Sample',
+    component: EditorSample,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_EDITOR,
     docs: true

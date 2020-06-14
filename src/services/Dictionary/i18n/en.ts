@@ -433,6 +433,7 @@ export default {
   inThisTabUsersCanManipulate: 'In this tab users can manipulate a project screens data (save, load, delete, clear), setup general UI settings',
   inControlTabUsersCanChoose: 'In controls tab users can choose Grid or Text element or pre stored component.',
   designFlexibility: 'Design Flexibility',
+  detailedVideoAboutHow: 'The detailed video instruction about how to use editor tools - add',
   oneOfTheBiggestStrength: 'One of the biggest strengths of the Muiditor editor is that it provides creative professionals with tremendous design flexibility.',
   thisIsAchievedBySeparating: 'This is achieved by known HTML elements tree structure and separating the concepts of Grid (which can be added, removed, copied, saved, moved and style edited with CSS property) and Text (individual text blocks: with Grid functionality plus text editing).',
   home: 'Home',
@@ -479,7 +480,8 @@ export default {
   goToViewerOverview: 'Go to the Viewer Overview',
   goToPluginEditorUsage: 'Go to the plugin Editor usage',
   goToPluginViewerUsage: 'Go to the plugin Viewer usage',
-  gotToMethodsAndEvents: 'Got to methods and events',
+  gotToMethodsAndEvents: 'Go to methods and events',
+  goToTheProjectSample: 'Go to the project sample',
   gotToProPlan: 'Go to Pro Plan',
   methodsAndEvents: 'Methods & Events',
   instanceMethods: 'Instance Methods',
@@ -529,6 +531,7 @@ export default {
   allOfThisGivesFlexibilityAllowsToCreateOwnMarketplace: 'With Pro Plan you and your users will use editor without Advertising, also, you can customize Editor and Viewer toolbars, untie editor methods to parent muiditor.com database, override saving and switching between projects. All of this will add "Mobile UI creation" user experience into your site and even allows you to create your own Mobile UI\'s Marketplace.',
   grabBelowDictionaryObjectChangeValuesOnYoursAndPass: 'Grab below dictionary object, change values on yours and pass this object with',
   getStartedPluginForEditor: 'Get started plugin for the Editor',
+  simpleMobileScreenWithHeaderAndDrawer: 'Simple mobile screen with header and drawer',
   getStartedPluginForViewer: 'Get started plugin for the Viewer',
   runPluginWithReactJs: 'Run plugin with React.js',
   runPluginWithVanillaJavascript: 'Run plugin with vanilla Javascript',
@@ -594,5 +597,8 @@ export default {
   openGithubIssue: 'Open GitHub issues',
   somethingElse: 'Something else?',
   didntFindWhatYouCameFor: 'Didn\'t find what you came for?',
-  ifYouStillDontHaveAnAnswer: 'If you still don\'t have an answer to your questions feel free to contact us via email.'
+  ifYouStillDontHaveAnAnswer: 'If you still don\'t have an answer to your questions feel free to contact us via email.',
+  images: 'images',
+  actions: 'actions',
+  icons: 'icons'
 };

@@ -60,7 +60,7 @@ describe("Control", () => {
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeFalsy();
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    const width = mainStyle![11];
+    const width = mainStyle![20];
     expect(width.key === "width").toBeTruthy();
     expect(width.enabled).toBeFalsy();
     grid.mergeStyles(new Map([
@@ -73,7 +73,7 @@ describe("Control", () => {
     ]));
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeTruthy();
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"padding")).toBeFalsy();
-    const width2 = mainStyle![11];
+    const width2 = mainStyle![20];
     expect(width2.enabled).toBeTruthy();
     expect(width === width2).toBeTruthy();
   });

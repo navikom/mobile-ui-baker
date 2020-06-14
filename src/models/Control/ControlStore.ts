@@ -362,6 +362,10 @@ class ControlStore extends Movable implements IControl {
     ControlStore.removeItem(this);
   };
 
+  deleteSelfTraverseChildren() {
+    // this.children.forEach(child => ControlStore.removeItem(child));
+  }
+
   @action addCSSStyle = (noHistory?: boolean) => {
     const key = `Style${this.cssStyles.size}`;
     this.cssStyles.set(key, observable(this.cssStyles.get(MAIN_CSS_STYLE)!.map(prop => prop.clone())));

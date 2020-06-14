@@ -7,6 +7,8 @@ import { ErrorHandler } from 'utils/ErrorHandler';
 import { api, Apis } from 'api';
 import { Users } from './User/UsersStore';
 
+const debug = false;
+
 class PaddleCheckoutStore extends Errors {
   static VENDOR_ID = Number(process.env.REACT_APP_PADDLE_VENDOR_ID) || 0;
   paddle: IPaddle = (window as any).Paddle;
@@ -27,12 +29,12 @@ class PaddleCheckoutStore extends Errors {
       email: App.user!.email || '',
       passthrough: JSON.stringify({ user_id: App.user!.userId }),
       successCallback: (data) => {
-        console.log('onSuccess=========', data);
+        debug && console.log('onSuccess=========', data);
         App.user!.setPlan(plan);
         this.updateUser();
       },
       errorCallback: (error) => {
-        console.log('onError=========', error);
+        debug && console.log('onError=========', error);
       }
     } as ICheckoutParams;
     if (_dev) {
@@ -50,7 +52,7 @@ class PaddleCheckoutStore extends Errors {
       runInAction(() => {
         this.loading = false;
       })
-    }, 1000);
+    }, 3000);
   }
 
   cancel(subscriptionId: number, url: string) {

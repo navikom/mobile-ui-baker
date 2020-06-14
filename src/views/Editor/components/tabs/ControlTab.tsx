@@ -76,22 +76,23 @@ interface ControlInstanceProps {
 }
 
 const ControlInstance: React.FC<ControlInstanceProps> =
-  observer(({isAdmin, handleMenu, store}) => {
-  const classes = useStyles();
-  return (
-    <div className={classes.container}>
-      {
-        store.items.map((instance, i) => {
-          const control = CreateForMenu(instance);
-          return <ControlTabItem
-            key={i.toString()}
-            control={control}
-            handleMenu={isAdmin ? handleMenu(control) : () => {}} />
-        })
-      }
-    </div>
-  )
-});
+  observer(({ isAdmin, handleMenu, store }) => {
+    const classes = useStyles();
+    return (
+      <div className={classes.container}>
+        {
+          store.items.map((instance, i) => {
+            const control = CreateForMenu(instance);
+            return <ControlTabItem
+              key={i.toString()}
+              control={control}
+              handleMenu={isAdmin ? handleMenu(control) : () => {
+              }} />
+          })
+        }
+      </div>
+    )
+  });
 
 type ControlTabProps = IEditorTabsProps
 
@@ -145,7 +146,8 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
       </div>
       {
         SharedControls.size > 0 && (
-          <Grid container alignItems="center" justify={App.isAdmin ? 'space-between' : 'center'} className={classes.tools}>
+          <Grid container alignItems="center" justify={App.isAdmin ? 'space-between' : 'center'}
+                className={classes.tools}>
             <Typography align="center" variant="subtitle2" className={classes.paragraph}>
               {dictionary!.defValue(EditorDictionary.keys.controls)}
             </Typography>
@@ -175,23 +177,22 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
         )
       }
       {
-        SharedComponents.size > 0 && <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedComponents} />
+        SharedComponents.size > 0 &&
+        <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedComponents} />
       }
-      {
-        OwnComponents.size > 0 && (
-          <Grid container alignItems="center" justify="space-between" className={classes.tools}>
-            <Typography align="center" variant="subtitle2" className={classes.paragraph}>
-              {dictionary!.defValue(EditorDictionary.keys.components)}
-            </Typography>
-            <Tooltip
-              title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
-              <IconButton size="small" onClick={importComponent}>
-                <SaveAlt />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-        )
-      }
+
+      <Grid container alignItems="center" justify="space-between" className={classes.tools}>
+        <Typography align="center" variant="subtitle2" className={classes.paragraph}>
+          {dictionary!.defValue(EditorDictionary.keys.components)}
+        </Typography>
+        <Tooltip
+          title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
+          <IconButton size="small" onClick={importComponent}>
+            <SaveAlt />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+
       {
         OwnComponents.size > 0 && <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={OwnComponents} />
       }
