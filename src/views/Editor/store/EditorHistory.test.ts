@@ -6,6 +6,8 @@ import { ACTION_TOGGLE_STYLE } from "models/Constants";
 import { DropEnum } from "enums/DropEnum";
 import { Mode } from "enums/ModeEnum";
 import ControlStore, { MAIN_CSS_STYLE } from "models/Control/ControlStore";
+import CreateControl from '../../../models/Control/ControlStores';
+import { ControlEnum } from '../../../enums/ControlEnum';
 
 describe("EditorHistory", () => {
   let store: EditorViewStore, control: IControl;
@@ -36,17 +38,27 @@ describe("EditorHistory", () => {
     expect(store.history.carriage).toBe(1);
   });
 
-  it("deleteSelf history record", () => {
-    control.deleteSelf();
-    expect(store.history.size).toBe(2);
-    expect(store.history.carriage).toBe(1);
-    expect(store.currentScreen.children.find(e => e.id === control.id)).toBeFalsy();
+  it("deleteSelf with child which added a new style history records", () => {
+    let grid = CreateControl(ControlEnum.Grid);
+    control.addChild(grid);
+    grid.addCSSStyle();
 
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
+
+    control.deleteSelf();
+
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
+
+    expect(store.history.size).toBe(3);
+    expect(store.history.carriage).toBe(2);
+    expect(store.currentScreen.children.find(e => e.id === control.id)).toBeFalsy();
     store.history.undo();
     expect(store.currentScreen.children.find(e => e.id === control.id)).toBeTruthy();
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
 
     store.history.redo();
     expect(store.currentScreen.children.find(e => e.id === control.id)).toBeFalsy();
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
   });
 
   it("handleCSSProperty history records", () => {

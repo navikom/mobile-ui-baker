@@ -339,6 +339,11 @@ class ControlStore extends Movable implements IControl {
     ControlStore.addClass(this.id, key);
   }
 
+  @action deleteSelfTraverseChildren() {
+    this.children.forEach(child => child.deleteSelfTraverseChildren());
+    ControlStore.removeItem(this);
+  }
+
   // ###### apply history start ######## //
 
   @action changeTitle = (title: string, noHistory?: boolean) => {
@@ -359,12 +364,8 @@ class ControlStore extends Movable implements IControl {
       parent && parent.removeChild(this);
       !noHistory && ControlStore.history.add([HIST_DELETE_SELF, undo, redo]);
     }
-    ControlStore.removeItem(this);
+    this.deleteSelfTraverseChildren();
   };
-
-  deleteSelfTraverseChildren() {
-    // this.children.forEach(child => ControlStore.removeItem(child));
-  }
 
   @action addCSSStyle = (noHistory?: boolean) => {
     const key = `Style${this.cssStyles.size}`;

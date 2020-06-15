@@ -79,6 +79,8 @@ export default interface IControl extends IMovable {
 
   setChecksum(depth: number, path: string[], cb: (depth: number, item: IControl) => void): void;
 
+  deleteSelfTraverseChildren(): void;
+
   /// property
   switchExpanded(key: string, propName: string): () => void;
 

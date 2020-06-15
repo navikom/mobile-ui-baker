@@ -55,6 +55,17 @@ describe("Control", () => {
     expect(ControlStore.classes.includes(`${grid.id}/NewStyle`)).toBeFalsy();
   });
 
+  it("Add child then add new style to the child then, after parent deletion, record [child.id]/[styleName]" +
+    " should be deleted from Control.classes", () => {
+    const parent = CreateControl(ControlEnum.Grid);
+    const grid = CreateControl(ControlEnum.Grid);
+    parent.addChild(grid);
+    grid.addCSSStyle();
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
+    parent.deleteSelf();
+    expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
+  });
+
   it("Merge styles", () => {
     const grid = CreateControl(ControlEnum.Grid);
     expect(Object.prototype.hasOwnProperty.call(grid.styles,"width")).toBeFalsy();
