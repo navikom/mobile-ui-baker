@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, Route, Router, Switch } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { ThemeProvider } from '@material-ui/core/styles';
 import WaitingComponent from 'hocs/WaitingComponent';

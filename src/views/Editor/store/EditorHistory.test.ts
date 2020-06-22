@@ -6,8 +6,8 @@ import { ACTION_TOGGLE_STYLE } from "models/Constants";
 import { DropEnum } from "enums/DropEnum";
 import { Mode } from "enums/ModeEnum";
 import ControlStore, { MAIN_CSS_STYLE } from "models/Control/ControlStore";
-import CreateControl from '../../../models/Control/ControlStores';
-import { ControlEnum } from '../../../enums/ControlEnum';
+import CreateControl from 'models/Control/ControlStores';
+import { ControlEnum } from 'enums/ControlEnum';
 
 describe("EditorHistory", () => {
   let store: EditorViewStore, control: IControl;
@@ -39,7 +39,7 @@ describe("EditorHistory", () => {
   });
 
   it("deleteSelf with child which added a new style history records", () => {
-    let grid = CreateControl(ControlEnum.Grid);
+    const grid = CreateControl(ControlEnum.Grid);
     control.addChild(grid);
     grid.addCSSStyle();
 
@@ -104,7 +104,7 @@ describe("EditorHistory", () => {
     const newName = "New Style";
 
     expect(control.cssStyles.has(oldName)).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(63);
+    expect(control.cssStyles.get(oldName)!.length).toBe(58);
     control.switchEnabled(oldName, "position")();
 
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
@@ -112,7 +112,7 @@ describe("EditorHistory", () => {
     control.renameCSSStyle(oldName, newName);
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(63);
+    expect(control.cssStyles.get(newName)!.length).toBe(58);
 
     control.removeCSSStyle(newName);
     expect(control.cssStyles.has(newName)).toBeFalsy();
@@ -120,12 +120,12 @@ describe("EditorHistory", () => {
     store.history.undo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(63);
+    expect(control.cssStyles.get(newName)!.length).toBe(58);
 
     store.history.undo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(63);
+    expect(control.cssStyles.get(oldName)!.length).toBe(58);
 
     store.history.undo();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeFalsy();
@@ -135,14 +135,14 @@ describe("EditorHistory", () => {
 
     store.history.redo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(63);
+    expect(control.cssStyles.get(oldName)!.length).toBe(58);
 
     store.history.redo();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
     store.history.redo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(63);
+    expect(control.cssStyles.get(newName)!.length).toBe(58);
   });
 
   it("add/remove style records", () => {

@@ -1,10 +1,10 @@
-import React from "react";
-import { action, IObservableArray } from "mobx";
-import { ControlEnum } from "enums/ControlEnum";
-import { DropEnum } from "enums/DropEnum";
-import IMovable from "interfaces/IMovable";
-import ICSSProperty from "interfaces/ICSSProperty";
-import IProject from "interfaces/IProject";
+import React from 'react';
+import { IObservableArray } from 'mobx';
+import { ControlEnum } from 'enums/ControlEnum';
+import { DropEnum } from 'enums/DropEnum';
+import IMovable from 'interfaces/IMovable';
+import ICSSProperty from 'interfaces/ICSSProperty';
+import IProject from 'interfaces/IProject';
 
 export default interface IControl extends IMovable {
   type: ControlEnum;
@@ -18,8 +18,8 @@ export default interface IControl extends IMovable {
   lockedChildren: boolean;
   toJSON: { [key: string]: any };
   hashSumChildren: { [key: string]: any };
-  hashSumChildrenWithChildren: { [key: string]: any };
-  hashSumChildrenWithChildrenAndTitles: { [key: string]: any };
+  hashSumChildrenWithStyles: { [key: string]: any };
+  hashSumChildrenWithStylesAndTitles: { [key: string]: any };
   classes: IObservableArray<string>;
   actions: IObservableArray<IObservableArray<string>>;
   instance?: IProject;
@@ -28,7 +28,12 @@ export default interface IControl extends IMovable {
   hashChildrenWithStyle?: string;
   hashChildrenWithStyleAndTitles?: string;
   path: string[];
+  cssStylesJSON: (string | { [key: string]: string | number | boolean | undefined | null }[])[][];
+  hasImage: boolean;
+  hasSVG: boolean;
+
   setId(value: string): void;
+
   activeClass(style: string): boolean;
 
   cssProperty(key: string, propName: string): ICSSProperty | undefined;
@@ -80,6 +85,8 @@ export default interface IControl extends IMovable {
   setChecksum(depth: number, path: string[], cb: (depth: number, item: IControl) => void): void;
 
   deleteSelfTraverseChildren(): void;
+
+  toString(): string;
 
   /// property
   switchExpanded(key: string, propName: string): () => void;

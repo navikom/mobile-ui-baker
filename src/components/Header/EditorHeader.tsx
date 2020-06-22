@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ForwardRefRenderFunction, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { App } from 'models/App';
 import { Auth } from 'models/Auth/Auth';
@@ -31,6 +31,7 @@ import Hidden from '@material-ui/core/Hidden';
 import MenuIcon from '@material-ui/icons/Menu';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
+import { observer } from 'mobx-react-lite';
 
 const editorStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -117,7 +118,7 @@ const ProfileMenuItemsComponent: React.FC<ProfileMenuItemsProps> = (
   )
 };
 
-const ProfileMenuItems = React.forwardRef(ProfileMenuItemsComponent);
+const ProfileMenuItems = React.forwardRef(ProfileMenuItemsComponent as ForwardRefRenderFunction<unknown,ProfileMenuItemsProps>);
 
 const MobileMenu: React.FC<MenuProps> = (
   {
@@ -161,7 +162,7 @@ const MobileMenu: React.FC<MenuProps> = (
   )
 }
 
-const DesktopMenu: React.FC<MenuProps> = (
+const DesktopMenu: React.FC<MenuProps> = observer((
   {
     fullScreen,
     switchFullscreen,
@@ -233,7 +234,7 @@ const DesktopMenu: React.FC<MenuProps> = (
       </div>
     </Hidden>
   )
-};
+});
 
 interface EditorHeaderProps extends ContextComponentProps {
   switchFullscreen: () => void;

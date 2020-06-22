@@ -45,6 +45,9 @@ class SettingsStore implements ISettings {
  }
 
  @action update(data: ISettings) {
+  if(!data) {
+   return;
+  }
   Events.setSystemEventsList(data.systemEventsList as []);
   Events.setCustomEventsList(data.customEventsList as []);
   Segments.setExpressions(data.expressions as []);

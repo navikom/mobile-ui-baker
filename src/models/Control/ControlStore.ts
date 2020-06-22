@@ -27,7 +27,8 @@ import EditorHistory, {
   ControlStatic,
   HIST_ADD_ACTION,
   HIST_ADD_CSS_STYLE,
-  HIST_CHANGE_TITLE, HIST_CONTROL_PROP_CHANGE,
+  HIST_CHANGE_TITLE,
+  HIST_CONTROL_PROP_CHANGE,
   HIST_CSS_PROP,
   HIST_DELETE_SELF,
   HIST_EDIT_ACTION,
@@ -38,7 +39,7 @@ import EditorHistory, {
 import IHistory from 'interfaces/IHistory';
 import IProject from 'interfaces/IProject';
 import { boxShadow } from 'assets/jss/material-dashboard-react';
-import DelayEnum from '../../enums/DelayEnum';
+import DelayEnum from 'enums/DelayEnum';
 
 export const MAIN_CSS_STYLE = 'Main';
 
@@ -67,45 +68,28 @@ const styles = [
     'https://res.cloudinary.com/dnfk5l75j/image/upload/v1579263129/email-editor/v2/placeholder_01.png', CSS_CAT_BACKGROUND)
     .makeExpandable().setInjectable('url($)')
     .setDescription(['backgroundImageDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-image']),
-  new CSSProperty('backgroundSize', '100% 100%', '100% 100%', CSS_CAT_BACKGROUND).setShowWhen(['backgroundImage', 'expanded'])
+  new CSSProperty('backgroundSize', '100%', '100%', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setOptions(['100% 100%', '100%', 'contain', 'cover'])
+    .setShowWhen(['backgroundImage', 'expanded'])
     .setDescription(['backgroundSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size']),
   new CSSProperty('backgroundRepeat', 'no-repeat', 'no-repeat', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
     .setShowWhen(['backgroundImage', 'expanded'])
-    .setOptions(['no-repeat', 'repeat', 'repeat-x', 'repeat-y', 'space', 'round', 'repeat space', 'repeat repeat', 'round space', 'no-repeat round'])
+    .setOptions(['no-repeat', 'repeat', 'space', 'round'])
     .setDescription(['backgroundSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/background-size']),
-  new CSSProperty('mask', 'url(https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg) 40px 20px', 'url(https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg) 40px 20px', CSS_CAT_BACKGROUND)
+  new CSSProperty('backgroundPosition', 'center', 'center', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+    .setOptions(['center'])
+    .setShowWhen(['backgroundImage', 'expanded']),
+  new CSSProperty('mask', 'url(https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg)', 'url(https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg)', CSS_CAT_BACKGROUND)
     .setDescription(['maskDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask']),
   new CSSProperty('maskImage',
     'https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg',
     'https://res.cloudinary.com/dnfk5l75j/image/upload/v1589468711/muiditor/svg/menu_vnllet.svg', CSS_CAT_BACKGROUND)
     .makeExpandable().setInjectable('url($)')
     .setDescription(['maskImageDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image']),
-  new CSSProperty('maskMode', 'luminance', 'luminance', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
+  new CSSProperty('maskRepeat', 'round', 'round', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
     .setShowWhen(['maskImage', 'expanded'])
-    .setOptions(['alpha', 'luminance', 'match-source', 'alpha, match-source', 'alpha, luminance', 'alpha, luminance, match-source'])
-    .setDescription(['maskModeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-mode']),
-  new CSSProperty('maskRepeat', 'no-repeat', 'no-repeat', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
-    .setShowWhen(['maskImage', 'expanded'])
-    .setOptions(['no-repeat', 'round', 'space', 'repeat', 'repeat-y', 'repeat-x', 'repeat space', 'repeat repeat', 'round space', 'no-repeat round', 'space round, no-repeat', 'round repeat, space, repeat-x'])
+    .setOptions(['no-repeat', 'round'])
     .setDescription(['maskRepeatDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-repeat']),
-  new CSSProperty('maskPosition', '100% 100%', '100% 100%', CSS_CAT_BACKGROUND)
-    .setShowWhen(['maskImage', 'expanded'])
-    .setDescription(['maskPositionDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-position']),
-  new CSSProperty('maskClip', 'content-box', 'content-box', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
-    .setShowWhen(['maskImage', 'expanded'])
-    .setOptions(['content-box', 'padding-box', 'border-box', 'margin-box', 'fill-box', 'stroke-box', 'view-box', 'no-clip', 'padding-box, no-clip', 'view-box, fill-box, border-box'])
-    .setDescription(['maskClipDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-clip']),
-  new CSSProperty('maskOrigin', 'content-box', 'content-box', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
-    .setShowWhen(['maskImage', 'expanded'])
-    .setOptions(['content-box', 'padding-box', 'border-box', 'margin-box', 'fill-box', 'stroke-box', 'view-box', 'padding-box, content-box', 'view-box, fill-box, border-box'])
-    .setDescription(['maskOriginDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-origin']),
-  new CSSProperty('maskSize', 'cover', 'cover', CSS_CAT_BACKGROUND)
-    .setShowWhen(['maskImage', 'expanded'])
-    .setDescription(['maskSizeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-size']),
-  new CSSProperty('maskComposite', 'add', 'add', CSS_CAT_BACKGROUND, false, CSS_VALUE_SELECT)
-    .setShowWhen(['maskImage', 'expanded'])
-    .setOptions(['add', 'subtract', 'intersect', 'exclude'])
-    .setDescription(['maskCompositeDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/mask-composite']),
   new CSSProperty('opacity', 1, 1, CSS_CAT_BACKGROUND, false, CSS_VALUE_NUMBER)
     .setControlProps({ min: 0, max: 1, double: true }),
   new CSSProperty('width', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
@@ -204,7 +188,6 @@ class ControlStore extends Movable implements IControl {
   hashChildrenWithStyleAndTitles?: string;
   instance?: IProject;
 
-
   get cssStylesJSON() {
     const keys = Array.from(this.cssStyles.keys());
     const cssStyles = [];
@@ -231,27 +214,59 @@ class ControlStore extends Movable implements IControl {
     }
   }
 
+  get hasImage() {
+    const styles = this.cssStylesJSON;
+    let l = styles.length;
+    while (l--) {
+      const subStyles = styles[l] as {[key: string]: any}[];
+      let j = subStyles[1].length;
+      while (j--) {
+        const subStyle = subStyles[1][j];
+        if(['background', 'backgroundImage', 'backgroundRepeat', 'backgroundSize', 'backgroundPosition',
+          'mask', 'maskImage', 'maskRepeat'].includes(subStyle.key)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  get hasSVG() {
+    const styles = this.cssStylesJSON;
+    let l = styles.length;
+    while (l--) {
+      const subStyles = styles[l] as {[key: string]: any}[];
+      let j = subStyles[1].length;
+      while (j--) {
+        const subStyle = subStyles[1][j];
+        if(['mask', 'maskImage'].includes(subStyle.key)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   get hashSumChildren() {
     return {
       type: this.type,
+      hasImage: this.hasImage,
       children: this.children.map(child => child.hashSumChildren),
     }
   }
 
-  get hashSumChildrenWithChildren() {
+  get hashSumChildrenWithStyles() {
     return {
       type: this.type,
       cssStyles: this.cssStylesJSON,
-      children: this.children.map(child => child.hashSumChildrenWithChildren)
     }
   }
 
-  get hashSumChildrenWithChildrenAndTitles() {
+  get hashSumChildrenWithStylesAndTitles() {
     return {
       title: this.title,
       type: this.type,
       cssStyles: this.cssStylesJSON,
-      children: this.children.map(child => child.hashSumChildrenWithChildrenAndTitles)
     }
   }
 
@@ -565,8 +580,8 @@ class ControlStore extends Movable implements IControl {
 
   setChecksum(depth: number, path: string[], cb: (depth: number, item: IControl) => void) {
     this.hashChildren = sum(this.hashSumChildren);
-    this.hashChildrenWithStyle = sum(this.hashSumChildrenWithChildren);
-    this.hashChildrenWithStyleAndTitles = sum(this.hashSumChildrenWithChildrenAndTitles);
+    this.hashChildrenWithStyle = sum(this.hashSumChildrenWithStyles);
+    this.hashChildrenWithStyleAndTitles = sum(this.hashSumChildrenWithStylesAndTitles);
     this.path = path;
     cb(depth, this);
     this.children.forEach(child => child.setChecksum(depth + 1, [...path, this.title], cb));
@@ -574,6 +589,35 @@ class ControlStore extends Movable implements IControl {
 
   clone(): IControl {
     throw new ErrorHandler('Redefine in children');
+  }
+
+  toString() {
+    const keys = Array.from(this.cssStyles.keys());
+    const cssStyles = [];
+    let l = keys.length, i = 0;
+    while (l--) {
+      const key = keys[i++];
+      const props = this.cssStyles.get(key)!.filter(prop => prop.enabled).map(prop => prop.toString());
+      if(props.length) {
+        cssStyles.push(
+          `[
+          ${['"' + key + '"', '[' + props + ']']}
+          ]`
+        );
+      }
+    }
+
+    return `{
+      type: "${this.type}",
+      id: "${this.id}",
+      allowChildren: ${this.allowChildren},
+      title: "${this.title}",
+      parentId: ${this.parentId ? '"' + this.parentId + '"' : undefined},
+      lockedChildren: ${this.lockedChildren},
+      cssStyles: [${cssStyles}],
+      classes: [${this.classes}],
+      actions: [${this.actions}],
+    }`;
   }
 
   //######### static ##########//

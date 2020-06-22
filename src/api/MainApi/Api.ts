@@ -1,7 +1,7 @@
 import { ApiBase } from 'api/ApiBase';
 import { HttpBase } from 'api/HttpBase';
 import { ILoginResult } from 'interfaces/ILoginResult';
-import AccessEnum from '../../enums/AccessEnum';
+import AccessEnum from 'enums/AccessEnum';
 
 class User extends HttpBase {
   constructor() {

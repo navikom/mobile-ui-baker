@@ -99,16 +99,9 @@ class DisplayViewStore extends Errors {
   makeProjectScreenshot = () => {
     const element = document.querySelector('#capture') as HTMLElement;
     element && html2canvas(element, { useCORS: true }).then(canvas => {
-      const base64 = canvas.toDataURL();
-      // const w = window.open("");
-      // w!.document.write(`<img src="${base64}"/>`);
-      const a = document.createElement('a');
-      a.href = base64;
-      a.download = `${this.project.title.length ? this.project.title : 'Project'}.png`;
-      a.click();
-      setTimeout(() => {
-        a.remove();
-      }, 300);
+      canvas.toBlob((blob) => {
+        saveAs(blob as Blob, `${this.project.title.length ? this.project.title : 'Project'}.png`);
+      });
     });
   };
 

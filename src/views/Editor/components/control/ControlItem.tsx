@@ -93,7 +93,7 @@ export const ElementComponent: React.FC<ElementProps> =
 
       let showPlaceholder = children.length === 0;
       let placeholder = <div className={classes.placeholder}>{title}</div>;
-      if (control.type === ControlEnum.Text) {
+      if (control.type === ControlEnum.Text && !control.hasImage) {
         showPlaceholder = true;
         // if (isSelected && isSelected(control)) {
         //   backgroundColor = styles.backgroundColor;
@@ -106,8 +106,7 @@ export const ElementComponent: React.FC<ElementProps> =
         //   // @ts-ignore
         //   placeholder = title;
         // }
-        // @ts-ignore
-        placeholder = title;
+        placeholder = title as unknown as JSX.Element;
       }
 
       const emptyControl: React.CSSProperties = {};

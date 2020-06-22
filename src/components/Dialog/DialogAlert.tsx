@@ -9,8 +9,8 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import Button from "components/CustomButtons/Button";
 
 const Transition: React.ComponentType<TransitionProps> =
-  React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
+  React.forwardRef(function Transition({ children, ...rest }, ref) {
+    return <Slide direction="up" ref={ref} {...rest}>{children as undefined}</Slide>;
 });
 
 interface Props {

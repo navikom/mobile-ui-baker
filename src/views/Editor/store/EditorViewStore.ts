@@ -42,7 +42,7 @@ import DisplayViewStore from 'models/DisplayViewStore';
 import { whiteColor } from 'assets/jss/material-dashboard-react';
 import { OwnProjects } from 'models/Project/OwnProjectsStore';
 import AccessEnum from 'enums/AccessEnum';
-import GenerateService from '../../../services/GenerateService';
+import GenerateService from '../../../services/Generator/GenerateService';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -437,10 +437,10 @@ class EditorViewStore extends DisplayViewStore {
       return;
     }
     this.saving = true;
-
     localStorage.setItem(EditorViewStore.STORE_JSON, json);
     if (!this.timer) {
       this.timer = setTimeout(() => {
+
         runInAction(() => {
           this.saving = false;
         });

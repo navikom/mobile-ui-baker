@@ -9,7 +9,6 @@ import { App } from 'models/App';
 import {
   ROUTE_DOCS_EDITOR_SAMPLE,
   ROUTE_DOCS_GET_STARTED,
-  ROUTE_DOCS_VIEWER_OVERVIEW
 } from 'models/Constants';
 
 const useStyles = makeStyles(theme => ({

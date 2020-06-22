@@ -56,6 +56,12 @@ const useStyles = makeStyles(theme => ({
     padding: 5,
     backgroundColor: blackOpacity(0.05)
   },
+  id: {
+    marginTop: 5,
+    padding: 5,
+    backgroundColor: blackOpacity(0.02),
+    opacity: 0.5
+  },
   tools: {
     padding: 3,
     backgroundColor: blackOpacity(0.03)
@@ -330,6 +336,9 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
         </IconButton>
       </Grid>
       <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 35}px)`, overflow: 'auto' }}>
+        <Grid container className={classes.id}>
+          <Typography variant="body2">#{control!.id}</Typography>
+        </Grid>
         <CSSProperties control={control as IControl} dictionary={dictionary} />
         <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
       </div>

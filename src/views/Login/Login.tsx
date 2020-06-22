@@ -10,7 +10,7 @@ import Slide from "@material-ui/core/Slide";
 import Fade from "@material-ui/core/Fade";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
-import { FormControlLabel, Typography } from '@material-ui/core';
+import { FormControlLabel } from '@material-ui/core';
 
 // models
 import { Auth } from "models/Auth/Auth";
@@ -28,7 +28,7 @@ import CardFooter from "components/Card/CardFooter";
 
 import styles from "assets/jss/material-dashboard-react/views/singlePageStyle";
 import { Dictionary, DictionaryService } from "services/Dictionary/Dictionary";
-import { ROUTE_LOGIN, ROUTE_RECOVERY, TITLE } from 'models/Constants';
+import { ROUTE_LOGIN, ROUTE_RECOVERY } from 'models/Constants';
 
 interface FormControlInterface {
   error?: boolean;

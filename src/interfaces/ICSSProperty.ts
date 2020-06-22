@@ -49,4 +49,6 @@ export default interface ICSSProperty {
   updateProperties(props: { [key: string]: string | number | boolean }): void;
 
   setControlProps(props: { [key: string]: any }): void;
+
+  toString(): void;
 }

@@ -17,12 +17,15 @@
     "@types/react-syntax-highlighter": "^11.0.4",
     "chartist": "0.10.1",
     "classnames": "2.2.6",
+    "css-to-react-native": "^3.0.0",
     "date-fns": "^2.0.0-beta.5",
     "emoji-mart": "^2.11.2",
+    "file-saver": "^2.0.2",
     "hash-sum": "^2.0.0",
     "history": "4.7.2",
     "html2canvas": "^1.0.0-rc.5",
     "js-cookie": "^2.2.1",
+    "jszip": "^3.5.0",
     "material-ui-dropzone": "^2.4.7",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
@@ -92,6 +95,7 @@
     "@testing-library/react": "^10.0.1",
     "@types/classnames": "^2.2.9",
     "@types/emoji-mart": "^2.11.1",
+    "@types/file-saver": "^2.0.1",
     "@types/hash-sum": "^1.0.0",
     "@types/history": "^4.7.3",
     "@types/jest": "^24.0.19",
@@ -108,6 +112,7 @@
     "dotenv": "^8.2.0",
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-prettier": "3.0.1",
-    "jest-fetch-mock": "^3.0.3"
+    "jest-fetch-mock": "^3.0.3",
+    "react-native-web": "^0.12.3"
   }
 }

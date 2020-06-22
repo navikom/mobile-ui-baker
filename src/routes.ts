@@ -438,7 +438,7 @@ export const documentationRoutes = [
   },
   {
     path: '/editor-sample',
-    name: 'Project Sample',
+    name: 'Project Example',
     component: EditorSample,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_EDITOR,

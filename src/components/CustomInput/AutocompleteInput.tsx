@@ -70,11 +70,10 @@ function CustomAutocomplete({ ...props }) {
     <div className={props.classes.root}>
       <Autocomplete
         size="small"
-        multiple
-        id="tags-outlined"
+        options={props.options || []}
         value={props.values}
         closeIcon={null}
-        renderTags={(value: (string | number)[], getTagProps) =>
+        renderTags={(value: any[], getTagProps) =>
           value.map((option: string | number, index: number) => (
             <Chip
               key={index}

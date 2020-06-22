@@ -31,7 +31,6 @@ export class DictionaryService extends AbstractDictionary {
     super(settings[locale], {});
     this.locale = locales[locale];
     this.data = settings[locale];
-    moment.updateLocale(locale);
 
     let key: EN_TYPE;
     for(key in DictionaryService.keys) {

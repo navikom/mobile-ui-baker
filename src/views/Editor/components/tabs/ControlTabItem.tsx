@@ -85,7 +85,7 @@ const ControlTabItem: React.FC<ControlProps> = (
   }
 
   return (
-    <Tooltip placement="top" title={(control && control.title) || type}>
+    <Tooltip placement="top" title={(control ? control.title : type) || ''}>
       <Paper elevation={0} ref={drag} className={classes.container} onClick={handleMenu} style={style || {}}>
         {(control && control.title) || type}
       </Paper>

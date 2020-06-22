@@ -133,8 +133,8 @@ type IBeeComponent = {
   handleClose(): void;
 }
 
-const Transition = React.forwardRef<unknown, TransitionProps>(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
+const Transition = React.forwardRef<unknown, TransitionProps>(function Transition({ children, ...rest }, ref) {
+  return <Slide direction="up" ref={ref} {...rest}>{children as undefined}</Slide>;
 });
 
 function EmailTemplatesDialog(props: { open: boolean; handleClose: () => void; onSelect: (template: number) => void }) {

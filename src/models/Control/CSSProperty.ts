@@ -151,6 +151,14 @@ export default class CSSProperty implements ICSSProperty {
     return clone;
   }
 
+  toString() {
+    return `{
+      key: "${this.key}",
+      value: ${this.valueType === CSS_VALUE_NUMBER ? this.value : '"' + this.value + '"'},
+      unit: ${this.unit ? '"' + this.unit + '"' : undefined},
+    }`
+  }
+
   static fromJSON(json: ICSSProperty) {
     const prop = new CSSProperty(json.key, json.value, json.defaultValue, json.category, json.enabled, json.valueType)
       .setShowWhen(json.showWhen)

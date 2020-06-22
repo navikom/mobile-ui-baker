@@ -122,11 +122,12 @@ const ProjectCard: React.FC<ProjectCardProps> = (
         </div>
       </div>
       <div className={classes.device}>
-        <img src={img} className={classes.image} />
+        <img src={img} className={classes.image} alt={title} />
         <img
           className={classes.cover}
           src={nexus_6_outer}
           title={title}
+          alt={title}
         />
       </div>
     </Card>
