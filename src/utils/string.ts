@@ -5,6 +5,10 @@ export function insertSubstring(str: string, index: number, value: string) {
 export function findStem(arr: string[]) {
   const n = arr.length;
 
+  if(!n) {
+    return '';
+  }
+
   // Take first word from array as reference
   const s = arr[0];
   const len = s.length;

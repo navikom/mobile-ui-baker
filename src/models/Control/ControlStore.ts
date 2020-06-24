@@ -247,6 +247,28 @@ class ControlStore extends Movable implements IControl {
     return false;
   }
 
+  get sources() {
+    const array: string[][] = [];
+    const styles = this.cssStylesJSON;
+    let l = styles.length;
+    while (l--) {
+      const subStyles = styles[l] as {[key: string]: any}[];
+      let j = subStyles[1].length;
+      while (j--) {
+        const subStyle = subStyles[1][j];
+        if(['background', 'backgroundImage', 'mask', 'maskImage'].includes(subStyle.key)) {
+          const match = (subStyle.value as string).match(/url\((\S+)\)/i);
+          if(match) {
+            array.push([subStyles[0] as unknown as string, match[1].replace(/"|'/g, '')]);
+          } else {
+            array.push([subStyles[0], subStyle.value]);
+          }
+        }
+      }
+    }
+    return array;
+  }
+
   get hashSumChildren() {
     return {
       type: this.type,
@@ -584,7 +606,7 @@ class ControlStore extends Movable implements IControl {
     this.hashChildrenWithStyleAndTitles = sum(this.hashSumChildrenWithStylesAndTitles);
     this.path = path;
     cb(depth, this);
-    this.children.forEach(child => child.setChecksum(depth + 1, [...path, this.title], cb));
+    this.children.forEach(child => child.setChecksum(depth + 1, [...path, this.id], cb));
   }
 
   clone(): IControl {

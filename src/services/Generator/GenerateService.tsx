@@ -8,15 +8,38 @@ import { uniqueNameDefinition } from 'utils/string';
 import {
   ACTIVE_STYLES,
   APP_ROOT,
-  CHILDREN_LIST, COMPONENT_ID,
-  COMPONENTS_FOLDER, FUNCTION,
+  BASE_COMP,
+  CHILDREN,
+  CHILDREN_LIST,
+  COMPONENT_ID,
+  COMPONENTS_FOLDER,
+  EXPORT_DEFAULT,
+  FLAT_LIST_COMP,
+  FUNCTION,
+  IMAGE_BACKGROUND_COMP,
+  IMAGE_COMP,
   IMPORT_REACT,
+  LINEAR_GRADIENT_COMP,
   NAVIGATION_FOLDER,
+  ON_PRESS,
+  RETURN,
   SCREENS_FOLDER,
-  SRC_FOLDER, STYLE_ID, STYLES
+  SCROLL_VIEW_COMP,
+  SRC_FOLDER,
+  STYLE_ID,
+  STYLES,
+  SVG_URI_COMP,
+  TEXT_BASE_COMP,
+  TEXT_COMP,
+  TOUCHABLE_OPACITY_COMP,
+  TRANSIT_STYLE,
+  VIEW_COMP
 } from './Constants';
 import { importFrom } from './utils';
 import { Mode } from 'enums/ModeEnum';
+import IScreenStoreContent from '../../interfaces/IScreenStoreContent';
+import ScreenStoreContent from './ScreenStoreContent';
+import { ControlEnum } from '../../enums/ControlEnum';
 
 class GenerateService {
   store: IMobileUIView;
@@ -26,6 +49,7 @@ class GenerateService {
   leftDrawer: IControl[] = [];
   rightDrawer: IControl[] = [];
   nameSpaces: string[] = [];
+  screenStoreContent: Map<string, Map<string, IScreenStoreContent>> = new Map<string, Map<string, IScreenStoreContent>>();
 
   constructor(store: IMobileUIView) {
     this.store = store;
@@ -33,7 +57,25 @@ class GenerateService {
 
   generateRN() {
     this.store.screens.forEach(screen => screen.setChecksum(0, [], (depth: number, control: IControl) => {
-      console.log(control.title, depth);
+      if(!this.screenStoreContent.has(screen.id)) {
+        this.screenStoreContent.set(screen.id, new Map());
+      }
+      const actions = control.actions.toJS();
+      const img = control.hasImage;
+      let store;
+      if(img) {
+        store =
+          new ScreenStoreContent(control.id as string, control.path as string[], control.classes, control.sources);
+      } else if(actions && actions.length) {
+        store =
+          new ScreenStoreContent(control.id as string, control.path as string[], control.classes, undefined, actions);
+      } else if(control.type === ControlEnum.Text) {
+        store =
+          new ScreenStoreContent(control.id as string, control.path as string[], control.classes, undefined, undefined, control.title);
+      }
+      console.log(control.title, depth, actions, img);
+      store && this.screenStoreContent.get(screen.id)!.set(control.id, store);
+      (actions.length || img) && console.log('==============', img ? 'image' : 'actions', control.path);
     }));
 
     let traverse: (controls: IControl[]) => void;
@@ -88,9 +130,11 @@ class GenerateService {
       }
       this.component2zip(zip, cmp, COMPONENTS_FOLDER, cmp.nameSpace);
     });
+    this.baseComponent2zip(zip, true);
+    this.baseComponent2zip(zip, false);
     this.navigation2zip(zip, screenNames);
     this.app2zip(zip);
-    this.generateZip(zip);
+    // this.generateZip(zip);
   }
 
   async generateZip(zip: JSZip) {
@@ -124,6 +168,63 @@ class GenerateService {
     zip.file(`${SRC_FOLDER}/${folder}/${cmp.nameSpace}/${STYLES}.js`, content);
     content = cmp.generateComponentString();
     zip.file(`${SRC_FOLDER}/${folder}/${name}/${name}.js`, content);
+  }
+
+  baseComponent2zip(zip: JSZip, isText: boolean) {
+    const name = isText ? TEXT_BASE_COMP : BASE_COMP;
+    let onPress = `else {\n`;
+    onPress += `    if(onPress) {\n`;
+    onPress += `      props.onPress = () => { console.log(${COMPONENT_ID})};\n`;
+    onPress += `      Component = ${TOUCHABLE_OPACITY_COMP};\n`;
+    onPress += '    }\n';
+    onPress += '  }'
+
+    onPress = !isText ? onPress : '';
+    const content = `${IMPORT_REACT};
+${importFrom([isText ? TEXT_COMP : VIEW_COMP, isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP])};
+${importFrom([SVG_URI_COMP], 'react-native-svg')};
+${importFrom([LINEAR_GRADIENT_COMP], 'react-native-linear-gradient')};
+    
+${FUNCTION} ${name}({${COMPONENT_ID}, ${STYLE_ID}, ${STYLES}, ${TRANSIT_STYLE}, ${ACTIVE_STYLES}, ${ON_PRESS}, ${CHILDREN}}) {
+  const style = ${STYLES}[${STYLE_ID}];
+  let Component = ${isText ? TEXT_COMP : VIEW_COMP};
+  const props = {};
+  const activeStyleKey = ${ACTIVE_STYLES}[${ACTIVE_STYLES}.length - 1];
+  const transit = (${TRANSIT_STYLE} || []).find(e => e.className === activeStyleKey);
+  
+  props.style = style ? ${ACTIVE_STYLES}.map(entry => style[entry]) : {flex: 1};
+  
+  if(transit) {
+    if(transit.isSvg) {
+      Component = ${SVG_URI_COMP};
+      props.uri = transit.src;
+      if(transit.style && transit.style.color) {
+        props.fill = transit.style.color;
+      }
+    } else if(transit.gradient) {
+      Component = ${LINEAR_GRADIENT_COMP};
+      Object.assign(props, transit.gradient.colorStops || {}, transit.gradient.orientation || {});
+    } else if(transit.scroll) {
+      Component = ${SCROLL_VIEW_COMP};
+      if(transit.scroll.horizontal) {
+        props.horizontal = true;
+      }
+    } else {
+      Component = ${isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP};
+      Object.assign(${isText ? 'props' : 'props.style'}, transit.style || {});
+      props.source = {uri: transit.src};
+    }
+  } ${onPress}
+  
+  if(${CHILDREN}) {
+    ${RETURN} (<Component {...props}>{${CHILDREN}}</Component>);
+  }
+  
+  ${RETURN} (<Component {...props} />);
+}
+    
+${EXPORT_DEFAULT} ${name};`;
+    zip.file(`${SRC_FOLDER}/${COMPONENTS_FOLDER}/${name}/${name}.js`, content);
   }
 
   navigation2zip(zip: JSZip, screenNames: { id: string; title: string }[]) {

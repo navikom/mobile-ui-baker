@@ -32,6 +32,8 @@ export default interface IControl extends IMovable {
   hasImage: boolean;
   hasSVG: boolean;
 
+  sources: string[][];
+
   setId(value: string): void;
 
   activeClass(style: string): boolean;
