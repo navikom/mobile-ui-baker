@@ -5,6 +5,7 @@ import ProjectEnum from "enums/ProjectEnum";
 import { WithPrimaryKey } from "interfaces/WithPrimaryKey";
 import { Mode } from "enums/ModeEnum";
 import IControl from "interfaces/IControl";
+import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 
 export interface IProjectJSON {
   title: string;
@@ -29,6 +30,8 @@ export interface IProjectData {
   ios: boolean;
   portrait: boolean;
   projectId: number;
+  versionId: number;
+  screensMetaMap: string[][];
 }
 
 export interface IProjectVersion {

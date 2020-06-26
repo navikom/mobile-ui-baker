@@ -37,6 +37,7 @@ const styles = [
 ];
 
 class GridStore extends ControlStore implements IGrid {
+
   constructor(id: string, style?: Map<string, ICSSProperty[]>) {
     super(ControlEnum.Grid, id, 'Grid', true);
     const keys = style ? Array.from(new Map(style).keys()) : [MAIN_CSS_STYLE];
@@ -44,7 +45,7 @@ class GridStore extends ControlStore implements IGrid {
   }
 
   @action clone(): IGrid {
-    const clone = CreateControl(ControlEnum.Grid);
+    const clone = CreateControl(ControlEnum.Grid) as IGrid;
     this.children.forEach(child => clone.addChild(child.clone() as IControl));
     super.cloneProps(clone);
     return clone;

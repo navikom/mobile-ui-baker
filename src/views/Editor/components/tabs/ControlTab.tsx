@@ -35,7 +35,9 @@ import { SharedControls } from 'models/Project/ControlsStore';
 import { SharedComponents } from 'models/Project/SharedComponentsStore';
 import { CreateForMenu } from 'models/Control/ControlStores';
 import { OwnComponents } from 'models/Project/OwnComponentsStore';
-import ProjectsStore from '../../../../models/Project/ProjectsStore';
+import ProjectsStore from 'models/Project/ProjectsStore';
+import CustomSelect from 'components/CustomSelect/CustomSelect';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -61,6 +63,12 @@ const useStyles = makeStyles(theme => ({
     padding: 5,
     backgroundColor: blackOpacity(0.02),
     opacity: 0.5
+  },
+  meta: {
+    marginTop: 5,
+    padding: 5,
+    backgroundColor: blackOpacity(0.02),
+    opacity: 0.8
   },
   tools: {
     padding: 3,
@@ -250,6 +258,8 @@ interface ControlDetailsProps {
   screens: IControl[];
   saveControl: (control: IControl, toFile?: boolean) => void;
   saveComponent: (control: IControl, toFile?: boolean) => void;
+  metaList: string[][];
+  setMeta: (meta: ScreenMetaEnum, control: IControl) => void;
 }
 
 const ControlDetails: React.FC<ControlDetailsProps> = observer((
@@ -262,9 +272,15 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
     saveControl,
     saveComponent,
     screens,
+    metaList,
+    setMeta
   }
 ) => {
   const classes = useStyles();
+  const screenMetaList = metaList.slice()
+  if(!screenMetaList.find(e => e[0] === control!.meta)) {
+    screenMetaList.push([control!.meta, dictionary.value(control!.meta)]);
+  }
   return (
     <div style={{ height: '100%' }}>
       <Tooltip
@@ -339,8 +355,32 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
         <Grid container className={classes.id}>
           <Typography variant="body2">#{control!.id}</Typography>
         </Grid>
+        {
+          control!.type === ControlEnum.Grid && (
+            <>
+              <Typography variant="subtitle2" align="center"
+                          className={classes.paragraph}>
+                {dictionary.defValue(EditorDictionary.keys.meta)}{' '}
+                ({dictionary.value(control!.meta)})
+              </Typography>
+              <Grid container className={classes.meta} alignItems="center">
+                <Grid item xs={12} sm={6} md={6}>
+                  <Typography>{dictionary.value(EditorDictionary.keys.availableMeta)}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6}>
+                  <CustomSelect fullWidth value={control!.meta} options={screenMetaList}
+                                onChange={(e) => setMeta(e as ScreenMetaEnum, control!)} />
+                </Grid>
+
+              </Grid>
+            </>
+          )
+        }
         <CSSProperties control={control as IControl} dictionary={dictionary} />
-        <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
+        {
+          control!.type === ControlEnum.Grid && !control!.hasImage &&
+          <ControlActions screens={screens} control={control as IControl} dictionary={dictionary} />
+        }
       </div>
 
     </div>
@@ -360,6 +400,8 @@ const Control: React.FC<IEditorTabsProps> = (
     deleteControl,
     importControl,
     importComponent,
+    metaList,
+    setMeta
   }
 ) => {
   const [element, setElement] = React.useState<IControl | undefined>();
@@ -392,6 +434,8 @@ const Control: React.FC<IEditorTabsProps> = (
             isSelected={isSelected}
             screens={screens as IControl[]}
             cloneControl={cloneControl}
+            metaList={metaList as string[][]}
+            setMeta={setMeta as (meta: ScreenMetaEnum, control: IControl) => void}
             dictionary={dictionary as EditorDictionary} />
       }
     </div>

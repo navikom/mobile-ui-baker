@@ -26,7 +26,7 @@ import {
 import EditorHistory, {
   ControlStatic,
   HIST_ADD_ACTION,
-  HIST_ADD_CSS_STYLE,
+  HIST_ADD_CSS_STYLE, HIST_CHANGE_META,
   HIST_CHANGE_TITLE,
   HIST_CONTROL_PROP_CHANGE,
   HIST_CSS_PROP,
@@ -40,6 +40,7 @@ import IHistory from 'interfaces/IHistory';
 import IProject from 'interfaces/IProject';
 import { boxShadow } from 'assets/jss/material-dashboard-react';
 import DelayEnum from 'enums/DelayEnum';
+import { ScreenMetaEnum } from '../../enums/ScreenMetaEnum';
 
 export const MAIN_CSS_STYLE = 'Main';
 
@@ -182,13 +183,14 @@ class ControlStore extends Movable implements IControl {
   @observable classes: IObservableArray<string> = observable([MAIN_CSS_STYLE]);
   @observable actions: IObservableArray<IObservableArray<string>> = observable([]);
   @observable saving = false;
+  @observable meta: ScreenMetaEnum = ScreenMetaEnum.COMPONENT;
   path: string[] = [];
   hashChildren?: string;
   hashChildrenWithStyle?: string;
   hashChildrenWithStyleAndTitles?: string;
   instance?: IProject;
 
-  get cssStylesJSON() {
+  @computed get cssStylesJSON() {
     const keys = Array.from(this.cssStyles.keys());
     const cssStyles = [];
     let l = keys.length, i = 0;
@@ -210,11 +212,12 @@ class ControlStore extends Movable implements IControl {
       id: this.id,
       lockedChildren: this.lockedChildren,
       allowChildren: this.allowChildren,
-      cssStyles: this.cssStylesJSON
+      cssStyles: this.cssStylesJSON,
+      meta: this.meta
     }
   }
 
-  get hasImage() {
+  @computed get hasImage() {
     const styles = this.cssStylesJSON;
     let l = styles.length;
     while (l--) {
@@ -245,28 +248,6 @@ class ControlStore extends Movable implements IControl {
       }
     }
     return false;
-  }
-
-  get sources() {
-    const array: string[][] = [];
-    const styles = this.cssStylesJSON;
-    let l = styles.length;
-    while (l--) {
-      const subStyles = styles[l] as {[key: string]: any}[];
-      let j = subStyles[1].length;
-      while (j--) {
-        const subStyle = subStyles[1][j];
-        if(['background', 'backgroundImage', 'mask', 'maskImage'].includes(subStyle.key)) {
-          const match = (subStyle.value as string).match(/url\((\S+)\)/i);
-          if(match) {
-            array.push([subStyles[0] as unknown as string, match[1].replace(/"|'/g, '')]);
-          } else {
-            array.push([subStyles[0], subStyle.value]);
-          }
-        }
-      }
-    }
-    return array;
   }
 
   get hashSumChildren() {
@@ -379,6 +360,10 @@ class ControlStore extends Movable implements IControl {
   @action deleteSelfTraverseChildren() {
     this.children.forEach(child => child.deleteSelfTraverseChildren());
     ControlStore.removeItem(this);
+  }
+
+  @action setMeta(meta: ScreenMetaEnum) {
+    this.meta = meta;
   }
 
   // ###### apply history start ######## //
@@ -600,13 +585,13 @@ class ControlStore extends Movable implements IControl {
     this.act(actions, cb);
   };
 
-  setChecksum(depth: number, path: string[], cb: (depth: number, item: IControl) => void) {
+  setChecksum(depth: number, path: string[], index: number, cb: (depth: number, i: number, item: IControl) => void) {
     this.hashChildren = sum(this.hashSumChildren);
     this.hashChildrenWithStyle = sum(this.hashSumChildrenWithStyles);
     this.hashChildrenWithStyleAndTitles = sum(this.hashSumChildrenWithStylesAndTitles);
     this.path = path;
-    cb(depth, this);
-    this.children.forEach(child => child.setChecksum(depth + 1, [...path, this.id], cb));
+    cb(depth, index, this);
+    this.children.forEach((child, j) => child.setChecksum(depth + 1, [...path, this.id], j, cb));
   }
 
   clone(): IControl {
@@ -677,6 +662,7 @@ class ControlStore extends Movable implements IControl {
     control.lockedChildren = json.lockedChildren;
     json.actions && control.actions.replace(json.actions.map(actions => observable(actions)));
     json.classes && control.classes.replace(json.classes);
+    json.meta && (control.meta = json.meta);
     control.mergeStyles(new Map(json.cssStyles));
     if (control.cssStyles.size > 1 && !isMenu) {
       Array.from(control.cssStyles.keys())

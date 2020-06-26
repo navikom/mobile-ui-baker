@@ -2,15 +2,14 @@ import { action, computed, observable, runInAction } from 'mobx';
 import html2canvas from 'html2canvas';
 
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
-import IControl from 'interfaces/IControl';
+import IControl, { IGrid } from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import { DropEnum } from 'enums/DropEnum';
 import CreateControl from 'models/Control/ControlStores';
 import {
-  HIST_ADD_SCREEN,
+  HIST_ADD_SCREEN, HIST_CHANGE_META,
   HIST_CLONE_CONTROL,
   HIST_CLONE_SCREEN,
-  HIST_CURRENT_SCREEN,
   HIST_DELETE_SCREEN,
   HIST_DROP,
   HIST_DROP_INDEX,
@@ -42,7 +41,8 @@ import DisplayViewStore from 'models/DisplayViewStore';
 import { whiteColor } from 'assets/jss/material-dashboard-react';
 import { OwnProjects } from 'models/Project/OwnProjectsStore';
 import AccessEnum from 'enums/AccessEnum';
-import GenerateService from '../../../services/Generator/GenerateService';
+import GenerateService from 'services/Generator/reactNative/GenerateService';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -75,8 +75,13 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   get toJSON() {
+    const screensMetaMap: any[] = [];
+    this.screensMetaMap.forEach((value, key) => {
+      screensMetaMap.push([key, Array.from(value.entries())]);
+    });
     return {
       screens: this.screens.map(e => e.toJSON),
+      screensMetaMap: screensMetaMap,
       navigation: this.navigation,
       background: this.background,
       statusBarEnabled: this.statusBarEnabled,
@@ -85,12 +90,20 @@ class EditorViewStore extends DisplayViewStore {
       title: this.project.title,
       ios: this.ios,
       portrait: this.portrait,
-      projectId: this.project ? this.project.projectId : 0
+      projectId: this.project ? this.project.projectId : 0,
+      versionId: this.project ? this.project.version.versionId : 0
     }
   }
 
   get toJSONString() {
     return JSON.stringify(this.toJSON);
+  }
+
+  @computed get currentScreenMetaList() {
+    const screenMetaMap = this.screensMetaMap.get(this.currentScreen.id);
+    return Object.values(ScreenMetaEnum)
+      .filter(value => !(screenMetaMap && screenMetaMap.has(value as ScreenMetaEnum)))
+      .map(value => [value, this.dictionary.value(value)]);
   }
 
   @computed get tabProps() {
@@ -129,7 +142,9 @@ class EditorViewStore extends DisplayViewStore {
         saveControl: this.saveControl,
         saveComponent: this.saveComponent,
         importControl: () => this.importControl(),
-        importComponent: () => this.importComponent()
+        importComponent: () => this.importComponent(),
+        metaList: this.currentScreenMetaList,
+        setMeta: (meta: ScreenMetaEnum, control: IControl) => this.setMeta(meta, control)
       }
     ];
     return props[this.tabToolsIndex];
@@ -351,7 +366,8 @@ class EditorViewStore extends DisplayViewStore {
     App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
   }
 
-  @action async deleteProject() {
+  @action
+  async deleteProject() {
     try {
       await OwnProjects.delete(this.project);
       runInAction(() => {
@@ -383,18 +399,18 @@ class EditorViewStore extends DisplayViewStore {
 
   @action
   async fetchProjectData(projectId: number) {
-    if(this.project.projectId === projectId && this.autoSave) {
+    if (this.project.projectId === projectId && this.autoSave) {
       return;
     }
     this.setFetchingProject(true);
     try {
       await super.fetchProjectData(projectId);
-      if(!App.user || !App.loggedIn || (this.project.owner && this.project.owner.userId !== App.user.userId)) {
-        if(this.project) {
-          if(this.project.access === AccessEnum.READ_BY_LINK) {
+      if (!App.user || !App.loggedIn || (this.project.owner && this.project.owner.userId !== App.user.userId)) {
+        if (this.project) {
+          if (this.project.access === AccessEnum.READ_BY_LINK) {
             App.navigationHistory && App.navigationHistory.replace(`${ROUTE_SCREENS}/${this.project.projectId}`);
-          } else if(this.project.access !== AccessEnum.EDIT_BY_LINK) {
-            this.project = ProjectStore.from({...this.project, projectId: 0, userId: App.user!.userId});
+          } else if (this.project.access !== AccessEnum.EDIT_BY_LINK) {
+            this.project = ProjectStore.from({ ...this.project, projectId: 0, userId: App.user!.userId });
             App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
           }
         }
@@ -407,7 +423,8 @@ class EditorViewStore extends DisplayViewStore {
     this.setFetchingProject(false);
   }
 
-  @action async setAccess(access: AccessEnum) {
+  @action
+  async setAccess(access: AccessEnum) {
     try {
       await ProjectsStore.setAccess(this.project, access);
     } catch (e) {
@@ -508,7 +525,28 @@ class EditorViewStore extends DisplayViewStore {
     this.save();
   }
 
+  @action setScreenMeta(meta: ScreenMetaEnum, screen: IControl, control: IGrid) {
+    if (!this.screensMetaMap.has(screen.id)) {
+      this.screensMetaMap.set(screen.id, new Map());
+    }
+    const screenMetaMap = this.screensMetaMap.get(screen.id) as Map<ScreenMetaEnum, string>;
+    if (screenMetaMap.has(control.meta)) {
+      screenMetaMap.delete(control.meta);
+    }
+    if (meta !== ScreenMetaEnum.COMPONENT) {
+      screenMetaMap.set(meta, control.id);
+    }
+    control.setMeta(meta);
+  }
+
   // ####### apply history start ######## //
+
+  @action setMeta(meta: ScreenMetaEnum, control: IControl, noHistory?: boolean) {
+    const undo = { control: control.id, meta: control.meta };
+    this.setScreenMeta(meta, this.currentScreen, control as IGrid);
+    const redo = { control: control.id, meta: control.meta };
+    !noHistory && ControlStore.history.add([HIST_CHANGE_META, undo, redo]);
+  }
 
   @action switchMode() {
     const undo = { control: this.currentScreen.id, key: 'mode', value: this.mode } as unknown as IHistoryObject;
@@ -792,13 +830,6 @@ class EditorViewStore extends DisplayViewStore {
     this.history.add([HIST_HANDLE_DROP_CANVAS, undo, redo]);
   };
 
-  @action setCurrentScreen(screen: IControl, behavior?: string[], noHistory?: boolean) {
-    const undo = { control: this.currentScreen.id };
-    super.setCurrentScreen(screen, behavior);
-    const redo = { control: this.currentScreen.id };
-    !noHistory && this.history.add([HIST_CURRENT_SCREEN, undo, redo]);
-  }
-
   @action addScreen = () => {
     const screen = CreateControl(ControlEnum.Grid);
     screen.changeTitle('Screen');
@@ -845,13 +876,22 @@ class EditorViewStore extends DisplayViewStore {
 
   // ####### apply history end ######## //
 
+  @action setCurrentScreen(screen: IControl, behavior?: string[]) {
+    super.setCurrentScreen(screen, behavior);
+  }
+
   @action spliceScreen(screen: IControl, index: number) {
     this.screens.splice(index, 0, screen);
   }
 
-  @action selectControl = (control?: IControl) => {
+  @action selectControl = (control?: IControl, screen?: IControl) => {
     this.tabToolsIndex = 1;
     this.selectedControl = control;
+    if(control && screen) {
+      if(this.currentScreen !== screen) {
+        this.setCurrentScreen(screen);
+      }
+    }
   };
 
   @action addItem(control: IControl) {

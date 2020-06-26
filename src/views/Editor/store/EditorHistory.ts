@@ -5,8 +5,10 @@ import { ControlEnum } from "enums/ControlEnum";
 import { Mode } from "enums/ModeEnum";
 import IProject, { IBackgroundColor } from "interfaces/IProject";
 import isTests from "utils/isTests";
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 
 export const HIST_CHANGE_TITLE = "changeTitle";
+export const HIST_CHANGE_META = "changeMeta";
 export const HIST_DELETE_SELF = "deleteSelf";
 export const HIST_ADD_CSS_STYLE = "addCSSStyle";
 export const HIST_RENAME_CSS_STYLE = "renameCSSStyle";
@@ -125,6 +127,9 @@ class EditorHistory implements IHistory {
       case HIST_CHANGE_TITLE:
         control.changeTitle(object.title as string, true);
         break;
+      case HIST_CHANGE_META:
+        this.viewStore!.setMeta(object.meta as ScreenMetaEnum, control, true);
+        break;
       case HIST_DELETE_SELF:
         if (control.parentId) {
           const parent = this.store.getById(control.parentId);
@@ -233,6 +238,10 @@ class EditorHistory implements IHistory {
       case HIST_CHANGE_TITLE:
         // "need to set title" { control: this.id, title }
         control.changeTitle(object.title as string, true);
+        break;
+      case HIST_CHANGE_META:
+        // "need to set meta" { control: this.id, meta }
+        this.viewStore!.setMeta(object.meta as ScreenMetaEnum, control, true);
         break;
       case HIST_DELETE_SELF:
         // delete control { control: this.id }

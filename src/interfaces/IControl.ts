@@ -5,6 +5,7 @@ import { DropEnum } from 'enums/DropEnum';
 import IMovable from 'interfaces/IMovable';
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IProject from 'interfaces/IProject';
+import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 
 export default interface IControl extends IMovable {
   type: ControlEnum;
@@ -31,8 +32,7 @@ export default interface IControl extends IMovable {
   cssStylesJSON: (string | { [key: string]: string | number | boolean | undefined | null }[])[][];
   hasImage: boolean;
   hasSVG: boolean;
-
-  sources: string[][];
+  meta: ScreenMetaEnum;
 
   setId(value: string): void;
 
@@ -84,11 +84,13 @@ export default interface IControl extends IMovable {
 
   setInstance(instance?: IProject): void;
 
-  setChecksum(depth: number, path: string[], cb: (depth: number, item: IControl) => void): void;
+  setChecksum(depth: number, path: string[], index: number, cb: (depth: number, i: number, item: IControl) => void): void;
 
   deleteSelfTraverseChildren(): void;
 
   toString(): string;
+
+  setMeta(meta: ScreenMetaEnum): void;
 
   /// property
   switchExpanded(key: string, propName: string): () => void;
@@ -100,6 +102,8 @@ export default interface IControl extends IMovable {
   applyPropertyMethod(styleKey: string, method: string, propName: string, value?: string | number | boolean): void;
 }
 
-export type IGrid = IControl
+export interface IGrid extends IControl {
+  clone(): IGrid;
+}
 
-export type IText = IControl
+export type IText = IControl;

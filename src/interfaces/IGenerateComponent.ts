@@ -6,10 +6,10 @@ interface IGenerateComponent {
   hash: string;
   nameSpace: string;
   depth: number;
+  styles: Map<string, { [key: string]: any }>;
 
   addControl(control: IControl): void;
   generateNameSpace(cb: (name: string) => string): void;
-  generateChildren(getNameSpace: (hash: string) => string): string;
   stylesString(): string;
   generateComponentString(): string;
   toString(): string;

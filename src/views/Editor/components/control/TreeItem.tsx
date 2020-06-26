@@ -78,8 +78,9 @@ interface ElementProps extends ControlProps {
   elementRef: RefObject<HTMLDivElement>;
   level: number;
   cloneControl: (control: IControl) => void;
-  selectControl: (control?: IControl) => void;
+  selectControl: (control?: IControl, screen?: IControl) => void;
   isSelected: (control: IControl) => boolean;
+  screen: IControl;
 }
 
 const ElementComponent: React.FC<ElementProps> =
@@ -94,7 +95,8 @@ const ElementComponent: React.FC<ElementProps> =
        level,
        cloneControl,
        selectControl,
-       isSelected
+       isSelected,
+       screen
      }) => {
       const { title, dropTarget, allowChildren, children, changeTitle, opened, switchOpened, lockedChildren } = control;
       const classes = useStyles();
@@ -147,7 +149,7 @@ const ElementComponent: React.FC<ElementProps> =
               className={inputClass}
               value={title}
               onChange={(e) => changeTitle(e.currentTarget.value)}
-              onClick={() => selectControl(control)}
+              onClick={() => selectControl(control, screen)}
             />
             <IconButton size="small" onClick={control.switchVisibility} style={{marginLeft: "auto"}}>
               {control.visible ? <Visibility /> : <VisibilityOff color="disabled" />}
@@ -173,6 +175,7 @@ const ElementComponent: React.FC<ElementProps> =
                 cloneControl={cloneControl}
                 selectControl={selectControl}
                 isSelected={isSelected}
+                screen={screen}
               />)
             }
           </div>
@@ -185,6 +188,7 @@ interface ControlItemProps extends ControlProps {
   cloneControl: (control: IControl) => void;
   selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
+  screen: IControl;
 }
 
 const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
@@ -201,7 +205,8 @@ const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
      level,
      cloneControl,
      selectControl,
-     isSelected
+     isSelected,
+     screen
    }, ref) => {
     const elementRef = React.useRef<HTMLDivElement>(null);
     useImperativeHandle(ref, () => ({
@@ -226,6 +231,7 @@ const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
         cloneControl={cloneControl}
         selectControl={selectControl}
         isSelected={isSelected}
+        screen={screen}
       />
     )
   });

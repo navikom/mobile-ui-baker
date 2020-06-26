@@ -51,12 +51,13 @@ interface ScreenComponentProps {
   handleDropCanvas: (item: DragAndDropItem) => void;
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   cloneControl: (control: IControl) => void;
-  selectControl: (control?: IControl) => void;
+  selectControl: (control?: IControl, screen?: IControl) => void;
   isSelected: (control: IControl) => boolean;
+  screen: IControl;
 }
 
 const ScreenComponent: React.FC<ScreenComponentProps> = observer(
-  ({ opened, controls, moveControl, handleDropElement, handleDropCanvas, cloneControl, selectControl, isSelected }) => {
+  ({ opened, controls, moveControl, handleDropElement, handleDropCanvas, cloneControl, selectControl, isSelected, screen }) => {
     const classes = useStyles();
     const list = classNames({
       [classes.list]: true,
@@ -74,6 +75,7 @@ const ScreenComponent: React.FC<ScreenComponentProps> = observer(
           cloneControl={cloneControl}
           selectControl={selectControl}
           isSelected={isSelected}
+          screen={screen}
         />)
       }
     </div>
@@ -109,7 +111,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
     cloneScreen,
     cloneControl,
     selectControl,
-    isSelected
+    isSelected,
   }) => {
   const classes = useStyles();
   return (
@@ -156,6 +158,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
             cloneControl={cloneControl}
             selectControl={selectControl}
             isSelected={isSelected}
+            screen={screen}
           />
         </div>
       ))}

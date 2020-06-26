@@ -3,10 +3,12 @@ import IControl from "interfaces/IControl";
 import { Mode } from "enums/ModeEnum";
 import IProject, { IBackgroundColor } from "interfaces/IProject";
 import IMobileUIView from './IMobileUIView';
+import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 
 export interface IHistoryObject {
   control: string | { [key: string]: any };
   title?: string;
+  meta?: ScreenMetaEnum;
   key?: string;
   oldKey?: string;
   style?: { [key: string]: any }[];
@@ -29,6 +31,7 @@ export interface ViewStore extends IMobileUIView {
   setScreen(screen: IControl): void;
   spliceScreen(screen: IControl, index: number): void;
   save(): void;
+  setMeta(meta: ScreenMetaEnum, control: IControl, noHistory?: boolean): void;
 }
 
 export type SettingsPropType = "mode" | "background" | "statusBarColor";

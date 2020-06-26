@@ -3,6 +3,7 @@ import IControl from 'interfaces/IControl';
 import { Mode } from 'enums/ModeEnum';
 import IProject, { IBackgroundColor } from 'interfaces/IProject';
 import AccessEnum from '../enums/AccessEnum';
+import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 
 export default interface IEditorTabsProps {
   mode?: Mode;
@@ -37,4 +38,6 @@ export default interface IEditorTabsProps {
   navigation?: (string | number)[];
   setNavigation?: (navigation: (string | number)[]) => void;
   generate?: () => void;
+  metaList?: string[][];
+  setMeta?: (meta: ScreenMetaEnum, control: IControl) => void;
 }

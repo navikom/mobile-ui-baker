@@ -2,7 +2,7 @@ import { action, IObservableArray, observable, runInAction } from 'mobx';
 import { Errors } from 'models/Errors';
 import { ControlEnum } from 'enums/ControlEnum';
 import IControl from 'interfaces/IControl';
-import IProject, { IBackgroundColor, IProjectData } from 'interfaces/IProject';
+import IProject, { IBackgroundColor, IProjectData, IProjectVersion } from 'interfaces/IProject';
 import { whiteColor } from 'assets/jss/material-dashboard-react';
 import { Mode } from 'enums/ModeEnum';
 import PluginStore from 'models/PluginStore';
@@ -17,6 +17,7 @@ import html2canvas from 'html2canvas';
 import AnimationEnum, { AnimationDirectionEnum } from '../enums/AnimationEnum';
 import { FIRST_CONTAINER, SECOND_CONTAINER } from './Constants';
 import ScreenSwitcherEnum from 'enums/ScreenSwitcherEnum';
+import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 
 export const getSwitcherParams = (list: (string | number)[], screenSwitcher: ScreenSwitcherEnum) => {
   if (Number(list[0]) === screenSwitcher) {
@@ -48,6 +49,7 @@ class DisplayViewStore extends Errors {
   @observable loadingPlugin = false;
   @observable firstContainerVisible = true;
   @observable navigation: (string | number)[] = [ScreenSwitcherEnum.NEXT, AnimationEnum.SLIDE, AnimationDirectionEnum.LEFT, 500];
+  @observable screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
   pluginStore: PluginStore = new PluginStore(this);
 
   debug = false;
@@ -138,6 +140,8 @@ class DisplayViewStore extends Errors {
     data.navigation && (this.navigation = data.navigation);
     this.project.update({ title: data.title } as IProject);
     data.projectId !== undefined && data.projectId !== 0 && this.project.setId(data.projectId);
+    data.versionId !== undefined && data.versionId !== 0 && this.project.version.update({versionId: data.versionId} as IProjectVersion);
+    data.screensMetaMap && (this.screensMetaMap = new Map(data.screensMetaMap.map(e => [e[0], new Map(e[1] as any)])));
   }
 
   @action switchStatusBar() {

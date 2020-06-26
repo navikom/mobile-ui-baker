@@ -98,7 +98,13 @@ export const data = {
   orientation: 'Orientation',
   current: 'Current',
   next: 'Next',
-  navigationAnimations: 'Navigation Animations'
+  navigationAnimations: 'Navigation Animations',
+  header: 'header',
+  leftDrawer: 'left drawer',
+  rightDrawer: 'right drawer',
+  tabs: 'tabs',
+  meta: 'meta',
+  availableMeta: 'Available Meta'
 };
 
 class EditorDictionary extends AbstractDictionary {

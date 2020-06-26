@@ -125,8 +125,10 @@ export const ElementComponent: React.FC<ElementProps> =
               return;
             }
             selectControl && selectControl(control);
-            control.applyActions(setCurrentScreen);
-            e.stopPropagation();
+            if(!control.hasImage) {
+              control.applyActions(setCurrentScreen);
+              e.stopPropagation();
+            }
           }}
           ref={elementRef}
           style={{
