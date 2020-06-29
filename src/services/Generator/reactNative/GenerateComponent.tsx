@@ -15,10 +15,11 @@ import {
 } from '../Constants';
 import { ControlEnum } from 'enums/ControlEnum';
 import { importFrom } from '../utils';
-import { blockStyle, specificRules } from './ReactNativeStyleDictionary';
+import { blockStyle, metaRules, specificRules } from './ReactNativeStyleDictionary';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';
 import IGenerateService from 'interfaces/IGenerateService';
+import { ScreenMetaEnum } from '../../../enums/ScreenMetaEnum';
 
 class GenerateComponent implements IGenerateComponent {
   generator: IGenerateService;
@@ -65,7 +66,8 @@ class GenerateComponent implements IGenerateComponent {
         rule && Object.assign(styles[k], rule);
       });
     });
-    return styles;
+
+    return control.meta === ScreenMetaEnum.COMPONENT ? styles : metaRules[control.meta](styles);
   }
 
   addControl(control: IControl) {
@@ -89,7 +91,7 @@ class GenerateComponent implements IGenerateComponent {
     let content = importFrom([STYLE_SHEET]) + ';\n';
     content += `\nconst styles = {\n`;
     this.styles.forEach((value, key) => {
-      content += `  "${key}": ${STYLE_SHEET}.create(` + JSON.stringify(value, null, 4) + '),\n';
+      content += `  "${key}": ${STYLE_SHEET}.create(` + JSON.stringify(value, null, 2) + '),\n';
     });
     content += `};\nexport default styles;`;
     return content;

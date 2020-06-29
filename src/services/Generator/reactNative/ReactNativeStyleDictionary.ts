@@ -39,6 +39,30 @@ export const specificRules = {
   }
 }
 
+const clearDrawerStyles = (styles: {[key: string]: any}) => {
+  const keys = Object.keys(styles);
+  let l = keys.length;
+  while (l--) {
+    const k = keys[l];
+    ['position', 'width', 'height', 'top', 'left', 'bottom', 'right', 'overflow'].forEach(rule => {
+      if({}.propertyIsEnumerable.call(styles[k], rule)) {
+        delete styles[k][rule];
+      }
+    });
+    Object.assign(styles[k], {flex: 1});
+    Object.assign(styles.Main, styles[k]);
+  }
+  return styles;
+}
+
+export const metaRules = {
+  leftDrawer: clearDrawerStyles,
+  rightDrawer: clearDrawerStyles,
+  tabs: (styles: { [key: string]: any }) => {
+    return styles;
+  }
+}
+
 export const reactNativeImage = {
   imageMode: (backgroundRepeat?: ICSSProperty, backgroundSize?: ICSSProperty, backgroundPosition?: ICSSProperty) => {
     if (backgroundRepeat && backgroundRepeat.enabled && backgroundRepeat.value === 'no-repeat' &&

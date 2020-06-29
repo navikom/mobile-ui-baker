@@ -1,19 +1,20 @@
 import React from 'react';
-import IScreenStoreContent from 'interfaces/IScreenStoreContent';
+import IStoreContent from 'interfaces/IStoreContent';
 import ITransitStyle from 'interfaces/ITransitSyle';
 
-class ScreenStoreContent implements IScreenStoreContent {
+class StoreContent implements IStoreContent {
   path: string[];
   id: string;
+  screenId: string;
   styleId: string;
   classes: string[];
   placeIndex: number[];
   action?: string[][];
-  isObservable:boolean;
+  isObservable: boolean;
   title: string;
   text?: string;
   transitStyles?: ITransitStyle[];
-  children: IScreenStoreContent[] = [];
+  children: IStoreContent[] = [];
   hash: string
 
   get hasAction() {
@@ -23,6 +24,7 @@ class ScreenStoreContent implements IScreenStoreContent {
   get toJSON() {
     return {
       id: this.id,
+      screenId: this.screenId,
       title: this.title,
       path: this.path,
       classes: this.classes,
@@ -36,6 +38,7 @@ class ScreenStoreContent implements IScreenStoreContent {
 
   constructor(
     id: string,
+    screenId: string,
     path: string[],
     classes: string[],
     styleId: string,
@@ -48,6 +51,7 @@ class ScreenStoreContent implements IScreenStoreContent {
     text?: string
   ) {
     this.id = id;
+    this.screenId = screenId;
     this.path = path;
     action && action.length > 0 && (this.action = action);
     this.text = text;
@@ -60,7 +64,7 @@ class ScreenStoreContent implements IScreenStoreContent {
     this.transitStyles = transitStyles;
   }
 
-  add(child: IScreenStoreContent) {
+  add(child: IStoreContent) {
     this.children.push(child);
   }
 
@@ -83,4 +87,4 @@ class ScreenStoreContent implements IScreenStoreContent {
 
 }
 
-export default ScreenStoreContent;
+export default StoreContent;

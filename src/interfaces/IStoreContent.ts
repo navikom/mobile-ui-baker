@@ -1,9 +1,10 @@
 import React from 'react';
 import ITransitStyle from './ITransitSyle';
 
-interface IScreenStoreContent {
+interface IStoreContent {
   path: string[];
   id: string;
+  screenId: string;
   classes: string[];
   styleId: string;
   placeIndex: number[];
@@ -13,12 +14,12 @@ interface IScreenStoreContent {
   action?: string[][];
   text?: string;
   transitStyles?: ITransitStyle[];
-  children: IScreenStoreContent[];
+  children: IStoreContent[];
 
   hasAction: boolean;
-  add(child: IScreenStoreContent): void;
+  add(child: IStoreContent): void;
   toJSON: { [key: string]: any };
   toString(component: React.FC): string;
 }
 
-export default IScreenStoreContent;
+export default IStoreContent;
