@@ -1,6 +1,8 @@
 import React from 'react';
 import IStoreContent from 'interfaces/IStoreContent';
 import ITransitStyle from 'interfaces/ITransitSyle';
+import { TextMetaEnum } from 'enums/TextMetaEnum';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 
 class StoreContent implements IStoreContent {
   path: string[];
@@ -15,7 +17,8 @@ class StoreContent implements IStoreContent {
   text?: string;
   transitStyles?: ITransitStyle[];
   children: IStoreContent[] = [];
-  hash: string
+  hash: string;
+  meta: ScreenMetaEnum | TextMetaEnum;
 
   get hasAction() {
     return this.action !== undefined && this.action.length > 0;
@@ -46,6 +49,7 @@ class StoreContent implements IStoreContent {
     title: string,
     hash: string,
     isObservable: boolean,
+    meta: ScreenMetaEnum | TextMetaEnum,
     transitStyles?: ITransitStyle[],
     action?: string[][],
     text?: string
@@ -60,6 +64,7 @@ class StoreContent implements IStoreContent {
     this.placeIndex = placeIndex;
     this.hash = hash;
     this.isObservable = isObservable;
+    this.meta = meta;
     this.title = title;
     this.transitStyles = transitStyles;
   }
@@ -79,6 +84,7 @@ class StoreContent implements IStoreContent {
     content += `    transitStyles: ${JSON.stringify(this.transitStyles)},\n`;
     content += `    action: ${JSON.stringify(this.action)},\n`;
     content += `    text: "${this.text}",\n`;
+    content += `    meta: "${this.meta}",\n`;
     content += `    placeIndex: ${JSON.stringify(this.placeIndex)},\n`;
     content += `    component: ${component}\n`;
     content += '  }'

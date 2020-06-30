@@ -600,5 +600,5 @@ export default {
   ifYouStillDontHaveAnAnswer: 'If you still don\'t have an answer to your questions feel free to contact us via email.',
   images: 'images',
   actions: 'actions',
-  icons: 'icons'
+  icons: 'icons',
 };

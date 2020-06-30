@@ -5,7 +5,7 @@ interface ITransitStyle {
   isSvg: boolean;
   enabled: boolean;
   src?: string;
-  style?: { resizeMode?: string; color?: string };
+  style?: { resizeMode?: string; color?: string; width?: string | number; height?: string | number};
   gradient?: ReactNativeGradient;
   scroll?: { horizontal: boolean };
 }

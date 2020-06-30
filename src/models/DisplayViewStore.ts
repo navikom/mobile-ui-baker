@@ -141,7 +141,12 @@ class DisplayViewStore extends Errors {
     this.project.update({ title: data.title } as IProject);
     data.projectId !== undefined && data.projectId !== 0 && this.project.setId(data.projectId);
     data.versionId !== undefined && data.versionId !== 0 && this.project.version.update({versionId: data.versionId} as IProjectVersion);
-    data.screensMetaMap && (this.screensMetaMap = new Map(data.screensMetaMap.map(e => [e[0], new Map(e[1] as any)])));
+    if(data.screensMetaMap) {
+      this.screensMetaMap = new Map(data.screensMetaMap.map(e => [e[0], new Map(e[1] as any)]));
+    } else {
+      this.screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
+    }
+
   }
 
   @action switchStatusBar() {

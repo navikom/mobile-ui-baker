@@ -6,6 +6,7 @@ import IMovable from 'interfaces/IMovable';
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IProject from 'interfaces/IProject';
 import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
+import { TextMetaEnum } from '../enums/TextMetaEnum';
 
 export default interface IControl extends IMovable {
   type: ControlEnum;
@@ -32,7 +33,7 @@ export default interface IControl extends IMovable {
   cssStylesJSON: (string | { [key: string]: string | number | boolean | undefined | null }[])[][];
   hasImage: boolean;
   hasSVG: boolean;
-  meta: ScreenMetaEnum;
+  meta: ScreenMetaEnum | TextMetaEnum;
 
   setId(value: string): void;
 
@@ -90,7 +91,7 @@ export default interface IControl extends IMovable {
 
   toString(): string;
 
-  setMeta(meta: ScreenMetaEnum): void;
+  setMeta(meta: ScreenMetaEnum | TextMetaEnum): void;
 
   /// property
   switchExpanded(key: string, propName: string): () => void;

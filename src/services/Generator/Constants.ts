@@ -13,6 +13,7 @@ export const TEXT_COMP = 'Text';
 export const IMAGE_COMP = 'Image';
 export const IMAGE_BACKGROUND_COMP = 'ImageBackground';
 export const TOUCHABLE_OPACITY_COMP = 'TouchableOpacity';
+export const TEXT_INPUT_COMP = 'TextInput';
 export const SCROLL_VIEW_COMP = 'ScrollView';
 export const FLAT_LIST_COMP = 'FlatList';
 export const LINEAR_GRADIENT_COMP = 'LinearGradient';
@@ -45,4 +46,6 @@ export const LEFT_DRAWER = 'LeftDrawer';
 export const RIGHT_DRAWER = 'RightDrawer';
 export const TABS = 'Tabs';
 export const STORE_BASE = 'StoreBase';
+export const APP_STORE = 'AppStore';
+export const SCREEN_ID_VARIABLE = 'screenId';
 

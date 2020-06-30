@@ -104,7 +104,9 @@ export const data = {
   rightDrawer: 'right drawer',
   tabs: 'tabs',
   meta: 'meta',
-  availableMeta: 'Available Meta'
+  availableMeta: 'Available Meta',
+  input: 'input',
+  textArea: 'text area'
 };
 
 class EditorDictionary extends AbstractDictionary {

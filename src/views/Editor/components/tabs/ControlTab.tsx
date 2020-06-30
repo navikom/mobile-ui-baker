@@ -38,6 +38,7 @@ import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import ProjectsStore from 'models/Project/ProjectsStore';
 import CustomSelect from 'components/CustomSelect/CustomSelect';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import { TextMetaEnum } from '../../../../enums/TextMetaEnum';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -259,7 +260,7 @@ interface ControlDetailsProps {
   saveControl: (control: IControl, toFile?: boolean) => void;
   saveComponent: (control: IControl, toFile?: boolean) => void;
   metaList: string[][];
-  setMeta: (meta: ScreenMetaEnum, control: IControl) => void;
+  setMeta: (meta: ScreenMetaEnum | TextMetaEnum, control: IControl) => void;
 }
 
 const ControlDetails: React.FC<ControlDetailsProps> = observer((
@@ -277,10 +278,12 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
   }
 ) => {
   const classes = useStyles();
-  const screenMetaList = metaList.slice()
-  if(!screenMetaList.find(e => e[0] === control!.meta)) {
+  const screenMetaList = metaList.slice();
+  const textMetaList = Object.values(TextMetaEnum).map(e => [e, dictionary.value(e)]);
+  if (!screenMetaList.find(e => e[0] === control!.meta)) {
     screenMetaList.push([control!.meta, dictionary.value(control!.meta)]);
   }
+
   return (
     <div style={{ height: '100%' }}>
       <Tooltip
@@ -355,27 +358,27 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
         <Grid container className={classes.id}>
           <Typography variant="body2">#{control!.id}</Typography>
         </Grid>
-        {
-          control!.type === ControlEnum.Grid && (
-            <>
-              <Typography variant="subtitle2" align="center"
-                          className={classes.paragraph}>
-                {dictionary.defValue(EditorDictionary.keys.meta)}{' '}
-                ({dictionary.value(control!.meta)})
-              </Typography>
-              <Grid container className={classes.meta} alignItems="center">
-                <Grid item xs={12} sm={6} md={6}>
-                  <Typography>{dictionary.value(EditorDictionary.keys.availableMeta)}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6}>
-                  <CustomSelect fullWidth value={control!.meta} options={screenMetaList}
-                                onChange={(e) => setMeta(e as ScreenMetaEnum, control!)} />
-                </Grid>
-
-              </Grid>
-            </>
-          )
-        }
+        <Typography variant="subtitle2" align="center"
+                    className={classes.paragraph}>
+          {dictionary.defValue(EditorDictionary.keys.meta)}{' '}
+          ({dictionary.value(control!.meta)})
+        </Typography>
+        <Grid container className={classes.meta} alignItems="center">
+          <Grid item xs={12} sm={6} md={6}>
+            <Typography>{dictionary.value(EditorDictionary.keys.availableMeta)}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={6}>
+            {
+              control!.type === ControlEnum.Grid ? (
+                <CustomSelect fullWidth value={control!.meta} options={screenMetaList}
+                              onChange={(e) => setMeta(e as ScreenMetaEnum, control!)} />
+              ) : (
+                <CustomSelect fullWidth value={control!.meta} options={textMetaList}
+                              onChange={(e) => setMeta(e as TextMetaEnum, control!)} />
+              )
+            }
+          </Grid>
+        </Grid>
         <CSSProperties control={control as IControl} dictionary={dictionary} />
         {
           control!.type === ControlEnum.Grid && !control!.hasImage &&
@@ -435,7 +438,7 @@ const Control: React.FC<IEditorTabsProps> = (
             screens={screens as IControl[]}
             cloneControl={cloneControl}
             metaList={metaList as string[][]}
-            setMeta={setMeta as (meta: ScreenMetaEnum, control: IControl) => void}
+            setMeta={setMeta as (meta: ScreenMetaEnum | TextMetaEnum, control: IControl) => void}
             dictionary={dictionary as EditorDictionary} />
       }
     </div>

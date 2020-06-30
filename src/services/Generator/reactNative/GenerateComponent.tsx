@@ -19,7 +19,6 @@ import { blockStyle, metaRules, specificRules } from './ReactNativeStyleDictiona
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';
 import IGenerateService from 'interfaces/IGenerateService';
-import { ScreenMetaEnum } from '../../../enums/ScreenMetaEnum';
 
 class GenerateComponent implements IGenerateComponent {
   generator: IGenerateService;
@@ -49,25 +48,23 @@ class GenerateComponent implements IGenerateComponent {
           return;
         }
         let rule = specificRules[item.key as 'display'] && specificRules[item.key as 'display'](item, control);
-
         if(!rule) {
           try {
             const propName = getPropertyName(item.key);
 
-            const value = item.unit ? item.value.toString() + item.unit : item.value;
+            const value = item.unit ? item.value.toString() + item.unit : item.value.toString();
             rule = getStylesForProperty(propName, value);
           } catch (e) {
             this.generator.addToTransitionErrors(
               'Control #' + control.id + ' Error: ' + e.message
             )
           }
-
         }
         rule && Object.assign(styles[k], rule);
       });
     });
 
-    return control.meta === ScreenMetaEnum.COMPONENT ? styles : metaRules[control.meta](styles);
+    return metaRules[control.meta](styles);
   }
 
   addControl(control: IControl) {

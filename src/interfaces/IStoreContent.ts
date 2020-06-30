@@ -1,5 +1,7 @@
 import React from 'react';
 import ITransitStyle from './ITransitSyle';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import { TextMetaEnum } from 'enums/TextMetaEnum';
 
 interface IStoreContent {
   path: string[];
@@ -15,6 +17,7 @@ interface IStoreContent {
   text?: string;
   transitStyles?: ITransitStyle[];
   children: IStoreContent[];
+  meta: ScreenMetaEnum | TextMetaEnum;
 
   hasAction: boolean;
   add(child: IStoreContent): void;

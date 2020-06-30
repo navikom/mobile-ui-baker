@@ -7,7 +7,8 @@ import { ControlEnum } from 'enums/ControlEnum';
 import { DropEnum } from 'enums/DropEnum';
 import CreateControl from 'models/Control/ControlStores';
 import {
-  HIST_ADD_SCREEN, HIST_CHANGE_META,
+  HIST_ADD_SCREEN,
+  HIST_CHANGE_META,
   HIST_CLONE_CONTROL,
   HIST_CLONE_SCREEN,
   HIST_DELETE_SCREEN,
@@ -31,7 +32,8 @@ import {
   ERROR_DATA_IS_INCOMPATIBLE,
   ERROR_ELEMENT_DOES_NOT_EXIST,
   ERROR_USER_DID_NOT_LOGIN,
-  ROUTE_EDITOR, ROUTE_SCREENS
+  ROUTE_EDITOR,
+  ROUTE_SCREENS
 } from 'models/Constants';
 import ControlStore from 'models/Control/ControlStore';
 import { SharedControls } from 'models/Project/ControlsStore';
@@ -43,6 +45,7 @@ import { OwnProjects } from 'models/Project/OwnProjectsStore';
 import AccessEnum from 'enums/AccessEnum';
 import GenerateService from 'services/Generator/reactNative/GenerateService';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import { TextMetaEnum } from 'enums/TextMetaEnum';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -101,6 +104,7 @@ class EditorViewStore extends DisplayViewStore {
 
   @computed get currentScreenMetaList() {
     const screenMetaMap = this.screensMetaMap.get(this.currentScreen.id);
+
     return Object.values(ScreenMetaEnum)
       .filter(value => !(screenMetaMap && screenMetaMap.has(value as ScreenMetaEnum)))
       .map(value => [value, this.dictionary.value(value)]);
@@ -530,8 +534,8 @@ class EditorViewStore extends DisplayViewStore {
       this.screensMetaMap.set(screen.id, new Map());
     }
     const screenMetaMap = this.screensMetaMap.get(screen.id) as Map<ScreenMetaEnum, string>;
-    if (screenMetaMap.has(control.meta)) {
-      screenMetaMap.delete(control.meta);
+    if (screenMetaMap.has(control.meta as ScreenMetaEnum)) {
+      screenMetaMap.delete(control.meta as ScreenMetaEnum);
     }
     if (meta !== ScreenMetaEnum.COMPONENT) {
       screenMetaMap.set(meta, control.id);
@@ -541,9 +545,14 @@ class EditorViewStore extends DisplayViewStore {
 
   // ####### apply history start ######## //
 
-  @action setMeta(meta: ScreenMetaEnum, control: IControl, noHistory?: boolean) {
+  @action setMeta(meta: ScreenMetaEnum | TextMetaEnum, control: IControl, noHistory?: boolean) {
     const undo = { control: control.id, meta: control.meta };
-    this.setScreenMeta(meta, this.currentScreen, control as IGrid);
+    if(control.type === ControlEnum.Grid) {
+      this.setScreenMeta(meta as ScreenMetaEnum, this.currentScreen, control as IGrid);
+    } else {
+      control.setMeta(meta);
+    }
+
     const redo = { control: control.id, meta: control.meta };
     !noHistory && ControlStore.history.add([HIST_CHANGE_META, undo, redo]);
   }

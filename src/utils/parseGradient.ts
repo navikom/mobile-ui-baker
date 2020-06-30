@@ -22,7 +22,7 @@ interface ColorStop {
 
 export interface ReactNativeGradient {
   orientation?: IOrientation;
-  colorStops?: { locations: number[]; colors: string[] };
+  colorStops?: { locations?: number[]; colors: string[] };
 }
 
 export const correctGradients = [
@@ -398,7 +398,7 @@ GradientParser.parse = () => {
       const locations: number[] = [];
       const colors: string[] = [];
       result[0].colorStops.forEach((e: ColorStop, i: number) => {
-        if (e.length != undefined && e.length.type === '%') {
+        if (e.length !== undefined && e.length.type === '%') {
           locations.push(Number(e.length.value) * .01);
         }
         if (e.type === 'rgba') {
@@ -411,7 +411,8 @@ GradientParser.parse = () => {
           colors.push(e.value as string);
         }
       });
-      gradient.colorStops = { locations, colors };
+      gradient.colorStops = { colors };
+      locations.length && (gradient.colorStops.locations = locations);
       return gradient;
     }
   }

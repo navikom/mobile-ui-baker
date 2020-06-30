@@ -4,11 +4,12 @@ import { Mode } from "enums/ModeEnum";
 import IProject, { IBackgroundColor } from "interfaces/IProject";
 import IMobileUIView from './IMobileUIView';
 import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
+import { TextMetaEnum } from '../enums/TextMetaEnum';
 
 export interface IHistoryObject {
   control: string | { [key: string]: any };
   title?: string;
-  meta?: ScreenMetaEnum;
+  meta?: ScreenMetaEnum | TextMetaEnum;
   key?: string;
   oldKey?: string;
   style?: { [key: string]: any }[];

@@ -27,7 +27,7 @@ const image = {
 export const specificRules = {
   display: (rule: { [key: string]: any }, control: IControl) => {
     if (rule.value === 'flex') {
-      return { width: '100%', flexDirection: 'row' }
+      return { flexDirection: 'row' }
     }
     return {};
   },
@@ -36,20 +36,56 @@ export const specificRules = {
       return { backgroundColor: rule.value }
     }
     return {};
-  }
+  },
+  borderBottom: (rule: { [key: string]: any }, control: IControl) => {
+    const values = rule.value.split(' ');
+    const object = {
+      borderBottomWidth: Number(values[0].replace(/\D/g, '')),
+      borderBottomColor: values[2],
+      borderStyle: values[1]
+    }
+    return object;
+  },
+  borderTop: (rule: { [key: string]: any }, control: IControl) => {
+    const values = rule.value.split(' ');
+    const object = {
+      borderTopWidth: Number(values[0].replace(/\D/g, '')),
+      borderTopColor: values[2],
+      borderStyle: values[1]
+    }
+    return object;
+  },
+  borderLeft: (rule: { [key: string]: any }, control: IControl) => {
+    const values = rule.value.split(' ');
+    const object = {
+      borderLeftWidth: Number(values[0].replace(/\D/g, '')),
+      borderLeftColor: values[2],
+      borderStyle: values[1]
+    }
+    return object;
+  },
+  borderRight: (rule: { [key: string]: any }, control: IControl) => {
+    const values = rule.value.split(' ');
+    const object = {
+      borderRightWidth: Number(values[0].replace(/\D/g, '')),
+      borderRightColor: values[2],
+      borderStyle: values[1]
+    }
+    return object;
+  },
 }
 
-const clearDrawerStyles = (styles: {[key: string]: any}) => {
+const clearDrawerStyles = (styles: { [key: string]: any }) => {
   const keys = Object.keys(styles);
   let l = keys.length;
   while (l--) {
     const k = keys[l];
     ['position', 'width', 'height', 'top', 'left', 'bottom', 'right', 'overflow'].forEach(rule => {
-      if({}.propertyIsEnumerable.call(styles[k], rule)) {
+      if ({}.propertyIsEnumerable.call(styles[k], rule)) {
         delete styles[k][rule];
       }
     });
-    Object.assign(styles[k], {flex: 1});
+    Object.assign(styles[k], { flex: 1 });
     Object.assign(styles.Main, styles[k]);
   }
   return styles;
@@ -59,6 +95,15 @@ export const metaRules = {
   leftDrawer: clearDrawerStyles,
   rightDrawer: clearDrawerStyles,
   tabs: (styles: { [key: string]: any }) => {
+    return styles;
+  },
+  input: (styles: { [key: string]: any }) => {
+    return styles;
+  },
+  textArea: (styles: { [key: string]: any }) => {
+    return styles;
+  },
+  component: (styles: { [key: string]: any }) => {
     return styles;
   }
 }
@@ -71,7 +116,6 @@ export const reactNativeImage = {
       return { resizeMode: 'contain' };
     }
     if (backgroundRepeat && backgroundRepeat.enabled && image.backgroundRepeat[backgroundRepeat.value as 'no-repeat']) {
-
       return image.backgroundRepeat[backgroundRepeat.value as 'no-repeat'];
     }
 
@@ -93,4 +137,14 @@ export const reactNativeImage = {
     }
     return style;
   },
+  size: (width: ICSSProperty, height: ICSSProperty) => {
+    const style: {width?: string | number; height?: string | number} = {};
+    if(width && width.enabled) {
+      style.width = width.unit && width.unit !== 'px' ? width.value + width.unit : width.value;
+    }
+    if(height && height.enabled) {
+      style.height = height.unit && height.unit !== 'px' ? height.value + height.unit : height.value;
+    }
+    return style;
+  }
 };

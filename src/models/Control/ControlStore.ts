@@ -41,6 +41,7 @@ import IProject from 'interfaces/IProject';
 import { boxShadow } from 'assets/jss/material-dashboard-react';
 import DelayEnum from 'enums/DelayEnum';
 import { ScreenMetaEnum } from '../../enums/ScreenMetaEnum';
+import { TextMetaEnum } from '../../enums/TextMetaEnum';
 
 export const MAIN_CSS_STYLE = 'Main';
 
@@ -138,15 +139,15 @@ const styles = [
   new CSSProperty('borderLeft', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
     .setShowWhen(['border', 'expanded']),
   new CSSProperty('borderRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .makeExpandable().setUnits('px', ['px', '%', 'rem']),
+    .makeExpandable().setUnits('px', ['px', 'rem']),
   new CSSProperty('borderTopLeftRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', 'rem']),
   new CSSProperty('borderTopRightRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', 'rem']),
   new CSSProperty('borderBottomRightRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', 'rem']),
   new CSSProperty('borderBottomLeftRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['borderRadius', 'expanded']).setUnits('px', ['px', 'rem']),
   new CSSProperty('transition', 'all .5s ease-out', 'all .5s ease-out', CSS_CAT_ANIMATIONS)
     .makeExpandable()
     .setDescription(['transitionDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition']),
@@ -183,7 +184,7 @@ class ControlStore extends Movable implements IControl {
   @observable classes: IObservableArray<string> = observable([MAIN_CSS_STYLE]);
   @observable actions: IObservableArray<IObservableArray<string>> = observable([]);
   @observable saving = false;
-  @observable meta: ScreenMetaEnum = ScreenMetaEnum.COMPONENT;
+  @observable meta: ScreenMetaEnum | TextMetaEnum = ScreenMetaEnum.COMPONENT;
   path: string[] = [];
   hashChildren?: string;
   hashChildrenWithStyle?: string;
