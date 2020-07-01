@@ -93,20 +93,25 @@ export const ElementComponent: React.FC<ElementProps> =
 
       let showPlaceholder = children.length === 0;
       let placeholder = <div className={classes.placeholder}>{title}</div>;
-      if (control.type === ControlEnum.Text && !control.hasImage) {
-        showPlaceholder = true;
-        // if (isSelected && isSelected(control)) {
-        //   backgroundColor = styles.backgroundColor;
-        //   placeholder =
-        //     <EditorInput
-        //       html={title}
-        //       onChange={(e) => control.changeTitle(e)}
-        //       style={{...styles, opacity: 1}} />;
-        // } else {
-        //   // @ts-ignore
-        //   placeholder = title;
-        // }
-        placeholder = title as unknown as JSX.Element;
+      if (control.type === ControlEnum.Text) {
+        if(!control.hasImage) {
+          showPlaceholder = true;
+          // if (isSelected && isSelected(control)) {
+          //   backgroundColor = styles.backgroundColor;
+          //   placeholder =
+          //     <EditorInput
+          //       html={title}
+          //       onChange={(e) => control.changeTitle(e)}
+          //       style={{...styles, opacity: 1}} />;
+          // } else {
+          //   // @ts-ignore
+          //   placeholder = title;
+          // }
+          placeholder = title as unknown as JSX.Element;
+        } else {
+          showPlaceholder = false;
+        }
+
       }
 
       const emptyControl: React.CSSProperties = {};

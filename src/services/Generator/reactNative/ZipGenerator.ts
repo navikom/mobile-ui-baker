@@ -76,7 +76,7 @@ class ZipGenerator {
     this.storeBase2zip();
     this.source.leftDrawer.size && this.navSpec2zip(LEFT_DRAWER, this.source.leftDrawer);
     this.source.rightDrawer.size && this.navSpec2zip(RIGHT_DRAWER, this.source.rightDrawer);
-    this.source.tab.size && this.navSpec2zip(TABS, this.source.tab);
+    this.source.tab.size && this.navSpec2zip(TABS, this.source.tab, true);
 
   }
 
@@ -97,7 +97,7 @@ class ZipGenerator {
     content += `\n${FUNCTION} ${title}({navigation, route}) {\n`;
     content += `  const store = new ${STORE}(navigation, route.params.${COMPONENT_ID});\n`;
     content += '  React.useEffect(() => {\n';
-    content += `    ${RETURN} store.dispose`;
+    content += `    ${RETURN} store.dispose;\n`;
     content += '  });\n';
     content += `  return <${cmp.nameSpace} ${STORE_VARIABLE}={store} ${PROPS_VARIABLE}={store.props(route.params.${COMPONENT_ID})} />;\n`;
     content += `}\nexport default ${title};`;
@@ -157,6 +157,9 @@ class ZipGenerator {
 
     const returnCause = isText ? returnText : returnGrid;
 
+    let baseImage = '\n      properties.imageStyle = properties.style || {};\n';
+    baseImage += `      properties.imageStyle.push({position: 'absolute'});`;
+
     const content = `${IMPORT_REACT};
 ${importFrom([isText ? TEXT_COMP : VIEW_COMP, isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP])};
 ${importFrom([SVG_URI_COMP], 'react-native-svg')};
@@ -195,8 +198,7 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}, ${STYLES}}) {
     } else {
       Component = ${isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP};
       Object.assign(${isText ? 'properties' : 'properties.style'}, transit.style || {});
-      properties.source = {uri: transit.src};
-      ${!isText ? 'properties.imageStyle = properties.style || {};' : ''}
+      properties.source = {uri: transit.src};${!isText ? baseImage : ''}
     }
   } ${elseCause}
   
@@ -207,7 +209,7 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${COMPONENTS_FOLDER}/${name}/${name}.js`, content);
   }
 
-  navSpec2zip(title: string, map: Map<string, string[]>) {
+  navSpec2zip(title: string, map: Map<string, string[]>, isTabs?: boolean) {
     const nameSpaces: string[] = [];
     let content = IMPORT_REACT + ';\n';
     map.forEach(([controlId]) => {
@@ -232,13 +234,15 @@ ${EXPORT_DEFAULT} ${name};`;
     content += importFrom(STORE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${STORE}`) + ';\n';
 
     content += `\n${FUNCTION} ${title}(props) {\n`;
-    content += '  const {navigation} = props;\n';
+    content += isTabs ? '  const {navigation, state} = props;\n' : '  const {navigation} = props;\n';
     content += `  const ${STORE_VARIABLE} = new ${STORE}(navigation);\n`;
-    content += `  const property = ${STORE_VARIABLE}.baseProps;\n`;
+    content += isTabs ?
+      `  const property = ${STORE_VARIABLE}.baseProps(state.routes[state.index].params.componentId);\n` :
+      `  const property = ${STORE_VARIABLE}.baseProps;\n`;
     content += componentContent;
     content += `}\nexport default ${title};`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${title}/${title}.js`, content);
-    this.navSpecStore2zip(title, map);
+    this.navSpecStore2zip(title, map, isTabs);
     this.navSpecInitState2zip(title, map);
   }
 
@@ -262,7 +266,7 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}.js`, content);
   }
 
-  navSpecStore2zip(title: string, map: Map<string, string[]>) {
+  navSpecStore2zip(title: string, map: Map<string, string[]>, isTabs?: boolean) {
     let content = importFrom(INIT_STATE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}`) + ';\n';
     content += importFrom(STORE_BASE, `${APP_ROOT}/${MODELS_FOLDER}/${STORE_BASE}`) + ';\n';
     content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n';
@@ -273,8 +277,10 @@ ${EXPORT_DEFAULT} ${name};`;
     });
     content += '  };\n';
 
-    content += '  get baseProps() {\n';
-    content += `    return this.props(this.baseComponent[${APP_STORE}.${SCREEN_ID_VARIABLE}]);\n`;
+    content += isTabs ? '  baseProps(id) {\n' : '  get baseProps() {\n';
+    content += isTabs ?
+      `    return this.props(this.baseComponent[id] || '${Array.from(map.values())[0][0]}');\n` :
+      `    return this.props(this.baseComponent[${APP_STORE}.${SCREEN_ID_VARIABLE}] || '${Array.from(map.values())[0][0]}');\n`;
     content += '  }\n';
 
     content += `  constructor(${NAVIGATION_VARIABLE}) {\n`;
@@ -412,7 +418,7 @@ ${EXPORT_DEFAULT} ${name};`;
       singleDrawerNavContent += `\nfunction ${this.source.leftDrawer.size > 0 && this.source.rightDrawer.size === 0 ? 'DrawerNavigation' : 'LeftDrawerNavigation'}() {\n`;
       singleDrawerNavContent += '  return (\n';
       singleDrawerNavContent += '    <Drawer.Navigator\n';
-      singleDrawerNavContent += `      drawerStyle={{width: ${this.source.leftDrawer.size > 0 ? this.source.leftDrawerWidth : this.source.rightDrawerWidth}}\n`
+      singleDrawerNavContent += `      drawerStyle={{width: '${this.source.leftDrawer.size > 0 ? this.source.leftDrawerWidth : this.source.rightDrawerWidth}'}}\n`
       singleDrawerNavContent += this.source.leftDrawer.size ? '' : '      drawerPosition="right"\n';
       singleDrawerNavContent += `      drawerContent={(props) => <${this.source.leftDrawer.size ? LEFT_DRAWER : RIGHT_DRAWER} {...props} />}>\n`;
       singleDrawerNavContent += '      <Stack.Screen name="StackNavigation" component={StackNavigation} />\n';
@@ -423,7 +429,7 @@ ${EXPORT_DEFAULT} ${name};`;
         singleDrawerNavContent += 'function DrawerNavigation() {\n';
         singleDrawerNavContent += '  return (\n';
         singleDrawerNavContent += '    <Drawer.Navigator\n';
-        singleDrawerNavContent += `      drawerStyle={{width: ${this.source.rightDrawerWidth}}}\n`
+        singleDrawerNavContent += `      drawerStyle={{width: '${this.source.rightDrawerWidth}'}}\n`
         singleDrawerNavContent += `      drawerPosition="right"\n`;
         singleDrawerNavContent += `      drawerContent={(props) => <${RIGHT_DRAWER} {...props} />}>\n`;
         singleDrawerNavContent += '      <Drawer.Screen name="LeftDrawer" component={LeftDrawerNavigation} />\n';
@@ -441,15 +447,20 @@ ${EXPORT_DEFAULT} ${name};`;
       const [inDrawer, outOfDrawer] = this.source.tabScreens;
       tabNavContent += 'function TabNavigation() {\n';
       tabNavContent += '  return (\n';
-      tabNavContent += '    <Tab.Navigator>\n';
+      tabNavContent += '    <Tab.Navigator tabBar={props => <Tabs {...props} />}>\n';
       if(inDrawer.length) {
-        tabNavContent += ` <Tab.Screen name="DrawerNavigation" component={DrawerNavigation} />\n`;
+        tabNavContent += `      <Tab.Screen name="DrawerNavigation"\n`;
+        tabNavContent += `        component={DrawerNavigation}\n`;
+        tabNavContent += `        initialParams={{componentId: '${inDrawer[0]}'}} />\n`;
       }
       outOfDrawer.forEach(screen => {
         const item = screenNames.find(e => e.id === screen);
         if(!item) return;
-        tabNavContent += `  <Tab.Screen name="${item!.title}" component={${item!.title}} />`;
-      })
+        tabNavContent += `      <Tab.Screen\n`;
+        tabNavContent += `        name="${item!.title}"\n`;
+        tabNavContent += `        component={${item!.title}}\n`;
+        tabNavContent += `        initialParams={{componentId: '${screen}'}} />\n`;
+      });
       tabNavContent += '    </Tab.Navigator>\n';
       tabNavContent += '  )\n';
       tabNavContent += '}\n';
@@ -510,17 +521,17 @@ ${EXPORT_DEFAULT} ${name};`;
   specNavComponents2zip() {
     let content = `const ${NAV_COMPONENTS} = {\n`;
     if(this.source.leftDrawer.size) {
-      this.source.leftDrawer.forEach(((drawerId) => {
+      this.source.leftDrawer.forEach((([drawerId]) => {
         content += `  '${drawerId}': '${LEFT_DRAWER}',\n`;
       }));
     }
     if(this.source.rightDrawer.size) {
-      this.source.rightDrawer.forEach(((drawerId) => {
+      this.source.rightDrawer.forEach((([drawerId]) => {
         content += `  '${drawerId}': '${RIGHT_DRAWER}',\n`;
       }));
     }
     if(this.source.tab.size) {
-      this.source.tab.forEach(((drawerId) => {
+      this.source.tab.forEach((([drawerId]) => {
         content += `  '${drawerId}': '${TABS}',\n`;
       }));
     }

@@ -141,8 +141,9 @@ const IOSDevice: React.FC<DeviceComponentProps> = (
   const content = classNames({
     [extraClasses.topBar]: statusBarEnabled,
     [extraClasses.content]: true,
-    [extraClasses.fullHeight]: statusBarEnabled
+    [extraClasses.fullHeight]: !statusBarEnabled
   });
+
   return (
     <Grid className={inner} id="capture">
       {
