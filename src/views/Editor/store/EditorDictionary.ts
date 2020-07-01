@@ -106,7 +106,10 @@ export const data = {
   meta: 'meta',
   availableMeta: 'Available Meta',
   input: 'input',
-  textArea: 'text area'
+  textArea: 'text area',
+  generatorWarnings: 'Code generator warnings',
+  proceed: 'Proceed',
+  revoke: 'Revoke'
 };
 
 class EditorDictionary extends AbstractDictionary {

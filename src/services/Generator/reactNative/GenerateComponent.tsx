@@ -15,7 +15,7 @@ import {
 } from '../Constants';
 import { ControlEnum } from 'enums/ControlEnum';
 import { importFrom } from '../utils';
-import { blockStyle, metaRules, specificRules } from './ReactNativeStyleDictionary';
+import { blockStyle, metaRules, ruleValidator, specificRules } from './ReactNativeStyleDictionary';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';
 import IGenerateService from 'interfaces/IGenerateService';
@@ -54,9 +54,11 @@ class GenerateComponent implements IGenerateComponent {
 
             const value = item.unit ? item.value.toString() + item.unit : item.value.toString();
             rule = getStylesForProperty(propName, value);
+            const invalid = ruleValidator(item, control);
+            invalid && this.generator.addToTransitionErrors(invalid);
           } catch (e) {
             this.generator.addToTransitionErrors(
-              'Control #' + control.id + ' Error: ' + e.message
+              'Control #' + control.id + ' error: ' + e.message + '.'
             )
           }
         }

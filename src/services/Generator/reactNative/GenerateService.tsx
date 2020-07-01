@@ -1,4 +1,3 @@
-import React from 'react';
 import IMobileUIView from 'interfaces/IMobileUIView';
 import IControl from 'interfaces/IControl';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
@@ -19,19 +18,28 @@ import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import ZipGenerator from './ZipGenerator';
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IGenerateService from 'interfaces/IGenerateService';
+import { TextMetaEnum } from '../../../enums/TextMetaEnum';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
 class GenerateService implements IGenerateService {
   store: IMobileUIView;
   components: Map<string, IGenerateComponent> = new Map<string, IGenerateComponent>();
-  tab: Map<string, string> = new Map<string, string>();
-  leftDrawer: Map<string, string> = new Map<string, string>();
-  rightDrawer: Map<string, string> = new Map<string, string>();
+  tab: Map<string, string[]> = new Map<string, string[]>();
+  leftDrawer: Map<string, string[]> = new Map<string, string[]>();
+  rightDrawer: Map<string, string[]> = new Map<string, string[]>();
   nameSpaces: string[] = [];
   storeContent: Map<string, IStoreContent[]> = new Map<string, IStoreContent[]>();
   transitionErrors: string[] = [];
   zipGenerator: ZipGenerator;
+
+  get leftDrawerWidth() {
+    return Array.from(this.leftDrawer.values())[0][1];
+  }
+
+  get rightDrawerWidth() {
+    return Array.from(this.rightDrawer.values())[0][1];
+  }
 
   get tabScreens() {
     const inDrawer: string[] = [];
@@ -66,6 +74,8 @@ class GenerateService implements IGenerateService {
   transitStyle(control: IControl) {
     const styles = control.cssStylesJSON;
     const transitStyles: ITransitStyle[] = [];
+    let widthValue = 0;
+    let unit;
     styles.forEach(style => {
       const background = (style[1] as unknown as ObjectType[]).find(e => e.key === 'background');
       const backgroundImage = (style[1] as unknown as ObjectType[]).find(e => e.key === 'backgroundImage');
@@ -138,22 +148,27 @@ class GenerateService implements IGenerateService {
           transitStyle.isSvg = true;
         }
       }
+      if(width) {
+        if(width.value > widthValue) {
+          widthValue = width.value as number;
+          unit = width.unit;
+        }
+      }
       (transitStyle.src || transitStyle.gradient || transitStyle.scroll) && transitStyles.push(transitStyle);
-
     });
-    return transitStyles.length ? transitStyles : undefined;
+    return [transitStyles.length ? transitStyles : undefined, unit === '%' ? widthValue + '%' : widthValue];
   }
 
   isLeftDrawerChild(control: IControl) {
-    return !!Array.from(this.leftDrawer.values()).find(id => control.path.includes(id));
+    return !!Array.from(this.leftDrawer.values()).find(ids => control.path.includes(ids[0]));
   }
 
   isRightDrawerChild(control: IControl) {
-    return !!Array.from(this.rightDrawer.values()).find(id => control.path.includes(id));
+    return !!Array.from(this.rightDrawer.values()).find(ids => control.path.includes(ids[0]));
   }
 
   isTabChild(control: IControl) {
-    return !!Array.from(this.tab.values()).find(id => control.path.includes(id));
+    return !!Array.from(this.tab.values()).find(ids => control.path.includes(ids[0]));
   }
 
   generateRN() {
@@ -166,7 +181,7 @@ class GenerateService implements IGenerateService {
         if (b[0] === NAVIGATE_TO) return -1;
         return 1;
       });
-      const transitStyles = this.transitStyle(control);
+      const [transitStyles, width] = this.transitStyle(control);
 
       const store =
         new StoreContent(
@@ -180,7 +195,7 @@ class GenerateService implements IGenerateService {
           control.hashChildren as string,
           control.cssStyles.size > 1,
           control.meta,
-          transitStyles,
+          transitStyles as ITransitStyle[],
           actions,
           control.title);
       const pathKey = control.path.join('/');
@@ -189,27 +204,27 @@ class GenerateService implements IGenerateService {
       }
       childrenMap[pathKey].push(store);
 
-      if(control.meta === ScreenMetaEnum.COMPONENT) {
+      if([ScreenMetaEnum.COMPONENT, TextMetaEnum.INPUT, TextMetaEnum.TEXT_AREA].includes(control.meta)) {
         if(this.isLeftDrawerChild(control)) {
-          this.storeContent.get(this.leftDrawer.get(screen.id)!)!.push(store);
+          this.storeContent.get(this.leftDrawer.get(screen.id)![0])!.push(store);
         } else if(this.isRightDrawerChild(control)) {
-          this.storeContent.get(this.rightDrawer.get(screen.id)!)!.push(store);
+          this.storeContent.get(this.rightDrawer.get(screen.id)![0])!.push(store);
         } else if(this.isTabChild(control)) {
-          this.storeContent.get(this.tab.get(screen.id)!)!.push(store);
+          this.storeContent.get(this.tab.get(screen.id)![0])!.push(store);
         } else {
           this.storeContent.get(screen.id)!.push(store);
         }
 
       } else if(control.meta === ScreenMetaEnum.LEFT_DRAWER) {
-        this.leftDrawer.set(screen.id, control.id);
+        this.leftDrawer.set(screen.id, [control.id, width as string]);
         this.storeContent.set(control.id, []);
         this.storeContent.get(control.id)!.push(store);
       } else if(control.meta === ScreenMetaEnum.RIGHT_DRAWER) {
-        this.rightDrawer.set(screen.id, control.id);
+        this.rightDrawer.set(screen.id, [control.id, width as string]);
         this.storeContent.set(control.id, []);
         this.storeContent.get(control.id)!.push(store);
       } else if(control.meta === ScreenMetaEnum.TABS) {
-        this.tab.set(screen.id, control.id);
+        this.tab.set(screen.id, [control.id, width as string]);
         this.storeContent.set(control.id, []);
         this.storeContent.get(control.id)!.push(store);
       }
@@ -234,6 +249,7 @@ class GenerateService implements IGenerateService {
     this.sortScreensStoreChildren(childrenMap);
     this.defineNames();
     this.components2zip();
+    return this;
   }
 
   sortScreensStoreChildren(map: { [key: string]: IStoreContent[] }) {
@@ -299,7 +315,17 @@ class GenerateService implements IGenerateService {
       this.zipGenerator.component2zip(cmp, COMPONENTS_FOLDER, cmp.nameSpace);
     });
     this.zipGenerator.generateRest(screenNames);
-    console.log('errors', this.transitionErrors);
+
+    if(this.transitionErrors.length) {
+      this.store.setContentGeneratorDialog!(this.transitionErrors);
+    } else {
+      this.generateZip();
+    }
+  }
+
+  generateZip() {
+    this.zipGenerator.generateZip();
+    this.clearTransitionErrors();
   }
 
   addToTransitionErrors(error: string) {

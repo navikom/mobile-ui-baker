@@ -108,8 +108,11 @@ const NumberInput: React.FC<NumberInputProps> = (
   const handleClick = (increase?: boolean) => () => {
     let val = Number(value);
     val = increase ? val + (double ? .1 : 1) : val - (double ? .1 : 1);
-    min && (value = Math.min(val, min));
-    max && (value = Math.max(val, max));
+    if(double) {
+      val = Math.round((val + Number.EPSILON) * 100) / 100;
+    }
+    min !== undefined && (val = Math.max(val, min));
+    max !== undefined && (val = Math.min(val, max));
     onChange && onChange(val);
   };
 

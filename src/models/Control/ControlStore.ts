@@ -26,7 +26,7 @@ import {
 import EditorHistory, {
   ControlStatic,
   HIST_ADD_ACTION,
-  HIST_ADD_CSS_STYLE, HIST_CHANGE_META,
+  HIST_ADD_CSS_STYLE,
   HIST_CHANGE_TITLE,
   HIST_CONTROL_PROP_CHANGE,
   HIST_CSS_PROP,
@@ -40,8 +40,8 @@ import IHistory from 'interfaces/IHistory';
 import IProject from 'interfaces/IProject';
 import { boxShadow } from 'assets/jss/material-dashboard-react';
 import DelayEnum from 'enums/DelayEnum';
-import { ScreenMetaEnum } from '../../enums/ScreenMetaEnum';
-import { TextMetaEnum } from '../../enums/TextMetaEnum';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import { TextMetaEnum } from 'enums/TextMetaEnum';
 
 export const MAIN_CSS_STYLE = 'Main';
 

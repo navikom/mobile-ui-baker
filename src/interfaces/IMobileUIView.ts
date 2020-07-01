@@ -28,6 +28,8 @@ interface IMobileUIView {
   navigation: (string | number)[];
 
   setLoadingPlugin(value: boolean): void;
+  setContentGeneratorDialog?(msg: string[] | null): void;
+  closeGeneratorDialog?(): void;
 
   fromJSON(data: IProjectData): void;
   switchAutoSave?(): void;

@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action } from 'mobx';
 import { v4 as uuidv4 } from 'uuid';
 import IControl, { IText } from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
@@ -14,8 +14,6 @@ import {
 } from 'models/Constants';
 import ControlStore, { MAIN_CSS_STYLE } from 'models/Control/ControlStore';
 import ICSSProperty from 'interfaces/ICSSProperty';
-import { ScreenMetaEnum } from '../../enums/ScreenMetaEnum';
-import { TextMetaEnum } from '../../enums/TextMetaEnum';
 
 const styles = [
   new CSSProperty('backgroundColor', '#ffffff', '#ffffff', CSS_CAT_BACKGROUND, false, CSS_VALUE_COLOR),
@@ -33,7 +31,9 @@ const styles = [
     .setOptions(['normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900']),
   new CSSProperty('textDecoration', 'none', 'none', CSS_CAT_FONT, false, CSS_VALUE_SELECT)
     .setOptions(['normal', 'blink', 'line-through', 'overline', 'underline', 'inherit']),
-  new CSSProperty('lineHeight', 'normal', 'normal', CSS_CAT_FONT)
+  new CSSProperty('lineHeight', 10, 10, CSS_CAT_FONT, false, CSS_VALUE_NUMBER)
+    .setControlProps({ min: 0 })
+    .setUnits('px', ['px'])
     .setDescription(['lineHeightDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/line-height']),
   new CSSProperty('textOverflow', 'ellipsis', 'ellipsis', CSS_CAT_FONT, false, CSS_VALUE_SELECT)
     .setOptions(['clip', 'ellipsis']).setDescription(['textOverflowDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow'])

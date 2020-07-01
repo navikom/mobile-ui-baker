@@ -4,7 +4,7 @@ import IControl from 'interfaces/IControl';
 
 export const blockStyle = ['transition', 'background', 'backgroundImage', 'backgroundRepeat', 'backgroundSize', 'backgroundPosition',
   'mask', 'maskImage', 'maskRepeat', 'transition', 'transitionProperty', 'transitionDuration', 'transitionTimingFunction',
-  'transitionDelay'];
+  'transitionDelay', 'overflowX', 'overflowY', 'whiteSpace'];
 
 const image = {
   backgroundRepeat: {
@@ -73,6 +73,25 @@ export const specificRules = {
     }
     return object;
   },
+}
+
+export const ruleValidator = (rule: {[key: string]: string | number}, control: IControl) => {
+  let msg;
+  switch (rule.key) {
+    case 'borderRadius':
+      if(rule.unit === '%') {
+        msg =
+          `Control #${control.id} error {borderRadius: '${rule.value}${rule.unit}'}. Percentage doesn't support for borderRadius in React Native.`;
+      }
+      break;
+    case 'boxShadow':
+      if(rule.value.toString().includes('rem')) {
+        msg =
+          `Control #${control.id} error {boxShadow: '${rule.value}'}. Rem doesn't support for boxShadow in React Native.`;
+      }
+      break;
+  }
+  return msg;
 }
 
 const clearDrawerStyles = (styles: { [key: string]: any }) => {

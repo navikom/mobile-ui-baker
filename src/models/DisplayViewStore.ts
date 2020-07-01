@@ -146,7 +146,6 @@ class DisplayViewStore extends Errors {
     } else {
       this.screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
     }
-
   }
 
   @action switchStatusBar() {

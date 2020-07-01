@@ -6,6 +6,7 @@ import { DndProvider, useDrop } from 'react-dnd';
 import classNames from 'classnames';
 import Backend from 'react-dnd-html5-backend';
 import { observer } from 'mobx-react-lite';
+import { when } from 'mobx';
 
 // @material-ui/core
 import { createStyles, Theme, Button } from '@material-ui/core';
@@ -37,13 +38,14 @@ import AddAlert from '@material-ui/icons/AddAlert';
 import Snackbar from 'components/Snackbar/Snackbar';
 import { SharedControls } from 'models/Project/ControlsStore';
 import { SharedComponents } from 'models/Project/SharedComponentsStore';
-import { when } from 'mobx';
 import { App } from 'models/App';
 import { OwnComponents } from 'models/Project/OwnComponentsStore';
 
 import { DeviceEnum } from 'enums/DeviceEnum';
 import EditorHeader from 'components/Header/EditorHeader';
 import CustomDragLayer from './components/CustomDragLayer';
+import DialogAlert from 'components/Dialog/DialogAlert';
+import EditorDictionary from './store/EditorDictionary';
 
 import 'views/Editor/Editor.css';
 
@@ -432,6 +434,16 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         open={store.hasError}
         closeNotification={() => store.setError(null)}
         close
+      />
+      <DialogAlert
+        open={store.generatorShowDialog}
+        handleClose={() => {}}
+        title={`${store.dictionary!.defValue(EditorDictionary.keys.generatorWarnings)}`}
+        content={store.generatorDialogContent || ''}
+        okTitle={store.dictionary!.defValue(EditorDictionary.keys.proceed)}
+        cancelTitle={store.dictionary!.defValue(EditorDictionary.keys.revoke)}
+        onOk={store.completeCodeGeneration}
+        onCancel={store.closeGeneratorDialog}
       />
       <div className={cover}>
         {

@@ -1,6 +1,5 @@
 import React from 'react';
 import JSZip from 'jszip';
-import IMobileUIView from 'interfaces/IMobileUIView';
 import { saveAs } from 'file-saver';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import {
@@ -78,7 +77,7 @@ class ZipGenerator {
     this.source.leftDrawer.size && this.navSpec2zip(LEFT_DRAWER, this.source.leftDrawer);
     this.source.rightDrawer.size && this.navSpec2zip(RIGHT_DRAWER, this.source.rightDrawer);
     this.source.tab.size && this.navSpec2zip(TABS, this.source.tab);
-    this.generateZip();
+
   }
 
   async generateZip() {
@@ -129,6 +128,7 @@ class ZipGenerator {
     textElse += `      Component = ${TEXT_INPUT_COMP};\n`;
     textElse += `      properties.onChange = (e) => ${PROPS_VARIABLE}.setText(e.nativeEvent.text);\n`;
     textElse += `      properties.defaultValue = ${PROPS_VARIABLE}.text;\n`;
+    textElse += `      properties.placeholder = ${PROPS_VARIABLE}.title;\n`;
     textElse += `      if(${PROPS_VARIABLE}.meta === 'textArea') {\n`;
     textElse += '        properties.multiline = true;\n';
     textElse += '      }\n';
@@ -139,7 +139,7 @@ class ZipGenerator {
 
     elseCause = !isText ? elseCause : textElse;
 
-    const returnGrid = `if(${CHILDREN}) {
+    const returnGrid = `if(${CHILDREN}.length) {
     ${RETURN} (<Component {...properties}>
       {
         ${CHILDREN}.map((child, i) => 
@@ -149,7 +149,7 @@ class ZipGenerator {
   }
     
   ${RETURN} (<Component {...properties} />);`;
-    const returnText = `if(${CHILDREN}) {
+    const returnText = `if(${CHILDREN}.length) {
     ${RETURN} (<Component {...properties}>{${CHILDREN}}</Component>);
   }
   ${RETURN} (<Component {...properties} />);
@@ -196,6 +196,7 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}, ${STYLES}}) {
       Component = ${isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP};
       Object.assign(${isText ? 'properties' : 'properties.style'}, transit.style || {});
       properties.source = {uri: transit.src};
+      ${!isText ? 'properties.imageStyle = properties.style || {};' : ''}
     }
   } ${elseCause}
   
@@ -206,10 +207,10 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${COMPONENTS_FOLDER}/${name}/${name}.js`, content);
   }
 
-  navSpec2zip(title: string, map: Map<string, string>) {
+  navSpec2zip(title: string, map: Map<string, string[]>) {
     const nameSpaces: string[] = [];
     let content = IMPORT_REACT + ';\n';
-    map.forEach((controlId) => {
+    map.forEach(([controlId]) => {
       const cmp = this.source.getComponentByControlId(controlId);
       if(cmp) {
         !nameSpaces.includes(cmp.nameSpace) && nameSpaces.push(cmp.nameSpace);
@@ -241,12 +242,12 @@ ${EXPORT_DEFAULT} ${name};`;
     this.navSpecInitState2zip(title, map);
   }
 
-  navSpecInitState2zip(title: string, map: Map<string, string>) {
+  navSpecInitState2zip(title: string, map: Map<string, string[]>) {
     const imports: string[] = [];
     let content = importFrom(PROPERTY_MODEL, `${APP_ROOT}/${MODELS_FOLDER}/${PROPERTY_MODEL}`) + ';\n';
     content += `const ${INIT_STATE} = [`;
 
-    map.forEach((specComponentId, screenId) => {
+    map.forEach(([specComponentId], screenId) => {
       this.source.storeContent.get(specComponentId)!.forEach(e => {
         if(e.id === specComponentId) {
           e.placeIndex = [0];
@@ -261,13 +262,13 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}.js`, content);
   }
 
-  navSpecStore2zip(title: string, map: Map<string, string>) {
+  navSpecStore2zip(title: string, map: Map<string, string[]>) {
     let content = importFrom(INIT_STATE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}`) + ';\n';
     content += importFrom(STORE_BASE, `${APP_ROOT}/${MODELS_FOLDER}/${STORE_BASE}`) + ';\n';
     content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n';
     content += `\nclass ${STORE} extends ${STORE_BASE} {\n`;
     content += `  baseComponent = {\n`;
-    map.forEach((componentId, stateId) => {
+    map.forEach(([componentId], stateId) => {
       content += `    '${stateId}': '${componentId}',\n`;
     });
     content += '  };\n';
@@ -411,6 +412,7 @@ ${EXPORT_DEFAULT} ${name};`;
       singleDrawerNavContent += `\nfunction ${this.source.leftDrawer.size > 0 && this.source.rightDrawer.size === 0 ? 'DrawerNavigation' : 'LeftDrawerNavigation'}() {\n`;
       singleDrawerNavContent += '  return (\n';
       singleDrawerNavContent += '    <Drawer.Navigator\n';
+      singleDrawerNavContent += `      drawerStyle={{width: ${this.source.leftDrawer.size > 0 ? this.source.leftDrawerWidth : this.source.rightDrawerWidth}}\n`
       singleDrawerNavContent += this.source.leftDrawer.size ? '' : '      drawerPosition="right"\n';
       singleDrawerNavContent += `      drawerContent={(props) => <${this.source.leftDrawer.size ? LEFT_DRAWER : RIGHT_DRAWER} {...props} />}>\n`;
       singleDrawerNavContent += '      <Stack.Screen name="StackNavigation" component={StackNavigation} />\n';
@@ -421,6 +423,7 @@ ${EXPORT_DEFAULT} ${name};`;
         singleDrawerNavContent += 'function DrawerNavigation() {\n';
         singleDrawerNavContent += '  return (\n';
         singleDrawerNavContent += '    <Drawer.Navigator\n';
+        singleDrawerNavContent += `      drawerStyle={{width: ${this.source.rightDrawerWidth}}}\n`
         singleDrawerNavContent += `      drawerPosition="right"\n`;
         singleDrawerNavContent += `      drawerContent={(props) => <${RIGHT_DRAWER} {...props} />}>\n`;
         singleDrawerNavContent += '      <Drawer.Screen name="LeftDrawer" component={LeftDrawerNavigation} />\n';
@@ -618,6 +621,7 @@ export default App;`;
     content += '  path;\n';
     content += '  styleId;\n';
     content += '  action;\n';
+    content += '  title;\n';
     content += '  transitStyles;\n';
     content += '  placeIndex;\n';
     content += '  component;\n';
@@ -641,12 +645,13 @@ export default App;`;
     content += `    ${RETURN} computed(() => style ? this.classes.map(entry => style[entry]) : {flex: 1} ).get();\n`;
     content += '  }\n';
 
-    content += '  constructor({id, path, styleId, action, classes, text, transitStyles, placeIndex, meta, component}) {\n';
+    content += '  constructor({id, title, path, styleId, action, classes, text, transitStyles, placeIndex, meta, component}) {\n';
     content += '    this.id = id;\n';
     content += '    this.path = path;\n';
     content += '    this.styleId = styleId;\n';
     content += '    this.action = action;\n';
     content += '    this.classes = classes;\n';
+    content += '    this.title = title;\n';
     content += '    this.text = text;\n';
     content += '    this.placeIndex = placeIndex;\n';
     content += '    this.meta = meta;\n';

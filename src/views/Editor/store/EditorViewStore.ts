@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction } from 'mobx';
+import { action, computed, IReactionDisposer, observable, reaction, runInAction } from 'mobx';
 import html2canvas from 'html2canvas';
 
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
@@ -46,6 +46,7 @@ import AccessEnum from 'enums/AccessEnum';
 import GenerateService from 'services/Generator/reactNative/GenerateService';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
+import IGenerateService from 'interfaces/IGenerateService';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -64,6 +65,10 @@ class EditorViewStore extends DisplayViewStore {
   @observable tabToolsIndex = 1;
   @observable saving = false;
   @observable savingProject = false;
+  @observable generatorShowDialog = false;
+  @observable generatorDialogContent: string[] | null = null;
+  generator: IGenerateService | null = null;
+  reactionDisposer: IReactionDisposer;
 
   moveOpened = true;
   debug = false;
@@ -161,6 +166,11 @@ class EditorViewStore extends DisplayViewStore {
     this.history.setViewStore(this);
     this.currentScreen.changeTitle('Screen', true);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
+    this.reactionDisposer = reaction(() => this.generatorDialogContent, (content) => {
+      if(content) {
+        this.openGeneratorDialog();
+      }
+    });
   }
 
   importData(): Promise<string> {
@@ -188,6 +198,7 @@ class EditorViewStore extends DisplayViewStore {
       if (!json.screens) {
         throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
       }
+      json.projectId = 0;
       this.fromJSON(json);
     } catch (e) {
       this.setError(Dictionary.value(e.message, Dictionary.defValue(DictionaryService.keys.project)));
@@ -351,6 +362,28 @@ class EditorViewStore extends DisplayViewStore {
     }
   };
 
+  @action openGeneratorDialog() {
+    this.generatorShowDialog = true;
+  }
+
+  @action setContentGeneratorDialog(msg: string[] | null) {
+    this.generatorDialogContent = msg;
+  }
+
+  @action closeGeneratorDialog = () => {
+    this.generatorShowDialog = false;
+    this.setContentGeneratorDialog(null);
+    this.generator = null;
+  }
+
+  @action completeCodeGeneration = () => {
+    if(this.generator) {
+      this.generator.generateZip();
+    }
+    this.closeGeneratorDialog();
+
+  }
+
   @action clearLocalStorage() {
     localStorage.removeItem(EditorViewStore.AUTO_SAVE);
     localStorage.removeItem(EditorViewStore.STORE_JSON);
@@ -389,7 +422,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   async generate() {
-    new GenerateService(this).generateRN();
+    this.generator = new GenerateService(this).generateRN();
   }
 
   @action clear() {
@@ -910,6 +943,11 @@ class EditorViewStore extends DisplayViewStore {
   @action handleTabTool = (_: any, index: number) => {
     this.tabToolsIndex = index;
   };
+
+  dispose() {
+    super.dispose();
+    this.reactionDisposer && this.reactionDisposer();
+  }
 }
 
 export default EditorViewStore;

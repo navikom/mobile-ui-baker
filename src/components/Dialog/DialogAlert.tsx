@@ -1,22 +1,22 @@
-import React from "react";
-import { Dialog } from "@material-ui/core";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Slide from "@material-ui/core/Slide";
-import { TransitionProps } from "@material-ui/core/transitions";
-import Button from "components/CustomButtons/Button";
+import React from 'react';
+import { Dialog } from '@material-ui/core';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Slide from '@material-ui/core/Slide';
+import { TransitionProps } from '@material-ui/core/transitions';
+import Button from 'components/CustomButtons/Button';
 
 const Transition: React.ComponentType<TransitionProps> =
   React.forwardRef(function Transition({ children, ...rest }, ref) {
     return <Slide direction="up" ref={ref} {...rest}>{children as undefined}</Slide>;
-});
+  });
 
 interface Props {
   open: boolean;
   title: string;
-  content: string;
+  content: string | string[];
   okTitle?: string;
   onOk?: () => void;
   cancelTitle?: string;
@@ -56,16 +56,26 @@ export default function AlertDialogSlide(
     >
       <DialogTitle id="alert-dialog-slide-title">{title.charAt(0).toUpperCase() + title.slice(1)}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
-          {content.charAt(0).toUpperCase() + content.slice(1)}
-        </DialogContentText>
+        {
+          Array.isArray(content) ? (
+            content.map((entry, i) => (
+              <DialogContentText key={i.toString()}>
+                {entry.charAt(0).toUpperCase() + entry.slice(1)}
+              </DialogContentText>)
+            )
+          ) : (
+            <DialogContentText>
+              {content.charAt(0).toUpperCase() + content.slice(1)}
+            </DialogContentText>
+          )
+        }
       </DialogContent>
       <DialogActions>
         <Button onClick={onOkHandler} color="primary" variant="outlined">
-          {okTitle || "Ok"}
+          {okTitle || 'Ok'}
         </Button>
         <Button onClick={onCancelHandler} variant="outlined">
-          {cancelTitle || "Cancel"}
+          {cancelTitle || 'Cancel'}
         </Button>
       </DialogActions>
     </Dialog>
