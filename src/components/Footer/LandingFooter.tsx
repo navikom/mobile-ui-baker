@@ -118,7 +118,7 @@ const Footer: React.FC<FooterProps> = (
           &copy; {new Date().getFullYear()} , made with{' '}
           <Favorite className={classes.icon} /> by
           <a
-            href="https://www.muiditor.com"
+            href="https://www.facetsui.com"
             className={aClasses}
             target="_blank"
           >

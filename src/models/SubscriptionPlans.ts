@@ -4,6 +4,7 @@ import { DictionaryService } from 'services/Dictionary/Dictionary';
 export const achievements = [
   [DictionaryService.keys.embedDragDropEditor],
   [DictionaryService.keys.embedMobileUIViewer],
+  [DictionaryService.keys.reactNativeCode, DictionaryService.keys.generateReactNativeSourceCode],
   [DictionaryService.keys.adsFreeEditor],
   [DictionaryService.keys.editorCustomization, DictionaryService.keys.possibleToHideHeaderWithReplacing],
   [DictionaryService.keys.viewerCustomization, DictionaryService.keys.possibleToHideHeaderWithReplacingOverride],
@@ -45,7 +46,7 @@ export class Plan implements ISubscriptionPlan {
 
   static free() {
     return new Plan(0, DictionaryService.keys.freePlan, DictionaryService.keys.goodForPersonalOrDev,
-      0.00, 0.00, [true, true, false, false, false, false, false]);
+      0.00, 0.00, [true, true, true, false, false, false, false, false]);
   }
 }
 
@@ -54,16 +55,16 @@ class SubscriptionPlans {
     ['0', Plan.free()],
     ['594907',
       new Plan(594907, DictionaryService.keys.startUpPlan, DictionaryService.keys.buildYourStartupOrClient,
-        19.00, 0.01, [true, true, true, true, true, (19/0.01).toFixed(0), '$0.01'])
+        19.00, 0.01, [true, true, true, true, true, true, (19/0.01).toFixed(0), '$0.01'])
     ],
     ['594912',
       new Plan(594912, DictionaryService.keys.silverPlan, DictionaryService.keys.perfectForWebDesignPortals,
-        99.00, 0.005, [true, true, true, true, true, (99/0.005).toFixed(0), '$0.005'],
+        99.00, 0.005, [true, true, true, true, true, true, (99/0.005).toFixed(0), '$0.005'],
         true)
     ],
     ['594913',
       new Plan(594913, DictionaryService.keys.goldPlan, DictionaryService.keys.deployLargeScaleMarketplaces,
-        199.00, 0.0025, [true, true, true, true, true, (199/0.0025).toFixed(0), '$0.0025'])
+        199.00, 0.0025, [true, true, true, true, true, true, (199/0.0025).toFixed(0), '$0.0025'])
     ],
   ]);
 }

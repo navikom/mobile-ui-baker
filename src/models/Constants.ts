@@ -17,7 +17,7 @@ import {
 import { TestSegmentPropertyType } from 'interfaces/ITestStep';
 
 //********* Main *************//
-export const TITLE = 'Muiditor';
+export const TITLE = 'Facets UI';
 export const MODE_DEVELOPMENT = 'development';
 
 //********* Routes ***********//
@@ -34,6 +34,7 @@ export const ROUTE_DOCS_PLUGIN_VIEWER = '/docs/viewer-plugin';
 export const ROUTE_DOCS_EDITOR_OVERVIEW = '/docs/editor-overview';
 export const ROUTE_DOCS_VIEWER_OVERVIEW = '/docs/viewer-overview';
 export const ROUTE_DOCS_EDITOR_SAMPLE = '/docs/editor-sample';
+export const ROUTE_DOCS_GENERATE_RN = '/docs/generate-rn-code';
 export const LAYOUT_MAIN = '/main';
 export const LAYOUT_EDITOR = '/editor';
 export const LAYOUT_EMPTY = '/empty';

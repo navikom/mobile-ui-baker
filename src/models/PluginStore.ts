@@ -50,7 +50,7 @@ class PluginStore {
   token = '';
   store: IMobileUIView;
 
-  freeData: EditorData = new EditorData(ROUTE_ROOT, 'Muiditor');
+  freeData: EditorData = new EditorData(ROUTE_ROOT, 'Facets UI');
   proData?: EditorData;
   origin?: string;
 

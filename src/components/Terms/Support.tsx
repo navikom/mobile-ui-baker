@@ -6,7 +6,7 @@ const Support = () => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <Typography>Here at MUIDITOR we strive to create great products and top-notch quality above everything.
+      <Typography>Here at FacetsUI we strive to create great products and top-notch quality above everything.
         Our Support System follows the same belief.</Typography>
       <br />
       <Typography variant="subtitle1"><b>{`WE OFFER SUPPORT FOR`.toUpperCase()}:</b></Typography>

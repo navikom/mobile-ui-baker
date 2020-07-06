@@ -37,7 +37,7 @@ function Footer({ ...props }) {
         <p className={classes.right}>
           <span>
             &copy; {new Date().getFullYear()}{" "}
-            <a href="https://muiditor.com" className={classes.a}>
+            <a href="https://facetsui.com" className={classes.a}>
               {TITLE}
             </a>
             , made with love for a better web

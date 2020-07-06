@@ -25,7 +25,7 @@ const Overview: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.makesItEasyToCreateA)}{' '}
-        <Link href="https://muiditor.com/editor" target="_blank">muiditor.com.</Link>
+        <Link href="https://facetsui.com/editor" target="_blank">facetsui.com.</Link>
       </Typography>
       <br />
       <Typography>{Dictionary.defValue(DictionaryService.keys.amongBenefits)}</Typography>
@@ -34,6 +34,8 @@ const Overview: React.FC = () => {
       <Typography
         component="li">{Dictionary.defValue(DictionaryService.keys.youCanChangeMobilePlatformAndOrientation)}</Typography>
       <Typography component="li">{Dictionary.defValue(DictionaryService.keys.youCanShareUIForView)}</Typography>
+      <Typography
+        component="li">{Dictionary.defValue(DictionaryService.keys.youCanTranslateMobileDesignInToReactNativeSourceCode)}</Typography>
       <br />
       <Typography>{Dictionary.defValue(DictionaryService.keys.doYouWantMore)}</Typography>
       <Typography

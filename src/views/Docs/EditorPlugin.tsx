@@ -39,7 +39,7 @@ const EditorPlugin: React.FC = () => {
   const config = {
     uid: 'your_client_uid',
     secret: 'your_client_secret',
-    container: 'muiditor-plugin-container',
+    container: 'facetsui-plugin-container',
     data: {/* here is a project JSON object */},
     hideHeader: true, /* available in Pro Plan */
     dictionary: {/* here is a dictionary JSON object */}, /* available in Pro Plan */
@@ -47,7 +47,7 @@ const EditorPlugin: React.FC = () => {
     onData
   };
  
-  const muiPlugin = new MuiditorPlugin(config);
+  const facetsUI = new FacetsUIPlugin(config);
   
   ...
 `
@@ -61,9 +61,9 @@ const EditorPlugin: React.FC = () => {
 `
   ...
   
-  muiPlugin
-  .getToken(muiPlugin.config.uid || "", muiPlugin.config.secret || "")
-  .then((token: string) => muiPlugin.startEditor(token)});
+  facetsUI
+  .getToken(facetsUI.config.uid || "", facetsUI.config.secret || "")
+  .then((token: string) => facetsUI.startEditor(token)});
   
   ...
 `
@@ -72,7 +72,7 @@ const EditorPlugin: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.completeExample)}{' '}
-        <Link href="https://github.com/navikom/muiditor-plugin/tree/master/examples/react-sample" target="_blank">React component</Link>.
+        <Link href="https://github.com/navikom/facetsui-plugin/tree/master/examples/react-sample" target="_blank">React component</Link>.
       </Typography>
       <br />
       <br />
@@ -83,7 +83,7 @@ const EditorPlugin: React.FC = () => {
         id="code3"
         content={
 `
-  <script src="https://unpkg.com/muiditor-plugin@1.7.2/dist/muiditor-plugin.min.js"/>
+  <script src="https://unpkg.com/facetsui-plugin@1.7.2/dist/facetsui-plugin.min.js"/>
 `
         }
         />
@@ -107,26 +107,26 @@ const EditorPlugin: React.FC = () => {
     setProjectData(projectData);
   };
 
-  var muiPlugin = new MuiditorPlugin({
+  var muiPlugin = new FacetsUIPlugin({
     uid: 'change_to_your_uid',
     secret: 'change_to_your_secret',
-    container: 'muiditor-plugin-container',
+    container: 'facetsui-plugin-container',
     data: {/* initial project data */},
     onLoad,
     onData,
     onSaveComponent });
 
-  muiPlugin
-    .getToken(muiPlugin.config.uid || '', muiPlugin.config.secret || '')
+  facetsUI
+    .getToken(facetsUI.config.uid || '', facetsUI.config.secret || '')
     .then((token) => {
-      muiPlugin.startEditor(token);
+      facetsUI.startEditor(token);
     });
 
   var projectData = {/*here is a project data*/};
 
   /* available in Pro Plan */
   var setProjectData = (project) => {
-    muiPlugin.setProject(project);
+    facetsUI.setProject(project);
   };
 `
         }
@@ -134,7 +134,7 @@ const EditorPlugin: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.completeExample)}{' '}
-        <Link href="https://github.com/navikom/muiditor-plugin/blob/master/examples/browser-sample/index.html" target="_blank">Index HTML file</Link>.
+        <Link href="https://github.com/navikom/facetsui-plugin/blob/master/examples/browser-sample/index.html" target="_blank">Index HTML file</Link>.
       </Typography>
       <br />
       <br />

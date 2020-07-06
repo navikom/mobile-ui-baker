@@ -21,7 +21,7 @@ import Button from '@material-ui/core/Button';
 import Code from 'components/Code/Code';
 
 const propertyRows = [
-  ['container', 'identifiesTheIdOfTheHtmlElement', 'yes', 'muiditor-plugin-container'],
+  ['container', 'identifiesTheIdOfTheHtmlElement', 'yes', 'facetsui-plugin-container'],
   ['uid', 'anAlphanumericString', 'yes', ''],
   ['secret', 'anAlphanumericString', 'yes', ''],
   ['data', 'jsonStringWithTheProject', 'no', 'emptyProject']

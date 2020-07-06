@@ -33,9 +33,9 @@ const ViewerPlugin: React.FC = () => {
           `
   ...
   
-  muiPlugin
-  .getToken(muiPlugin.config.uid || "", muiPlugin.config.secret || "")
-  .then((token: string) => muiPlugin.startViewer(token)});
+  facetsUI
+  .getToken(facetsUI.config.uid || "", facetsUI.config.secret || "")
+  .then((token: string) => facetsUI.startViewer(token)});
   
   ...
 `
@@ -44,7 +44,7 @@ const ViewerPlugin: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.completeExample)}{' '}
-        <Link href="https://github.com/navikom/muiditor-plugin/tree/master/examples/react-sample" target="_blank">React component</Link>.
+        <Link href="https://github.com/navikom/facetsui-plugin/tree/master/examples/react-sample" target="_blank">React component</Link>.
       </Typography>
       <br />
       <br />
@@ -61,10 +61,10 @@ const ViewerPlugin: React.FC = () => {
         id="code4"
         content={
           `
-  muiPlugin
-    .getToken(muiPlugin.config.uid || '', muiPlugin.config.secret || '')
+  facetsUI
+    .getToken(facetsUI.config.uid || '', facetsUI.config.secret || '')
     .then((token) => {
-      muiPlugin.startViewer(token);
+      facetsUI.startViewer(token);
     });
 `
         }
@@ -72,7 +72,7 @@ const ViewerPlugin: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.completeExample)}{' '}
-        <Link href="https://github.com/navikom/muiditor-plugin/blob/master/examples/browser-sample/index.html" target="_blank">Index HTML file</Link>.
+        <Link href="https://github.com/navikom/facetsui-plugin/blob/master/examples/browser-sample/index.html" target="_blank">Index HTML file</Link>.
       </Typography>
       <br />
       <br />

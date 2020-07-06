@@ -30,6 +30,7 @@ import ViewerSection from './Sections/ViewerSection';
 import CookiePopup from 'components/CookiePopup';
 import useScreenSize from 'hooks/useScreenSize';
 import ContactSection from './Sections/ContactSection';
+import GenerateRNSection from './Sections/GenerateRNSection';
 
 const useStyles = makeStyles(styles);
 
@@ -55,7 +56,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
             <GridItem xs={12} sm={12} md={6}>
               <h1 className={classes.title}>Create Mobile UI, fast.</h1>
               <h4>
-                Muiditor is the easiest, quickest way to design Mobile UI&apos;s
+                FacetsUI is the easiest, quickest way to design Mobile UI&apos;s
                 and share them to attract people.
                 <br />
                 Create beautiful mobile UI&apos;s or embed Editor
@@ -78,6 +79,9 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
           <ProductSection />
+        </div>
+        <GenerateRNSection />
+        <div className={classes.container}>
           <EditorSection />
         </div>
         <SampleSection />

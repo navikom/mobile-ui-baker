@@ -75,7 +75,7 @@ const Panels: React.FC<PanelsProps> = ({openDialog}) => {
         </PanelDetails>
         <PanelActions>
           <CustomButton
-            href="https://github.com/navikom/muiditor-plugin/issues"
+            href="https://github.com/navikom/facetsui-plugin/issues"
             disableElevation={true}
             variant="contained"
             startIcon={<GitHub />}

@@ -37,7 +37,7 @@ const MuiditorPlugin: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.hereIsALinkToThe)}{' '}
-        <Link href="https://github.com/navikom/muiditor-plugin" target="_blank">muiditor-plugin</Link>
+        <Link href="https://github.com/navikom/facetsui-plugin" target="_blank">facetsui-plugin</Link>
       </Typography>
       <br />
       <Typography>{Dictionary.defValue(DictionaryService.keys.isEmbeddedVersionOfEditor)}</Typography>
@@ -50,7 +50,7 @@ const MuiditorPlugin: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.toUsePluginInYourWebPage)}{' '}
-        <Link href="https://muiditor.com/panel/user-profile" target="_blank">User Profile</Link>
+        <Link href="https://facetsui.com/panel/user-profile" target="_blank">User Profile</Link>
         {' '}{Dictionary.defValue(DictionaryService.keys.enterYourWebPageUrl)}.
       </Typography>
       <br />

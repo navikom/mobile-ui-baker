@@ -44,7 +44,7 @@ const BeforeStartBox = () => {
           <Link
             className={classes.link}
             underline="none"
-            href="https://github.com/navikom/muiditor-plugin/issues"
+            href="https://github.com/navikom/facetsui-plugin/issues"
             target="_blank"
           >
             GitHub

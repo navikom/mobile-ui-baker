@@ -70,6 +70,7 @@ const ViewerPlugin = lazy(() => import('views/Docs/ViewerPlugin'));
 const ProPlanOverview = lazy(() => import('views/Docs/ProPlanOverview'));
 const PluginConfigurationParameters = lazy(() => import('views/Docs/PluginConfigurationParameters'));
 const PluginMethods = lazy(() => import('views/Docs/PluginMethods'));
+const GenerateReactNative = lazy(() => import('views/Docs/GenerateReactNative'));
 const SubscriptionsList = lazy(() => import('views/Subscriptions/SubscriptionsList'));
 const SubscriptionDetails = lazy(() => import('views/Subscriptions/SubscriptionDetails'));
 const TermsAndConditions = lazy(() => import('views/terms/TermsAndConditions'));
@@ -398,7 +399,7 @@ export const documentationRoutes = [
   },
   {
     path: '/plugin-overview',
-    name: 'MUIDITOR Plugin',
+    name: 'FacetsUI Plugin',
     component: MuiditorPlugin,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_PLUGIN,
@@ -466,6 +467,14 @@ export const documentationRoutes = [
     component: ViewerPlugin,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_VIEWER,
+    docs: true
+  },
+  {
+    path: '/generate-rn-code',
+    name: 'Generate React Native',
+    component: GenerateReactNative,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_EDITOR,
     docs: true
   }
 ];

@@ -24,15 +24,15 @@ const getParams = (params: string[][]) =>
 export default function ContactSection() {
   const classes = useStyles();
   const mailto = () => {
-    window.location.href = `mailto:?subject=Check this&body=Hi, I found this and thought you might like it https://www.muiditor.com`;
+    window.location.href = `mailto:?subject=Check this&body=Hi, I found this and thought you might like it https://www.facetsui.com`;
   }
 
   const twit = () => {
     const shareURL = 'http://twitter.com/share?';
     const params = [
-      ['url', 'https://muiditor.com'],
-      ['text', 'Muiditor is the easiest, quickest way to design Mobile UI\'s and share them to attract people'],
-      ['hashtags', 'muiditor']
+      ['url', 'https://facetsui.com'],
+      ['text', 'Facets UI is the easiest, quickest way to design Mobile UI\'s and share them to attract people'],
+      ['hashtags', 'facetsui']
     ];
 
     window.open(shareURL + getParams(params), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
@@ -41,7 +41,7 @@ export default function ContactSection() {
   const fShare = () => {
     const shareURL = 'http://www.facebook.com/sharer.php?s=100&';
     const params = [
-      ['u', 'https://muiditor.com']
+      ['u', 'https://facetsui.com']
     ];
     window.open(shareURL + getParams(params), 'facebook-popup', 'height=350,width=600');
   };

@@ -23,7 +23,12 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
 import { createStyles, Theme } from '@material-ui/core';
-import { ROUTE_LOGIN, ROUTE_PROJECTS, ROUTE_USER_PROFILE } from 'models/Constants';
+import {
+  ROUTE_DOCS_GET_STARTED,
+  ROUTE_LOGIN,
+  ROUTE_PROJECTS,
+  ROUTE_USER_PROFILE
+} from 'models/Constants';
 import { blackOpacity, whiteColor } from 'assets/jss/material-dashboard-react';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import DisplayViewStore from 'models/DisplayViewStore';
@@ -95,6 +100,7 @@ const ProfileMenuItemsComponent: React.FC<ProfileMenuItemsProps> = (
   { navigate, logout }, ref
 ) => {
   const items = [
+    [navigate(ROUTE_DOCS_GET_STARTED), 'docs'],
     [navigate(ROUTE_PROJECTS), 'projects'],
   ];
   if (App.loggedIn) {

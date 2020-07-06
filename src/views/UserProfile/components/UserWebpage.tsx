@@ -184,7 +184,7 @@ function UserWebpage() {
         UserDetails.user && UserDetails.user.uid && (
           <Typography variant="body2"
                       color="secondary">{Dictionary.defValue(DictionaryService.keys.youCanEmbedNowEditorInto)}.
-            <Link target="_blank" href={ROUTE_DOCS_PLUGIN}> Muiditor Plugin</Link>
+            <Link target="_blank" href={ROUTE_DOCS_PLUGIN}> FacetsUI Plugin</Link>
           </Typography>
         )
       }

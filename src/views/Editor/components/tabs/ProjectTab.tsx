@@ -125,7 +125,7 @@ const ShareProjectComponent: React.FC<IEditorTabsProps> = (
   }
 
   const copyToClipboard = () => {
-    const input = document.getElementById('copy') as HTMLInputElement & { select: () => void; setSelectionRange: (a: number, b: number) => void};
+    const input = document.getElementById('copy') as HTMLInputElement & { select: () => void; setSelectionRange: (a: number, b: number) => void };
     if (input) {
       input.select();
       input.setSelectionRange(0, 99999);
@@ -280,18 +280,14 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
           <LayersClear />
         </IconButton>
       </Tooltip>
-      {
-        App.isAdmin && (
-          <Tooltip
-            placement="top"
-            className={classes.btn}
-            title={`${dictionary!.defValue(EditorDictionary.keys.generate)} ${dictionary!.defValue(EditorDictionary.keys.reactNativePackage)}`}>
-            <IconButton size="small" onClick={generate}>
-              <PhonelinkSetup />
-            </IconButton>
-          </Tooltip>
-        )
-      }
+      <Tooltip
+        placement="top"
+        className={classes.btn}
+        title={`${dictionary!.defValue(EditorDictionary.keys.generate)} ${dictionary!.defValue(EditorDictionary.keys.reactNativePackage)}`}>
+        <IconButton size="small" onClick={generate}>
+          <PhonelinkSetup />
+        </IconButton>
+      </Tooltip>
       {
         App.user && project && project.owner && App.user.userId === project.owner.userId && (
           <Tooltip
@@ -352,7 +348,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         App.user && project && project.owner && App.user.userId === project.owner.userId &&
         <ShareProject dictionary={dictionary} project={project} setAccess={setAccess} />
       }
-      <br/>
+      <br />
       <Typography variant="subtitle2" className={classes.title}>
         {dictionary!.defValue(EditorDictionary.keys.navigationAnimations)}
       </Typography>

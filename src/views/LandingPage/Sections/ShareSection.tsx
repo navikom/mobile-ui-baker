@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
-const BgImage = '/images/bg-3d.png';
+const BgImage = '/images/bg-3d-2.png';
 
 export default function ShareSection() {
   const classes = useStyles();

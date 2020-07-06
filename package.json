@@ -4,7 +4,7 @@
   "description": "Mobile UI baker. Coded by navikom",
   "private": false,
   "main": "dist/index.js",
-  "homepage": "https://muiditor.com",
+  "homepage": "https://facetsui.com",
   "dependencies": {
     "2co-react": "^0.1.6",
     "@date-io/date-fns": "^1.3.13",
