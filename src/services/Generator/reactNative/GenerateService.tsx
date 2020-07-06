@@ -18,7 +18,7 @@ import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import ZipGenerator from './ZipGenerator';
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IGenerateService from 'interfaces/IGenerateService';
-import { TextMetaEnum } from '../../../enums/TextMetaEnum';
+import { TextMetaEnum } from 'enums/TextMetaEnum';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
