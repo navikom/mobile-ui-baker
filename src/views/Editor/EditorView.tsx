@@ -478,10 +478,14 @@ function Editor(props: RouteComponentProps) {
         process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Own components error %s', err.message);
       }
     });
+
+  }, [store, id]);
+  useEffect(() => {
     return () => {
+      console.log('dispose');
       store.dispose();
     }
-  }, [store, id]);
+  }, [store]);
   return <Context store={store} />;
 }
 

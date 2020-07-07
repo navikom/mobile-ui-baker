@@ -58,7 +58,7 @@ class GenerateComponent implements IGenerateComponent {
             invalid && this.generator.addToTransitionErrors(invalid);
           } catch (e) {
             this.generator.addToTransitionErrors(
-              'Control #' + control.id + ' style ""' + item.key + '  error: ' + e.message + '.'
+              'Control #' + control.id + ' style "' + item.key + '"  error: ' + e.message + '.'
             )
           }
         }
