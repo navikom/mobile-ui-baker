@@ -79,7 +79,7 @@ class PaddleCheckoutStore extends Errors {
       App.user!.setPlan(planId.toString());
       App.user!.updatePlanInSubscription(subscriptionId, planId);
     } catch (e) {
-      console.log('Update plan error %s', e.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Update plan error %s', e.message);
     }
 
   }

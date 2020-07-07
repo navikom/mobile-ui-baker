@@ -1,7 +1,7 @@
 import { action } from 'mobx';
 import DisplayViewStore from 'models/DisplayViewStore';
 import { App } from 'models/App';
-import { ROUTE_VIEWER } from 'models/Constants';
+import { MODE_DEVELOPMENT, ROUTE_VIEWER } from 'models/Constants';
 
 class ViewerViewStore extends DisplayViewStore {
 
@@ -10,7 +10,7 @@ class ViewerViewStore extends DisplayViewStore {
     try {
       await super.fetchProjectData(projectId);
     } catch (err) {
-      console.log("Fetch full instance data error %s", err.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log("Fetch full instance data error %s", err.message);
       App.navigationHistory && App.navigationHistory.replace(ROUTE_VIEWER);
     }
     this.setFetchingProject(false);

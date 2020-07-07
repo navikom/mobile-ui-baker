@@ -3,21 +3,21 @@ import { when } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import classNames from 'classnames';
 
-import { App } from 'models/App';
+import { Edit } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
-import { Edit } from '@material-ui/icons';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
 
+import { App } from 'models/App';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { SharedProjects } from 'models/Project/SharedProjectsStore';
 import { OwnProjects } from 'models/Project/OwnProjectsStore';
 import { ROUTE_EDITOR } from 'models/Constants';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import EmptyProjectImg from 'assets/img/projects/empty-project.png';
 import nexus_6_outer from 'assets/img/device/nexus_6_outer.png';
-import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
   container: {

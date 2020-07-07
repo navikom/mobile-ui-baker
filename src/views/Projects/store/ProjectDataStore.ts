@@ -4,7 +4,7 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import validate from 'validate.js';
 import { IImage } from 'interfaces/IImage';
 import { App } from 'models/App';
-import { ROUTE_PROJECTS_LIST } from 'models/Constants';
+import { MODE_DEVELOPMENT, ROUTE_PROJECTS_LIST } from 'models/Constants';
 import ProjectsStore from 'models/Project/ProjectsStore';
 import { Errors } from 'models/Errors';
 import ProjectStore from 'models/Project/ProjectStore';
@@ -101,7 +101,7 @@ export default class ProjectDataStore extends Errors {
         this.project = project;
       });
     } catch (err) {
-      console.log('Fetch full instance data error %s', err.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Fetch full instance data error %s', err.message);
       this.setError(Dictionary.defValue(DictionaryService.keys.dataFetchError, [this.project.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => {
         App.navigationHistory && App.navigationHistory.replace(ROUTE_PROJECTS_LIST);
@@ -126,7 +126,7 @@ export default class ProjectDataStore extends Errors {
       await api(Apis.Main).project.sortImages(this.project.projectId, data);
       images.forEach((e, i) => e.setSort(i));
     } catch (e) {
-      console.log('Images sorting store error: %s', e.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Images sorting store error: %s', e.message);
     }
   }
 
@@ -136,7 +136,7 @@ export default class ProjectDataStore extends Errors {
       await api(Apis.Main).project.deleteImage(this.project.projectId, item.imageId);
       this.project.images!.splice(this.project.images!.indexOf(item), 1);
     } catch (e) {
-      console.log('Delete App Image error: %s', e.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Delete App Image error: %s', e.message);
     }
   }
 
@@ -145,7 +145,7 @@ export default class ProjectDataStore extends Errors {
     try {
       await ProjectsStore.setAccess(this.project, access);
     } catch (e) {
-      console.log('Change access error: %s', e.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Change access error: %s', e.message);
     }
   }
 

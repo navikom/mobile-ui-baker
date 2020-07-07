@@ -143,7 +143,7 @@ const GenerateReactNative: React.FC = () => {
       <br />
       <Typography>
         {Dictionary.defValue(DictionaryService.keys.tryItNowOpenTheSampleProject)}{' '}
-        <Link href="https://facetsui.com/editor/1" target="_blank">&quot;Navigation Example&quot;</Link>
+        <Link href="https://facetsui.com/editor/9" target="_blank">&quot;Navigation Example&quot;</Link>
         {' '}{Dictionary.defValue(DictionaryService.keys.andGenerateYourFirstReactNativeProject)}.
       </Typography>
       <br />

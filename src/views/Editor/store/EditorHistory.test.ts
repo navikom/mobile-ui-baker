@@ -382,18 +382,14 @@ describe("EditorHistory", () => {
     expect(store.currentScreen.id).toBe(screen1.id);
 
     store.history.undo();
-    expect(store.currentScreen.id).toBe(screen2.id);
-
-    store.history.undo();
     expect(store.screens.length).toBe(1);
-    expect(store.currentScreen.id).toBe(screen1.id);
 
     store.history.redo();
     expect(store.screens.length).toBe(2);
     expect(store.currentScreen.id).toBe(screen2.id);
 
     store.history.redo();
-    expect(store.currentScreen.id).toBe(screen1.id);
+    expect(store.currentScreen.id).toBe(screen2.id);
 
     store.history.redo();
     expect(store.screens.length).toBe(1);

@@ -4,6 +4,7 @@ import { UserStore } from 'models/User/UserStore';
 import { IUser } from 'interfaces/IUser';
 import { api, Apis } from 'api';
 import { Dictionary } from 'services/Dictionary/Dictionary';
+import { MODE_DEVELOPMENT } from '../Constants';
 
 export class UsersStore extends Pagination<IUser> {
 
@@ -39,7 +40,7 @@ export class UsersStore extends Pagination<IUser> {
     try {
       await user.referrals.fetchItems();
     } catch (e) {
-      console.log("Fetch referrals error: %s", e.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log("Fetch referrals error: %s", e.message);
     }
   }
 

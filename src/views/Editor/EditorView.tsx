@@ -30,7 +30,7 @@ import { ItemTypes } from 'views/Editor/store/ItemTypes';
 import IControl from 'interfaces/IControl';
 import { DropEnum } from 'enums/DropEnum';
 import TreeComponent from 'views/Editor/components/TreeComponent';
-import { TABS_HEIGHT, FIRST_CONTAINER, SECOND_CONTAINER } from 'models/Constants';
+import { TABS_HEIGHT, FIRST_CONTAINER, SECOND_CONTAINER, MODE_DEVELOPMENT } from 'models/Constants';
 import ProjectTab from 'views/Editor/components/tabs/ProjectTab';
 import { blackOpacity, whiteColor, whiteOpacity } from 'assets/jss/material-dashboard-react';
 import { IBackgroundColor } from 'interfaces/IProject';
@@ -475,7 +475,7 @@ function Editor(props: RouteComponentProps) {
       try {
         await OwnComponents.fetchItems();
       } catch (err) {
-        console.log('Own components error %s', err.message);
+        process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Own components error %s', err.message);
       }
     });
     return () => {

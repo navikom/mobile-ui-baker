@@ -9,7 +9,7 @@ import validate from "validate.js";
 import * as Constants from "models/Constants";
 import { ILoginResult } from "interfaces/ILoginResult";
 import { IAuthUser } from "interfaces/IAuthUser";
-import { ROUTE_LOGIN, ROUTE_ROOT } from "models/Constants";
+import { MODE_DEVELOPMENT, ROUTE_LOGIN, ROUTE_ROOT } from 'models/Constants';
 
 const constraints = {
   password: {
@@ -149,7 +149,7 @@ export class AuthStore extends Errors implements IFlow {
       const data = await api(Apis.Main).user.refresh();
       this.update(data);
     } catch (err) {
-      console.log("Refresh Error", err.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log("Refresh Error", err.message);
       App.navigationHistory && App.navigationHistory.push(Constants.ROUTE_LOGIN);
     }
   }
@@ -170,7 +170,7 @@ export class AuthStore extends Errors implements IFlow {
       });
       localStorage.removeItem(AuthStore.REMEMBER_ME);
     } catch (err) {
-      console.log("Logout Error", err.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log("Logout Error", err.message);
     }
   }
 

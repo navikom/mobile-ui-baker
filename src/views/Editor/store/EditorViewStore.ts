@@ -31,7 +31,7 @@ import { ErrorHandler } from 'utils/ErrorHandler';
 import {
   ERROR_DATA_IS_INCOMPATIBLE,
   ERROR_ELEMENT_DOES_NOT_EXIST,
-  ERROR_USER_DID_NOT_LOGIN,
+  ERROR_USER_DID_NOT_LOGIN, MODE_DEVELOPMENT,
   ROUTE_EDITOR,
   ROUTE_SCREENS
 } from 'models/Constants';
@@ -47,6 +47,7 @@ import GenerateService from 'services/Generator/reactNative/GenerateService';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
 import IGenerateService from 'interfaces/IGenerateService';
+import ProjectVersionStore from '../../../models/Project/ProjectVersionStore';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -448,13 +449,15 @@ class EditorViewStore extends DisplayViewStore {
             App.navigationHistory && App.navigationHistory.replace(`${ROUTE_SCREENS}/${this.project.projectId}`);
           } else if (this.project.access !== AccessEnum.EDIT_BY_LINK) {
             this.project = ProjectStore.from({ ...this.project, projectId: 0, userId: App.user!.userId });
+            this.project.updateVersions([ProjectVersionStore.createEmpty()]);
             App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
           }
         }
       }
       this.save();
+
     } catch (err) {
-      console.log('Fetch full instance data error %s', err.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Fetch full instance data error %s', err);
       App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
     }
     this.setFetchingProject(false);
@@ -465,7 +468,7 @@ class EditorViewStore extends DisplayViewStore {
     try {
       await ProjectsStore.setAccess(this.project, access);
     } catch (e) {
-      console.log('Change access error: %s', e.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Change access error: %s', e.message);
     }
   }
 
@@ -479,7 +482,7 @@ class EditorViewStore extends DisplayViewStore {
         const data = JSON.parse(json);
         this.fromJSON(data);
       } catch (err) {
-        console.log('LocalStorage json data parse error %s', err.message);
+        process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('LocalStorage json data parse error %s', err.message);
       }
     }
   }

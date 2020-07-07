@@ -157,7 +157,7 @@ class ZipGenerator {
 
     const returnCause = isText ? returnText : returnGrid;
 
-    let baseImage = '\n      properties.imageStyle = properties.style || {};\n';
+    let baseImage = '\n      properties.imageStyle = properties.style.slice() || {};\n';
     baseImage += `      properties.imageStyle.push({position: 'absolute'});`;
 
     const content = `${IMPORT_REACT};

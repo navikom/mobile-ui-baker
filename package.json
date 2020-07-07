@@ -1,5 +1,5 @@
 {
-  "name": "mobile-ui-baker",
+  "name": "facetsui",
   "version": "1.0.0",
   "description": "Mobile UI baker. Coded by navikom",
   "private": false,
@@ -71,7 +71,7 @@
     "deploy": "npm run predeploy && npm run deploy:s3 && npm run postdeploy:s3",
     "predeploy": "npm run build:clean && npm run lint:check && npm run test:ci && npm run build",
     "deploy:s3": "aws s3 sync build/ s3://muiditorweb --delete",
-    "postdeploy:s3": "aws cloudfront create-invalidation --distribution-id E5YU840T2VVAX --paths \"/*\""
+    "postdeploy:s3": "aws cloudfront create-invalidation --distribution-id E2S0NGZ7OWUNSX --paths \"/*\""
   },
   "repository": {
     "type": "git",

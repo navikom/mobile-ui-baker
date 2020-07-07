@@ -6,6 +6,7 @@ import SubscriptionPlans from 'models/SubscriptionPlans';
 import { App } from 'models/App';
 import PaddleCheckoutStore from 'models/PaddleCheckoutStore';
 import {
+  MODE_DEVELOPMENT,
   ROUTE_SUBSCRIPTION_DETAILS,
   SUBSCRIPTION_PADDLE_STATUS_ACTIVE,
   SUBSCRIPTION_PADDLE_STATUS_DELETED, SUBSCRIPTION_PADDLE_STATUS_PAST_DUE
@@ -68,7 +69,7 @@ class SubscriptionsStore {
       const subscriptions = await api(Apis.Main).user.subscriptionsFullData();
       this.user!.updateSubscriptions(subscriptions);
     } catch (e) {
-      console.log('Fetch subscription full data', e.message);
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Fetch subscription full data', e.message);
     }
   }
 
