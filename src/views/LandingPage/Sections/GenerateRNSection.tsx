@@ -34,31 +34,45 @@ const useStyles = makeStyles(theme => ({
     }
   },
   imgWrapper: {
-    height: theme.typography.pxToRem(660),
+    height: '500px',
     position: 'relative',
-    maxWidth: theme.typography.pxToRem(1040),
-    marginTop: theme.typography.pxToRem(40),
+    [theme.breakpoints.down('md')]: {
+      height: '250px'
+    }
   },
   img: {
-    maxWidth: theme.typography.pxToRem(800),
     position: 'absolute',
     left: '50%',
-    transform: 'translate(-50%, 0)'
+    transform: 'translate(-50%, 0)',
+    width: 'auto',
+    height: '100%',
   },
   imgHighlight: {
     position: 'absolute',
-    width: '120px',
-    left: '138px',
-    top: '188px',
+    width: 97,
+    left: 109,
+    top: 149,
     opacity: 0,
-    animation: "$Button-loop 15s ease-in-out infinite"
+    animation: '$Button-loop 11s ease-in-out infinite',
+    [theme.breakpoints.down('md')]: {
+      width: 50,
+      left: 54,
+      top: 73,
+      animation: '$Button-loop 11s ease-in-out infinite',
+    }
   },
   imgPointer: {
     position: 'absolute',
-    width: '80px',
-    left: 365,
-    top: 222,
-    animation: "$Pointer 15s ease-in-out infinite"
+    width: 30,
+    left: 146,
+    top: 178,
+    animation: '$Pointer 11s ease-in-out infinite',
+    [theme.breakpoints.down('md')]: {
+      width: 25,
+      left: 69,
+      top: 90,
+      animation: '$Pointer-small 11s ease-in-out infinite',
+    }
   },
   title: {
     ...title,
@@ -79,26 +93,52 @@ const useStyles = makeStyles(theme => ({
   },
   '@keyframes Pointer': {
     '0%': {
-      left: 365,
+      left: 345,
     },
-    '40%': {
-      left: 165
+    '10%': {
+      left: 345
+    },
+    '20%': {
+      left: 146
     },
     '80%': {
-      left: 165
+      left: 146
+    },
+    '90%': {
+      left: 345,
     },
     '100%': {
-      left: 365,
+      left: 345,
+    },
+  },
+  '@keyframes Pointer-small': {
+    '0%': {
+      left: 162,
+    },
+    '10%': {
+      left: 162
+    },
+    '20%': {
+      left: 69
+    },
+    '80%': {
+      left: 69
+    },
+    '90%': {
+      left: 162,
+    },
+    '100%': {
+      left: 162,
     },
   },
   '@keyframes Button-loop': {
     '0%': {
       opacity: 0,
     },
-    '30%': {
+    '18%': {
       opacity: 0,
     },
-    '50%': {
+    '22%': {
       opacity: 1,
     },
     '80%': {

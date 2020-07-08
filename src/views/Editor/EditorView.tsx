@@ -482,7 +482,6 @@ function Editor(props: RouteComponentProps) {
   }, [store, id]);
   useEffect(() => {
     return () => {
-      console.log('dispose');
       store.dispose();
     }
   }, [store]);

@@ -13,7 +13,13 @@ const conatinerFluid = {
   paddingLeft: "15px",
   marginRight: "auto",
   marginLeft: "auto",
-  width: "100%"
+  width: "100%",
+  "@media (min-width: 176px)": {
+    paddingLeft: 0,
+  },
+  "@media (min-width: 576px)": {
+    paddingLeft: "15px",
+  }
 };
 const container = {
   ...conatinerFluid,
