@@ -46,7 +46,7 @@ const mainLayoutStyle = makeStyles(theme => createStyles({
     }
   },
   mobileContainer: {
-    marginTop: '-85%',
+    marginTop: '-75%',
   },
   gradientLightBlue: {
     "&:after": {

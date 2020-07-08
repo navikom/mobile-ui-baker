@@ -110,6 +110,7 @@ class DisplayViewStore extends Errors {
   @action
   async fetchProjectData(projectId: number) {
     const project = await ProjectsStore.fetchFullData(projectId);
+    project.version && project.version.data && ((project.version.data as IProjectData).projectId = projectId);
     runInAction(() => {
       this.project = project;
     });
