@@ -4,7 +4,7 @@ import { saveAs } from 'file-saver';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import {
   APP_ROOT,
-  APP_STORE,
+  APP_STORE, ASSETS_FOLDER,
   BASE_COMP, BREAK,
   CHILDREN,
   COMPONENT_ID,
@@ -33,7 +33,7 @@ import {
   STORE_BASE,
   STORE_VARIABLE,
   STYLE_ID,
-  STYLES,
+  STYLES, SVG_FOLDER,
   SVG_URI_COMP, TABS,
   TEXT_BASE_COMP,
   TEXT_COMP,
@@ -162,7 +162,6 @@ class ZipGenerator {
 
     const content = `${IMPORT_REACT};
 ${importFrom([isText ? TEXT_COMP : VIEW_COMP, isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP])};
-${importFrom([SVG_URI_COMP], 'react-native-svg')};
 ${importFrom(LINEAR_GRADIENT_COMP, 'react-native-linear-gradient')};
     
 ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}, ${STYLES}}) {
@@ -176,10 +175,9 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}, ${STYLES}}) {
   
   if(transit) {
     if(transit.isSvg) {
-      Component = ${SVG_URI_COMP};
-      properties.uri = transit.src;
+      Component = transit.Svg.default;
       if(transit.style && transit.style.color) {
-        properties.fill = transit.style.color;
+        properties.stroke = transit.style.color;
       }
       if(transit.style && transit.style.width) {
         properties.width = transit.style.width;
@@ -608,12 +606,14 @@ export default App;`;
     content += '  style;\n';
     content += '  gradient;\n';
     content += '  scroll;\n';
+    content += '  Svg;\n';
     content += '  @observable enabled;\n\n';
 
-    content += '  constructor({className, isSvg, src, style, gradient, scroll, enabled}) {\n';
+    content += '  constructor({className, isSvg, src, Svg, style, gradient, scroll, enabled}) {\n';
     content += '    this.className = className;\n';
     content += '    this.isSvg = isSvg;\n';
     content += '    this.src = src;\n';
+    content += '    this.Svg = Svg;\n';
     content += '    this.style = style;\n';
     content += '    this.gradient = gradient;\n';
     content += '    this.scroll = scroll;\n';
@@ -738,6 +738,16 @@ export default App;`;
 
     content += `}\nexport default ${STORE};`;
     this.zip.file(`${SRC_FOLDER}/${SCREENS_FOLDER}/${title}/${STORE}.js`, content);
+  }
+
+  svg2zip(name: string, xml: string) {
+    let content = IMPORT_REACT + ';\n';
+    content += importFrom(['SvgXml'], 'react-native-svg') + ';\n';
+
+    content += 'const xml = `' + xml + '`;\n';
+
+    content += 'export default ({stroke, width, height}) => <SvgXml xml={xml} fill={stroke} stroke={stroke} width={width} height={height}/>;';
+    this.zip.file(`${SRC_FOLDER}/${ASSETS_FOLDER}/${SVG_FOLDER}/${name}.js`, content);
   }
 }
 

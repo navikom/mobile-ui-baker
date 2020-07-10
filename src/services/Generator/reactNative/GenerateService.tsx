@@ -4,10 +4,11 @@ import IGenerateComponent from 'interfaces/IGenerateComponent';
 import GenerateComponent from './GenerateComponent';
 import { uniqueNameDefinition } from 'utils/string';
 import {
+  APP_ROOT, ASSETS_FOLDER,
   COMPONENTS_FOLDER,
   NAVIGATE_TO,
   SCREENS_FOLDER,
-  SRC_FOLDER,
+  SRC_FOLDER, SVG_FOLDER,
 } from '../Constants';
 import IStoreContent from 'interfaces/IStoreContent';
 import StoreContent from '../StoreContent';
@@ -19,6 +20,8 @@ import ZipGenerator from './ZipGenerator';
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IGenerateService from 'interfaces/IGenerateService';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
+import { action, IReactionDisposer, observable, reaction, runInAction } from 'mobx';
+import TransitStyle from '../TransitStyle';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
@@ -31,7 +34,9 @@ class GenerateService implements IGenerateService {
   nameSpaces: string[] = [];
   storeContent: Map<string, IStoreContent[]> = new Map<string, IStoreContent[]>();
   transitionErrors: string[] = [];
+  fetchItemsReaction: IReactionDisposer;
   zipGenerator: ZipGenerator;
+  @observable fetchItems: string[] = [];
 
   get leftDrawerWidth() {
     return Array.from(this.leftDrawer.values())[0][1];
@@ -57,6 +62,11 @@ class GenerateService implements IGenerateService {
   constructor(store: IMobileUIView) {
     this.store = store;
     this.zipGenerator = new ZipGenerator(this);
+    this.fetchItemsReaction = reaction(() => this.fetchItems.length, (length: number) => {
+      if(length === 0) {
+        this.generateFinish();
+      }
+    })
   }
 
   getComponentByControlId(id: string) {
@@ -76,7 +86,9 @@ class GenerateService implements IGenerateService {
     const transitStyles: ITransitStyle[] = [];
     let widthValue = 0;
     let unit;
-    styles.forEach(style => {
+    let l = styles.length, i = 0;
+    while (l--) {
+      const style = styles[i++];
       const background = (style[1] as unknown as ObjectType[]).find(e => e.key === 'background');
       const backgroundImage = (style[1] as unknown as ObjectType[]).find(e => e.key === 'backgroundImage');
       const mask = (style[1] as unknown as ObjectType[]).find(e => e.key === 'mask');
@@ -87,11 +99,7 @@ class GenerateService implements IGenerateService {
       const width = control.cssProperty(style[0] as string, 'width');
       const height = control.cssProperty(style[0] as string, 'height');
 
-      const transitStyle: ITransitStyle = {
-        className: style[0] as string,
-        enabled: control.activeClass(style[0] as string),
-        isSvg: false
-      }
+      const transitStyle = new TransitStyle(style[0] as string, control.activeClass(style[0] as string), false);
 
       if ((overflow && overflow.enabled && overflow.value !== 'hidden') ||
         (overflowY && overflowY.enabled && overflowY.value !== 'hidden')) {
@@ -105,9 +113,12 @@ class GenerateService implements IGenerateService {
       if (background && background.enabled) {
         const match = (background.value as string).match(/url\((\S+)\)/i);
         if (match) {
-          transitStyle.src = match[1].replace(/"|'/g, '');
-          if (transitStyle.src!.includes('.svg')) {
+          const src = match[1].replace(/"|'/g, '');
+          if (src!.includes('.svg')) {
+            this.addToFetch(src, transitStyle);
             transitStyle.isSvg = true;
+          } else {
+            transitStyle.src = src;
           }
         } else {
           try {
@@ -121,19 +132,24 @@ class GenerateService implements IGenerateService {
       if (mask && mask.enabled) {
         const match = (mask.value as string).match(/url\((\S+)\)/i);
         if (match) {
-          transitStyle.src = match[1].replace(/"|'/g, '');
+          const src = match[1].replace(/"|'/g, '');
           if (transitStyle.src!.includes('.svg')) {
+            this.addToFetch(src, transitStyle);
             transitStyle.isSvg = true;
+          } else {
+            transitStyle.src = src;
           }
         }
       }
       if (backgroundImage && backgroundImage.enabled) {
-        transitStyle.src = backgroundImage.value as string;
-        if (transitStyle.src!.includes('.svg')) {
+        const src = backgroundImage.value as string;
+        if (src!.includes('.svg')) {
+          this.addToFetch(src, transitStyle);
           transitStyle.isSvg = true;
           transitStyle.style = reactNativeImage.size(width as ICSSProperty, height as ICSSProperty);
 
         } else {
+          transitStyle.src = src;
           const backgroundSize = control.cssProperty(style[0] as string, 'backgroundSize');
           const backgroundPosition = control.cssProperty(style[0] as string, 'backgroundPosition');
           const backgroundRepeat = control.cssProperty(style[0] as string, 'backgroundRepeat');
@@ -141,8 +157,9 @@ class GenerateService implements IGenerateService {
         }
       }
       if (maskImage && maskImage.enabled) {
-        transitStyle.src = maskImage.value as string;
-        if (transitStyle.src!.includes('.svg')) {
+        const src = maskImage.value as string;
+        if (src!.includes('.svg')) {
+          this.addToFetch(src, transitStyle);
           const backgroundColor = control.cssProperty(style[0] as string, 'backgroundColor');
           transitStyle.style = reactNativeImage.svgMode(width, height, backgroundColor);
           transitStyle.isSvg = true;
@@ -155,8 +172,33 @@ class GenerateService implements IGenerateService {
         }
       }
       (transitStyle.src || transitStyle.gradient || transitStyle.scroll) && transitStyles.push(transitStyle);
-    });
+    }
+
     return [transitStyles.length ? transitStyles : undefined, unit === '%' ? widthValue + '%' : widthValue];
+  }
+
+  @action addToFetch(src: string, transitStyle: ITransitStyle) {
+    this.fetchItems.push(src);
+    const name = src!.split('/').pop()!.replace('.svg', '');
+    transitStyle.src = `${APP_ROOT}/${ASSETS_FOLDER}/${SVG_FOLDER}/${name}`;
+    this.fetchSource(src, name as string);
+  }
+
+  async fetchSource(src: string, name: string) {
+    try {
+      const response = await fetch(src);
+      const text = await response.text();
+      this.deleteFetchItem(src);
+      const svgWithNoStroke = text.replace(/stroke="(.*?)"/g, '');
+      this.zipGenerator.svg2zip(name as string, svgWithNoStroke);
+    } catch (e) {
+      this.deleteFetchItem(src);
+      this.addToTransitionErrors('Svg source "' + src + '" fetch error: ' + e.message);
+    }
+  }
+
+  @action deleteFetchItem(src: string) {
+    this.fetchItems.splice(this.fetchItems.indexOf(src), 1);
   }
 
   isLeftDrawerChild(control: IControl) {
@@ -171,65 +213,74 @@ class GenerateService implements IGenerateService {
     return !!Array.from(this.tab.values()).find(ids => control.path.includes(ids[0]));
   }
 
-  generateRN() {
+   setChecksums(): { [key: string]: IStoreContent[] } {
     const childrenMap: { [key: string]: IStoreContent[] } = {};
-    this.store.screens.forEach((screen, i) => screen.setChecksum(0, [], i, (depth: number, index: number, control: IControl) => {
-      if (!this.storeContent.has(screen.id)) {
-        this.storeContent.set(screen.id, []);
+      let l = this.store.screens.length, i = 0;
+      while (l--) {
+        const screen = this.store.screens[i];
+        screen.setChecksum(0, [], i, async (depth: number, index: number, control: IControl) => {
+          if (!this.storeContent.has(screen.id)) {
+            this.storeContent.set(screen.id, []);
+          }
+          const actions = control.actions.toJS().sort((a, b) => {
+            if (b[0] === NAVIGATE_TO) return -1;
+            return 1;
+          });
+          const [transitStyles, width] = this.transitStyle(control);
+
+          const store =
+            new StoreContent(
+              control.id as string,
+              screen.id as string,
+              control.path as string[],
+              control.classes,
+              control.hashChildrenWithStyle as string,
+              [index],
+              control.title,
+              control.hashChildren as string,
+              control.cssStyles.size > 1,
+              control.meta,
+              transitStyles as ITransitStyle[],
+              actions,
+              control.title);
+          const pathKey = control.path.join('/');
+          if (!childrenMap[pathKey]) {
+            childrenMap[pathKey] = [];
+          }
+          childrenMap[pathKey].push(store);
+
+          if([ScreenMetaEnum.COMPONENT, TextMetaEnum.INPUT, TextMetaEnum.TEXT_AREA].includes(control.meta)) {
+            if(this.isLeftDrawerChild(control)) {
+              this.storeContent.get(this.leftDrawer.get(screen.id)![0])!.push(store);
+            } else if(this.isRightDrawerChild(control)) {
+              this.storeContent.get(this.rightDrawer.get(screen.id)![0])!.push(store);
+            } else if(this.isTabChild(control)) {
+              this.storeContent.get(this.tab.get(screen.id)![0])!.push(store);
+            } else {
+              this.storeContent.get(screen.id)!.push(store);
+            }
+
+          } else if(control.meta === ScreenMetaEnum.LEFT_DRAWER) {
+            this.leftDrawer.set(screen.id, [control.id, width as string]);
+            this.storeContent.set(control.id, []);
+            this.storeContent.get(control.id)!.push(store);
+          } else if(control.meta === ScreenMetaEnum.RIGHT_DRAWER) {
+            this.rightDrawer.set(screen.id, [control.id, width as string]);
+            this.storeContent.set(control.id, []);
+            this.storeContent.get(control.id)!.push(store);
+          } else if(control.meta === ScreenMetaEnum.TABS) {
+            this.tab.set(screen.id, [control.id, width as string]);
+            this.storeContent.set(control.id, []);
+            this.storeContent.get(control.id)!.push(store);
+          }
+        });
+        i++;
       }
-      const actions = control.actions.toJS().sort((a, b) => {
-        if (b[0] === NAVIGATE_TO) return -1;
-        return 1;
-      });
-      const [transitStyles, width] = this.transitStyle(control);
+      return childrenMap;
+  }
 
-      const store =
-        new StoreContent(
-          control.id as string,
-          screen.id as string,
-          control.path as string[],
-          control.classes,
-          control.hashChildrenWithStyle as string,
-          [index],
-          control.title,
-          control.hashChildren as string,
-          control.cssStyles.size > 1,
-          control.meta,
-          transitStyles as ITransitStyle[],
-          actions,
-          control.title);
-      const pathKey = control.path.join('/');
-      if (!childrenMap[pathKey]) {
-        childrenMap[pathKey] = [];
-      }
-      childrenMap[pathKey].push(store);
-
-      if([ScreenMetaEnum.COMPONENT, TextMetaEnum.INPUT, TextMetaEnum.TEXT_AREA].includes(control.meta)) {
-        if(this.isLeftDrawerChild(control)) {
-          this.storeContent.get(this.leftDrawer.get(screen.id)![0])!.push(store);
-        } else if(this.isRightDrawerChild(control)) {
-          this.storeContent.get(this.rightDrawer.get(screen.id)![0])!.push(store);
-        } else if(this.isTabChild(control)) {
-          this.storeContent.get(this.tab.get(screen.id)![0])!.push(store);
-        } else {
-          this.storeContent.get(screen.id)!.push(store);
-        }
-
-      } else if(control.meta === ScreenMetaEnum.LEFT_DRAWER) {
-        this.leftDrawer.set(screen.id, [control.id, width as string]);
-        this.storeContent.set(control.id, []);
-        this.storeContent.get(control.id)!.push(store);
-      } else if(control.meta === ScreenMetaEnum.RIGHT_DRAWER) {
-        this.rightDrawer.set(screen.id, [control.id, width as string]);
-        this.storeContent.set(control.id, []);
-        this.storeContent.get(control.id)!.push(store);
-      } else if(control.meta === ScreenMetaEnum.TABS) {
-        this.tab.set(screen.id, [control.id, width as string]);
-        this.storeContent.set(control.id, []);
-        this.storeContent.get(control.id)!.push(store);
-      }
-
-    }));
+  generateRN() {
+    const childrenMap = this.setChecksums();
 
     let traverse: (controls: IControl[]) => void;
     (traverse = (controls: IControl[]) => {
@@ -316,6 +367,13 @@ class GenerateService implements IGenerateService {
     });
     this.zipGenerator.generateRest(screenNames);
 
+    if(!this.fetchItems.length) {
+      this.generateFinish();
+    }
+  }
+
+  generateFinish() {
+    this.fetchItemsReaction();
     if(this.transitionErrors.length) {
       this.store.setContentGeneratorDialog!(this.transitionErrors);
     } else {

@@ -423,7 +423,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   async generate() {
-    this.generator = new GenerateService(this).generateRN();
+    this.generator = await new GenerateService(this).generateRN();
   }
 
   @action clear() {

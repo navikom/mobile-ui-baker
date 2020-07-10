@@ -81,13 +81,13 @@ class StoreContent implements IStoreContent {
     content += `    path: ${JSON.stringify(this.path)},\n`;
     content += `    classes: ${JSON.stringify(this.classes)},\n`;
     content += `    styleId: "${this.styleId}",\n`;
-    content += `    transitStyles: ${JSON.stringify(this.transitStyles)},\n`;
+    content += `    transitStyles: ${this.transitStyles ? '[' + this.transitStyles.map(e => e.toString()) + ']' : undefined},\n`;
     content += `    action: ${JSON.stringify(this.action)},\n`;
     content += `    text: "${this.text}",\n`;
     content += `    meta: "${this.meta}",\n`;
     content += `    placeIndex: ${JSON.stringify(this.placeIndex)},\n`;
     content += `    component: ${component}\n`;
-    content += '  }'
+    content += '  }';
     return content;
   }
 
