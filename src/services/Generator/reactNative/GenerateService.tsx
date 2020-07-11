@@ -1,3 +1,5 @@
+import { action, observable, runInAction, when } from 'mobx';
+
 import IMobileUIView from 'interfaces/IMobileUIView';
 import IControl from 'interfaces/IControl';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
@@ -20,7 +22,6 @@ import ZipGenerator from './ZipGenerator';
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IGenerateService from 'interfaces/IGenerateService';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
-import { action, IReactionDisposer, observable, reaction, runInAction } from 'mobx';
 import TransitStyle from '../TransitStyle';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
@@ -34,8 +35,8 @@ class GenerateService implements IGenerateService {
   nameSpaces: string[] = [];
   storeContent: Map<string, IStoreContent[]> = new Map<string, IStoreContent[]>();
   transitionErrors: string[] = [];
-  fetchItemsReaction: IReactionDisposer;
   zipGenerator: ZipGenerator;
+  @observable generated = false;
   @observable fetchItems: string[] = [];
 
   get leftDrawerWidth() {
@@ -62,11 +63,9 @@ class GenerateService implements IGenerateService {
   constructor(store: IMobileUIView) {
     this.store = store;
     this.zipGenerator = new ZipGenerator(this);
-    this.fetchItemsReaction = reaction(() => this.fetchItems.length, (length: number) => {
-      if(length === 0) {
-        this.generateFinish();
-      }
-    })
+    when(() => this.generated, () => {
+      when(() => this.fetchItems.length === 0, () => this.generateFinish());
+    });
   }
 
   getComponentByControlId(id: string) {
@@ -133,7 +132,7 @@ class GenerateService implements IGenerateService {
         const match = (mask.value as string).match(/url\((\S+)\)/i);
         if (match) {
           const src = match[1].replace(/"|'/g, '');
-          if (transitStyle.src!.includes('.svg')) {
+          if (src!.includes('.svg')) {
             this.addToFetch(src, transitStyle);
             transitStyle.isSvg = true;
           } else {
@@ -179,7 +178,9 @@ class GenerateService implements IGenerateService {
 
   @action addToFetch(src: string, transitStyle: ITransitStyle) {
     this.fetchItems.push(src);
-    const name = src!.split('/').pop()!.replace('.svg', '');
+    let name = src!.split('/').pop()!
+      .replace('.svg', '');
+    name = name.replace(/-|\.|:/g, '_');
     transitStyle.src = `${APP_ROOT}/${ASSETS_FOLDER}/${SVG_FOLDER}/${name}`;
     this.fetchSource(src, name as string);
   }
@@ -188,9 +189,9 @@ class GenerateService implements IGenerateService {
     try {
       const response = await fetch(src);
       const text = await response.text();
-      this.deleteFetchItem(src);
       const svgWithNoStroke = text.replace(/stroke="(.*?)"/g, '');
       this.zipGenerator.svg2zip(name as string, svgWithNoStroke);
+      this.deleteFetchItem(src);
     } catch (e) {
       this.deleteFetchItem(src);
       this.addToTransitionErrors('Svg source "' + src + '" fetch error: ' + e.message);
@@ -367,13 +368,12 @@ class GenerateService implements IGenerateService {
     });
     this.zipGenerator.generateRest(screenNames);
 
-    if(!this.fetchItems.length) {
-      this.generateFinish();
-    }
+    runInAction(() => {
+      this.generated = true;
+    })
   }
 
   generateFinish() {
-    this.fetchItemsReaction();
     if(this.transitionErrors.length) {
       this.store.setContentGeneratorDialog!(this.transitionErrors);
     } else {

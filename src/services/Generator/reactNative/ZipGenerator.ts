@@ -746,8 +746,12 @@ export default App;`;
 
     content += 'const xml = `' + xml + '`;\n';
 
-    content += 'export default ({stroke, width, height}) => <SvgXml xml={xml} fill={stroke} stroke={stroke} width={width} height={height}/>;';
-    this.zip.file(`${SRC_FOLDER}/${ASSETS_FOLDER}/${SVG_FOLDER}/${name}.js`, content);
+    content += 'export default ({stroke, width, height, style}) => \n';
+    content += '  <SvgXml style={style} xml={xml} fill={stroke} stroke={stroke} width={width} height={height}/>;';
+    const path = `${SRC_FOLDER}/${ASSETS_FOLDER}/${SVG_FOLDER}/${name}.js`;
+    console.log(path, content);
+    console.log('==============');
+    this.zip.file(path, content);
   }
 }
 

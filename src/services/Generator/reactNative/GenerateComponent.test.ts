@@ -1,3 +1,4 @@
+import { FetchMock } from 'jest-fetch-mock';
 import CreateControl from 'models/Control/ControlStores';
 import { ControlEnum } from 'enums/ControlEnum';
 import { MAIN_CSS_STYLE } from 'models/Control/ControlStore';
@@ -7,7 +8,13 @@ import EditorViewStore from '../../../views/Editor/store/EditorViewStore';
 import GenerateService from './GenerateService';
 import ITransitStyle from '../../../interfaces/ITransitSyle';
 
+const fetchMock = fetch as FetchMock;
+
 describe('GenerateComponent', () => {
+
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  })
 
   it('transit image from background to react native', () => {
     const viewStore = new EditorViewStore('');
@@ -63,6 +70,7 @@ describe('GenerateComponent', () => {
   });
 
   it('transit svg from mask to react native', () => {
+    fetchMock.mockResponseOnce('');
     const viewStore = new EditorViewStore('');
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
