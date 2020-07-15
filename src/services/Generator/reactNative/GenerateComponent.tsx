@@ -15,10 +15,12 @@ import {
 } from '../Constants';
 import { ControlEnum } from 'enums/ControlEnum';
 import { importFrom } from '../utils';
-import { blockStyle, metaRules, ruleValidator, specificRules } from './ReactNativeStyleDictionary';
+import { blockStyle, ignoreStyle, metaRules, ruleValidator, specificRules } from './ReactNativeStyleDictionary';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';
 import IGenerateService from 'interfaces/IGenerateService';
+
+type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
 class GenerateComponent implements IGenerateComponent {
   generator: IGenerateService;
@@ -39,16 +41,22 @@ class GenerateComponent implements IGenerateComponent {
 
   rnStylesJSON(control: IControl) {
     const array = control.cssStylesJSON;
-    const styles: {[key: string]: any} = {};
+    const styles: { [key: string]: any } = {};
     array.forEach(entry => {
       const k = entry[0] as string;
-      styles[k] = control.type === ControlEnum.Text && !control.hasImage ? {fontSize: 17} : {};
-      (entry[1] as unknown as {[key: string]: string | number}[]).forEach(item => {
-        if(blockStyle.includes(item.key as string)) {
+      styles[k] = control.type === ControlEnum.Text && !control.hasImage ? { fontSize: 17 } : {};
+      const overflow = (entry[1] as unknown as ObjectType[]).find(e => e.key === 'overflow');
+      const overflowX = (entry[1] as unknown as ObjectType[]).find(e => e.key === 'overflowX');
+      const overflowY = (entry[1] as unknown as ObjectType[]).find(e => e.key === 'overflowY');
+      (entry[1] as unknown as { [key: string]: string | number }[]).forEach(item => {
+        if (blockStyle.includes(item.key as string)) {
+          return;
+        }
+        if (ignoreStyle[item.key as 'alignItems'] && ignoreStyle[item.key as 'alignItems'](overflow, overflowX, overflowY)) {
           return;
         }
         let rule = specificRules[item.key as 'display'] && specificRules[item.key as 'display'](item, control);
-        if(!rule) {
+        if (!rule) {
           try {
             const propName = getPropertyName(item.key);
 

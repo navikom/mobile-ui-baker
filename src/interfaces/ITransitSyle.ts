@@ -5,9 +5,9 @@ interface ITransitStyle {
   isSvg: boolean;
   enabled: boolean;
   src?: string;
-  style?: { resizeMode?: string; color?: string; width?: string | number; height?: string | number};
+  style?: { resizeMode?: string; color?: string; width?: string | number; height?: string | number };
   gradient?: ReactNativeGradient;
-  scroll?: { horizontal: boolean };
+  scroll?: { horizontal: boolean; contentContainerStyle: { alignItems?: string; justifyContent?: string } };
 }
 
 export default ITransitStyle;

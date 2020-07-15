@@ -1,5 +1,4 @@
 import { ERROR_USER_DID_NOT_LOGIN } from 'models/Constants';
-import React from 'react';
 
 export default {
   'auth:wrong-password': 'The password is invalid.',

@@ -35,6 +35,7 @@ class GenerateService implements IGenerateService {
   nameSpaces: string[] = [];
   storeContent: Map<string, IStoreContent[]> = new Map<string, IStoreContent[]>();
   transitionErrors: string[] = [];
+  screenNames: { id: string; title: string }[] = [];
   zipGenerator: ZipGenerator;
   @observable generated = false;
   @observable fetchItems: string[] = [];
@@ -58,6 +59,14 @@ class GenerateService implements IGenerateService {
       }
     }));
     return [inDrawer, outOfDrawer];
+  }
+
+  get bareScreens() {
+    const keys = [
+      ...Array.from(this.leftDrawer.keys()),
+      ...Array.from(this.rightDrawer.keys()),
+      ...Array.from(this.tab.keys())];
+    return this.screenNames.filter(screen => !keys.includes(screen.id));
   }
 
   constructor(store: IMobileUIView) {
@@ -95,6 +104,8 @@ class GenerateService implements IGenerateService {
       const overflow = (style[1] as unknown as ObjectType[]).find(e => e.key === 'overflow');
       const overflowX = (style[1] as unknown as ObjectType[]).find(e => e.key === 'overflowX');
       const overflowY = (style[1] as unknown as ObjectType[]).find(e => e.key === 'overflowY');
+      const alignItems = (style[1] as unknown as ObjectType[]).find(e => e.key === 'alignItems');
+      const justifyContent = (style[1] as unknown as ObjectType[]).find(e => e.key === 'justifyContent');
       const width = control.cssProperty(style[0] as string, 'width');
       const height = control.cssProperty(style[0] as string, 'height');
 
@@ -102,11 +113,23 @@ class GenerateService implements IGenerateService {
 
       if ((overflow && overflow.enabled && overflow.value !== 'hidden') ||
         (overflowY && overflowY.enabled && overflowY.value !== 'hidden')) {
-        transitStyle.scroll = { horizontal: false };
+        transitStyle.scroll = { horizontal: false, contentContainerStyle: {} };
+        if(alignItems && alignItems.enabled) {
+          transitStyle.scroll.contentContainerStyle.alignItems = alignItems.value as string;
+        }
+        if(justifyContent && justifyContent.enabled) {
+          transitStyle.scroll.contentContainerStyle.justifyContent = justifyContent.value as string;
+        }
       }
 
       if (overflowX && overflowX.enabled && overflowX.value !== 'hidden') {
-        transitStyle.scroll = { horizontal: true };
+        transitStyle.scroll = { horizontal: true, contentContainerStyle: {} };
+        if(alignItems && alignItems.enabled) {
+          transitStyle.scroll.contentContainerStyle.alignItems = alignItems.value as string;
+        }
+        if(justifyContent && justifyContent.enabled) {
+          transitStyle.scroll.contentContainerStyle.justifyContent = justifyContent.value as string;
+        }
       }
 
       if (background && background.enabled) {
@@ -350,7 +373,6 @@ class GenerateService implements IGenerateService {
 
   components2zip() {
     const screenHashes: string[] = [];
-    const screenNames: { id: string; title: string }[] = [];
     this.store.screens.forEach((screen: IControl) => {
       !screenHashes.includes(screen.hashChildren as string) && screenHashes.push(screen.hashChildren as string);
     });
@@ -361,12 +383,12 @@ class GenerateService implements IGenerateService {
           cmp.styles.delete(control.hashChildrenWithStyle as string);
           this.zipGenerator.screen2zip(cmp, title);
           this.zipGenerator.initState2zip(`${SRC_FOLDER}/${SCREENS_FOLDER}/${title}`, this.getScreenStore(control.id));
-          screenNames.push({ id: control.id, title });
+          this.screenNames.push({ id: control.id, title });
         });
       }
       this.zipGenerator.component2zip(cmp, COMPONENTS_FOLDER, cmp.nameSpace);
     });
-    this.zipGenerator.generateRest(screenNames);
+    this.zipGenerator.generateRest();
 
     runInAction(() => {
       this.generated = true;

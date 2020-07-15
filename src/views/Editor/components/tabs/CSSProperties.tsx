@@ -1,39 +1,39 @@
-import React from "react";
-import { observer } from "mobx-react-lite";
-import ICSSProperty from "interfaces/ICSSProperty";
-import { CSS_CATEGORIES, TABS_HEIGHT } from "models/Constants";
-import CSSProperty from "views/Editor/components/tabs/CSSProperty";
-import EditorDictionary from "views/Editor/store/EditorDictionary";
-import { ExpansionPanel, makeStyles } from "@material-ui/core";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import { Add, CheckCircle, Delete, ExpandMore } from "@material-ui/icons";
-import Typography from "@material-ui/core/Typography";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import { blackOpacity } from "assets/jss/material-dashboard-react";
-import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import Button from "@material-ui/core/Button";
-import IControl from "interfaces/IControl";
-import IconButton from "@material-ui/core/IconButton";
-import { PROPERTY_EXPANDED } from "models/Control/CSSProperty";
-import { MAIN_CSS_STYLE } from "models/Control/ControlStore";
-import TextInput from "components/CustomInput/TextInput";
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import ICSSProperty from 'interfaces/ICSSProperty';
+import { CSS_CATEGORIES, TABS_HEIGHT } from 'models/Constants';
+import CSSProperty from 'views/Editor/components/tabs/CSSProperty';
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
+import { ExpansionPanel, makeStyles } from '@material-ui/core';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import { Add, CheckCircle, Delete, ExpandMore } from '@material-ui/icons';
+import Typography from '@material-ui/core/Typography';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import { blackOpacity } from 'assets/jss/material-dashboard-react';
+import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
+import IControl from 'interfaces/IControl';
+import IconButton from '@material-ui/core/IconButton';
+import { PROPERTY_EXPANDED } from 'models/Control/CSSProperty';
+import { MAIN_CSS_STYLE } from 'models/Control/ControlStore';
+import TextInput from 'components/CustomInput/TextInput';
 
 const useStyles = makeStyles(theme => ({
     root: {
       backgroundColor: blackOpacity(0.05),
-      boxShadow: "none"
+      boxShadow: 'none'
     },
     details: {
       backgroundColor: theme.palette.background.paper,
       padding: 8,
     },
     paragraph: {
-      margin: "4px 0"
+      margin: '4px 0'
     },
     input: {
       backgroundColor: blackOpacity(0.001),
-      textOverflow: "ellipsis",
+      textOverflow: 'ellipsis',
     }
   })
 );
@@ -48,8 +48,10 @@ const CSSPropertiesComponent: React.FC<CSSPropertiesProps> = ({ control, styleKe
 
   const classes = useStyles();
   const properties = control.cssStyles.get(styleKey) as ICSSProperty[];
-
   const hasToShow = (prop: ICSSProperty) => {
+    if (prop.enabled) {
+      return true;
+    }
     if (prop.showWhen) {
       const property = properties.find(p => p.key === prop.showWhen![0]);
       if (property) {
@@ -70,7 +72,7 @@ const CSSPropertiesComponent: React.FC<CSSPropertiesProps> = ({ control, styleKe
   ).filter(cat => cat[1].length);
 
   return (
-    <div style={{ height: `calc(100% - ${TABS_HEIGHT + 7}px)`, overflow: "auto" }}>
+    <div style={{ height: `calc(100% - ${TABS_HEIGHT + 7}px)`, overflow: 'auto' }}>
       {
         props.map((prop, i) => {
           return (<ExpansionPanel key={i} className={classes.root}>
@@ -136,27 +138,27 @@ const CSSMap: React.FC<CSSMapProps> = ({ control, dictionary }) => {
                     />
                   </Grid>
                   <Grid container item xs={4} sm={4} md={4} justify="flex-end">
-                      <Tooltip
-                        title={`${dictionary.defValue(EditorDictionary.keys.switch)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
-                        placement="top">
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            control.switchClass(key);
-                            e.stopPropagation();
-                          }}
-                          color={control.activeClass(key) ? "primary" : "inherit"}
-                        >
-                          <CheckCircle />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip
-                        title={`${dictionary.defValue(EditorDictionary.keys.delete)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
-                        placement="top">
-                        <IconButton size="small" onClick={() => control.removeCSSStyle(key)}>
-                          <Delete />
-                        </IconButton>
-                      </Tooltip>
+                    <Tooltip
+                      title={`${dictionary.defValue(EditorDictionary.keys.switch)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
+                      placement="top">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          control.switchClass(key);
+                          e.stopPropagation();
+                        }}
+                        color={control.activeClass(key) ? 'primary' : 'inherit'}
+                      >
+                        <CheckCircle />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                      title={`${dictionary.defValue(EditorDictionary.keys.delete)} ${dictionary.defValue(EditorDictionary.keys.style)}`}
+                      placement="top">
+                      <IconButton size="small" onClick={() => control.removeCSSStyle(key)}>
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
                   </Grid>
                 </Grid>)}
 

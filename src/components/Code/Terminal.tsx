@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
-import { blackOpacity, whiteOpacity } from 'assets/jss/material-dashboard-react';
+import { blackOpacity } from 'assets/jss/material-dashboard-react';
 
 const useStyles = makeStyles({
   root: {

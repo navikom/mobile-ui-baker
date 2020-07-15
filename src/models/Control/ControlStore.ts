@@ -662,9 +662,14 @@ class ControlStore extends Movable implements IControl {
     control.parentId = json.parentId;
     control.lockedChildren = json.lockedChildren;
     json.actions && control.actions.replace(json.actions.map(actions => observable(actions)));
-    json.classes && control.classes.replace(json.classes);
     json.meta && (control.meta = json.meta);
     control.mergeStyles(new Map(json.cssStyles));
+    if(json.classes) {
+      const keys = Array.from(control.cssStyles.keys());
+      const classes = json.classes.filter(clazz => keys.includes(clazz));
+
+      control.classes.replace(classes);
+    }
     if (control.cssStyles.size > 1 && !isMenu) {
       Array.from(control.cssStyles.keys())
         .filter(k => k !== MAIN_CSS_STYLE).forEach(k => this.addClass(control.id, k));

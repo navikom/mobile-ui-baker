@@ -6,7 +6,7 @@ class TransitStyle implements ITransitStyle {
   enabled: boolean;
   isSvg: boolean;
   gradient?: ReactNativeGradient;
-  scroll?: { horizontal: boolean };
+  scroll?: { horizontal: boolean; contentContainerStyle: { alignItems?: string; justifyContent?: string } };
   src?: string;
   style?: { resizeMode?: string; color?: string; width?: string | number; height?: string | number };
 

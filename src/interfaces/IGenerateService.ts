@@ -9,9 +9,11 @@ interface IGenerateService {
   tab: Map<string, string[]>;
   storeContent: Map<string, IStoreContent[]>;
   components: Map<string, IGenerateComponent>;
+  screenNames: { id: string; title: string }[];
   tabScreens: string[][];
   leftDrawerWidth: string;
   rightDrawerWidth: string;
+  bareScreens: { id: string; title: string }[];
   generateRN(): IGenerateService;
   addToTransitionErrors(value: string): void;
   getComponentByControlId(id: string): IGenerateComponent | null;

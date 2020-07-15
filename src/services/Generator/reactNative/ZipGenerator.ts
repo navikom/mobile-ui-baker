@@ -34,7 +34,7 @@ import {
   STORE_VARIABLE,
   STYLE_ID,
   STYLES, SVG_FOLDER,
-  SVG_URI_COMP, TABS,
+  TABS,
   TEXT_BASE_COMP,
   TEXT_COMP,
   TEXT_INPUT_COMP, TOGGLE_STYLE,
@@ -59,25 +59,33 @@ class ZipGenerator {
   zip = new JSZip();
   source: IService;
 
+  get getDirection() {
+    const direction = this.source.store.navigation[2];
+    let navDirection = '';
+    if(direction === AnimationDirectionEnum.TOP) {
+      navDirection += `, ...TransitionPresets[Platform.OS === 'ios' ? 'ModalSlideFromBottomIOS' : 'RevealFromBottomAndroid']`;
+    }
+    return navDirection;
+  }
+
   constructor(source: IService) {
     this.source = source;
   }
 
-  generateRest(screenNames: { id: string; title: string }[]) {
+  generateRest() {
     this.baseComponent2zip(true);
     this.baseComponent2zip(false);
-    this.navigation2zip(screenNames);
-    this.screens2zip(screenNames);
+    this.navigation2zip();
+    this.screens2zip();
     this.specNavComponents2zip();
     this.app2zip();
-    this.appStore2zip(screenNames);
+    this.appStore2zip();
     this.transitStyle2zip();
     this.controlProperty2Zip();
     this.storeBase2zip();
     this.source.leftDrawer.size && this.navSpec2zip(LEFT_DRAWER, this.source.leftDrawer);
     this.source.rightDrawer.size && this.navSpec2zip(RIGHT_DRAWER, this.source.rightDrawer);
     this.source.tab.size && this.navSpec2zip(TABS, this.source.tab, true);
-
   }
 
   async generateZip() {
@@ -193,6 +201,7 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}, ${STYLES}}) {
       if(transit.scroll.horizontal) {
         properties.horizontal = true;
       }
+      properties.contentContainerStyle = transit.scroll.contentContainerStyle;
     } else {
       Component = ${isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP};
       Object.assign(${isText ? 'properties' : 'properties.style'}, transit.style || {});
@@ -267,7 +276,7 @@ ${EXPORT_DEFAULT} ${name};`;
   navSpecStore2zip(title: string, map: Map<string, string[]>, isTabs?: boolean) {
     let content = importFrom(INIT_STATE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}`) + ';\n';
     content += importFrom(STORE_BASE, `${APP_ROOT}/${MODELS_FOLDER}/${STORE_BASE}`) + ';\n';
-    content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n';
+    !isTabs && (content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n');
     content += `\nclass ${STORE} extends ${STORE_BASE} {\n`;
     content += `  baseComponent = {\n`;
     map.forEach(([componentId], stateId) => {
@@ -382,27 +391,26 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${MODELS_FOLDER}/${STORE_BASE}.js`, content);
   }
 
-  prepareStack(screenNames: { id: string; title: string }[]) {
+  prepareStack() {
     let stacks = '';
 
-    const direction = this.source.store.navigation[2];
-    let navDirection = '';
-    if(direction === AnimationDirectionEnum.TOP) {
-      navDirection += `, ...TransitionPresets[Platform.OS === 'ios' ? 'ModalSlideFromBottomIOS' : 'RevealFromBottomAndroid']`;
-    }
-
-    screenNames.forEach(screenName => {
+    const navDirection = this.getDirection;
+    [...Array.from(this.source.leftDrawer.keys()), ...Array.from(this.source.rightDrawer.keys())].forEach(id => {
+      const screen = this.source.screenNames.find(item => item.id === id);
+      if (!screen) {
+        return;
+      }
       stacks += '      <Stack.Screen\n';
-      stacks += `        name="${screenName.title}"\n`;
+      stacks += `        name="${screen.title}"\n`;
       stacks += `        options={{headerShown: false${navDirection}}}\n`;
-      stacks += `        component={${screenName.title}}\n`;
-      stacks += `        initialParams={{${COMPONENT_ID}: '${screenName.id}'}}\n`;
+      stacks += `        component={${screen.title}}\n`;
+      stacks += `        initialParams={{${COMPONENT_ID}: '${screen.id}'}}\n`;
       stacks += '      />\n';
     });
 
-    let stackNavigatorContent = `function StackNavigation() {\n`;
+    let stackNavigatorContent = `\nfunction StackNavigation() {\n`;
     stackNavigatorContent += `  ${RETURN} (\n`;
-    stackNavigatorContent += `    <Stack.Navigator initialRouteName="${screenNames[0].title}">\n`;
+    stackNavigatorContent += `    <Stack.Navigator initialRouteName="${this.source.screenNames[0].title}">\n`;
     stackNavigatorContent += stacks;
     stackNavigatorContent += '    </Stack.Navigator>\n';
     stackNavigatorContent += '  );\n'
@@ -413,6 +421,7 @@ ${EXPORT_DEFAULT} ${name};`;
   prepareDrawerScreens() {
     let singleDrawerNavContent = '';
     if(this.source.leftDrawer.size || this.source.rightDrawer.size) {
+      singleDrawerNavContent += this.prepareStack();
       singleDrawerNavContent += `\nfunction ${this.source.leftDrawer.size > 0 && this.source.rightDrawer.size === 0 ? 'DrawerNavigation' : 'LeftDrawerNavigation'}() {\n`;
       singleDrawerNavContent += '  return (\n';
       singleDrawerNavContent += '    <Drawer.Navigator\n';
@@ -439,7 +448,7 @@ ${EXPORT_DEFAULT} ${name};`;
     return singleDrawerNavContent;
   }
 
-  prepareTabScreens(screenNames: { id: string; title: string }[]) {
+  prepareTabScreens() {
     let tabNavContent = '';
     if(this.source.tab.size) {
       const [inDrawer, outOfDrawer] = this.source.tabScreens;
@@ -452,7 +461,7 @@ ${EXPORT_DEFAULT} ${name};`;
         tabNavContent += `        initialParams={{componentId: '${inDrawer[0]}'}} />\n`;
       }
       outOfDrawer.forEach(screen => {
-        const item = screenNames.find(e => e.id === screen);
+        const item = this.source.screenNames.find(e => e.id === screen);
         if(!item) return;
         tabNavContent += `      <Tab.Screen\n`;
         tabNavContent += `        name="${item!.title}"\n`;
@@ -461,21 +470,50 @@ ${EXPORT_DEFAULT} ${name};`;
       });
       tabNavContent += '    </Tab.Navigator>\n';
       tabNavContent += '  )\n';
-      tabNavContent += '}\n';
+      tabNavContent += '}\n\n';
     }
     return tabNavContent;
   }
 
-  navigation2zip(screenNames: { id: string; title: string }[]) {
+  prepareStackScreens() {
+    let stackContent = `function Navigation() {\n`;
+    stackContent += `  ${RETURN} (\n`;
+    stackContent += `    <Stack.Navigator initialRouteName="${this.source.screenNames[0].title}">\n`;
+    if(this.source.tab.size) {
+      stackContent += '      <Stack.Screen\n';
+      stackContent += '        name="TabNavigation"\n';
+      stackContent += '        component={TabNavigation}\n';
+      stackContent += '        options={{headerShown: false}}\n';
+      stackContent += '      />\n';
+    } else if (this.source.leftDrawer.size || this.source.rightDrawer.size) {
+      stackContent += '      <Stack.Screen\n';
+      stackContent += '        name="DrawerNavigation"\n';
+      stackContent += '        component={DrawerNavigation}\n';
+      stackContent += '        options={{headerShown: false}}\n';
+      stackContent += '      />\n';
+    }
+    const navDirection = this.getDirection;
+    this.source.bareScreens.forEach(screen => {
+      stackContent += '      <Stack.Screen\n';
+      stackContent += `        name="${screen.title}"\n`;
+      stackContent += `        options={{headerShown: false${navDirection}}}\n`;
+      stackContent += `        component={${screen.title}}\n`;
+      stackContent += `        initialParams={{${COMPONENT_ID}: '${screen.id}'}}\n`;
+      stackContent += '      />\n';
+    });
+    stackContent += '    </Stack.Navigator>\n';
+    stackContent += '  );\n'
+    stackContent += '}\n\n';
+    return stackContent;
+  }
 
-    let navigationContent = this.prepareStack(screenNames);
+  navigation2zip() {
 
-    navigationContent += this.prepareDrawerScreens();
+    let navigationContent = this.prepareDrawerScreens();
 
-    navigationContent += this.prepareTabScreens(screenNames);
+    navigationContent += this.prepareTabScreens();
 
-    const navFunction = this.source.tab.size ? 'TabNavigation' : (this.source.leftDrawer.size || this.source.rightDrawer.size )
-      ? 'DrawerNavigation' : 'StackNavigation';
+    navigationContent += this.prepareStackScreens();
 
     let content = IMPORT_REACT + ';\n';
     content += importFrom(['createStackNavigator', 'TransitionPresets'], '@react-navigation/stack') + ';\n';
@@ -491,7 +529,7 @@ ${EXPORT_DEFAULT} ${name};`;
       content += importFrom(['createBottomTabNavigator'], '@react-navigation/bottom-tabs') + ';\n';
       content += importFrom(TABS, `${APP_ROOT}/${NAVIGATION_FOLDER}/${TABS}/${TABS}`) + ';\n';
     }
-    screenNames.forEach(screenName =>
+    this.source.screenNames.forEach(screenName =>
       (content += importFrom(screenName.title, `${APP_ROOT}/${SCREENS_FOLDER}/${screenName.title}/${screenName.title}`) + ';\n'));
 
     content += '\nconst Stack = createStackNavigator();\n';
@@ -505,14 +543,14 @@ ${EXPORT_DEFAULT} ${name};`;
 
     content += navigationContent;
 
-    content += `export default ${navFunction};`;
+    content += `\nexport default Navigation;`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/AppNavigator.js`, content);
   }
 
-  screens2zip(screenNames: { id: string; title: string }[]) {
+  screens2zip() {
     let content = `const ${SCREENS_LIST} = {\n`;
-    screenNames.map(e => content += `  '${e.id}': '${e.title}',\n`);
-    content += `};\nexport default ${SCREENS_LIST};`;
+    this.source.screenNames.map(e => content += `  '${e.id}': '${e.title}',\n`);
+    content += `};export default ${SCREENS_LIST};`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${SCREENS_LIST}.js`, content);
   }
 
@@ -586,8 +624,8 @@ export default App;`;
     this.zip.file(`${SRC_FOLDER}/App.js`, content);
   }
 
-  appStore2zip(screenNames: { id: string; title: string }[]) {
-    const screenId = screenNames[0].id;
+  appStore2zip() {
+    const screenId = this.source.screenNames[0].id;
     let content = `class ${APP_STORE} {\n`;
     content += `  ${SCREEN_ID_VARIABLE} = "${screenId}";\n\n`;
     content += `  setScreen(${SCREEN_ID_VARIABLE}) {\n`;
@@ -749,8 +787,6 @@ export default App;`;
     content += 'export default ({stroke, width, height, style}) => \n';
     content += '  <SvgXml style={style} xml={xml} fill={stroke} stroke={stroke} width={width} height={height}/>;';
     const path = `${SRC_FOLDER}/${ASSETS_FOLDER}/${SVG_FOLDER}/${name}.js`;
-    console.log(path, content);
-    console.log('==============');
     this.zip.file(path, content);
   }
 }

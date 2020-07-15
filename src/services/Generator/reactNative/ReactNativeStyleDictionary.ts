@@ -1,10 +1,23 @@
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IControl from 'interfaces/IControl';
+import { ControlEnum } from 'enums/ControlEnum';
 
 
 export const blockStyle = ['transition', 'background', 'backgroundImage', 'backgroundRepeat', 'backgroundSize', 'backgroundPosition',
   'mask', 'maskImage', 'maskRepeat', 'transition', 'transitionProperty', 'transitionDuration', 'transitionTimingFunction',
   'transitionDelay', 'overflowX', 'overflowY', 'whiteSpace'];
+
+const overflowRule = (overflow?: { [key: string]: any }, overflowX?: { [key: string]: any }, overflowY?: { [key: string]: any }) => {
+  if ((overflow && overflow.enabled) || (overflowX && overflowX.enabled) || (overflowY && overflowY.enabled)) {
+    return true;
+  }
+  return false;
+};
+
+export const ignoreStyle = {
+  alignItems: overflowRule,
+  justifyContent: overflowRule
+}
 
 const image = {
   backgroundRepeat: {
@@ -73,19 +86,26 @@ export const specificRules = {
     }
     return object;
   },
+  borderRadius: (rule: { [key: string]: any }, control: IControl) => {
+    const object: { borderRadius: number; overflow?: string } = {
+      borderRadius: rule.value
+    };
+    control.type === ControlEnum.Text && (object.overflow = 'hidden');
+    return object;
+  },
 }
 
-export const ruleValidator = (rule: {[key: string]: string | number}, control: IControl) => {
+export const ruleValidator = (rule: { [key: string]: string | number }, control: IControl) => {
   let msg;
   switch (rule.key) {
     case 'borderRadius':
-      if(rule.unit === '%') {
+      if (rule.unit === '%') {
         msg =
           `Control #${control.id} error {borderRadius: '${rule.value}${rule.unit}'}. Percentage doesn't support for borderRadius in React Native.`;
       }
       break;
     case 'boxShadow':
-      if(rule.value.toString().includes('rem')) {
+      if (rule.value.toString().includes('rem')) {
         msg =
           `Control #${control.id} error {boxShadow: '${rule.value}'}. Rem doesn't support for boxShadow in React Native.`;
       }
@@ -157,11 +177,11 @@ export const reactNativeImage = {
     return style;
   },
   size: (width: ICSSProperty, height: ICSSProperty) => {
-    const style: {width?: string | number; height?: string | number} = {};
-    if(width && width.enabled) {
+    const style: { width?: string | number; height?: string | number } = {};
+    if (width && width.enabled) {
       style.width = width.unit && width.unit !== 'px' ? width.value + width.unit : width.value;
     }
-    if(height && height.enabled) {
+    if (height && height.enabled) {
       style.height = height.unit && height.unit !== 'px' ? height.value + height.unit : height.value;
     }
     return style;
