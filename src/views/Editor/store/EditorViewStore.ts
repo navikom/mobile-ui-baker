@@ -19,14 +19,6 @@ import {
   HIST_PROJECT_TITLE_CHANGE,
   HIST_SETTINGS
 } from 'views/Editor/store/EditorHistory';
-import { IHistoryObject, SettingsPropType } from 'interfaces/IHistory';
-import IProject, { IBackgroundColor, IProjectVersion } from 'interfaces/IProject';
-import ProjectsStore from 'models/Project/ProjectsStore';
-import ProjectStore from 'models/Project/ProjectStore';
-import ProjectEnum from 'enums/ProjectEnum';
-import { Mode } from 'enums/ModeEnum';
-import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
-import { App } from 'models/App';
 import { ErrorHandler } from 'utils/ErrorHandler';
 import {
   ERROR_DATA_IS_INCOMPATIBLE,
@@ -35,19 +27,27 @@ import {
   ROUTE_EDITOR,
   ROUTE_SCREENS
 } from 'models/Constants';
+import ProjectsStore from 'models/Project/ProjectsStore';
+import ProjectStore from 'models/Project/ProjectStore';
+import { App } from 'models/App';
 import ControlStore from 'models/Control/ControlStore';
 import { SharedControls } from 'models/Project/ControlsStore';
 import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import PluginStore from 'models/PluginStore';
 import DisplayViewStore from 'models/DisplayViewStore';
-import { whiteColor } from 'assets/jss/material-dashboard-react';
 import { OwnProjects } from 'models/Project/OwnProjectsStore';
+import ProjectVersionStore from 'models/Project/ProjectVersionStore';
+import { whiteColor } from 'assets/jss/material-dashboard-react';
 import AccessEnum from 'enums/AccessEnum';
-import GenerateService from 'services/Generator/reactNative/GenerateService';
-import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import ProjectEnum from 'enums/ProjectEnum';
+import { Mode } from 'enums/ModeEnum';
 import IGenerateService from 'interfaces/IGenerateService';
-import ProjectVersionStore from '../../../models/Project/ProjectVersionStore';
+import { IHistoryObject, SettingsPropType } from 'interfaces/IHistory';
+import IProject, { IBackgroundColor, IProjectVersion } from 'interfaces/IProject';
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+import GenerateService from 'services/Generator/reactNative/GenerateService';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -236,9 +236,9 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   saveProject = async (toFile?: boolean) => {
-
+    this.setSavingProject(true);
     if (toFile) {
-      this.importToFile(this.toJSON);
+      this.exportToFile(this.toJSON);
       return;
     }
     const json = this.toJSONString;
@@ -246,7 +246,7 @@ class EditorViewStore extends DisplayViewStore {
     if (this.pluginStore.proMode) {
       return;
     }
-    this.setSavingProject(true);
+
     try {
       if (!App.loggedIn) {
         throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
@@ -302,7 +302,7 @@ class EditorViewStore extends DisplayViewStore {
     const json = control.toJSON;
     control.instance!.version.update({ data: json } as IProjectVersion);
     if (toFile) {
-      this.importToFile({ ...control.instance!.JSON, type: control.instance!.type });
+      this.exportToFile({ ...control.instance!.JSON, type: control.instance!.type });
       return;
     }
     const [file, base64] = await this.makeScreenshot(control);
@@ -340,13 +340,14 @@ class EditorViewStore extends DisplayViewStore {
     await this.saveControl(control, toFile);
   };
 
-  importToFile(data: { [key: string]: any }) {
+  exportToFile(data: { [key: string]: any }) {
     const content = JSON.stringify(data, null, '\t');
     const a = document.createElement('a');
     const file = new Blob([content], { type: 'text/plain' });
     a.href = URL.createObjectURL(file);
     a.download = `${data.title}.json`;
     a.click();
+    this.setSavingProject(false);
   }
 
   deleteControl = async (control: IControl) => {

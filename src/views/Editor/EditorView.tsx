@@ -48,6 +48,8 @@ import DialogAlert from 'components/Dialog/DialogAlert';
 import EditorDictionary from './store/EditorDictionary';
 
 import 'views/Editor/Editor.css';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -233,7 +235,11 @@ const editorStyles = makeStyles((theme: Theme) =>
     },
     contentWrapper: {
       marginTop: 65
-    }
+    },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: whiteColor,
+    },
   })
 );
 
@@ -450,6 +456,9 @@ const ContextComponent: React.FC<ContextComponentProps> = (
           store.loadingPlugin && <Preview />
         }
       </div>
+      <Backdrop className={classes.backdrop} open={store.savingProject}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   )
 };

@@ -38,7 +38,8 @@ import {
   TEXT_BASE_COMP,
   TEXT_COMP,
   TEXT_INPUT_COMP, TOGGLE_STYLE,
-  TOUCHABLE_OPACITY_COMP, TRANSIT_STYLE_MODEL,
+  TOUCHABLE_OPACITY_COMP,
+  TRANSIT_STYLE_MODEL,
   VIEW_COMP
 } from '../Constants';
 import { importFrom } from '../utils';
@@ -85,7 +86,7 @@ class ZipGenerator {
     this.storeBase2zip();
     this.source.leftDrawer.size && this.navSpec2zip(LEFT_DRAWER, this.source.leftDrawer);
     this.source.rightDrawer.size && this.navSpec2zip(RIGHT_DRAWER, this.source.rightDrawer);
-    this.source.tab.size && this.navSpec2zip(TABS, this.source.tab, true);
+    this.source.tab.size && this.navTabSpec2zip(TABS, this.source.tab);
   }
 
   async generateZip() {
@@ -216,7 +217,8 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${COMPONENTS_FOLDER}/${name}/${name}.js`, content);
   }
 
-  navSpec2zip(title: string, map: Map<string, string[]>, isTabs?: boolean) {
+  navSpec2zip(title: string, map: Map<string, string[]>) {
+
     const nameSpaces: string[] = [];
     let content = IMPORT_REACT + ';\n';
     map.forEach(([controlId]) => {
@@ -241,15 +243,52 @@ ${EXPORT_DEFAULT} ${name};`;
     content += importFrom(STORE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${STORE}`) + ';\n';
 
     content += `\n${FUNCTION} ${title}(props) {\n`;
-    content += isTabs ? '  const {navigation, state} = props;\n' : '  const {navigation} = props;\n';
+    content += '  const {navigation} = props;\n';
     content += `  const ${STORE_VARIABLE} = new ${STORE}(navigation);\n`;
-    content += isTabs ?
-      `  const property = ${STORE_VARIABLE}.baseProps(state.routes[state.index].params.componentId);\n` :
-      `  const property = ${STORE_VARIABLE}.baseProps;\n`;
+    content += `  const property = ${STORE_VARIABLE}.baseProps;\n`;
     content += componentContent;
     content += `}\nexport default ${title};`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${title}/${title}.js`, content);
-    this.navSpecStore2zip(title, map, isTabs);
+    this.navSpecStore2zip(title, map);
+    this.navSpecInitState2zip(title, map);
+  }
+
+  navTabSpec2zip(title: string, map: Map<string, string[]>) {
+    const nameSpaces: string[] = [];
+    let content = IMPORT_REACT + ';\n';
+    content += importFrom(['observer'], 'mobx-react-lite') + ';\n';
+    map.forEach(([controlId]) => {
+      const cmp = this.source.getComponentByControlId(controlId);
+      if(cmp) {
+        !nameSpaces.includes(cmp.nameSpace) && nameSpaces.push(cmp.nameSpace);
+      }
+    });
+
+    nameSpaces.forEach((nameSpace) => {
+      content += importFrom(nameSpace, `${APP_ROOT}/${COMPONENTS_FOLDER}/${nameSpace}/${nameSpace}`) + ';\n';
+    });
+
+    let componentContent = '';
+    const componentName = nameSpaces.length > 1 ? 'Component' : nameSpaces[0];
+    if(nameSpaces.length > 1) {
+      componentContent += '  Component = property.component;\n\n';
+    }
+
+    componentContent += `  ${RETURN} <${componentName} ${STORE_VARIABLE}={${STORE_VARIABLE}} ${PROPS_VARIABLE}={property} />;\n`;
+
+    content += importFrom(STORE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${STORE}`) + ';\n';
+
+    content += `\n${FUNCTION} ${title}(props) {\n`;
+    content += '  const {navigation} = props;\n';
+    content += `  const [${STORE_VARIABLE}] = React.useState(new ${STORE}(navigation));\n`;
+    content += '  React.useEffect(() => {\n';
+    content += `    ${RETURN} ${STORE_VARIABLE}.dispose;\n`;
+    content += `  }, [${STORE_VARIABLE}]);\n`;
+    content += `  const property = ${STORE_VARIABLE}.baseProps;\n`;
+    content += componentContent;
+    content += `}\nexport default observer(${title});`;
+    this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${title}/${title}.js`, content);
+    this.navTabStore2zip(title, map);
     this.navSpecInitState2zip(title, map);
   }
 
@@ -273,10 +312,10 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}.js`, content);
   }
 
-  navSpecStore2zip(title: string, map: Map<string, string[]>, isTabs?: boolean) {
+  navSpecStore2zip(title: string, map: Map<string, string[]>) {
     let content = importFrom(INIT_STATE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}`) + ';\n';
     content += importFrom(STORE_BASE, `${APP_ROOT}/${MODELS_FOLDER}/${STORE_BASE}`) + ';\n';
-    !isTabs && (content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n');
+    content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n';
     content += `\nclass ${STORE} extends ${STORE_BASE} {\n`;
     content += `  baseComponent = {\n`;
     map.forEach(([componentId], stateId) => {
@@ -284,14 +323,51 @@ ${EXPORT_DEFAULT} ${name};`;
     });
     content += '  };\n';
 
-    content += isTabs ? '  baseProps(id) {\n' : '  get baseProps() {\n';
-    content += isTabs ?
-      `    return this.props(this.baseComponent[id] || '${Array.from(map.values())[0][0]}');\n` :
+    content += '  get baseProps() {\n';
+    content +=
       `    return this.props(this.baseComponent[${APP_STORE}.${SCREEN_ID_VARIABLE}] || '${Array.from(map.values())[0][0]}');\n`;
     content += '  }\n';
 
     content += `  constructor(${NAVIGATION_VARIABLE}) {\n`;
     content += `    super(${INIT_STATE}, ${NAVIGATION_VARIABLE});\n`;
+    content += '  }\n';
+
+    content += `}\nexport default ${STORE};`;
+    this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${title}/${STORE}.js`, content);
+  }
+
+  navTabStore2zip(title: string, map: Map<string, string[]>) {
+    let content = importFrom(['computed', 'observable', 'action', 'reaction'], 'mobx') + ';\n';
+    content += importFrom(INIT_STATE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${INIT_STATE}`) + ';\n';
+    content += importFrom(STORE_BASE, `${APP_ROOT}/${MODELS_FOLDER}/${STORE_BASE}`) + ';\n';
+    content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n';
+    content += `\nclass ${STORE} extends ${STORE_BASE} {\n`;
+    content += `  baseComponent = {\n`;
+    map.forEach(([componentId], stateId) => {
+      content += `    '${stateId}': '${componentId}',\n`;
+    });
+    content += '  };\n';
+    content += `  @observable ${SCREEN_ID_VARIABLE} = '${Array.from(map.keys())[0]}';\n`;
+
+    content += '  @computed get baseProps() {\n';
+    content += `    return this.props(this.baseComponent[this.${SCREEN_ID_VARIABLE}]);\n`;
+    content += '  }\n';
+
+    content += `  constructor(${NAVIGATION_VARIABLE}) {\n`;
+    content += `    super(${INIT_STATE}, ${NAVIGATION_VARIABLE});\n`;
+    content += `    this.reactionDisposer = reaction(() => ${APP_STORE}.${SCREEN_ID_VARIABLE}, (id) => \n`;
+    content += '      this.setBaseProps(id)\n';
+    content += '    );\n';
+    content += '  }\n';
+
+    content += '  @action setBaseProps(id) {\n';
+    content += `    if(this.baseComponent[id] && id !== this.${SCREEN_ID_VARIABLE}) {\n`;
+    content += `      this.${SCREEN_ID_VARIABLE} = id;\n`;
+    content += '    }\n';
+    content += '  }\n';
+
+    content += '  dispose = () => {\n';
+    content += '    this.reactionDisposer();\n';
     content += '  }\n';
 
     content += `}\nexport default ${STORE};`;
@@ -626,9 +702,10 @@ export default App;`;
 
   appStore2zip() {
     const screenId = this.source.screenNames[0].id;
-    let content = `class ${APP_STORE} {\n`;
-    content += `  ${SCREEN_ID_VARIABLE} = "${screenId}";\n\n`;
-    content += `  setScreen(${SCREEN_ID_VARIABLE}) {\n`;
+    let content = importFrom(['action', 'observable'], 'mobx') + ';\n\n';
+    content += `class ${APP_STORE} {\n`;
+    content += `  @observable ${SCREEN_ID_VARIABLE} = "${screenId}";\n\n`;
+    content += `  @action setScreen(${SCREEN_ID_VARIABLE}) {\n`;
     content += `    this.${SCREEN_ID_VARIABLE} = ${SCREEN_ID_VARIABLE};\n`;
     content += '  }\n\n';
     content += `}\nexport default new ${APP_STORE}()`;
