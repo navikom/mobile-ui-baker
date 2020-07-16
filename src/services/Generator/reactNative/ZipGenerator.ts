@@ -96,6 +96,7 @@ class ZipGenerator {
     } catch (err) {
       this.source.addToTransitionErrors('Zip folder generation Error: ' + err.message);
     }
+    this.source.setFinished();
   }
 
   screen2zip(cmp: IGenerateComponent, title: string) {
@@ -367,7 +368,7 @@ ${EXPORT_DEFAULT} ${name};`;
     content += '  }\n';
 
     content += '  dispose = () => {\n';
-    content += '    this.reactionDisposer();\n';
+    content += '    this.generatorMessageReactionDisposer();\n';
     content += '  }\n';
 
     content += `}\nexport default ${STORE};`;

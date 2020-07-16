@@ -88,11 +88,29 @@ export const specificRules = {
   },
   borderRadius: (rule: { [key: string]: any }, control: IControl) => {
     const object: { borderRadius: number; overflow?: string } = {
-      borderRadius: rule.value
+      borderRadius: Math.round(Number(rule.value) * 1.3)
     };
     control.type === ControlEnum.Text && (object.overflow = 'hidden');
     return object;
   },
+};
+
+export const valueModifier = (rule: { [key: string]: string | number }) => {
+  if (!['border', 'borderLeft', 'borderRight', 'borderTop', 'borderBottom'].includes(rule.key as string)
+    && (rule.unit === 'px' || rule.value.toString().includes('px'))) {
+    let value = rule.value.toString();
+    if (value.includes('px')) {
+      const matches = rule.value.toString().match(/\d+px/g);
+      (matches || []).forEach(substr => {
+        const val = Number(substr.replace('px', ''));
+        value = value.replace(substr, `${Math.round(val * 1.3)}px`);
+      });
+    } else if (rule.unit === 'px') {
+      value = Math.round(Number(rule.value) * 1.3).toString();
+    }
+    return value;
+  }
+  return rule.value;
 }
 
 export const ruleValidator = (rule: { [key: string]: string | number }, control: IControl) => {

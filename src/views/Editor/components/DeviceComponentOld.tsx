@@ -53,6 +53,7 @@ const androidStyles = makeStyles((theme: Theme) =>
     },
     inner: {
       height: theme.typography.pxToRem(484),
+      overflowX: 'hidden'
     },
     landscape: {
       backgroundImage: `url(${AndroidWrapperLand})`,

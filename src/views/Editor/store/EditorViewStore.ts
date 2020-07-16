@@ -1,4 +1,4 @@
-import { action, computed, IReactionDisposer, observable, reaction, runInAction } from 'mobx';
+import { action, computed, IReactionDisposer, observable, reaction, runInAction, when } from 'mobx';
 import html2canvas from 'html2canvas';
 
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
@@ -68,8 +68,9 @@ class EditorViewStore extends DisplayViewStore {
   @observable savingProject = false;
   @observable generatorShowDialog = false;
   @observable generatorDialogContent: string[] | null = null;
-  generator: IGenerateService | null = null;
-  reactionDisposer: IReactionDisposer;
+  @observable generator: IGenerateService | null = null;
+  generatorMessageReactionDisposer: IReactionDisposer;
+  generatorReactionDisposer?: IReactionDisposer;
 
   moveOpened = true;
   debug = false;
@@ -167,7 +168,7 @@ class EditorViewStore extends DisplayViewStore {
     this.history.setViewStore(this);
     this.currentScreen.changeTitle('Screen', true);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
-    this.reactionDisposer = reaction(() => this.generatorDialogContent, (content) => {
+    this.generatorMessageReactionDisposer = reaction(() => this.generatorDialogContent, (content) => {
       if(content) {
         this.openGeneratorDialog();
       }
@@ -372,18 +373,17 @@ class EditorViewStore extends DisplayViewStore {
     this.generatorDialogContent = msg;
   }
 
-  @action closeGeneratorDialog = () => {
+  @action closeGeneratorDialog = (leaveProgress?: boolean) => {
     this.generatorShowDialog = false;
     this.setContentGeneratorDialog(null);
-    this.generator = null;
+    !leaveProgress && this.generator!.setFinished();
   }
 
   @action completeCodeGeneration = () => {
     if(this.generator) {
       this.generator.generateZip();
     }
-    this.closeGeneratorDialog();
-
+    this.closeGeneratorDialog(true);
   }
 
   @action clearLocalStorage() {
@@ -424,7 +424,14 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   async generate() {
+    this.setSavingProject(true);
     this.generator = await new GenerateService(this).generateRN();
+    this.generatorReactionDisposer = when(() => {
+      return this.generator !== null && this.generator.finished;
+    }, () => {
+      this.setSavingProject(false);
+      this.generator = null;
+    });
   }
 
   @action clear() {
@@ -950,7 +957,8 @@ class EditorViewStore extends DisplayViewStore {
 
   dispose() {
     super.dispose();
-    this.reactionDisposer && this.reactionDisposer();
+    this.generatorMessageReactionDisposer && this.generatorMessageReactionDisposer();
+    this.generatorReactionDisposer && this.generatorReactionDisposer();
   }
 }
 

@@ -15,7 +15,14 @@ import {
 } from '../Constants';
 import { ControlEnum } from 'enums/ControlEnum';
 import { importFrom } from '../utils';
-import { blockStyle, ignoreStyle, metaRules, ruleValidator, specificRules } from './ReactNativeStyleDictionary';
+import {
+  blockStyle,
+  ignoreStyle,
+  metaRules,
+  ruleValidator,
+  specificRules,
+  valueModifier
+} from './ReactNativeStyleDictionary';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';
 import IGenerateService from 'interfaces/IGenerateService';
@@ -55,12 +62,14 @@ class GenerateComponent implements IGenerateComponent {
         if (ignoreStyle[item.key as 'alignItems'] && ignoreStyle[item.key as 'alignItems'](overflow, overflowX, overflowY)) {
           return;
         }
+
         let rule = specificRules[item.key as 'display'] && specificRules[item.key as 'display'](item, control);
         if (!rule) {
+          const modifiedValue = valueModifier(item);
           try {
             const propName = getPropertyName(item.key);
 
-            const value = item.unit ? item.value.toString() + item.unit : item.value.toString();
+            const value = item.unit ? modifiedValue.toString() + item.unit : modifiedValue.toString();
             rule = getStylesForProperty(propName, value);
             const invalid = ruleValidator(item, control);
             invalid && this.generator.addToTransitionErrors(invalid);

@@ -14,10 +14,12 @@ interface IGenerateService {
   leftDrawerWidth: string;
   rightDrawerWidth: string;
   bareScreens: { id: string; title: string }[];
+  finished: boolean;
   generateRN(): IGenerateService;
   addToTransitionErrors(value: string): void;
   getComponentByControlId(id: string): IGenerateComponent | null;
   generateZip(): void;
+  setFinished(): void;
 }
 
 export default IGenerateService;

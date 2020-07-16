@@ -38,6 +38,7 @@ class GenerateService implements IGenerateService {
   screenNames: { id: string; title: string }[] = [];
   zipGenerator: ZipGenerator;
   @observable generated = false;
+  @observable finished = false;
   @observable fetchItems: string[] = [];
 
   get leftDrawerWidth() {
@@ -393,6 +394,10 @@ class GenerateService implements IGenerateService {
     runInAction(() => {
       this.generated = true;
     })
+  }
+
+  @action setFinished() {
+    this.finished = true;
   }
 
   generateFinish() {
