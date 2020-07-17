@@ -31,10 +31,6 @@ const styles = [
     .setOptions(['normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900']),
   new CSSProperty('textDecoration', 'none', 'none', CSS_CAT_FONT, false, CSS_VALUE_SELECT)
     .setOptions(['normal', 'blink', 'line-through', 'overline', 'underline', 'inherit']),
-  new CSSProperty('lineHeight', 10, 10, CSS_CAT_FONT, false, CSS_VALUE_NUMBER)
-    .setControlProps({ min: 0 })
-    .setUnits('px', ['px'])
-    .setDescription(['lineHeightDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/line-height']),
   new CSSProperty('textOverflow', 'ellipsis', 'ellipsis', CSS_CAT_FONT, false, CSS_VALUE_SELECT)
     .setOptions(['clip', 'ellipsis']).setDescription(['textOverflowDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow'])
 ];

@@ -1,31 +1,31 @@
-import React, { RefObject, useImperativeHandle } from "react";
-import { DragSource, DropTarget } from "react-dnd";
-import { observer } from "mobx-react-lite";
-import { DropEnum } from "enums/DropEnum";
-import { ItemTypes } from "views/Editor/store/ItemTypes";
-import { makeStyles } from "@material-ui/core/styles";
-import { createStyles, Theme } from "@material-ui/core";
-import { blackOpacity } from "assets/jss/material-dashboard-react";
-import { ControlProps } from "interfaces/IControlProps";
-import hover from "utils/hover";
-import classNames from "classnames";
-import { ControlEnum } from "enums/ControlEnum";
+import React, { RefObject, useImperativeHandle } from 'react';
+import { DragSource, DropTarget } from 'react-dnd';
+import { observer } from 'mobx-react-lite';
+import { DropEnum } from 'enums/DropEnum';
+import { ItemTypes } from 'views/Editor/store/ItemTypes';
+import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, Theme } from '@material-ui/core';
+import { blackOpacity } from 'assets/jss/material-dashboard-react';
+import { ControlProps } from 'interfaces/IControlProps';
+import hover from 'utils/hover';
+import classNames from 'classnames';
+import { ControlEnum } from 'enums/ControlEnum';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      transition: "all 0.1s",
+      transition: 'all 0.1s',
     },
     placeholder: {
-      position: "absolute",
+      position: 'absolute',
       color: blackOpacity(0.3),
-      left: "50%",
-      top: "50%",
-      transform: "translate(-50%, -50%)",
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
     },
     hover: {
-      "&:hover": {
-        cursor: "move",
+      '&:hover': {
+        cursor: 'move',
         backgroundColor: blackOpacity(0.05)
       }
     },
@@ -37,19 +37,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const borders = {
   [DropEnum.Left]: {
-    borderLeft: "2px dotted rgba(0,0,0,0.2)",
+    borderLeft: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Right]: {
-    borderRight: "2px dotted rgba(0,0,0,0.2)",
+    borderRight: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Above]: {
-    borderTop: "2px dotted rgba(0,0,0,0.2)",
+    borderTop: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Below]: {
-    borderBottom: "2px dotted rgba(0,0,0,0.2)",
+    borderBottom: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Inside]: {
-    border: "2px dotted rgba(0,0,0,0.2)",
+    border: '2px dotted rgba(0,0,0,0.2)',
   }
 };
 
@@ -76,7 +76,7 @@ export const ElementComponent: React.FC<ElementProps> =
       }) => {
       const { title, styles, dropTarget, allowChildren, children, lockedChildren } = control;
       const classes = useStyles();
-      let backgroundColor = isOverCurrent ? "rgba(0,0,0,0.05)" : styles.backgroundColor;
+      let backgroundColor = isOverCurrent ? 'rgba(0,0,0,0.05)' : styles.backgroundColor;
       let borderStyles = {};
       if (isOverCurrent) {
         borderStyles = dropTarget !== undefined ? borders[dropTarget] : {};
@@ -92,9 +92,14 @@ export const ElementComponent: React.FC<ElementProps> =
       });
 
       let showPlaceholder = children.length === 0;
-      let placeholder = <div className={classes.placeholder}>{title}</div>;
+      let Tag = 'div';
+      let placeholder = (<div style={{position: "relative", height: "100%"}} key={`${control.id}_1`}>
+        <div className={classes.placeholder}>{title}</div>
+      </div>);
+
       if (control.type === ControlEnum.Text) {
-        if(!control.hasImage) {
+        if (!control.hasImage) {
+          Tag = 'span';
           showPlaceholder = true;
           // if (isSelected && isSelected(control)) {
           //   backgroundColor = styles.backgroundColor;
@@ -107,64 +112,65 @@ export const ElementComponent: React.FC<ElementProps> =
           //   // @ts-ignore
           //   placeholder = title;
           // }
-          placeholder = title as unknown as JSX.Element;
         } else {
           showPlaceholder = false;
         }
-
+        placeholder = title as unknown as JSX.Element;
       }
 
       const emptyControl: React.CSSProperties = {};
-      if(!control.children.length && control.type === ControlEnum.Grid) {
-        emptyControl.padding = "15px";
+      if (!control.children.length && control.type === ControlEnum.Grid) {
+        emptyControl.padding = '15px';
       }
 
       const lock = locked || lockedChildren;
 
-      return (
-        <div
-          id={`capture_${control.id}`}
-          data-testid="control"
-          onClick={(e) => {
-            if(locked) {
-              return;
-            }
-            selectControl && selectControl(control);
-            if(!control.hasImage) {
-              control.applyActions(setCurrentScreen);
-              e.stopPropagation();
-            }
-          }}
-          ref={elementRef}
-          style={{
-            ...styles, backgroundColor, ...emptyControl, ...borderStyles, ...(isDragging ? {
-              position: "absolute",
-              top: -1000
-            } : {}),
-          }}
-          className={controlClass}>
-          {showPlaceholder && <div style={{position: "relative", height: "100%"}}>{placeholder}</div>}
-          {children && children.map((child, i) =>
-            lock ? (
-              <ElementComponent
-                key={child.id}
-                control={child}
-                locked={true}
-              />
-            ) : (
-              <Item
-                key={child.id}
-                control={child}
-                moveControl={moveControl}
-                handleDropElement={handleDropElement}
-                isSelected={isSelected}
-                setCurrentScreen={setCurrentScreen}
-                selectControl={selectControl} />
-            )
-          )}
-        </div>
-      )
-    });
+      const props = {
+        id: `capture_${control.id}`,
+        key: control.id,
+        'data-testid': 'control',
+        onClick: (e: MouseEvent) => {
+          if (locked) {
+            return;
+          }
+          selectControl && selectControl(control);
+          if (!control.hasImage) {
+            control.applyActions(setCurrentScreen);
+            e.stopPropagation();
+          }
+        },
+        ref: elementRef,
+        style: {
+          ...styles, backgroundColor, ...emptyControl, ...borderStyles, ...(isDragging ? {
+            position: 'absolute',
+            top: -1000
+          } : {}),
+        },
+        className: controlClass
+      };
+
+      const elementChildren = children.length ? children.map((child, i) =>
+        lock ? (
+          <ElementComponent
+            key={child.id}
+            control={child}
+            locked={true}
+          />
+        ) : (
+          <Item
+            key={child.id}
+            control={child}
+            moveControl={moveControl}
+            handleDropElement={handleDropElement}
+            isSelected={isSelected}
+            setCurrentScreen={setCurrentScreen}
+            selectControl={selectControl} />
+        )
+      ) : showPlaceholder ? [placeholder] : [];
+
+      return React.createElement(Tag, props, elementChildren);
+    }
+  );
 
 const ControlItem: React.FC<ControlProps> = React.forwardRef(
   (

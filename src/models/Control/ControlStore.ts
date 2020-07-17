@@ -116,6 +116,10 @@ const styles = [
     .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
   new CSSProperty('paddingLeft', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
     .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+  new CSSProperty('lineHeight', 10, 10, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
+    .setControlProps({ min: 0 })
+    .setUnits('px', ['px'])
+    .setDescription(['lineHeightDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/line-height']),
   new CSSProperty('margin', 0, 0, CSS_CAT_ALIGN).makeExpandable(),
   new CSSProperty('marginTop', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
     .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),

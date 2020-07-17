@@ -4,23 +4,30 @@ import { saveAs } from 'file-saver';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import {
   APP_ROOT,
-  APP_STORE, ASSETS_FOLDER,
-  BASE_COMP, BREAK,
+  APP_STORE,
+  ASSETS_FOLDER,
+  BASE_COMP,
+  BREAK,
   CHILDREN,
   COMPONENT_ID,
-  COMPONENTS_FOLDER, DISABLE_STYLE, ENABLE_STYLE,
+  COMPONENTS_FOLDER,
+  DISABLE_STYLE,
+  ENABLE_STYLE,
   EXPORT_DEFAULT,
   FLAT_LIST_COMP,
   FUNCTION,
   IMAGE_BACKGROUND_COMP,
   IMAGE_COMP,
   IMPORT_REACT,
-  INIT_STATE, LEFT_DRAWER,
+  INIT_STATE,
+  LEFT_DRAWER,
   LINEAR_GRADIENT_COMP,
   MODELS_FOLDER,
-  NAV_COMPONENTS, NAVIGATE_TO,
+  NAV_COMPONENTS,
+  NAVIGATE_TO,
   NAVIGATION_FOLDER,
-  NAVIGATION_VARIABLE, PROPERTIES_VARIABLE,
+  NAVIGATION_VARIABLE,
+  PROPERTIES_VARIABLE,
   PROPERTY_MODEL,
   PROPS_VARIABLE,
   RETURN, RIGHT_DRAWER,
@@ -37,7 +44,8 @@ import {
   TABS,
   TEXT_BASE_COMP,
   TEXT_COMP,
-  TEXT_INPUT_COMP, TOGGLE_STYLE,
+  TEXT_INPUT_COMP,
+  TOGGLE_STYLE,
   TOUCHABLE_OPACITY_COMP,
   TRANSIT_STYLE_MODEL,
   VIEW_COMP
@@ -150,10 +158,10 @@ class ZipGenerator {
     elseCause = !isText ? elseCause : textElse;
 
     const returnGrid = `if(${CHILDREN}.length) {
+    const childrenMap = ${CHILDREN}.map((child, i) => React.createElement(child.component, {key: child.id + i, ${STORE_VARIABLE}: ${STORE_VARIABLE}, ${PROPS_VARIABLE}: child}));
     ${RETURN} (<Component {...properties}>
       {
-        ${CHILDREN}.map((child, i) => 
-          React.createElement(child.component, {key: child.id + i, ${STORE_VARIABLE}: ${STORE_VARIABLE}, ${PROPS_VARIABLE}: child}))
+        ${PROPS_VARIABLE}.isRowChildren(properties.style) ? <Text>{childrenMap}</Text> : childrenMap
       }
     </Component>);
   }
@@ -171,7 +179,7 @@ class ZipGenerator {
     baseImage += `      properties.imageStyle.push({position: 'absolute'});`;
 
     const content = `${IMPORT_REACT};
-${importFrom([isText ? TEXT_COMP : VIEW_COMP, isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP])};
+${importFrom([TEXT_COMP, VIEW_COMP, isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP].filter(e => !(isText && e === VIEW_COMP)))};
 ${importFrom(LINEAR_GRADIENT_COMP, 'react-native-linear-gradient')};
     
 ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}, ${STYLES}}) {
@@ -750,6 +758,7 @@ export default App;`;
     content += '  action;\n';
     content += '  title;\n';
     content += '  transitStyles;\n';
+    content += '  isTextChildren;\n';
     content += '  placeIndex;\n';
     content += '  component;\n';
     content += '  meta;\n';
@@ -772,11 +781,12 @@ export default App;`;
     content += `    ${RETURN} computed(() => style ? this.classes.map(entry => style[entry]) : {flex: 1} ).get();\n`;
     content += '  }\n';
 
-    content += '  constructor({id, title, path, styleId, action, classes, text, transitStyles, placeIndex, meta, component}) {\n';
+    content += '  constructor({id, title, path, styleId, action, classes, isTextChildren, text, transitStyles, placeIndex, meta, component}) {\n';
     content += '    this.id = id;\n';
     content += '    this.path = path;\n';
     content += '    this.styleId = styleId;\n';
     content += '    this.action = action;\n';
+    content += '    this.isTextChildren = isTextChildren;\n';
     content += '    this.classes = classes;\n';
     content += '    this.title = title;\n';
     content += '    this.text = text;\n';
@@ -784,6 +794,10 @@ export default App;`;
     content += '    this.meta = meta;\n';
     content += '    transitStyles && (this.transitStyles = transitStyles.map(e => new TransitStyle(e)));\n';
     content += '    this.component = component;\n';
+    content += '  }\n';
+
+    content += '  isRowChildren(styles) {\n';
+    content += `    return this.isTextChildren && !styles.find(style => style.flexDirection && style.flexDirection === 'column');\n`;
     content += '  }\n';
 
     content += '  @action addStyle(style) {\n';

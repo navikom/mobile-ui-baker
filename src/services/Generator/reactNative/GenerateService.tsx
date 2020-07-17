@@ -6,11 +6,13 @@ import IGenerateComponent from 'interfaces/IGenerateComponent';
 import GenerateComponent from './GenerateComponent';
 import { uniqueNameDefinition } from 'utils/string';
 import {
-  APP_ROOT, ASSETS_FOLDER,
+  APP_ROOT,
+  ASSETS_FOLDER,
   COMPONENTS_FOLDER,
   NAVIGATE_TO,
   SCREENS_FOLDER,
-  SRC_FOLDER, SVG_FOLDER,
+  SRC_FOLDER,
+  SVG_FOLDER,
 } from '../Constants';
 import IStoreContent from 'interfaces/IStoreContent';
 import StoreContent from '../StoreContent';
@@ -23,6 +25,7 @@ import ICSSProperty from 'interfaces/ICSSProperty';
 import IGenerateService from 'interfaces/IGenerateService';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
 import TransitStyle from '../TransitStyle';
+import { ControlEnum } from '../../../enums/ControlEnum';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
@@ -53,7 +56,7 @@ class GenerateService implements IGenerateService {
     const inDrawer: string[] = [];
     const outOfDrawer: string[] = [];
     this.tab.forEach(((value, screenId) => {
-      if(this.leftDrawer.has(screenId) || this.rightDrawer.has(screenId)) {
+      if (this.leftDrawer.has(screenId) || this.rightDrawer.has(screenId)) {
         inDrawer.push(screenId);
       } else {
         outOfDrawer.push(screenId);
@@ -83,7 +86,7 @@ class GenerateService implements IGenerateService {
     let l = components.length;
     while (l--) {
       const cmp = components[l][1];
-      if(cmp.controls.find(e => e.id === id)) {
+      if (cmp.controls.find(e => e.id === id)) {
         return cmp;
       }
     }
@@ -115,20 +118,20 @@ class GenerateService implements IGenerateService {
       if ((overflow && overflow.enabled && overflow.value !== 'hidden') ||
         (overflowY && overflowY.enabled && overflowY.value !== 'hidden')) {
         transitStyle.scroll = { horizontal: false, contentContainerStyle: {} };
-        if(alignItems && alignItems.enabled) {
+        if (alignItems && alignItems.enabled) {
           transitStyle.scroll.contentContainerStyle.alignItems = alignItems.value as string;
         }
-        if(justifyContent && justifyContent.enabled) {
+        if (justifyContent && justifyContent.enabled) {
           transitStyle.scroll.contentContainerStyle.justifyContent = justifyContent.value as string;
         }
       }
 
       if (overflowX && overflowX.enabled && overflowX.value !== 'hidden') {
         transitStyle.scroll = { horizontal: true, contentContainerStyle: {} };
-        if(alignItems && alignItems.enabled) {
+        if (alignItems && alignItems.enabled) {
           transitStyle.scroll.contentContainerStyle.alignItems = alignItems.value as string;
         }
-        if(justifyContent && justifyContent.enabled) {
+        if (justifyContent && justifyContent.enabled) {
           transitStyle.scroll.contentContainerStyle.justifyContent = justifyContent.value as string;
         }
       }
@@ -188,8 +191,8 @@ class GenerateService implements IGenerateService {
           transitStyle.isSvg = true;
         }
       }
-      if(width) {
-        if(width.value > widthValue) {
+      if (width) {
+        if (width.value > widthValue) {
           widthValue = width.value as number;
           unit = width.unit;
         }
@@ -238,70 +241,77 @@ class GenerateService implements IGenerateService {
     return !!Array.from(this.tab.values()).find(ids => control.path.includes(ids[0]));
   }
 
-   setChecksums(): { [key: string]: IStoreContent[] } {
+  setChecksums(): { [key: string]: IStoreContent[] } {
     const childrenMap: { [key: string]: IStoreContent[] } = {};
-      let l = this.store.screens.length, i = 0;
-      while (l--) {
-        const screen = this.store.screens[i];
-        screen.setChecksum(0, [], i, async (depth: number, index: number, control: IControl) => {
-          if (!this.storeContent.has(screen.id)) {
-            this.storeContent.set(screen.id, []);
-          }
-          const actions = control.actions.toJS().sort((a, b) => {
-            if (b[0] === NAVIGATE_TO) return -1;
-            return 1;
-          });
-          const [transitStyles, width] = this.transitStyle(control);
-
-          const store =
-            new StoreContent(
-              control.id as string,
-              screen.id as string,
-              control.path as string[],
-              control.classes,
-              control.hashChildrenWithStyle as string,
-              [index],
-              control.title,
-              control.hashChildren as string,
-              control.cssStyles.size > 1,
-              control.meta,
-              transitStyles as ITransitStyle[],
-              actions,
-              control.title);
-          const pathKey = control.path.join('/');
-          if (!childrenMap[pathKey]) {
-            childrenMap[pathKey] = [];
-          }
-          childrenMap[pathKey].push(store);
-
-          if([ScreenMetaEnum.COMPONENT, TextMetaEnum.INPUT, TextMetaEnum.TEXT_AREA].includes(control.meta)) {
-            if(this.isLeftDrawerChild(control)) {
-              this.storeContent.get(this.leftDrawer.get(screen.id)![0])!.push(store);
-            } else if(this.isRightDrawerChild(control)) {
-              this.storeContent.get(this.rightDrawer.get(screen.id)![0])!.push(store);
-            } else if(this.isTabChild(control)) {
-              this.storeContent.get(this.tab.get(screen.id)![0])!.push(store);
-            } else {
-              this.storeContent.get(screen.id)!.push(store);
-            }
-
-          } else if(control.meta === ScreenMetaEnum.LEFT_DRAWER) {
-            this.leftDrawer.set(screen.id, [control.id, width as string]);
-            this.storeContent.set(control.id, []);
-            this.storeContent.get(control.id)!.push(store);
-          } else if(control.meta === ScreenMetaEnum.RIGHT_DRAWER) {
-            this.rightDrawer.set(screen.id, [control.id, width as string]);
-            this.storeContent.set(control.id, []);
-            this.storeContent.get(control.id)!.push(store);
-          } else if(control.meta === ScreenMetaEnum.TABS) {
-            this.tab.set(screen.id, [control.id, width as string]);
-            this.storeContent.set(control.id, []);
-            this.storeContent.get(control.id)!.push(store);
+    let l = this.store.screens.length, i = 0;
+    while (l--) {
+      const screen = this.store.screens[i];
+      screen.setChecksum(0, [], i, async (depth: number, index: number, control: IControl) => {
+        if (!this.storeContent.has(screen.id)) {
+          this.storeContent.set(screen.id, []);
+        }
+        const actions = control.actions.toJS().sort((a, b) => {
+          if (b[0] === NAVIGATE_TO) return -1;
+          return 1;
+        });
+        const [transitStyles, width] = this.transitStyle(control);
+        let textChildren = 0;
+        control.children.forEach((e, i) => {
+          if (e.type === ControlEnum.Text && !e.hasImage) {
+            textChildren++;
           }
         });
-        i++;
-      }
-      return childrenMap;
+
+        const store =
+          new StoreContent(
+            control.id as string,
+            screen.id as string,
+            control.path as string[],
+            control.classes,
+            control.hashChildrenWithStyle as string,
+            [index],
+            control.title,
+            control.hashChildren as string,
+            control.children.length > 1 && textChildren === control.children.length,
+            control.cssStyles.size > 1,
+            control.meta,
+            transitStyles as ITransitStyle[],
+            actions,
+            control.title);
+        const pathKey = control.path.join('/');
+        if (!childrenMap[pathKey]) {
+          childrenMap[pathKey] = [];
+        }
+        childrenMap[pathKey].push(store);
+
+        if ([ScreenMetaEnum.COMPONENT, TextMetaEnum.INPUT, TextMetaEnum.TEXT_AREA].includes(control.meta)) {
+          if (this.isLeftDrawerChild(control)) {
+            this.storeContent.get(this.leftDrawer.get(screen.id)![0])!.push(store);
+          } else if (this.isRightDrawerChild(control)) {
+            this.storeContent.get(this.rightDrawer.get(screen.id)![0])!.push(store);
+          } else if (this.isTabChild(control)) {
+            this.storeContent.get(this.tab.get(screen.id)![0])!.push(store);
+          } else {
+            this.storeContent.get(screen.id)!.push(store);
+          }
+
+        } else if (control.meta === ScreenMetaEnum.LEFT_DRAWER) {
+          this.leftDrawer.set(screen.id, [control.id, width as string]);
+          this.storeContent.set(control.id, []);
+          this.storeContent.get(control.id)!.push(store);
+        } else if (control.meta === ScreenMetaEnum.RIGHT_DRAWER) {
+          this.rightDrawer.set(screen.id, [control.id, width as string]);
+          this.storeContent.set(control.id, []);
+          this.storeContent.get(control.id)!.push(store);
+        } else if (control.meta === ScreenMetaEnum.TABS) {
+          this.tab.set(screen.id, [control.id, width as string]);
+          this.storeContent.set(control.id, []);
+          this.storeContent.get(control.id)!.push(store);
+        }
+      });
+      i++;
+    }
+    return childrenMap;
   }
 
   generateRN() {
@@ -401,7 +411,7 @@ class GenerateService implements IGenerateService {
   }
 
   generateFinish() {
-    if(this.transitionErrors.length) {
+    if (this.transitionErrors.length) {
       this.store.setContentGeneratorDialog!(this.transitionErrors);
     } else {
       this.generateZip();

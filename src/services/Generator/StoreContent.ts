@@ -15,6 +15,7 @@ class StoreContent implements IStoreContent {
   isObservable: boolean;
   title: string;
   text?: string;
+  isTextChildren: boolean;
   transitStyles?: ITransitStyle[];
   children: IStoreContent[] = [];
   hash: string;
@@ -32,6 +33,7 @@ class StoreContent implements IStoreContent {
       path: this.path,
       classes: this.classes,
       styleId: this.styleId,
+      isAllChildrenAreText: this.isTextChildren,
       transitStyles: this.transitStyles,
       action: this.action,
       text: this.text,
@@ -48,6 +50,7 @@ class StoreContent implements IStoreContent {
     placeIndex: number[],
     title: string,
     hash: string,
+    isTextChildren: boolean,
     isObservable: boolean,
     meta: ScreenMetaEnum | TextMetaEnum,
     transitStyles?: ITransitStyle[],
@@ -61,6 +64,7 @@ class StoreContent implements IStoreContent {
     this.text = text;
     this.classes = classes;
     this.styleId = styleId;
+    this.isTextChildren = isTextChildren;
     this.placeIndex = placeIndex;
     this.hash = hash;
     this.isObservable = isObservable;
@@ -81,6 +85,7 @@ class StoreContent implements IStoreContent {
     content += `    path: ${JSON.stringify(this.path)},\n`;
     content += `    classes: ${JSON.stringify(this.classes)},\n`;
     content += `    styleId: "${this.styleId}",\n`;
+    content += `    isTextChildren: ${this.isTextChildren},\n`;
     content += `    transitStyles: ${this.transitStyles ? '[' + this.transitStyles.map(e => e.toString()) + ']' : undefined},\n`;
     content += `    action: ${JSON.stringify(this.action)},\n`;
     content += `    text: "${this.text}",\n`;

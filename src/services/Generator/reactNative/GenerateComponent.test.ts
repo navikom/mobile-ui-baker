@@ -7,8 +7,11 @@ import GenerateComponent from './GenerateComponent';
 import EditorViewStore from '../../../views/Editor/store/EditorViewStore';
 import GenerateService from './GenerateService';
 import ITransitStyle from '../../../interfaces/ITransitSyle';
+import ICSSProperty from '../../../interfaces/ICSSProperty';
 
 const fetchMock = fetch as FetchMock;
+
+const getStyle = (styles: ICSSProperty[], key: string) => styles.find(style => style.key === key);
 
 describe('GenerateComponent', () => {
 
@@ -154,22 +157,21 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-
-    mainStyle![54].setValue('auto'); // overflow
+    mainStyle![55].setValue('scroll'); // overflow
     expect(generator.transitStyle(grid).length).toBe(2);
-    mainStyle![54].switchEnabled();
+    mainStyle![55].switchEnabled();
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeFalsy();
 
-    mainStyle![55].switchEnabled(); // overflowX
-    mainStyle![55].setValue('auto');
+    mainStyle![56].switchEnabled(); // overflowX
+    mainStyle![56].setValue('scroll');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeTruthy();
 
-    mainStyle![56].switchEnabled(); // overflowY
-    mainStyle![56].setValue('auto');
+    mainStyle![57].switchEnabled(); // overflowY
+    mainStyle![57].setValue('scroll');
     // doesn't change until overflowX enabled
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeTruthy();
 
-    mainStyle![55].switchEnabled();
+    mainStyle![56].switchEnabled();
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeFalsy();
   });
 
@@ -202,27 +204,28 @@ describe('GenerateComponent', () => {
     mainStyle![18].switchEnabled();
     mainStyle![18].setValue(100);
 
-    mainStyle![21].switchEnabled();
+    mainStyle![21].switchEnabled(); // padding
     mainStyle![21].setValue('10px 5px 7px 0');
 
-    mainStyle![27].switchEnabled();
-    mainStyle![27].setValue(10);
+    mainStyle![28].switchEnabled(); // marginTop
+    mainStyle![28].setValue(10);
 
-    mainStyle![31].switchEnabled(); // transform
-    mainStyle![31].setValue('translate(-50%,20%)');
+    mainStyle![32].switchEnabled(); // transform
+    mainStyle![32].setValue('translate(-50%,20%)');
 
-    mainStyle![48].switchEnabled(); // boxShadow
+    mainStyle![49].switchEnabled(); // boxShadow
 
-    mainStyle![49].switchEnabled(); // display
+    mainStyle![50].switchEnabled(); // display
 
-    mainStyle![53].switchEnabled(); // flexWrap
-    mainStyle![53].setValue('wrap');
+    mainStyle![54].switchEnabled(); // flexWrap
+    mainStyle![54].setValue('wrap');
 
-    mainStyle![54].switchEnabled(); // overflow
+    mainStyle![55].switchEnabled(); // overflow
 
-    mainStyle![57].switchEnabled(); // white-space
+    mainStyle![58].switchEnabled(); // white-space
 
     generator.addControl(grid);
+
     expect(
       JSON.stringify(generator.styles.get('96e913cc')) ===
       JSON.stringify({
@@ -231,12 +234,12 @@ describe('GenerateComponent', () => {
           top: '10%',
           height: '100%',
           minWidth: '10rem',
-          minHeight: 100,
-          paddingTop: 10,
-          paddingRight: 5,
-          paddingBottom: 7,
+          minHeight: Math.round(100 * 1.3),
+          paddingTop: Math.round(10 * 1.3),
+          paddingRight: Math.round(5 * 1.3),
+          paddingBottom: Math.round(7 * 1.3),
           paddingLeft: 0,
-          marginTop: 10,
+          marginTop: Math.round(10 * 1.3),
           flexDirection: 'row',
           flexWrap: 'wrap',
           overflow: 'visible'
@@ -254,8 +257,8 @@ describe('GenerateComponent', () => {
     grid.setChecksum(0, [], 0, () => {
     });
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![31].switchEnabled();
-    mainStyle![31].setValue('translate(-50px,0)');
+    mainStyle![32].switchEnabled(); // transform
+    mainStyle![32].setValue('translate(-50px,0)');
 
     generator.addControl(grid);
 
@@ -263,7 +266,7 @@ describe('GenerateComponent', () => {
       JSON.stringify(generator.styles.get('96e913cc')) ===
       JSON.stringify({
         Main: {
-          transform: [{ translateY: 0 }, { translateX: -50 }]
+          transform: [{ translateY: 0 }, { translateX: -Math.round(50 * 1.3) }]
         }
       })
     ).toBeTruthy();
@@ -345,33 +348,34 @@ describe('GenerateComponent', () => {
     mainStyle![18].switchEnabled();
     mainStyle![18].setValue(100);
 
-    mainStyle![21].switchEnabled();
+    mainStyle![21].switchEnabled(); // padding
     mainStyle![21].setValue('10px 5px 7px 0');
 
-    mainStyle![27].switchEnabled();
-    mainStyle![27].setValue(10);
+    mainStyle![28].switchEnabled(); // marginTop
+    mainStyle![28].setValue(10);
 
-    mainStyle![31].switchEnabled(); // transform
-    mainStyle![31].setValue('translate(-50%,20%)');
+    mainStyle![32].switchEnabled(); // transform
+    mainStyle![32].setValue('translate(-50%,20%)');
 
-    mainStyle![48].switchEnabled(); // boxShadow
+    mainStyle![49].switchEnabled(); // boxShadow
 
-    mainStyle![49].switchEnabled(); // color
-    mainStyle![49].setValue('#fff');
+    mainStyle![50].switchEnabled(); // color
+    mainStyle![50].setValue('#fff');
 
-    mainStyle![50].switchEnabled(); // textAlign
-    mainStyle![51].switchEnabled(); // fontFamily
-    mainStyle![52].switchEnabled(); // fontStyle
-    mainStyle![52].setValue('oblique');
+    mainStyle![51].switchEnabled(); // textAlign
+    mainStyle![52].switchEnabled(); // fontFamily
+    mainStyle![53].switchEnabled(); // fontStyle
+    mainStyle![53].setValue('oblique');
 
-    mainStyle![55].switchEnabled(); // fontDecoration
-    mainStyle![55].setValue('line-through');
+    mainStyle![56].switchEnabled(); // fontDecoration
+    mainStyle![56].setValue('line-through');
 
-    mainStyle![56].switchEnabled(); // lineHeight
+    getStyle(mainStyle as ICSSProperty[], 'lineHeight')!.switchEnabled(); // lineHeight
 
     mainStyle![57].switchEnabled(); // textOverflow
 
     generator.addControl(text);
+
     expect(
       JSON.stringify(generator.styles.get('21eabfa8')) ===
       JSON.stringify({
@@ -380,12 +384,13 @@ describe('GenerateComponent', () => {
           top: '10%',
           height: '100%',
           minWidth: '10rem',
-          minHeight: 100,
-          paddingTop: 10,
-          paddingRight: 5,
-          paddingBottom: 7,
+          minHeight: Math.round(100 * 1.3),
+          paddingTop: Math.round(10 * 1.3),
+          paddingRight: Math.round(5 * 1.3),
+          paddingBottom: Math.round(7 * 1.3),
           paddingLeft: 0,
-          marginTop: 10,
+          lineHeight: Math.round(10 * 1.3),
+          marginTop: Math.round(10 * 1.3),
           color: '#fff',
           textAlign: 'center',
           fontFamily: 'Verdana',
@@ -393,7 +398,6 @@ describe('GenerateComponent', () => {
           textDecorationLine: 'line-through',
           textDecorationColor: 'black',
           textDecorationStyle: 'solid',
-          lineHeight: 10,
           textOverflow: 'ellipsis'
         }
       })
@@ -409,12 +413,13 @@ describe('GenerateComponent', () => {
           "top": "10%",
           "height": "100%",
           "minWidth": "10rem",
-          "minHeight": 100,
-          "paddingTop": 10,
-          "paddingRight": 5,
-          "paddingBottom": 7,
+          "minHeight": ${Math.round(100 * 1.3)},
+          "paddingTop": ${Math.round(10 * 1.3)},
+          "paddingRight": ${Math.round(5 * 1.3)},
+          "paddingBottom": ${Math.round(7 * 1.3)},
           "paddingLeft": 0,
-          "marginTop": 10,
+          "lineHeight": ${Math.round(10 * 1.3)},
+          "marginTop": ${Math.round(10 * 1.3)},
           "color": "#fff",
           "textAlign": "center",
           "fontFamily": "Verdana",
@@ -422,7 +427,6 @@ describe('GenerateComponent', () => {
           "textDecorationLine": "line-through",
           "textDecorationColor": "black",
           "textDecorationStyle": "solid",
-          "lineHeight": 10,
           "textOverflow": "ellipsis"
        }
     }),

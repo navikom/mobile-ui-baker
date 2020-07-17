@@ -104,7 +104,7 @@ describe("EditorHistory", () => {
     const newName = "New Style";
 
     expect(control.cssStyles.has(oldName)).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(58);
+    expect(control.cssStyles.get(oldName)!.length).toBe(59);
     control.switchEnabled(oldName, "position")();
 
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
@@ -112,7 +112,7 @@ describe("EditorHistory", () => {
     control.renameCSSStyle(oldName, newName);
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(58);
+    expect(control.cssStyles.get(newName)!.length).toBe(59);
 
     control.removeCSSStyle(newName);
     expect(control.cssStyles.has(newName)).toBeFalsy();
@@ -120,12 +120,12 @@ describe("EditorHistory", () => {
     store.history.undo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(58);
+    expect(control.cssStyles.get(newName)!.length).toBe(59);
 
     store.history.undo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(58);
+    expect(control.cssStyles.get(oldName)!.length).toBe(59);
 
     store.history.undo();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeFalsy();
@@ -135,14 +135,14 @@ describe("EditorHistory", () => {
 
     store.history.redo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
-    expect(control.cssStyles.get(oldName)!.length).toBe(58);
+    expect(control.cssStyles.get(oldName)!.length).toBe(59);
 
     store.history.redo();
     expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
     store.history.redo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
     expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
-    expect(control.cssStyles.get(newName)!.length).toBe(58);
+    expect(control.cssStyles.get(newName)!.length).toBe(59);
   });
 
   it("add/remove style records", () => {
