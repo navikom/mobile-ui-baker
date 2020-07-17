@@ -18,6 +18,7 @@ import AnimationEnum, { AnimationDirectionEnum } from '../enums/AnimationEnum';
 import { FIRST_CONTAINER, SECOND_CONTAINER } from './Constants';
 import ScreenSwitcherEnum from 'enums/ScreenSwitcherEnum';
 import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
+import { Users } from './User/UsersStore';
 
 export const getSwitcherParams = (list: (string | number)[], screenSwitcher: ScreenSwitcherEnum) => {
   if (Number(list[0]) === screenSwitcher) {
@@ -147,6 +148,7 @@ class DisplayViewStore extends Errors {
     } else {
       this.screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
     }
+    data.owner && this.project.update({owner: data.owner, userId: data.owner.userId} as IProject);
   }
 
   @action switchStatusBar() {

@@ -1,51 +1,51 @@
 import React, { RefObject, useEffect, useImperativeHandle } from 'react';
-import { DragSource, DropTarget } from "react-dnd";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
+import { DragSource, DropTarget } from 'react-dnd';
+import { observer } from 'mobx-react-lite';
+import classNames from 'classnames';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
-import { makeStyles } from "@material-ui/core/styles";
-import { createStyles, Theme } from "@material-ui/core";
-import { Add, Delete, DragIndicator, FilterNone, Remove, Visibility, VisibilityOff } from "@material-ui/icons";
-import IconButton from "@material-ui/core/IconButton";
-import Grid from "@material-ui/core/Grid";
-import { DropEnum } from "enums/DropEnum";
-import { ItemTypes } from "views/Editor/store/ItemTypes";
-import { ControlProps } from "interfaces/IControlProps";
-import hover from "utils/hover";
-import TextInput from "components/CustomInput/TextInput";
-import IControl from "interfaces/IControl";
-import { warningOpacity } from "assets/jss/material-dashboard-react";
+import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, Theme } from '@material-ui/core';
+import { Add, Delete, DragIndicator, FilterNone, Remove, Visibility, VisibilityOff } from '@material-ui/icons';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import { DropEnum } from 'enums/DropEnum';
+import { ItemTypes } from 'views/Editor/store/ItemTypes';
+import { ControlProps } from 'interfaces/IControlProps';
+import hover from 'utils/hover';
+import TextInput from 'components/CustomInput/TextInput';
+import IControl from 'interfaces/IControl';
+import { warningOpacity } from 'assets/jss/material-dashboard-react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      transition: "all 0.1s",
+      transition: 'all 0.1s',
     },
     input: {
       width: theme.typography.pxToRem(80),
-      textOverflow: "ellipsis"
+      textOverflow: 'ellipsis'
     },
     container: {
-      flexWrap: "nowrap",
+      flexWrap: 'nowrap',
     },
     hover: {
-      cursor: "move",
+      cursor: 'move',
     },
     list: {
-      margin: "0 .1em",
-      padding: ".1em",
-      maxHeight: "1000px"
+      margin: '0 .1em',
+      padding: '.1em',
+      maxHeight: "30000px",
     },
     closed: {
-      padding: "0 .1em",
-      overflow: "hidden",
+      padding: '0 .1em',
+      overflow: 'hidden',
       maxHeight: 0,
       opacity: 0,
-      transition: "all .1s"
+      transition: 'all .1s'
     },
     opened: {
-      transition: "all .1s"
+      transition: 'all .1s'
     },
     selected: {
       backgroundColor: warningOpacity(0.1)
@@ -58,19 +58,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const borders = {
   [DropEnum.Left]: {
-    borderLeft: "2px dotted rgba(0,0,0,0.2)",
+    borderLeft: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Right]: {
-    borderRight: "2px dotted rgba(0,0,0,0.2)",
+    borderRight: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Above]: {
-    borderTop: "2px dotted rgba(0,0,0,0.2)",
+    borderTop: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Below]: {
-    borderBottom: "2px dotted rgba(0,0,0,0.2)",
+    borderBottom: '2px dotted rgba(0,0,0,0.2)',
   },
   [DropEnum.Inside]: {
-    border: "2px dotted rgba(0,0,0,0.2)",
+    border: '2px dotted rgba(0,0,0,0.2)',
   }
 };
 
@@ -131,7 +131,7 @@ const ElementComponent: React.FC<ElementProps> =
           style={{
             ...borderStyles,
             ...(isDragging ? {
-              position: "absolute",
+              position: 'absolute',
               top: -1000
             } : {})
           }}
@@ -151,7 +151,7 @@ const ElementComponent: React.FC<ElementProps> =
               onChange={(e) => changeTitle(e.currentTarget.value)}
               onClick={() => selectControl(control, screen)}
             />
-            <IconButton size="small" onClick={control.switchVisibility} style={{marginLeft: "auto"}}>
+            <IconButton size="small" onClick={control.switchVisibility} style={{ marginLeft: 'auto' }}>
               {control.visible ? <Visibility /> : <VisibilityOff color="disabled" />}
             </IconButton>
             <IconButton size="small" onClick={() => cloneControl(control)}>

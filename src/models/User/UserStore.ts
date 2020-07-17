@@ -199,6 +199,13 @@ export class UserStore implements IUser {
     subscription.payments = payments;
   }
 
+  toJSON() {
+    return {
+      userId: this.userId,
+      email: this.email,
+    } as IUser;
+  }
+
   static from(model: IUser): UserStore {
     const user = new UserStore(model.userId);
     user.update(model);

@@ -61,4 +61,5 @@ export interface IUser extends WithPrimaryKey {
   updateStatusInSubscription(subscriptionId: number, status: string): void;
   setPlan: (plan: string) => void;
   totalTime: string;
+  toJSON(): IUser;
 }

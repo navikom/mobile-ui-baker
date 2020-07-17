@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
     list: {
       margin: "0 .5em",
       padding: ".5em",
-      maxHeight: "1000px",
+      maxHeight: "50000px",
     },
     closed: {
       overflow: "hidden",

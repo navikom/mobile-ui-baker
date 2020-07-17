@@ -32,6 +32,7 @@ export interface IProjectData {
   projectId: number;
   versionId: number;
   screensMetaMap: string[][];
+  owner: IUser;
 }
 
 export interface IProjectVersion {
