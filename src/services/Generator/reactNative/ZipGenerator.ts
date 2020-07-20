@@ -1,4 +1,3 @@
-import React from 'react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
@@ -39,8 +38,7 @@ import {
   STORE,
   STORE_BASE,
   STORE_VARIABLE,
-  STYLE_ID,
-  STYLES, SVG_FOLDER,
+  STYLES_FOLDER, SVG_FOLDER,
   TABS,
   TEXT_BASE_COMP,
   TEXT_COMP,
@@ -58,7 +56,9 @@ import { AnimationDirectionEnum } from 'enums/AnimationEnum';
 
 const contentString = (content: string, imports: string[]) => {
   let str = importFrom(['observer'], 'mobx-react-lite') + ';\n';
-  str += imports.map(e => importFrom(e, APP_ROOT + '/' + COMPONENTS_FOLDER + '/' + e + '/' + e) + ';').join('\n');
+  str += importFrom(BASE_COMP, APP_ROOT + '/' + COMPONENTS_FOLDER + '/' + BASE_COMP + '/' + BASE_COMP) + ';\n';
+  str += importFrom(TEXT_BASE_COMP, APP_ROOT + '/' + COMPONENTS_FOLDER + '/' + TEXT_BASE_COMP + '/' + TEXT_BASE_COMP) + ';\n';
+  str += imports.map(e => importFrom('style' + e, APP_ROOT + '/' + ASSETS_FOLDER + '/' + STYLES_FOLDER + '/style' + e) + ';').join('\n');
   str += '\n';
   str += content;
   return str
@@ -107,9 +107,9 @@ class ZipGenerator {
     this.source.setFinished();
   }
 
-  screen2zip(cmp: IGenerateComponent, title: string) {
+  screen2zip(title: string) {
     let content = IMPORT_REACT + ';\n';
-    content += importFrom(cmp.nameSpace, `${APP_ROOT}/${COMPONENTS_FOLDER}/${cmp.nameSpace}/${cmp.nameSpace}`) + ';\n';
+    content += importFrom(BASE_COMP, `${APP_ROOT}/${COMPONENTS_FOLDER}/${BASE_COMP}/${BASE_COMP}`) + ';\n';
     content += importFrom(STORE, `${APP_ROOT}/${SCREENS_FOLDER}/${title}/${STORE}`) + ';\n';
 
     content += `\n${FUNCTION} ${title}({navigation, route}) {\n`;
@@ -117,18 +117,16 @@ class ZipGenerator {
     content += '  React.useEffect(() => {\n';
     content += `    ${RETURN} store.dispose;\n`;
     content += '  });\n';
-    content += `  return <${cmp.nameSpace} ${STORE_VARIABLE}={store} ${PROPS_VARIABLE}={store.props(route.params.${COMPONENT_ID})} />;\n`;
+    content += `  return <${BASE_COMP} ${STORE_VARIABLE}={store} ${PROPS_VARIABLE}={store.props(route.params.${COMPONENT_ID})} />;\n`;
     content += `}\nexport default ${title};`;
     this.zip.file(`${SRC_FOLDER}/${SCREENS_FOLDER}/${title}/${title}.js`, content);
     this.screenStore2zip(title);
   }
 
-  component2zip(cmp: IGenerateComponent, folder: string, name: string) {
+  componentStyle2zip(cmp: IGenerateComponent, folder: string) {
     let content = cmp.stylesString();
 
-    this.zip.file(`${SRC_FOLDER}/${folder}/${cmp.nameSpace}/${STYLES}.js`, content);
-    content = cmp.generateComponentString();
-    this.zip.file(`${SRC_FOLDER}/${folder}/${name}/${name}.js`, content);
+    this.zip.file(`${SRC_FOLDER}/${folder}/style${cmp.nameSpace}.js`, content);
   }
 
   baseComponent2zip(isText: boolean) {
@@ -182,14 +180,13 @@ class ZipGenerator {
 ${importFrom([TEXT_COMP, VIEW_COMP, isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP].filter(e => !(isText && e === VIEW_COMP)))};
 ${importFrom(LINEAR_GRADIENT_COMP, 'react-native-linear-gradient')};
     
-${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}, ${STYLES}}) {
-  const style = ${STYLES}[${PROPS_VARIABLE}.${STYLE_ID}];
+${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}}) {
   let Component = ${isText ? TEXT_COMP : VIEW_COMP};
   const properties = {};
   const transit = ${PROPS_VARIABLE}.activeTransit;
   let ${CHILDREN} = ${STORE_VARIABLE}.${CHILDREN}[${PROPS_VARIABLE}.id];
   
-  properties.style = ${PROPS_VARIABLE}.getStyle(style);
+  properties.style = ${PROPS_VARIABLE}.style;
   
   if(transit) {
     if(transit.isSvg) {
@@ -228,26 +225,10 @@ ${EXPORT_DEFAULT} ${name};`;
 
   navSpec2zip(title: string, map: Map<string, string[]>) {
 
-    const nameSpaces: string[] = [];
     let content = IMPORT_REACT + ';\n';
-    map.forEach(([controlId]) => {
-      const cmp = this.source.getComponentByControlId(controlId);
-      if(cmp) {
-        !nameSpaces.includes(cmp.nameSpace) && nameSpaces.push(cmp.nameSpace);
-      }
-    });
+    content += importFrom(BASE_COMP, `${APP_ROOT}/${COMPONENTS_FOLDER}/${BASE_COMP}/${BASE_COMP}`) + ';\n';
 
-    nameSpaces.forEach((nameSpace) => {
-      content += importFrom(nameSpace, `${APP_ROOT}/${COMPONENTS_FOLDER}/${nameSpace}/${nameSpace}`) + ';\n';
-    });
-
-    let componentContent = '';
-    const componentName = nameSpaces.length > 1 ? 'Component' : nameSpaces[0];
-    if(nameSpaces.length > 1) {
-      componentContent += '  Component = property.component;\n\n';
-    }
-
-    componentContent += `  ${RETURN} <${componentName} ${STORE_VARIABLE}={${STORE_VARIABLE}} ${PROPS_VARIABLE}={property} />;\n`;
+    const componentContent = `  ${RETURN} <${BASE_COMP} ${STORE_VARIABLE}={${STORE_VARIABLE}} ${PROPS_VARIABLE}={property} />;\n`;
 
     content += importFrom(STORE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${STORE}`) + ';\n';
 
@@ -263,27 +244,10 @@ ${EXPORT_DEFAULT} ${name};`;
   }
 
   navTabSpec2zip(title: string, map: Map<string, string[]>) {
-    const nameSpaces: string[] = [];
     let content = IMPORT_REACT + ';\n';
     content += importFrom(['observer'], 'mobx-react-lite') + ';\n';
-    map.forEach(([controlId]) => {
-      const cmp = this.source.getComponentByControlId(controlId);
-      if(cmp) {
-        !nameSpaces.includes(cmp.nameSpace) && nameSpaces.push(cmp.nameSpace);
-      }
-    });
-
-    nameSpaces.forEach((nameSpace) => {
-      content += importFrom(nameSpace, `${APP_ROOT}/${COMPONENTS_FOLDER}/${nameSpace}/${nameSpace}`) + ';\n';
-    });
-
-    let componentContent = '';
-    const componentName = nameSpaces.length > 1 ? 'Component' : nameSpaces[0];
-    if(nameSpaces.length > 1) {
-      componentContent += '  Component = property.component;\n\n';
-    }
-
-    componentContent += `  ${RETURN} <${componentName} ${STORE_VARIABLE}={${STORE_VARIABLE}} ${PROPS_VARIABLE}={property} />;\n`;
+    content += importFrom(BASE_COMP, `${APP_ROOT}/${COMPONENTS_FOLDER}/${BASE_COMP}/${BASE_COMP}`) + ';\n';
+    const componentContent = `  ${RETURN} <${BASE_COMP} ${STORE_VARIABLE}={${STORE_VARIABLE}} ${PROPS_VARIABLE}={property} />;\n`;
 
     content += importFrom(STORE, `${APP_ROOT}/${NAVIGATION_FOLDER}/${title}/${STORE}`) + ';\n';
 
@@ -313,7 +277,7 @@ ${EXPORT_DEFAULT} ${name};`;
         }
         const nameSpace = this.source.components.get(e.hash)!.nameSpace;
         !imports.includes(nameSpace) && imports.push(nameSpace);
-        content += `\n  new ${PROPERTY_MODEL}(${e.toString(nameSpace as unknown as React.FC)}),`;
+        content += `\n  new ${PROPERTY_MODEL}(${e.toString(nameSpace)}),`;
       });
     });
     content += `\n]\nexport default ${INIT_STATE};`;
@@ -762,6 +726,7 @@ export default App;`;
     content += '  placeIndex;\n';
     content += '  component;\n';
     content += '  meta;\n';
+    content += '  styles;\n';
     content += '  @observable classes;\n';
     content += '  @observable text;\n';
 
@@ -777,11 +742,12 @@ export default App;`;
     content += `    ${RETURN} (this.transitStyles || []).find(e => e.className === this.activeClass);\n`;
     content += '  }\n';
 
-    content += '  getStyle(style) {\n';
-    content += `    ${RETURN} computed(() => style ? this.classes.map(entry => style[entry]) : {flex: 1} ).get();\n`;
+    content += '  @computed get style() {\n';
+    content += '    const style = this.styles[this.styleId];\n';
+    content += `    ${RETURN} style ? [style[this.activeClass]] : {flex: 1};\n`;
     content += '  }\n';
 
-    content += '  constructor({id, title, path, styleId, action, classes, isTextChildren, text, transitStyles, placeIndex, meta, component}) {\n';
+    content += '  constructor({id, title, path, styleId, action, classes, styles, isTextChildren, text, transitStyles, placeIndex, meta, component}) {\n';
     content += '    this.id = id;\n';
     content += '    this.path = path;\n';
     content += '    this.styleId = styleId;\n';
@@ -794,6 +760,7 @@ export default App;`;
     content += '    this.meta = meta;\n';
     content += '    transitStyles && (this.transitStyles = transitStyles.map(e => new TransitStyle(e)));\n';
     content += '    this.component = component;\n';
+    content += '    this.styles = styles;\n';
     content += '  }\n';
 
     content += '  isRowChildren(styles) {\n';
@@ -832,7 +799,7 @@ export default App;`;
     content += stateContent.map(e => {
       const nameSpace = this.source.components.get(e.hash)!.nameSpace;
       !imports.includes(nameSpace) && imports.push(nameSpace);
-      const string = `\n  new ${PROPERTY_MODEL}(${e.toString(nameSpace as unknown as React.FC)})`;
+      const string = `\n  new ${PROPERTY_MODEL}(${e.toString(nameSpace)})`;
       return string;
     });
     content += `];\nexport default ${INIT_STATE};`;

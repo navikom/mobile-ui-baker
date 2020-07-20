@@ -102,7 +102,7 @@ class EditorViewStore extends DisplayViewStore {
       portrait: this.portrait,
       projectId: this.project ? this.project.projectId : 0,
       versionId: this.project ? this.project.version.versionId : 0,
-      owner: this.project.owner!.toJSON()
+      owner: this.project.owner && this.project.owner!.toJSON()
     }
   }
 

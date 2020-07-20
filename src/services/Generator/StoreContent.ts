@@ -1,10 +1,12 @@
-import React from 'react';
 import IStoreContent from 'interfaces/IStoreContent';
 import ITransitStyle from 'interfaces/ITransitSyle';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import { ControlEnum } from 'enums/ControlEnum';
+import { BASE_COMP, TEXT_BASE_COMP } from './Constants';
 
 class StoreContent implements IStoreContent {
+  type: ControlEnum;
   path: string[];
   id: string;
   screenId: string;
@@ -42,6 +44,7 @@ class StoreContent implements IStoreContent {
   }
 
   constructor(
+    type: ControlEnum,
     id: string,
     screenId: string,
     path: string[],
@@ -57,6 +60,7 @@ class StoreContent implements IStoreContent {
     action?: string[][],
     text?: string
   ) {
+    this.type = type;
     this.id = id;
     this.screenId = screenId;
     this.path = path;
@@ -77,8 +81,9 @@ class StoreContent implements IStoreContent {
     this.children.push(child);
   }
 
-  toString(component: React.FC): string {
-    component = this.isObservable ? `observer(${component})` as unknown as React.FC : component;
+  toString(nameSpace: string): string {
+    let component = this.type === ControlEnum.Grid ? BASE_COMP : TEXT_BASE_COMP;
+    component = this.isObservable ? `observer(${component})` : component;
     let content = '{\n';
     content += `    id: "${this.id}",\n`;
     content += `    title: "${this.title}",\n`;
@@ -91,7 +96,8 @@ class StoreContent implements IStoreContent {
     content += `    text: "${this.text}",\n`;
     content += `    meta: "${this.meta}",\n`;
     content += `    placeIndex: ${JSON.stringify(this.placeIndex)},\n`;
-    content += `    component: ${component}\n`;
+    content += `    component: ${component},\n`;
+    content += `    styles: style${nameSpace}\n`
     content += '  }';
     return content;
   }

@@ -1,24 +1,24 @@
 import { action, IObservableArray, observable, runInAction } from 'mobx';
-import { Errors } from 'models/Errors';
-import { ControlEnum } from 'enums/ControlEnum';
+import html2canvas from 'html2canvas';
+
 import IControl from 'interfaces/IControl';
 import IProject, { IBackgroundColor, IProjectData, IProjectVersion } from 'interfaces/IProject';
 import { whiteColor } from 'assets/jss/material-dashboard-react';
+import { ControlEnum } from 'enums/ControlEnum';
 import { Mode } from 'enums/ModeEnum';
+import ProjectEnum from 'enums/ProjectEnum';
+import { DeviceEnum } from 'enums/DeviceEnum';
+import AnimationEnum, { AnimationDirectionEnum } from 'enums/AnimationEnum';
+import ScreenSwitcherEnum from 'enums/ScreenSwitcherEnum';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import { Errors } from 'models/Errors';
 import PluginStore from 'models/PluginStore';
 import ProjectStore from 'models/Project/ProjectStore';
-import ProjectEnum from 'enums/ProjectEnum';
 import CreateControl from 'models/Control/ControlStores';
 import ProjectsStore from 'models/Project/ProjectsStore';
-import { DeviceEnum } from '../enums/DeviceEnum';
 import ControlStore from './Control/ControlStore';
-import EditorDictionary from '../views/Editor/store/EditorDictionary';
-import html2canvas from 'html2canvas';
-import AnimationEnum, { AnimationDirectionEnum } from '../enums/AnimationEnum';
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import { FIRST_CONTAINER, SECOND_CONTAINER } from './Constants';
-import ScreenSwitcherEnum from 'enums/ScreenSwitcherEnum';
-import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
-import { Users } from './User/UsersStore';
 
 export const getSwitcherParams = (list: (string | number)[], screenSwitcher: ScreenSwitcherEnum) => {
   if (Number(list[0]) === screenSwitcher) {

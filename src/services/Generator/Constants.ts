@@ -21,6 +21,7 @@ export const SVG_URI_COMP = 'SvgUri';
 export const STYLE_SHEET = 'StyleSheet';
 export const SCREENS_FOLDER = 'screens';
 export const ASSETS_FOLDER = 'assets';
+export const STYLES_FOLDER = 'styles';
 export const SVG_FOLDER = 'svg';
 export const MODELS_FOLDER = 'models';
 export const PROPERTY_MODEL = 'Property';

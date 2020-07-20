@@ -2,8 +2,10 @@ import React from 'react';
 import ITransitStyle from './ITransitSyle';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
+import { ControlEnum } from '../enums/ControlEnum';
 
 interface IStoreContent {
+  type: ControlEnum;
   path: string[];
   id: string;
   screenId: string;
@@ -22,7 +24,7 @@ interface IStoreContent {
   hasAction: boolean;
   add(child: IStoreContent): void;
   toJSON: { [key: string]: any };
-  toString(component: React.FC): string;
+  toString(nameSpace: string): string;
 }
 
 export default IStoreContent;

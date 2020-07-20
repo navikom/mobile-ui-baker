@@ -3,29 +3,28 @@ import { action, observable, runInAction, when } from 'mobx';
 import IMobileUIView from 'interfaces/IMobileUIView';
 import IControl from 'interfaces/IControl';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
+import ITransitStyle from 'interfaces/ITransitSyle';
+import ICSSProperty from 'interfaces/ICSSProperty';
+import IGenerateService from 'interfaces/IGenerateService';
+import IStoreContent from 'interfaces/IStoreContent';
 import GenerateComponent from './GenerateComponent';
 import { uniqueNameDefinition } from 'utils/string';
 import {
   APP_ROOT,
   ASSETS_FOLDER,
-  COMPONENTS_FOLDER,
   NAVIGATE_TO,
   SCREENS_FOLDER,
-  SRC_FOLDER,
+  SRC_FOLDER, STYLES_FOLDER,
   SVG_FOLDER,
 } from '../Constants';
-import IStoreContent from 'interfaces/IStoreContent';
 import StoreContent from '../StoreContent';
-import ITransitStyle from 'interfaces/ITransitSyle';
 import GradientParser, { correctGradients } from 'utils/parseGradient';
 import { reactNativeImage } from './ReactNativeStyleDictionary';
-import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import ZipGenerator from './ZipGenerator';
-import ICSSProperty from 'interfaces/ICSSProperty';
-import IGenerateService from 'interfaces/IGenerateService';
-import { TextMetaEnum } from 'enums/TextMetaEnum';
 import TransitStyle from '../TransitStyle';
-import { ControlEnum } from '../../../enums/ControlEnum';
+import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
+import { TextMetaEnum } from 'enums/TextMetaEnum';
+import { ControlEnum } from 'enums/ControlEnum';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
@@ -262,12 +261,16 @@ class GenerateService implements IGenerateService {
           }
         });
 
+        const keys = Array.from(control.cssStyles.keys());
+        const classes = control.classes.filter(clazz => keys.includes(clazz));
+
         const store =
           new StoreContent(
+            control.type,
             control.id as string,
             screen.id as string,
             control.path as string[],
-            control.classes,
+            classes,
             control.hashChildrenWithStyle as string,
             [index],
             control.title,
@@ -392,12 +395,12 @@ class GenerateService implements IGenerateService {
         cmp.controls.forEach((control) => {
           const title = this.approveNameSpace('Screen' + control.title.replace(/\s/g, ''));
           cmp.styles.delete(control.hashChildrenWithStyle as string);
-          this.zipGenerator.screen2zip(cmp, title);
+          this.zipGenerator.screen2zip(title);
           this.zipGenerator.initState2zip(`${SRC_FOLDER}/${SCREENS_FOLDER}/${title}`, this.getScreenStore(control.id));
           this.screenNames.push({ id: control.id, title });
         });
       }
-      this.zipGenerator.component2zip(cmp, COMPONENTS_FOLDER, cmp.nameSpace);
+      this.zipGenerator.componentStyle2zip(cmp, `${ASSETS_FOLDER}/${STYLES_FOLDER}`);
     });
     this.zipGenerator.generateRest();
 

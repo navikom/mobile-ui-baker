@@ -100,15 +100,16 @@ export const valueModifier = (rule: { [key: string]: string | number }) => {
     && (rule.unit === 'px' || rule.value.toString().includes('px'))) {
     let value = rule.value.toString();
     if (value.includes('px')) {
-
-
       const matches = rule.value.toString().match(/\d+px/g);
       const arr = [rule.value.toString()];
       (matches || []).forEach(substr => {
-        const substrings = arr.pop()!.split(substr);
+        const part = arr.pop();
+        const [first, ...rest] = part!.split(substr);
+        const substrings = [first, rest.join(substr)];
         const val = Number(substr.replace('px', ''));
         const newSubstr = `${Math.round(val * 1.3)}px`;
         arr.push(substrings[0], newSubstr, substrings[1]);
+
       });
       value = arr.join('');
     } else if (rule.unit === 'px') {

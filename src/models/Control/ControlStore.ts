@@ -671,7 +671,6 @@ class ControlStore extends Movable implements IControl {
     if(json.classes) {
       const keys = Array.from(control.cssStyles.keys());
       const classes = json.classes.filter(clazz => keys.includes(clazz));
-
       control.classes.replace(classes);
     }
     if (control.cssStyles.size > 1 && !isMenu) {
