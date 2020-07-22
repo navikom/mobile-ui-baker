@@ -78,24 +78,67 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: '3em',
     boxOrient: 'vertical',
     lineClamp: 2
+  },
+  'img': {
+    animation: '$Img 27s ease-in-out infinite',
+  },
+  img1: {
+    animationDelay: '-3s'
+  },
+  img2: {
+    animationDelay: '-6s'
+  },
+  img3: {
+    animationDelay: '-9s'
+  },
+  img4: {
+    animationDelay: '-12s'
+  },
+  img5: {
+    animationDelay: '-15s'
+  },
+  img6: {
+    animationDelay: '-18s'
+  },
+  img7: {
+    animationDelay: '-21s'
+  },
+  img8: {
+    animationDelay: '-24s'
+  },
+  img9: {
+    animationDelay: '-27s'
+  },
+  '@keyframes Img': {
+    '0%': {
+      opacity: 0,
+    },
+    '8%, 11%': {
+      opacity: 1,
+    },
+    '19%, 100%': {
+      opacity: 0,
+    }
   }
 }));
 
 interface ProjectCardProps {
   id: number;
   title: string;
-  img: string;
+  img: string[];
   route: string;
   author: string;
   description: string;
+  index: number;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = (
-  { id, title, img, route, author, description }) => {
+  { id, title, img, route, author, description, index }) => {
   const classes = useStyles();
   const descriptionClasses = classNames({
     [classes.description]: true
-  })
+  });
+  console.log(111111, img.length);
   return (
     <Card className={classes.root}>
       <div className={classes.details}>
@@ -117,12 +160,21 @@ const ProjectCard: React.FC<ProjectCardProps> = (
             color="primary"
             variant="outlined"
           >
-            Open in editor
+            {Dictionary.defValue(index ? DictionaryService.keys.openInViewer : DictionaryService.keys.openInEditor)}
           </Button>
         </div>
       </div>
       <div className={classes.device}>
-        <img src={img} className={classes.image} alt={title} />
+        {
+          img.map((src, i) => {
+            console.log(`img${i}`);
+            return <img
+              key={i.toString()}
+              src={src}
+              className={i === 0 ? classes.image : classNames(classes.image, classes.img, classes[`img${i}` as 'img1'])}
+              alt={title} />
+          })
+        }
         <img
           className={classes.cover}
           src={nexus_6_outer}
@@ -141,7 +193,7 @@ const ContextComponent: React.FC = () => {
     {
       id: 0,
       title: Dictionary.defValue(DictionaryService.keys.newApp),
-      img: EmptyProjectImg,
+      img: [EmptyProjectImg],
       description: Dictionary.defValue(DictionaryService.keys.startFromWhitePage),
       author: Dictionary.defValue(DictionaryService.keys.muiditorTeam),
       route: ROUTE_EDITOR
@@ -168,8 +220,9 @@ const ContextComponent: React.FC = () => {
             description={tile.description || ''}
             author={tile.author as string}
             id={tile.id}
+            index={i}
             title={tile.title}
-            img={tile.img as string}
+            img={tile.img as string[]}
             route={tile.route} />
         ))}
       </div>

@@ -128,6 +128,10 @@ class Paddle extends HttpBase {
   setPlan(subscriptionId: number, planId: number) {
     return this.fetchData('post', `subscription/${subscriptionId}/plan/${planId}`);
   }
+
+  checkout(projectId: number) {
+    return this.fetchData('post', `checkout/project/${projectId}`);
+  }
 }
 
 class Plugin extends HttpBase {
@@ -159,6 +163,10 @@ export class Project extends HttpBase {
 
   access(projectId: number, access: AccessEnum) {
     return this.fetchData('post', `${projectId}/access/${access}`);
+  }
+
+  fullDataForViewer(id: number) {
+    return this.fetchData("get", `${id}/viewer`);
   }
 }
 

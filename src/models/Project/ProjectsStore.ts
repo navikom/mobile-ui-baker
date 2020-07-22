@@ -5,7 +5,7 @@ import ProjectStore from "models/Project/ProjectStore";
 import { api, Apis } from "api";
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { Project } from "api/MainApi/Api";
-import { ROUTE_EDITOR } from "models/Constants";
+import { ROUTE_EDITOR, ROUTE_SCREENS } from 'models/Constants';
 import { App } from "models/App";
 import AccessEnum from '../../enums/AccessEnum';
 
@@ -35,9 +35,9 @@ export default class ProjectsStore extends Pagination<IProject> {
       id: project.projectId,
       title: project.title,
       description: project.description,
-      img: project.preview,
+      img: project.previews,
       author: project.owner ? Dictionary.defValue(DictionaryService.keys.muiditorTeam) : App.user!.fullName,
-      route: ROUTE_EDITOR + "/" + project.projectId}));
+      route: ROUTE_SCREENS + "/" + project.projectId}));
   }
 
   constructor(apiMethod: ApiMethodTypes, size: number, requestMethod: RequestMethodTypes) {
@@ -68,8 +68,8 @@ export default class ProjectsStore extends Pagination<IProject> {
     return this.items.some((e) => id === e.projectId);
   }
 
-  static async fetchFullData(projectId: number) {
-    const data = await api(Apis.Main).project.fullData(projectId);
+  static async fetchFullData(projectId: number, viewer?: boolean) {
+    const data = await api(Apis.Main).project[viewer ? 'fullDataForViewer' : 'fullData'](projectId);
     const project = this.getOrCreate(data).update(data).updateVersions(data.versions);
     return project;
   }

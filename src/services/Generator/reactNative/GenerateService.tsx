@@ -28,6 +28,12 @@ import { ControlEnum } from 'enums/ControlEnum';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
+const propToTransitScroll = (transitStyle: ITransitStyle, prop?: ObjectType | ICSSProperty) => {
+  if (prop && prop.enabled) {
+    transitStyle.scroll!.contentContainerStyle[prop.key as 'alignItems'] = prop.value!.toString();
+  }
+}
+
 class GenerateService implements IGenerateService {
   store: IMobileUIView;
   components: Map<string, IGenerateComponent> = new Map<string, IGenerateComponent>();
@@ -117,22 +123,14 @@ class GenerateService implements IGenerateService {
       if ((overflow && overflow.enabled && overflow.value !== 'hidden') ||
         (overflowY && overflowY.enabled && overflowY.value !== 'hidden')) {
         transitStyle.scroll = { horizontal: false, contentContainerStyle: {} };
-        if (alignItems && alignItems.enabled) {
-          transitStyle.scroll.contentContainerStyle.alignItems = alignItems.value as string;
-        }
-        if (justifyContent && justifyContent.enabled) {
-          transitStyle.scroll.contentContainerStyle.justifyContent = justifyContent.value as string;
-        }
+        propToTransitScroll(transitStyle, alignItems);
+        propToTransitScroll(transitStyle, justifyContent);
       }
 
       if (overflowX && overflowX.enabled && overflowX.value !== 'hidden') {
         transitStyle.scroll = { horizontal: true, contentContainerStyle: {} };
-        if (alignItems && alignItems.enabled) {
-          transitStyle.scroll.contentContainerStyle.alignItems = alignItems.value as string;
-        }
-        if (justifyContent && justifyContent.enabled) {
-          transitStyle.scroll.contentContainerStyle.justifyContent = justifyContent.value as string;
-        }
+        propToTransitScroll(transitStyle, alignItems);
+        propToTransitScroll(transitStyle, justifyContent);
       }
 
       if (background && background.enabled) {

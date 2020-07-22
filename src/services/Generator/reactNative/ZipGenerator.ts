@@ -124,7 +124,7 @@ class ZipGenerator {
   }
 
   componentStyle2zip(cmp: IGenerateComponent, folder: string) {
-    let content = cmp.stylesString();
+    const content = cmp.stylesString();
 
     this.zip.file(`${SRC_FOLDER}/${folder}/style${cmp.nameSpace}.js`, content);
   }

@@ -109,8 +109,8 @@ class DisplayViewStore extends Errors {
   };
 
   @action
-  async fetchProjectData(projectId: number) {
-    const project = await ProjectsStore.fetchFullData(projectId);
+  async fetchProjectData(projectId: number, viewer?: boolean) {
+    const project = await ProjectsStore.fetchFullData(projectId, viewer);
     project.version && project.version.data && ((project.version.data as IProjectData).projectId = projectId);
     runInAction(() => {
       this.project = project;
@@ -140,7 +140,7 @@ class DisplayViewStore extends Errors {
     this.ios = data.ios;
     this.portrait = data.portrait;
     data.navigation && (this.navigation = data.navigation);
-    this.project.update({ title: data.title } as IProject);
+    // this.project.update({ title: data.title } as IProject);
     data.projectId !== undefined && data.projectId !== 0 && this.project.setId(data.projectId);
     data.versionId !== undefined && data.versionId !== 0 && this.project.version.update({versionId: data.versionId} as IProjectVersion);
     if(data.screensMetaMap) {

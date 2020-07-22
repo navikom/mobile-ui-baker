@@ -219,23 +219,30 @@ const ProjectDataComponent: React.FC<ProjectDataProps> = (
           />
         </Grid>
       </Grid>
-      <Grid container item direction="row" className={classes.container}>
-        <Typography variant="subtitle2" className={centerNote}>
-          {Dictionary.defValue(DictionaryService.keys.price)}:
-        </Typography>
-        <CustomInput
-          error={store.errors && store.errors.price !== undefined}
-          helperText={store.errors && store.errors.price}
-          formControlProps={{
-            margin: 'none'
-          }}
-          type="number"
-          inputProps={{
-            onChange: ({ ...e }) => store.onInput('price')(e.target.value),
-            value: (store.project.price || ''),
-          }}
-        />
-      </Grid>
+      {
+        App.isAdmin && (
+          <Grid container item direction="row" className={classes.container}>
+            <Typography variant="subtitle2" className={centerNote}>
+              {Dictionary.defValue(DictionaryService.keys.price)}:
+            </Typography>
+            <CustomInput
+              error={store.errors && store.errors.price !== undefined}
+              helperText={store.errors && store.errors.price}
+              formControlProps={{
+                margin: 'none'
+              }}
+              type="number"
+              inputProps={{
+                onChange: ({ ...e }) => {
+                  const value = e.target.value;
+                  store.onInput('price')(value)
+                },
+                value: (store.project.price || 0),
+              }}
+            />
+          </Grid>
+        )
+      }
       {
         store.files && (
           <Grid container justify="center">

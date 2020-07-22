@@ -94,41 +94,53 @@ const useStyles = makeStyles(theme => ({
   '@keyframes Pointer': {
     '0%': {
       left: 345,
+      opacity: 0,
     },
     '10%': {
-      left: 345
+      left: 345,
+      opacity: 0
     },
     '20%': {
-      left: 146
+      left: 146,
+      opacity: 1
     },
     '80%': {
-      left: 146
+      left: 146,
+      opacity: 1
     },
     '90%': {
       left: 345,
+      opacity: 0
     },
     '100%': {
       left: 345,
+      opacity: 0
     },
   },
   '@keyframes Pointer-small': {
     '0%': {
       left: 162,
+      opacity: 0
     },
     '10%': {
-      left: 162
+      left: 162,
+      opacity: 0
     },
     '20%': {
-      left: 69
+      left: 69,
+      opacity: 1
     },
     '80%': {
-      left: 69
+      left: 69,
+      opacity: 1
     },
     '90%': {
       left: 162,
+      opacity: 0
     },
     '100%': {
       left: 162,
+      opacity: 0
     },
   },
   '@keyframes Button-loop': {

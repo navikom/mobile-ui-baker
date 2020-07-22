@@ -2,7 +2,7 @@ import { observable, runInAction } from 'mobx';
 import { Errors } from 'models/Errors';
 import { App } from 'models/App';
 import { ERROR_USER_DID_NOT_LOGIN, MODE_DEVELOPMENT, SUBSCRIPTION_PADDLE_STATUS_DELETED } from 'models/Constants';
-import { ICheckoutParams, IPaddle } from 'types/global-window';
+import { ICallback, ICheckoutParams, IPaddle } from 'types/global-window';
 import { ErrorHandler } from 'utils/ErrorHandler';
 import { api, Apis } from 'api';
 import { Users } from './User/UsersStore';
@@ -81,7 +81,18 @@ class PaddleCheckoutStore extends Errors {
     } catch (e) {
       process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Update plan error %s', e.message);
     }
+  }
 
+  async checkout(projectId: number, success: (payload: ICallback) => void, error: (payload: ICallback) => void) {
+    if (!App.loggedIn) {
+      throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
+    }
+    const data = await api(Apis.Main).paddle.checkout(projectId);
+    this.paddle.Checkout.open({
+      override: data.url,
+      successCallback: success,
+      errorCallback: error
+    });
   }
 }
 

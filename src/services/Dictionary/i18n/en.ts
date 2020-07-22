@@ -1,4 +1,6 @@
 import { ERROR_USER_DID_NOT_LOGIN } from 'models/Constants';
+import Button from '@material-ui/core/Button';
+import React from 'react';
 
 export default {
   'auth:wrong-password': 'The password is invalid.',
@@ -628,5 +630,35 @@ export default {
   renameTheProject: 'rename the project if you want',
   initReactNativeInside: 'init react-native inside the current project with the preferred project name',
   moveFoldersAndFile: `move folders "ios", "android" and file "app.json" to route of the project`,
-  deleteTheObsoleteFolder: 'delete the obsolete folder'
+  deleteTheObsoleteFolder: 'delete the obsolete folder',
+  openInEditor: 'Open in editor',
+  openInViewer: 'Open in viewer',
+  buy: 'Buy',
+  agreementTitle: `Terms of buying`,
+  agreement1: `What you're buying:`,
+  agreement11: 'the license on the project item that can be used by you or one client, in a single end product which end users are not charged for;',
+  agreement12: `when you buy an item, you acquire the right to use that item; you're not actually acquiring the item itself;`,
+  agreement2: 'When you buy an FacetsUI item you’re doing so on the following terms:',
+  agreement21: `you cannot cancel a completed purchase of an item;`,
+  agreement22: `we and the authors do not promise that any particular item will continue to be available on FacetsUI so you should download or save the item as soon as you buy it;`,
+  agreement23: `once you buy or download an item and the item has been paid for, you acquire a non-exclusive license to use the item under the terms set out in the license (non-exclusive means others might also license the same item);`,
+  agreement24: 'the author retains ownership of the item;',
+  agreement3: 'Warranties we make:',
+  agreement31: 'We warrant that the FacetsUI will be suitable for the purposes described on the sites, and that we will provide our platform services with reasonable skill and care.',
+  agreement32: 'We otherwise do not make any express or implied warranties about the FacetsUI (or any items on the FacetsUI).',
+  agreement4: 'Warranties authors make:',
+  agreement41: `the item is of acceptable quality and fit for the purpose for which it is 'sold';`,
+  agreement42: 'the item matches the description given by the author on the item preview page, as well as any item preview;',
+  agreement421: 'the generated React Native application layouts can have differences from the FacetsUI editor or viewer layouts;',
+  agreement43: 'they will honour any express warranties given to you that are not contained in these terms;',
+  agreement44: 'they have the rights necessary to license that item on the terms of applicable license;',
+  agreement45: 'your use of that item in accordance with the terms of the applicable license does not infringe the intellectual property rights of someone else;',
+  agreement46: 'the item and its description are not false, inaccurate, misleading, fraudulent, unlawful or defamatory;',
+  agreement47: 'the item and its description do not violate any applicable law or regulation (including those governing export control, consumer protection, unfair competition, criminal law, pornography, anti-discrimination, trade practices or fair trading);',
+  agreement48: 'the item does not contain viruses or other computer codes, files or programs which are designed to limit or destroy the functionality of other computer software or hardware;',
+  agreement5: 'Taxes',
+  agreement51: `Australian GST, European VAT and US Sales Tax. Prices and fees for supplies made to you in connection with these terms exclude Australian GST, European VAT and US Sales Tax, unless stated otherwise on our site. If a supply is made to you under or in connection with these terms on which Australian GST, European VAT or US Sales Tax is imposed, any applicable fee that is charged for that supply is increased by, and you must also pay, an amount equal to the GST, VAT or US Sales Tax payable on that supply.`,
+  agreement52: `Other taxes. Prices, fees and charges are otherwise inclusive of other applicable taxes unless stated otherwise on our site. You are responsible for paying all such taxes and imposts associated with your use of FacetsUI wherever levied. Your responsibility includes withholding tax if it applies, unless we already process that withholding tax. We may collect geographical location information to determine your location, which may be used for tax purposes (so location information you give us must be accurate for tax residency purposes).`,
+  weThankYouForPurchasing: 'We thank you for purchasing a project "$"!',
+  weAreSorryButYourCurrent: 'We are sorry, but your current payment method could not be processed. Please contact your financial institution and [Try again] or [Try a different payment method]'
 };

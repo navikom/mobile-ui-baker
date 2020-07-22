@@ -9,14 +9,14 @@ import { createStyles, Theme } from '@material-ui/core';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     hover: {
-      "&:hover": {
-        cursor: "pointer",
+      '&:hover': {
+        cursor: 'pointer',
       },
     }
   })
 );
 
-const ElementComponent: React.FC<ControlProps & {locked?: boolean}> =
+const ElementComponent: React.FC<ControlProps & { locked?: boolean }> =
   observer(
     (
       {
@@ -29,8 +29,10 @@ const ElementComponent: React.FC<ControlProps & {locked?: boolean}> =
       const backgroundColor = styles.backgroundColor;
 
       let placeholder;
-      if (control.type === ControlEnum.Text) {
+      let Tag = 'div';
+      if (control.type === ControlEnum.Text && !control.hasImage) {
         placeholder = title;
+        Tag = 'span';
       }
 
       const lock = locked || lockedChildren;
@@ -39,33 +41,29 @@ const ElementComponent: React.FC<ControlProps & {locked?: boolean}> =
         [classes.hover]: control.actions.length > 0,
       });
 
-      return (
-        <div
-          id={`capture_${control.id}`}
-          data-testid="control"
-          onClick={(e) => {
-            if(locked) {
-              return;
-            }
-            control.applyActions(setCurrentScreen);
-            e.stopPropagation();
-          }}
-          style={{
-            ...styles, backgroundColor
-          }}
-          className={controlClass}
-        >
-          {placeholder !== undefined && <div style={{ position: 'relative', height: '100%' }}>{placeholder}</div>}
-          {children && children.map((child, i) =>
-            <ElementComponent
-              key={child.id}
-              setCurrentScreen={setCurrentScreen}
-              control={child}
-              locked={lock}
-            />
-          )}
-        </div>
-      )
-    });
+      const elementChildren = children.length ? children.map((child, i) =>
+        <ElementComponent
+          key={child.id}
+          setCurrentScreen={setCurrentScreen}
+          control={child}
+          locked={lock}
+        />
+      ) : placeholder !== undefined ? [placeholder] : [];
+
+      return React.createElement(Tag, {
+        id: `capture_${control.id}`,
+        'data-testid': 'control',
+        onClick: (e: MouseEvent) => {
+          if (locked) {
+            return;
+          }
+          control.applyActions(setCurrentScreen);
+          e.stopPropagation();
+        },
+        style: { ...styles, backgroundColor },
+        className: controlClass
+      }, elementChildren);
+    }
+  );
 
 export default ElementComponent;
