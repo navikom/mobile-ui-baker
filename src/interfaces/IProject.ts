@@ -58,6 +58,7 @@ export default interface IProject extends WithPrimaryKey {
   buyers: IUser[];
   images?: IImage[];
   isBuyer?: boolean;
+  fullDataFetched: boolean;
   version: IProjectVersion;
   hasPreview?: boolean;
   preview?: string;
@@ -70,4 +71,5 @@ export default interface IProject extends WithPrimaryKey {
   update(data: IProject): IProject;
   updateVersions(versions: IProjectVersion[]): IProject;
   setId(id: number): IProject;
+  setFullDataFetched(): void;
 }

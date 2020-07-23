@@ -1,13 +1,13 @@
-import { action, computed } from "mobx";
-import { ApiMethodTypes, Pagination, RequestMethodTypes } from "models/Pagination";
-import IProject, { IProjectJSON } from "interfaces/IProject";
-import ProjectStore from "models/Project/ProjectStore";
-import { api, Apis } from "api";
+import { action, computed } from 'mobx';
+import { ApiMethodTypes, Pagination, RequestMethodTypes } from 'models/Pagination';
+import IProject, { IProjectJSON } from 'interfaces/IProject';
+import ProjectStore from 'models/Project/ProjectStore';
+import { api, Apis } from 'api';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
-import { Project } from "api/MainApi/Api";
-import { ROUTE_EDITOR, ROUTE_SCREENS } from 'models/Constants';
-import { App } from "models/App";
-import AccessEnum from '../../enums/AccessEnum';
+import { Project } from 'api/MainApi/Api';
+import { ROUTE_SCREENS } from 'models/Constants';
+import { App } from 'models/App';
+import AccessEnum from 'enums/AccessEnum';
 
 export const Access = {
   [AccessEnum.OWNER]: 'owner',
@@ -36,12 +36,14 @@ export default class ProjectsStore extends Pagination<IProject> {
       title: project.title,
       description: project.description,
       img: project.previews,
+      price: project.price,
       author: project.owner ? Dictionary.defValue(DictionaryService.keys.muiditorTeam) : App.user!.fullName,
-      route: ROUTE_SCREENS + "/" + project.projectId}));
+      route: ROUTE_SCREENS + '/' + project.projectId
+    }));
   }
 
   constructor(apiMethod: ApiMethodTypes, size: number, requestMethod: RequestMethodTypes) {
-    super("projectId", apiMethod, size, requestMethod);
+    super('projectId', apiMethod, size, requestMethod);
   }
 
   @action push(data: IProject[]) {
@@ -53,7 +55,8 @@ export default class ProjectsStore extends Pagination<IProject> {
     }
   }
 
-  @action async delete(project: IProject) {
+  @action
+  async delete(project: IProject) {
     await ProjectsStore.delete(project);
     this.items.splice(this.items.indexOf(project), 1);
   }
@@ -69,21 +72,34 @@ export default class ProjectsStore extends Pagination<IProject> {
   }
 
   static async fetchFullData(projectId: number, viewer?: boolean) {
+    let project;
+    if (this.has(projectId)) {
+      project = this.getById(projectId) as IProject;
+      if (project.fullDataFetched) {
+        return project;
+      }
+    }
     const data = await api(Apis.Main).project[viewer ? 'fullDataForViewer' : 'fullData'](projectId);
-    const project = this.getOrCreate(data).update(data).updateVersions(data.versions);
+    if (project) {
+      project.update(data).updateVersions(data.versions);
+    } else {
+      project = this.getOrCreate(data).update(data).updateVersions(data.versions);
+    }
+    project.setFullDataFetched();
+
     return project;
   }
 
   static async setAccess(project: IProject, access: AccessEnum) {
     await api(Apis.Main).project.access(project.projectId, access);
-    project.update({access} as IProject);
+    project.update({ access } as IProject);
   }
 
   static async save(project: IProject, files?: any) {
-    const method: ApiMethodTypes = ["control", "component", "project"][project.type] as ApiMethodTypes;
+    const method: ApiMethodTypes = ['control', 'component', 'project'][project.type] as ApiMethodTypes;
     if (!project.projectId) {
       let data;
-      if(files) {
+      if (files) {
         data = await this.addWithImages(project.JSON, method, files);
       } else {
         data = await api(Apis.Main)[method].add(project.JSON);
@@ -91,7 +107,7 @@ export default class ProjectsStore extends Pagination<IProject> {
       project.update(data).updateVersions(data.versions).setId(data.projectId);
     } else {
       let data;
-      if(files) {
+      if (files) {
         project.images &&
         project.images.forEach(
           async (image) => await (api(Apis.Main)[method] as Project).deleteImage(project.projectId, image.imageId)
@@ -106,12 +122,12 @@ export default class ProjectsStore extends Pagination<IProject> {
 
   static fillFormData(project: IProjectJSON, files?: any) {
     const formData = new FormData();
-    project.description && formData.append("description", project.description);
-    project.title && formData.append("title", project.title);
-    (project.price !== undefined && project.price !== null) && formData.append("price", project.price.toString());
-    !!project.data && formData.append("data", JSON.stringify(project.data));
-    formData.append("versionId", project.versionId.toString());
-    files && files.forEach((file: any, key: number) => formData.append("file", file));
+    project.description && formData.append('description', project.description);
+    project.title && formData.append('title', project.title);
+    (project.price !== undefined && project.price !== null) && formData.append('price', project.price.toString());
+    !!project.data && formData.append('data', JSON.stringify(project.data));
+    formData.append('versionId', project.versionId.toString());
+    files && files.forEach((file: any, key: number) => formData.append('file', file));
     return formData;
   }
 
@@ -124,18 +140,18 @@ export default class ProjectsStore extends Pagination<IProject> {
   }
 
   static async saveWithImages(project: IProject, files: any) {
-    const method: ApiMethodTypes = ["control", "component", "project"][project.type] as ApiMethodTypes;
+    const method: ApiMethodTypes = ['control', 'component', 'project'][project.type] as ApiMethodTypes;
     const formData = new FormData();
-    project.description && formData.append("description", project.description);
-    project.title && formData.append("title", project.title);
-    (project.price !== undefined && project.price !== null) && formData.append("price", project.price.toString());
-    (files || []).forEach((file: any, key: number) => formData.append("file", file));
+    project.description && formData.append('description', project.description);
+    project.title && formData.append('title', project.title);
+    (project.price !== undefined && project.price !== null) && formData.append('price', project.price.toString());
+    (files || []).forEach((file: any, key: number) => formData.append('file', file));
     const data = await api(Apis.Main)[method].update(project.projectId, formData);
     project.update(data);
   }
 
   static async delete(project: IProject) {
-    const method: ApiMethodTypes = ["control", "component", "project"][project.type] as ApiMethodTypes;
+    const method: ApiMethodTypes = ['control', 'component', 'project'][project.type] as ApiMethodTypes;
     await api(Apis.Main)[method].delete(project.projectId);
     this.items.splice(this.items.indexOf(project), 1);
   }

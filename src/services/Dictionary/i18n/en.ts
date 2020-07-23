@@ -1,6 +1,4 @@
 import { ERROR_USER_DID_NOT_LOGIN } from 'models/Constants';
-import Button from '@material-ui/core/Button';
-import React from 'react';
 
 export default {
   'auth:wrong-password': 'The password is invalid.',
@@ -660,5 +658,6 @@ export default {
   agreement51: `Australian GST, European VAT and US Sales Tax. Prices and fees for supplies made to you in connection with these terms exclude Australian GST, European VAT and US Sales Tax, unless stated otherwise on our site. If a supply is made to you under or in connection with these terms on which Australian GST, European VAT or US Sales Tax is imposed, any applicable fee that is charged for that supply is increased by, and you must also pay, an amount equal to the GST, VAT or US Sales Tax payable on that supply.`,
   agreement52: `Other taxes. Prices, fees and charges are otherwise inclusive of other applicable taxes unless stated otherwise on our site. You are responsible for paying all such taxes and imposts associated with your use of FacetsUI wherever levied. Your responsibility includes withholding tax if it applies, unless we already process that withholding tax. We may collect geographical location information to determine your location, which may be used for tax purposes (so location information you give us must be accurate for tax residency purposes).`,
   weThankYouForPurchasing: 'We thank you for purchasing a project "$"!',
-  weAreSorryButYourCurrent: 'We are sorry, but your current payment method could not be processed. Please contact your financial institution and [Try again] or [Try a different payment method]'
+  weAreSorryButYourCurrent: 'We are sorry, but your current payment method could not be processed. Please contact your financial institution and [Try again] or [Try a different payment method]',
+  free: 'Free'
 };

@@ -4,7 +4,7 @@ import settings from "config/server";
 
 export abstract class HttpBase {
  url: string;
- debug = true;
+ debug = false;
 
  protected constructor(url: string) {
   this.url = `${settings.mainApi}/${url}`;

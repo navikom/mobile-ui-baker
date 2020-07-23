@@ -17,6 +17,7 @@
     "@types/react-syntax-highlighter": "^11.0.4",
     "chartist": "0.10.1",
     "classnames": "2.2.6",
+    "crypto-js": "^4.0.0",
     "css-to-react-native": "^3.0.0",
     "date-fns": "^2.0.0-beta.5",
     "emoji-mart": "^2.11.2",

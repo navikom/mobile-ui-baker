@@ -494,6 +494,7 @@ class EditorViewStore extends DisplayViewStore {
         process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('LocalStorage json data parse error %s', err.message);
       }
     }
+    this.setSavingProject(false);
   }
 
   @action save() {

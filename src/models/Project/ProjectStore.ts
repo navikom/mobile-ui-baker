@@ -26,6 +26,7 @@ export default class ProjectStore implements IProject {
   type: ProjectEnum;
   updatedAt?: Date;
   userId: number;
+  fullDataFetched: boolean = false;
 
   @computed get version() {
     return this.versions[0];
@@ -113,6 +114,10 @@ export default class ProjectStore implements IProject {
   setId(id: number) {
     this.projectId = id;
     return this;
+  }
+
+  setFullDataFetched() {
+    this.fullDataFetched = true;
   }
 
   static from(model: IProject) {

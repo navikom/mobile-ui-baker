@@ -443,7 +443,8 @@ const ContextComponent: React.FC<ContextComponentProps> = (
       />
       <DialogAlert
         open={store.generatorShowDialog}
-        handleClose={() => {}}
+        handleClose={() => {
+        }}
         title={`${store.dictionary!.defValue(EditorDictionary.keys.generatorWarnings)}`}
         content={store.generatorDialogContent || ''}
         okTitle={store.dictionary!.defValue(EditorDictionary.keys.proceed)}
@@ -478,6 +479,7 @@ function Editor(props: RouteComponentProps) {
       id && store.fetchProjectData(id);
       store.placeSecondContainer();
     });
+
     SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
     SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
     when(() => App.loggedIn, async () => {

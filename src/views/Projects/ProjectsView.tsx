@@ -18,6 +18,7 @@ import { OwnProjects } from 'models/Project/OwnProjectsStore';
 import { ROUTE_EDITOR } from 'models/Constants';
 import EmptyProjectImg from 'assets/img/projects/empty-project.png';
 import nexus_6_outer from 'assets/img/device/nexus_6_outer.png';
+import Chip from '@material-ui/core/Chip';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -130,15 +131,15 @@ interface ProjectCardProps {
   author: string;
   description: string;
   index: number;
+  price: number;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = (
-  { id, title, img, route, author, description, index }) => {
+  { id, title, img, route, author, price, description, index }) => {
   const classes = useStyles();
   const descriptionClasses = classNames({
     [classes.description]: true
   });
-  console.log(111111, img.length);
   return (
     <Card className={classes.root}>
       <div className={classes.details}>
@@ -152,6 +153,12 @@ const ProjectCard: React.FC<ProjectCardProps> = (
           <Typography variant="caption" color="textSecondary">
             {Dictionary.defValue(DictionaryService.keys.author)}: {author}
           </Typography>
+
+          <Chip
+            label={price > 0 ? '$' + (price / 100).toFixed(2) : Dictionary.defValue(DictionaryService.keys.free)}
+            />
+
+
         </CardContent>
         <div className={classes.controls}>
           <Button
@@ -167,7 +174,6 @@ const ProjectCard: React.FC<ProjectCardProps> = (
       <div className={classes.device}>
         {
           img.map((src, i) => {
-            console.log(`img${i}`);
             return <img
               key={i.toString()}
               src={src}
@@ -194,6 +200,7 @@ const ContextComponent: React.FC = () => {
       id: 0,
       title: Dictionary.defValue(DictionaryService.keys.newApp),
       img: [EmptyProjectImg],
+      price: 0,
       description: Dictionary.defValue(DictionaryService.keys.startFromWhitePage),
       author: Dictionary.defValue(DictionaryService.keys.muiditorTeam),
       route: ROUTE_EDITOR
@@ -219,6 +226,7 @@ const ContextComponent: React.FC = () => {
             key={i.toString()}
             description={tile.description || ''}
             author={tile.author as string}
+            price={tile.price}
             id={tile.id}
             index={i}
             title={tile.title}
