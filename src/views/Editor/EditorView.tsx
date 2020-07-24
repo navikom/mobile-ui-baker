@@ -48,8 +48,7 @@ import DialogAlert from 'components/Dialog/DialogAlert';
 import EditorDictionary from './store/EditorDictionary';
 
 import 'views/Editor/Editor.css';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CustomBackdrop from 'components/Backdrop/Backdrop';
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -235,10 +234,6 @@ const editorStyles = makeStyles((theme: Theme) =>
     },
     contentWrapper: {
       marginTop: 65
-    },
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: whiteColor,
     },
   })
 );
@@ -457,9 +452,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
           store.loadingPlugin && <Preview />
         }
       </div>
-      <Backdrop className={classes.backdrop} open={store.savingProject}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <CustomBackdrop open={store.savingProject || store.fetchingProject} />
     </div>
   )
 };
@@ -475,10 +468,13 @@ function Editor(props: RouteComponentProps) {
   const id = match ? Number(match.params.id) : null;
   const [store] = React.useState(new EditorViewStore(props.location.search));
   useEffect(() => {
-    store.checkLocalStorage().then(() => {
-      id && store.fetchProjectData(id);
-      store.placeSecondContainer();
-    });
+    store.setFetchingProject(true);
+    setTimeout(() => {
+      store.checkLocalStorage().then(() => {
+        id && store.fetchProjectData(id);
+        store.placeSecondContainer();
+      });
+    }, 10);
 
     SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
     SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));

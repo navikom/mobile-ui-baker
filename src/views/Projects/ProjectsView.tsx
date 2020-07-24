@@ -15,7 +15,7 @@ import { App } from 'models/App';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { SharedProjects } from 'models/Project/SharedProjectsStore';
 import { OwnProjects } from 'models/Project/OwnProjectsStore';
-import { ROUTE_EDITOR } from 'models/Constants';
+import { MODE_DEVELOPMENT, ROUTE_EDITOR } from 'models/Constants';
 import EmptyProjectImg from 'assets/img/projects/empty-project.png';
 import nexus_6_outer from 'assets/img/device/nexus_6_outer.png';
 import Chip from '@material-ui/core/Chip';
@@ -242,12 +242,13 @@ const Context = observer(ContextComponent);
 
 function ProjectsView() {
   useEffect(() => {
-    SharedProjects.fetchItems().catch(err => console.log('Shared projects error %s', err.message));
+    SharedProjects.fetchItems()
+      .catch(err => process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Shared projects error %s', err.message));
     when(() => App.loggedIn, async () => {
       try {
         await OwnProjects.fetchItems();
       } catch (err) {
-        console.log('Own projects error %s', err.message);
+        process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Own projects error %s', err.message);
       }
     });
 

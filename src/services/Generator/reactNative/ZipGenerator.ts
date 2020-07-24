@@ -175,10 +175,11 @@ class ZipGenerator {
 
     let baseImage = '\n      properties.imageStyle = properties.style.slice() || {};\n';
     baseImage += `      properties.imageStyle.push({position: 'absolute'});`;
+    const fastImage = isText ? '\n' + importFrom('FastImage', 'react-native-fast-image') + ';' : '';
 
     const content = `${IMPORT_REACT};
-${importFrom([TEXT_COMP, VIEW_COMP, isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP].filter(e => !(isText && e === VIEW_COMP)))};
-${importFrom(LINEAR_GRADIENT_COMP, 'react-native-linear-gradient')};
+${importFrom([TEXT_COMP, VIEW_COMP, IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP].filter(e => !(isText && [VIEW_COMP, IMAGE_BACKGROUND_COMP].includes(e))))};
+${importFrom(LINEAR_GRADIENT_COMP, 'react-native-linear-gradient')};${fastImage}
     
 ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}}) {
   let Component = ${isText ? TEXT_COMP : VIEW_COMP};
@@ -210,7 +211,7 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}}) {
       }
       properties.contentContainerStyle = transit.scroll.contentContainerStyle;
     } else {
-      Component = ${isText ? IMAGE_COMP : IMAGE_BACKGROUND_COMP};
+      Component = ${isText ? 'FastImage' : IMAGE_BACKGROUND_COMP};
       Object.assign(${isText ? 'properties' : 'properties.style'}, transit.style || {});
       properties.source = {uri: transit.src};${!isText ? baseImage : ''}
     }
@@ -383,7 +384,10 @@ ${EXPORT_DEFAULT} ${name};`;
     content += '      }\n';
     content += `      if(type === '${RIGHT_DRAWER}') {\n`;
     content += '        const dispatcher = \n';
-    content += '          this.navigation.dangerouslyGetParent().dangerouslyGetParent() || this.navigation.dangerouslyGetParent();\n';
+    content += '          this.navigation.dangerouslyGetParent().dangerouslyGetParent().openDrawer ?\n';
+    content += '            this.navigation.dangerouslyGetParent().dangerouslyGetParent() :\n';
+    content += '            this.navigation.dangerouslyGetParent().openDrawer ?\n';
+    content += '              this.navigation.dangerouslyGetParent() : this.navigation;\n';
     content += '        dispatcher.openDrawer();\n';
     content += '      }\n';
     content += '    } else {\n';
@@ -394,8 +398,16 @@ ${EXPORT_DEFAULT} ${name};`;
     content += '  disableStyle(entry) {\n';
     content += `    const type = ${NAV_COMPONENTS}[entry[1]];\n`;
     content += '    if(type) {\n';
-    content += `      if(['${LEFT_DRAWER}', '${RIGHT_DRAWER}'].includes(type)) {\n`;
+    content += `      if(type === '${LEFT_DRAWER}') {\n`;
     content += '        this.navigation.closeDrawer();\n';
+    content += '      }\n';
+    content += `      if(type === '${RIGHT_DRAWER}') {\n`;
+    content += '        const dispatcher = \n';
+    content += '          this.navigation.dangerouslyGetParent().dangerouslyGetParent().closeDrawer ?\n';
+    content += '            this.navigation.dangerouslyGetParent().dangerouslyGetParent() :\n';
+    content += '            this.navigation.dangerouslyGetParent().closeDrawer ?\n';
+    content += '              this.navigation.dangerouslyGetParent() : this.navigation;\n';
+    content += '        dispatcher.closeDrawer();\n';
     content += '      }\n';
     content += '    } else {\n';
     content += `      this.${PROPERTIES_VARIABLE}[entry[1]] && this.${PROPERTIES_VARIABLE}[entry[1]].removeStyle(entry[2]);\n`;
@@ -444,8 +456,20 @@ ${EXPORT_DEFAULT} ${name};`;
     let stacks = '';
 
     const navDirection = this.getDirection;
-    [...Array.from(this.source.leftDrawer.keys()), ...Array.from(this.source.rightDrawer.keys())].forEach(id => {
+    const generated: string[]= [];
+    let screens: string[];
+    if(this.source.leftDrawer.size > 0 && this.source.rightDrawer.size > 0) {
+      screens = Array.from(this.source.leftDrawer.keys());
+    } else {
+      screens = [...Array.from(this.source.leftDrawer.keys()), ...Array.from(this.source.rightDrawer.keys())];
+    }
+
+    screens.forEach(id => {
       const screen = this.source.screenNames.find(item => item.id === id);
+      if(generated.includes(id)) {
+        return;
+      }
+      generated.push(id);
       if (!screen) {
         return;
       }
@@ -482,6 +506,7 @@ ${EXPORT_DEFAULT} ${name};`;
       singleDrawerNavContent += '  );\n';
       singleDrawerNavContent += '}\n\n';
       if(this.source.leftDrawer.size && this.source.rightDrawer.size) {
+        const outOfLeftDrawer = this.source.rightDrawerScreens[1];
         singleDrawerNavContent += 'function DrawerNavigation() {\n';
         singleDrawerNavContent += '  return (\n';
         singleDrawerNavContent += '    <Drawer.Navigator\n';
@@ -489,6 +514,14 @@ ${EXPORT_DEFAULT} ${name};`;
         singleDrawerNavContent += `      drawerPosition="right"\n`;
         singleDrawerNavContent += `      drawerContent={(props) => <${RIGHT_DRAWER} {...props} />}>\n`;
         singleDrawerNavContent += '      <Drawer.Screen name="LeftDrawer" component={LeftDrawerNavigation} />\n';
+        outOfLeftDrawer.forEach(screen => {
+          const item = this.source.screenNames.find(e => e.id === screen);
+          if(!item) return;
+          singleDrawerNavContent += `      <Drawer.Screen\n`;
+          singleDrawerNavContent += `        name="${item!.title}"\n`;
+          singleDrawerNavContent += `        component={${item!.title}}\n`;
+          singleDrawerNavContent += `        initialParams={{componentId: '${screen}'}} />\n`;
+        });
         singleDrawerNavContent += '    </Drawer.Navigator>\n';
         singleDrawerNavContent += '  )\n';
         singleDrawerNavContent += '}\n\n';

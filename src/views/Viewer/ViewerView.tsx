@@ -32,6 +32,7 @@ import BuyTerms from 'components/Terms/BuyTerms';
 import Snackbar from '../../components/Snackbar/Snackbar';
 import AddAlert from '@material-ui/icons/AddAlert';
 import { Clear } from '@material-ui/icons';
+import CustomBackdrop from '../../components/Backdrop/Backdrop';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -328,7 +329,7 @@ const ContextComponent: React.FC<ContextComponentProps> = ({ store, header }) =>
           </div>
         )
       }
-
+      <CustomBackdrop open={store.fetchingProject} />
     </div>
   )
 };

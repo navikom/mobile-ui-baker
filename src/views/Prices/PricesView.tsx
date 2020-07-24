@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import classNames from 'classnames';
-import { Check, Close, InfoRounded } from '@material-ui/icons';
+import { Check, Close, InfoRounded, Lock } from '@material-ui/icons';
 import Button from '@material-ui/core/Button';
 import { Theme, TableHead, TableBody, withStyles, createStyles, Link } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
@@ -16,14 +16,15 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import { App } from 'models/App';
 import SubscriptionPlans, { achievements, Plan } from 'models/SubscriptionPlans';
-import { ROUTE_BILLING, ROUTE_DOCS_PRO_PLAN } from 'models/Constants';
-import { roseColor, whiteColor } from 'assets/jss/material-dashboard-react';
+import { ROUTE_BILLING, ROUTE_DOCS_PRO_PLAN, ROUTE_LOGIN } from 'models/Constants';
+import { blackOpacity, roseColor, whiteColor } from 'assets/jss/material-dashboard-react';
 import ISubscriptionPlan from 'interfaces/ISubscriptionPlan';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Hidden from '@material-ui/core/Hidden';
+import FontAwesome, { Path } from '../../components/Icons/FontAwesome';
 
 const useStyles = makeStyles((theme: Theme) => ({
   title: {
@@ -67,6 +68,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   link: {
     color: '#00BBFF',
+    display: 'block',
     '&:hover': {
       color: 'rgba(0,187,255,0.7)',
     }
@@ -103,6 +105,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   shiftRight: {
     marginLeft: theme.spacing(3)
+  },
+  checkoutInfoWrapper: {
+    marginTop: 60,
+    color: blackOpacity(.5)
+  },
+  icon: {
+    fontSize: theme.typography.pxToRem(17),
+    marginRight: theme.typography.pxToRem(5)
   }
 }));
 
@@ -127,7 +137,7 @@ interface PlanProps {
   onPlanClick: () => void;
 }
 
-const TableView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
+const TableViewComponent: React.FC<PlanProps> = ({ plans, onPlanClick, currentPlan }) => {
   const classes = useStyles();
   return (
     <Table className={classes.table}>
@@ -159,22 +169,29 @@ const TableView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
                   {Dictionary.value(plan.subtitle)}
                 </Typography>
                 {
-                  plan.price > 0 && (
+                  plan.price > 0 ? (
                     <Link href={ROUTE_DOCS_PRO_PLAN} target="_blank" className={linkClassName}>
                       {Dictionary.defValue(DictionaryService.keys.proPlan)}
                     </Link>
-                  )
+                  ) : (<p style={{color: 'white'}}>.</p>)
                 }
                 <Typography variant="h5" className={classes.price}>${plan.price.toFixed(2)}</Typography>
                 {
-                  plan.price > 0 && (
+                  plan.price > 0 && !App.loggedIn ? (
+                    <Button
+                      onClick={() => App.navigationHistory && App.navigationHistory.push(ROUTE_LOGIN)}
+                      className={buttonClassName}
+                      fullWidth>
+                      {Dictionary.value(DictionaryService.keys.login)}
+                    </Button>
+                  ) : plan.price > 0 ? (
                     <Button
                       onClick={onPlanClick}
                       className={buttonClassName}
                       fullWidth>
                       {Dictionary.value(plan.getStatus(currentPlan.price))}
                     </Button>
-                  )
+                  ) : null
                 }
               </StyledTableCell>
             })
@@ -191,7 +208,7 @@ const TableView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
                   achievement[1] && (
                     <Tooltip placement="top" title={Dictionary.value(achievement[1])} arrow>
                       <IconButton size="small">
-                        <InfoRounded className={classes.info}/>
+                        <InfoRounded className={classes.info} />
                       </IconButton>
                     </Tooltip>
                   )
@@ -224,7 +241,9 @@ const TableView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
   )
 }
 
-const CardView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
+const TableView = observer(TableViewComponent);
+
+const CardViewComponent: React.FC<PlanProps> = ({ plans, onPlanClick, currentPlan }) => {
   const classes = useStyles();
   return (
     <Grid container spacing={1}>
@@ -261,24 +280,31 @@ const CardView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
                         {Dictionary.value(plan.subtitle)}
                       </Typography>
                       {
-                        plan.price > 0 && (
-                          <Link href={ROUTE_DOCS_PRO_PLAN} target="_blank" className={linkClassName}>
+                        plan.price > 0 ? (
+                          <Link href={ROUTE_DOCS_PRO_PLAN} target="_blank" className={linkClassName} align="center">
                             {Dictionary.defValue(DictionaryService.keys.proPlan)}
                           </Link>
-                        )
+                        ) : (<p>{' '}</p>)
                       }
                       <Typography variant="h5" className={priceClasses} align="center">
                         ${plan.price.toFixed(2)}
                       </Typography>
                       {
-                        plan.price > 0 && (
+                        plan.price > 0 && !App.loggedIn ? (
+                          <Button
+                            onClick={() => App.navigationHistory && App.navigationHistory.push(ROUTE_LOGIN)}
+                            className={buttonClassName}
+                            fullWidth>
+                            {Dictionary.value(DictionaryService.keys.login)}
+                          </Button>
+                        ) : plan.price > 0 ? (
                           <Button
                             onClick={onPlanClick}
                             className={buttonClassName}
                             fullWidth>
                             {Dictionary.value(plan.getStatus(currentPlan.price))}
                           </Button>
-                        )
+                        ) : null
                       }
                     </React.Fragment>
 
@@ -295,7 +321,7 @@ const CardView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
                               <IconButton size="small">
                                 <InfoRounded
                                   className={classes.info}
-                                  style={{color: plan.preferred ? 'white' : 'grey'}}/>
+                                  style={{ color: plan.preferred ? 'white' : 'grey' }} />
                               </IconButton>
                             </Tooltip>
                           )
@@ -322,6 +348,8 @@ const CardView: React.FC<PlanProps> = ({plans, onPlanClick, currentPlan}) => {
   )
 }
 
+const CardView = observer(CardViewComponent);
+
 const PricesViewComponent: React.FC = () => {
   const classes = useStyles();
 
@@ -342,7 +370,35 @@ const PricesViewComponent: React.FC = () => {
       <Hidden mdUp>
         <CardView plans={plans} onPlanClick={onPlanClick} currentPlan={currentPlan} />
       </Hidden>
+      <Grid container justify="center" className={classes.checkoutInfoWrapper}>
+        <Grid item xs={12} sm={8} md={8}>
+          <Grid container justify="center">
+            <Lock className={classes.icon} />
+            <Typography variant="body2" component="span">
+              {Dictionary.defValue(DictionaryService.keys.securedPaymentBy)}
+              <Typography variant="body2" style={{ fontWeight: 'bold' }} component="span">
+                {' '}Paddle{' '}
+              </Typography>
+              {Dictionary.defValue(DictionaryService.keys.with)}:
+            </Typography>
+          </Grid>
+          <Grid container justify="center">
+            <FontAwesome icon={Path.VISA} style={{ opacity: .9, padding: 5 }} />
+            <FontAwesome icon={Path.MASTERCARD} style={{ opacity: .9, padding: 5 }} />
+            <FontAwesome icon={Path.PAYPAL} style={{ opacity: .9, padding: 5 }} />
+            <FontAwesome icon={Path.AMEX} style={{ opacity: .9, padding: 5 }} />
+          </Grid>
+          <Grid container justify="center">
+            <Typography variant="body2" align="center" component="span">
+              <Typography variant="body2" style={{ fontWeight: 'bold' }} component="span">
+                {Dictionary.defValue(DictionaryService.keys.info)}:
+              </Typography>
+              {' '}{Dictionary.defValue(DictionaryService.keys.ifYouAreARegisteredCompany)}{' '}
+            </Typography>
+          </Grid>
 
+        </Grid>
+      </Grid>
     </Container>
   )
 };

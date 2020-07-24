@@ -167,7 +167,7 @@ const styles = [
   new CSSProperty('transitionDelay', 0.5, 0.5, CSS_CAT_ANIMATIONS, false, CSS_VALUE_NUMBER)
     .setDescription(['transitionDelayDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition-delay'])
     .setShowWhen(['transition', 'expanded']).setUnits('s', ['s', 'ms']),
-  new CSSProperty('boxShadow', boxShadow.boxShadow, boxShadow.boxShadow, CSS_CAT_BACKGROUND)
+  new CSSProperty('boxShadow', '2px 4px 20px rgba(0,0,0,0.4)', '2px 4px 20px rgba(0,0,0,0.4)', CSS_CAT_BACKGROUND)
     .setDescription(['boxShadow', 'https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow']),
 ];
 

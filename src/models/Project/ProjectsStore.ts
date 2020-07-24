@@ -8,6 +8,8 @@ import { Project } from 'api/MainApi/Api';
 import { ROUTE_SCREENS } from 'models/Constants';
 import { App } from 'models/App';
 import AccessEnum from 'enums/AccessEnum';
+import { decrypt } from '../../utils/crypto';
+import isTests from '../../utils/isTests';
 
 export const Access = {
   [AccessEnum.OWNER]: 'owner',
@@ -79,7 +81,8 @@ export default class ProjectsStore extends Pagination<IProject> {
         return project;
       }
     }
-    const data = await api(Apis.Main).project[viewer ? 'fullDataForViewer' : 'fullData'](projectId);
+    const response = await api(Apis.Main).project[viewer ? 'fullDataForViewer' : 'fullData'](projectId);
+    const data = isTests() ? response : JSON.parse(decrypt(response)) as IProject;
     if (project) {
       project.update(data).updateVersions(data.versions);
     } else {

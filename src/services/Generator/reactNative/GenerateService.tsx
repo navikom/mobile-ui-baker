@@ -70,6 +70,19 @@ class GenerateService implements IGenerateService {
     return [inDrawer, outOfDrawer];
   }
 
+  get rightDrawerScreens() {
+    const inLeftDrawer: string[] = [];
+    const outOfLeftDrawer: string[] = [];
+    this.rightDrawer.forEach(((value, screenId) => {
+      if (this.leftDrawer.has(screenId)) {
+        inLeftDrawer.push(screenId);
+      } else {
+        outOfLeftDrawer.push(screenId);
+      }
+    }));
+    return [inLeftDrawer, outOfLeftDrawer];
+  }
+
   get bareScreens() {
     const keys = [
       ...Array.from(this.leftDrawer.keys()),

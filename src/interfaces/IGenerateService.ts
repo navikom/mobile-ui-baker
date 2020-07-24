@@ -11,6 +11,7 @@ interface IGenerateService {
   components: Map<string, IGenerateComponent>;
   screenNames: { id: string; title: string }[];
   tabScreens: string[][];
+  rightDrawerScreens: string[][];
   leftDrawerWidth: string;
   rightDrawerWidth: string;
   bareScreens: { id: string; title: string }[];

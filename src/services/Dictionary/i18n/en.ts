@@ -393,7 +393,7 @@ export default {
   linkCopied: 'Copied: $',
   securedPaymentBy: 'Secured Payment by',
   with: 'with',
-  ifYouAreARegisteredCompany: 'If you are a Registered Company inside the European Union you will be able to add your VAT ID after your Press',
+  ifYouAreARegisteredCompany: 'If you are a Registered Company you will be able to add your VAT ID',
   info: 'Info',
   account: 'Account',
   fullscreen: 'Fullscreen',

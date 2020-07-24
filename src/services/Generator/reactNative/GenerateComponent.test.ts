@@ -240,13 +240,17 @@ describe('GenerateComponent', () => {
           paddingBottom: Math.round(7 * 1.3),
           paddingLeft: 0,
           marginTop: Math.round(10 * 1.3),
+          shadowOffset: { width: 2, height: 4 },
+          shadowRadius: 20,
+          shadowColor: 'rgba(0,0,0,0.4)',
+          shadowOpacity: 1,
           flexDirection: 'row',
           flexWrap: 'wrap',
           overflow: 'visible'
         }
       })
     ).toBeTruthy();
-    expect(service.transitionErrors.length).toBe(2);
+    expect(service.transitionErrors.length).toBe(1);
   });
 
   it('grid style correct transform to react native', () => {
@@ -391,6 +395,10 @@ describe('GenerateComponent', () => {
           paddingLeft: 0,
           lineHeight: Math.round(10 * 1.3),
           marginTop: Math.round(10 * 1.3),
+          shadowOffset: { width: 2, height: 4 },
+          shadowRadius: 20,
+          shadowColor: 'rgba(0,0,0,0.4)',
+          shadowOpacity: 1,
           color: '#fff',
           textAlign: 'center',
           fontFamily: 'Verdana',
@@ -402,7 +410,7 @@ describe('GenerateComponent', () => {
         }
       })
     ).toBeTruthy();
-    expect(service.transitionErrors.length).toBe(2);
+    expect(service.transitionErrors.length).toBe(1);
 
     expect(generator.stylesString().trim().replace(/\t|\s/g, '') === `import {StyleSheet} from 'react-native';
     
@@ -420,6 +428,10 @@ describe('GenerateComponent', () => {
           "paddingLeft": 0,
           "lineHeight": ${Math.round(10 * 1.3)},
           "marginTop": ${Math.round(10 * 1.3)},
+          "shadowOffset": { "width": 2, "height": 4 },
+          "shadowRadius": 20,
+          "shadowColor": "rgba(0,0,0,0.4)",
+          "shadowOpacity": 1,
           "color": "#fff",
           "textAlign": "center",
           "fontFamily": "Verdana",

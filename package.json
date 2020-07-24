@@ -97,6 +97,7 @@
     "@testing-library/jest-dom": "^5.1.1",
     "@testing-library/react": "^10.0.1",
     "@types/classnames": "^2.2.9",
+    "@types/crypto-js": "^3.1.47",
     "@types/emoji-mart": "^2.11.1",
     "@types/file-saver": "^2.0.1",
     "@types/hash-sum": "^1.0.0",

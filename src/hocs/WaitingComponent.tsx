@@ -1,8 +1,9 @@
 import React, { Suspense } from "react";
+import CustomBackdrop from '../components/Backdrop/Backdrop';
 
 export default function WaitingComponent(Component: any) {
   const Item = (props: any) => (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<CustomBackdrop open={true} />}>
       <Component {...props} />
     </Suspense>
   );

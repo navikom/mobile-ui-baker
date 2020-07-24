@@ -26,7 +26,7 @@ export default class ProjectStore implements IProject {
   type: ProjectEnum;
   updatedAt?: Date;
   userId: number;
-  fullDataFetched: boolean = false;
+  fullDataFetched = false;
 
   @computed get version() {
     return this.versions[0];
