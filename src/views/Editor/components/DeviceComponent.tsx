@@ -14,6 +14,7 @@ export interface DeviceComponentProps {
   background: IBackgroundColor;
   portrait: boolean;
   device?: DeviceEnum;
+  scale?: number;
 }
 
 const DeviceComponent: React.FC<DeviceComponentProps> = ({ children, device, ...rest }) => {

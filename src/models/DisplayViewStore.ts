@@ -1,7 +1,7 @@
-import { action, IObservableArray, observable, runInAction } from 'mobx';
+import { action, computed, IObservableArray, observable, runInAction } from 'mobx';
 import html2canvas from 'html2canvas';
 
-import IControl from 'interfaces/IControl';
+import IControl, { IScreen } from 'interfaces/IControl';
 import IProject, { IBackgroundColor, IProjectData, IProjectVersion } from 'interfaces/IProject';
 import { whiteColor } from 'assets/jss/material-dashboard-react';
 import { ControlEnum } from 'enums/ControlEnum';
@@ -18,7 +18,8 @@ import CreateControl from 'models/Control/ControlStores';
 import ProjectsStore from 'models/Project/ProjectsStore';
 import ControlStore from './Control/ControlStore';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
-import { FIRST_CONTAINER, SECOND_CONTAINER } from './Constants';
+import { ACTION_NAVIGATE_REPLACE, ACTION_NAVIGATE_TO, FIRST_CONTAINER, SECOND_CONTAINER } from './Constants';
+import NavigationItem from './NavigationItem';
 
 export const getSwitcherParams = (list: (string | number)[], screenSwitcher: ScreenSwitcherEnum) => {
   if (Number(list[0]) === screenSwitcher) {
@@ -30,19 +31,30 @@ export const getSwitcherParams = (list: (string | number)[], screenSwitcher: Scr
   return undefined;
 }
 
+const directionReverse = {
+  [AnimationDirectionEnum.TOP]: AnimationDirectionEnum.BOTTOM,
+  [AnimationDirectionEnum.BOTTOM]: AnimationDirectionEnum.TOP,
+  [AnimationDirectionEnum.LEFT]: AnimationDirectionEnum.RIGHT,
+  [AnimationDirectionEnum.RIGHT]: AnimationDirectionEnum.LEFT,
+};
+
 class DisplayViewStore extends Errors {
+  static MAX_ZOOM = 1.2;
+  static MIN_ZOOM = 0.8;
+  static ZOOM_STEP = 0.1;
   @observable dictionary = new EditorDictionary();
   @observable device: DeviceEnum = DeviceEnum.IPHONE_6;
   @observable screens: IObservableArray<IControl>;
-  @observable currentScreen: IControl;
+  @observable currentScreen?: IControl;
   @observable firstScreen?: IControl;
   @observable secondScreen?: IControl;
   @observable background: IBackgroundColor = { backgroundColor: whiteColor };
   @observable statusBarEnabled = true;
   @observable statusBarColor: string = whiteColor;
   @observable mode: Mode = Mode.WHITE;
+  @observable scale = 0.9;
   @observable portrait = true;
-  @observable ios = true;
+  @observable ios = false;
   @observable autoSave = false;
   @observable project: IProject;
   @observable fetchingProject = false;
@@ -51,6 +63,7 @@ class DisplayViewStore extends Errors {
   @observable firstContainerVisible = true;
   @observable navigation: (string | number)[] = [ScreenSwitcherEnum.NEXT, AnimationEnum.SLIDE, AnimationDirectionEnum.LEFT, 500];
   @observable screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
+  @observable navigationStack: IObservableArray<NavigationItem> = observable([]);
   pluginStore: PluginStore = new PluginStore(this);
 
   debug = false;
@@ -68,6 +81,26 @@ class DisplayViewStore extends Errors {
     })
   }
 
+  @computed get screenMode() {
+    const screen = this.currentScreen as IScreen;
+    return screen.statusBarExtended ? screen.mode : this.mode;
+  }
+
+  @computed get screenStatusBarEnabled() {
+    const screen = this.currentScreen as IScreen;
+    return screen.statusBarExtended ? true : this.statusBarEnabled;
+  }
+
+  @computed get screenStatusBarColor() {
+    const screen = this.currentScreen as IScreen;
+    return screen.statusBarExtended ? screen.statusBarColor : this.statusBarColor;
+  }
+
+  @computed get screenBackground() {
+    const screen = this.currentScreen as IScreen;
+    return screen.statusBarExtended ? { backgroundColor: screen.background } : this.background;
+  }
+
   constructor(urlQuery: string) {
     super();
     if (urlQuery.length) {
@@ -75,9 +108,28 @@ class DisplayViewStore extends Errors {
       this.pluginStore.fetchMode(urlQuery);
     }
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
-    this.screens = observable([CreateControl(ControlEnum.Grid)]);
-    this.currentScreen = this.screens[0];
+    this.screens = observable([CreateControl(ControlEnum.Screen)]);
+    this.setCurrentScreen(this.screens[0]);
     this.placeContent(this.screens[0]);
+  }
+
+  protected toCenter() {
+    const el = document.getElementById('viewport');
+    if (el) {
+      setTimeout(() => {
+        el.scrollIntoView({ inline: 'center', block: 'start' });
+      }, 100);
+    }
+  }
+
+  @action zoomIn() {
+    this.scale = Math.min(this.scale + DisplayViewStore.ZOOM_STEP, DisplayViewStore.MAX_ZOOM);
+    this.toCenter();
+  }
+
+  @action zoomOut() {
+    this.scale = Math.max(this.scale - DisplayViewStore.ZOOM_STEP, DisplayViewStore.MIN_ZOOM);
+    this.toCenter();
   }
 
   @action setNavigation(navigation: (string | number)[]) {
@@ -130,7 +182,7 @@ class DisplayViewStore extends Errors {
 
   @action fromJSON(data: IProjectData) {
     ControlStore.clear();
-    data.screens && this.screens.replace(data.screens.map((e) => CreateControl(ControlEnum.Grid, e)));
+    data.screens && this.screens.replace(data.screens.map((e) => CreateControl(ControlEnum.Screen, e)));
     this.currentScreen = this.screens[0];
     this.placeContent(this.screens[0]);
     this.mode = data.mode;
@@ -142,13 +194,13 @@ class DisplayViewStore extends Errors {
     data.navigation && (this.navigation = data.navigation);
     // this.project.update({ title: data.title } as IProject);
     data.projectId !== undefined && data.projectId !== 0 && this.project.setId(data.projectId);
-    data.versionId !== undefined && data.versionId !== 0 && this.project.version.update({versionId: data.versionId} as IProjectVersion);
-    if(data.screensMetaMap) {
+    data.versionId !== undefined && data.versionId !== 0 && this.project.version.update({ versionId: data.versionId } as IProjectVersion);
+    if (data.screensMetaMap) {
       this.screensMetaMap = new Map(data.screensMetaMap.map(e => [e[0], new Map(e[1] as any)]));
     } else {
       this.screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
     }
-    data.owner && this.project.update({owner: data.owner, userId: data.owner.userId} as IProject);
+    data.owner && this.project.update({ owner: data.owner, userId: data.owner.userId } as IProject);
   }
 
   @action switchStatusBar() {
@@ -194,7 +246,7 @@ class DisplayViewStore extends Errors {
 
     const invisibleParams = getSwitcherParams(behavior, ScreenSwitcherEnum.NEXT);
 
-    if(invisibleParams) {
+    if (invisibleParams) {
 
       if (invisibleParams[1] === AnimationDirectionEnum.TOP) {
         invisibleContainer.style.setProperty('top', `${height}px`);
@@ -230,7 +282,7 @@ class DisplayViewStore extends Errors {
       visibleParams && visibleContainer.style.setProperty('transition', `all ${visibleDuration}ms ease`);
       invisibleParams && invisibleContainer.style.setProperty('transition', `all ${invisibleDuration}ms ease`);
 
-      if(visibleParams) {
+      if (visibleParams) {
 
         if (visibleParams[1] === AnimationDirectionEnum.TOP) {
           visibleContainer.style.setProperty('top', `-${height}px`);
@@ -270,11 +322,57 @@ class DisplayViewStore extends Errors {
     }, 100);
   }
 
-  @action setCurrentScreenAnimate(screen: IControl, behavior?: (string | number)[]) {
+  @action navigateReplace(screen: IControl, behavior?: (string | number)[]) {
+    this.navigationStack.replace([]);
     behavior = behavior && behavior.length > 1 ? behavior : this.navigation;
+    this.navigate(screen, behavior);
+  }
+
+  @action navigateBack() {
+    const item = this.navigationStack.shift();
+    if (!item) {
+      return;
+    }
+    const currentScreen = getSwitcherParams(item.behavior, ScreenSwitcherEnum.NEXT);
+    const prevScreen = getSwitcherParams(item.behavior, ScreenSwitcherEnum.CURRENT);
+
+    const behavior = [
+      ScreenSwitcherEnum.CURRENT,
+      currentScreen![0],
+      directionReverse[currentScreen![1] as AnimationDirectionEnum.TOP],
+      currentScreen![2]
+    ];
+    if (prevScreen) {
+      behavior.push(
+        ScreenSwitcherEnum.NEXT,
+        prevScreen![0],
+        directionReverse[prevScreen![1] as AnimationDirectionEnum.TOP],
+        prevScreen![2]
+      )
+    }
+    this.navigate(item.screen, behavior);
+  }
+
+  @action navigateTo(screen: IControl, behavior?: (string | number)[]) {
+    behavior = behavior && behavior.length > 1 ? behavior : this.navigation;
+    this.navigationStack.push(new NavigationItem(this.currentScreen!, behavior));
+    this.navigate(screen, behavior);
+  }
+
+  @action navigate(screen: IControl, behavior: (string | number)[]) {
     this.currentScreen = screen;
     this.placeContent(screen, !!behavior && behavior.length > 1);
     !!behavior && this.effect(behavior);
+  }
+
+  @action setCurrentScreenAnimate(action: string, screen?: IControl, behavior?: (string | number)[]) {
+    if (action === ACTION_NAVIGATE_TO) {
+      this.navigateTo(screen as IControl, behavior);
+    } else if (action === ACTION_NAVIGATE_REPLACE) {
+      this.navigateReplace(screen as IControl, behavior);
+    } else {
+      this.navigateBack();
+    }
   }
 
   @action setCurrentScreen(screen: IControl, behavior?: (string | number)[]) {

@@ -12,7 +12,14 @@ import ColorInput from 'components/CustomInput/ColorInput';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
-import { CloudUpload, Delete, LayersClear, SaveAlt, PhonelinkSetup } from '@material-ui/icons';
+import {
+  CloudUpload,
+  Delete,
+  LayersClear,
+  SaveAlt,
+  PhonelinkSetup,
+  Computer
+} from '@material-ui/icons';
 import { blackOpacity, primaryOpacity, whiteOpacity } from 'assets/jss/material-dashboard-react';
 import { Mode } from 'enums/ModeEnum';
 import TextInput from 'components/CustomInput/TextInput';
@@ -25,6 +32,16 @@ import Button from '@material-ui/core/Button';
 import { TABS_HEIGHT } from 'models/Constants';
 import Typography from '@material-ui/core/Typography';
 import AnimationParams from '../AnimationParams';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import LabeledInput from 'components/CustomInput/LabeledInput';
+import FigmaIcon from 'components/Icons/FigmaIcon';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,6 +72,19 @@ const useStyles = makeStyles(theme => ({
     padding: '3px',
     fontSize: theme.typography.pxToRem(10),
     minWidth: 0
+  },
+  iconButton: {
+    padding: 7
+  },
+  icon: {
+    width: 15,
+    height: 15
+  },
+  listItemText: {
+    marginLeft: theme.typography.pxToRem(7)
+  },
+  figmaInput: {
+    padding: theme.typography.pxToRem(4)
   }
 }));
 
@@ -90,6 +120,108 @@ const sectionStyles = makeStyles((theme) => ({
     minWidth: theme.typography.pxToRem(230)
   }
 }));
+
+interface ImportMenuProps {
+  anchorEl: null | HTMLElement;
+  handleClose: () => void;
+  importFromFile: () => void;
+  importFromFigma: () => void;
+}
+
+interface FigmaDialogProps {
+  open: boolean;
+  handleClose(): void;
+  onChange(field: string): (e: any) => void;
+  onFigmaDialogClick(): void;
+  credentials: {token: string; key: string};
+}
+
+const FigmaDialog: React.FC<FigmaDialogProps> = (
+  {
+    open,
+    handleClose,
+    onChange,
+    onFigmaDialogClick,
+    credentials
+  }
+) => {
+
+  const classes = useStyles();
+
+  return (
+    <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <DialogTitle id="figma-dialog-title">
+        {Dictionary.defValue(DictionaryService.keys.downloadFromFigma)}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {Dictionary.defValue(DictionaryService.keys.provideAccessTokenAndFileKeyToFetchDocument)}
+        </DialogContentText>
+            <FormControl fullWidth margin="dense">
+              <LabeledInput
+                label={Dictionary.defValue(DictionaryService.keys.accessToken)}
+                fullWidth
+                value={credentials.token}
+                className={classes.input}
+                onChange={onChange('token')}
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <LabeledInput
+                label={Dictionary.defValue(DictionaryService.keys.fileKey)}
+                fullWidth
+                value={credentials.key}
+                className={classes.input}
+                onChange={onChange('key')}
+              />
+            </FormControl>
+        <Grid container justify="center" style={{marginTop: 20}}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={onFigmaDialogClick}
+            disabled={!(credentials.token.length > 10 && credentials.key.length > 10)}>
+            {Dictionary.defValue(DictionaryService.keys.download)}
+          </Button>
+        </Grid>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const ImportMenu: React.FC<ImportMenuProps> = (
+  {
+    anchorEl,
+    handleClose,
+    importFromFile,
+    importFromFigma,
+  }
+) => {
+  const classes = useStyles();
+
+  return (
+    <Menu
+      anchorEl={anchorEl}
+      keepMounted
+      open={Boolean(anchorEl)}
+      onClose={handleClose}
+    >
+      {
+        [
+          [Computer, 'fromFile', importFromFile],
+          [FigmaIcon, 'fromFigma', importFromFigma],
+        ].map((item, i) => {
+          return (
+            <MenuItem key={i.toString()} onClick={item[2] as () => void}>
+              {React.createElement(item[0] as React.FunctionComponent)}
+              <ListItemText primary={Dictionary.value(item[1] as string)} className={classes.listItemText} />
+            </MenuItem>
+          )
+        })
+      }
+    </Menu>
+  )
+}
 
 const ShareProjectComponent: React.FC<IEditorTabsProps> = (
   {
@@ -217,11 +349,49 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     switchStatusBar,
     navigation,
     setNavigation,
-    generate
+    generate,
+    importFromFigma
   }
 ) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+  const [openFigma, setOpenFigma] = React.useState<boolean>(false);
   const [dangerAction, setDangerAction] = React.useState<string | null>(null);
+  const [figmaCreds, setFigmaCreds] = React.useState<{token: string; key: string}>({token: '', key: ''});
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickOpenFigma = () => {
+    handleClose();
+    setOpenFigma(true);
+  };
+
+  const handleImportProject = () => {
+    handleClose();
+    importProject && importProject();
+  };
+
+  const handleCloseFigma = () => {
+    setOpenFigma(false);
+  };
+
+  const onFigmaInputChange = (key: string) => (e: string) => {
+    const obj = Object.assign({}, figmaCreds, {[key]: e});
+    setFigmaCreds(obj);
+  }
+
+  const onFigmaDialogClick = () => {
+    handleCloseFigma();
+    importFromFigma && importFromFigma(figmaCreds.token, figmaCreds.key);
+  }
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    // setAnchorEl(event.currentTarget);
+    importFromFigma && importFromFigma('55587-de2833b2-2101-4361-be55-7923873c031f', 'Q09rBNMM7vskgeyXmJqEYu');
+  };
+
   const handleDangerAction = (action: string) => {
     setDangerAction(action);
     setOpenDialog(true);
@@ -252,40 +422,46 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
       <Tooltip
         placement="top"
         title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
-        <IconButton size="small" onClick={() => saveProject && saveProject()} disabled={savingProject}>
-          <CloudUpload />
+        <IconButton size="small"
+                    onClick={() => saveProject && saveProject()}
+                    disabled={savingProject}
+                    className={classes.iconButton}>
+          <CloudUpload className={classes.icon} />
         </IconButton>
       </Tooltip>
       <Tooltip
         placement="top"
         className={classes.btn}
         title={`${dictionary!.defValue(EditorDictionary.keys.export)} ${dictionary!.defValue(EditorDictionary.keys.project)} ${dictionary!.defValue(EditorDictionary.keys.toFile)}`}>
-        <IconButton size="small" onClick={() => saveProject && saveProject(true)}>
-          <SaveAlt style={{ transform: 'rotate(180deg)' }} />
+        <IconButton size="small" onClick={() => saveProject && saveProject(true)} className={classes.iconButton}>
+          <SaveAlt style={{ transform: 'rotate(180deg)' }} className={classes.icon} />
         </IconButton>
       </Tooltip>
       <Tooltip
         placement="top"
         className={classes.btn}
-        title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.project)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
-        <IconButton size="small" onClick={importProject}>
-          <SaveAlt />
+        title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
+        <IconButton
+          size="small"
+          onClick={handleClick}
+          className={classes.iconButton}>
+          <SaveAlt className={classes.icon} />
         </IconButton>
       </Tooltip>
       <Tooltip
         placement="top"
         className={classes.btn}
         title={`${dictionary!.defValue(EditorDictionary.keys.clear)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
-        <IconButton size="small" onClick={() => handleDangerAction(CLEAR)}>
-          <LayersClear />
+        <IconButton size="small" onClick={() => handleDangerAction(CLEAR)} className={classes.iconButton}>
+          <LayersClear className={classes.icon} />
         </IconButton>
       </Tooltip>
       <Tooltip
         placement="top"
         className={classes.btn}
         title={`${dictionary!.defValue(EditorDictionary.keys.generate)} ${dictionary!.defValue(EditorDictionary.keys.reactNativePackage)}`}>
-        <IconButton size="small" onClick={generate}>
-          <PhonelinkSetup />
+        <IconButton size="small" onClick={generate} className={classes.iconButton}>
+          <PhonelinkSetup className={classes.icon} />
         </IconButton>
       </Tooltip>
       {
@@ -294,8 +470,8 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
             placement="top"
             className={classes.btn}
             title={`${dictionary!.defValue(EditorDictionary.keys.delete)} ${dictionary!.defValue(EditorDictionary.keys.project)}`}>
-            <IconButton size="small" onClick={() => handleDangerAction(DELETE)}>
-              <Delete />
+            <IconButton size="small" onClick={() => handleDangerAction(DELETE)} className={classes.iconButton}>
+              <Delete className={classes.icon} />
             </IconButton>
           </Tooltip>
         )
@@ -368,6 +544,17 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
       cancelTitle={dictionary!.defValue(EditorDictionary.keys.no)}
       onOk={handleAction}
     />
+    <FigmaDialog
+      onFigmaDialogClick={onFigmaDialogClick}
+      credentials={figmaCreds}
+      open={openFigma}
+      handleClose={handleCloseFigma}
+      onChange={onFigmaInputChange}/>
+    <ImportMenu
+      importFromFile={handleImportProject}
+      importFromFigma={handleClickOpenFigma}
+      anchorEl={anchorEl}
+      handleClose={handleClose} />
   </div>)
 };
 

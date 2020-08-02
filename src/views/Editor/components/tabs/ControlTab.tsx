@@ -38,7 +38,7 @@ import { OwnComponents } from 'models/Project/OwnComponentsStore';
 import ProjectsStore from 'models/Project/ProjectsStore';
 import CustomSelect from 'components/CustomSelect/CustomSelect';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
-import { TextMetaEnum } from '../../../../enums/TextMetaEnum';
+import { TextMetaEnum } from 'enums/TextMetaEnum';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -81,7 +81,14 @@ const useStyles = makeStyles(theme => ({
   },
   menu: {
     borderRadius: '50%'
-  }
+  },
+  iconButton: {
+    padding: 7
+  },
+  icon: {
+    width: 15,
+    height: 15
+  },
 }));
 
 interface ControlInstanceProps {
@@ -170,8 +177,8 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
               App.isAdmin && (
                 <Tooltip
                   title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
-                  <IconButton size="small" onClick={importControl}>
-                    <SaveAlt />
+                  <IconButton size="small" onClick={importControl} className={classes.iconButton}>
+                    <SaveAlt className={classes.icon} />
                   </IconButton>
                 </Tooltip>
               )
@@ -202,8 +209,8 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
         </Typography>
         <Tooltip
           title={`${dictionary!.defValue(EditorDictionary.keys.import)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.fromFile)}`}>
-          <IconButton size="small" onClick={importComponent}>
-            <SaveAlt />
+          <IconButton size="small" onClick={importComponent} className={classes.iconButton}>
+            <SaveAlt className={classes.icon} />
           </IconButton>
         </Tooltip>
       </Grid>
@@ -228,8 +235,8 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           paper: classes.menu
         }}
       >
-        <IconButton size="small" onClick={handleDelete}>
-          <Delete />
+        <IconButton size="small" onClick={handleDelete} className={classes.iconButton}>
+          <Delete className={classes.icon} />
         </IconButton>
       </Popover>
       <DialogAlert
@@ -302,25 +309,28 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
         />
       </Grid>
       <Grid container justify="space-between" className={classes.tools}>
-        <IconButton size="small" onClick={control!.switchVisibility}>
-          {control!.visible ? <Visibility /> : <VisibilityOff color="disabled" />}
+        <IconButton size="small" onClick={control!.switchVisibility} className={classes.iconButton}>
+          {control!.visible ? <Visibility className={classes.icon} /> : <VisibilityOff color="disabled" className={classes.icon} />}
         </IconButton>
         <Tooltip title={dictionary.defValue(EditorDictionary.keys.lockChildren)} placement="top">
-          <IconButton size="small" onClick={control!.switchLockChildren}>
-            {control!.lockedChildren ? <Lock color="disabled" /> : <LockOpen />}
+          <IconButton size="small" onClick={control!.switchLockChildren} className={classes.iconButton}>
+            {control!.lockedChildren ? <Lock color="disabled" className={classes.icon} /> : <LockOpen className={classes.icon} />}
           </IconButton>
         </Tooltip>
         <Tooltip title={dictionary.defValue(EditorDictionary.keys.cloneControl)} placement="top">
-          <IconButton size="small" onClick={() => cloneControl && cloneControl(control!)}>
-            <FilterNone />
+          <IconButton size="small" onClick={() => cloneControl && cloneControl(control!)} className={classes.iconButton}>
+            <FilterNone className={classes.icon} />
           </IconButton>
         </Tooltip>
         {
           App.isAdmin && (
             <Tooltip
               title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.control)}`}>
-              <IconButton size="small" onClick={() => saveControl(control!)} disabled={control!.saving}>
-                <CloudUpload />
+              <IconButton
+                size="small" onClick={() => saveControl(control!)}
+                className={classes.iconButton}
+                disabled={control!.saving}>
+                <CloudUpload className={classes.icon} />
               </IconButton>
             </Tooltip>
           )
@@ -329,29 +339,41 @@ const ControlDetails: React.FC<ControlDetailsProps> = observer((
           App.isAdmin && (
             <Tooltip
               title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.control)} ${dictionary!.defValue(EditorDictionary.keys.toFile)}`}>
-              <IconButton size="small" onClick={() => saveControl(control!, true)} disabled={control!.saving}>
-                <SaveAlt style={{ transform: 'rotate(180deg)' }} />
+              <IconButton
+                size="small"
+                onClick={() => saveControl(control!, true)}
+                className={classes.iconButton}
+                disabled={control!.saving}>
+                <SaveAlt className={classes.icon} style={{ transform: 'rotate(180deg)' }} />
               </IconButton>
             </Tooltip>
           )
         }
         <Tooltip
           title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.component)}`}>
-          <IconButton size="small" onClick={() => saveComponent(control!)} disabled={control?.saving}>
-            <CloudUpload />
+          <IconButton
+            size="small"
+            onClick={() => saveComponent(control!)}
+            className={classes.iconButton}
+            disabled={control?.saving}>
+            <CloudUpload className={classes.icon} />
           </IconButton>
         </Tooltip>
         <Tooltip
           title={`${dictionary!.defValue(EditorDictionary.keys.save)} ${dictionary!.defValue(EditorDictionary.keys.component)} ${dictionary!.defValue(EditorDictionary.keys.toFile)}`}>
-          <IconButton size="small" onClick={() => saveComponent(control!, true)} disabled={control?.saving}>
-            <SaveAlt style={{ transform: 'rotate(180deg)' }} />
+          <IconButton
+            size="small"
+            onClick={() => saveComponent(control!, true)}
+            className={classes.iconButton}
+            disabled={control?.saving}>
+            <SaveAlt className={classes.icon} style={{ transform: 'rotate(180deg)' }} />
           </IconButton>
         </Tooltip>
-        <IconButton size="small" onClick={() => {
+        <IconButton size="small" className={classes.iconButton} onClick={() => {
           isSelected!(control!) && selectControl!();
           control!.deleteSelf()
         }}>
-          <Delete />
+          <Delete className={classes.icon} />
         </IconButton>
       </Grid>
       <div style={{ height: `calc(100% - ${TABS_HEIGHT * 2 - 35}px)`, overflow: 'auto' }}>

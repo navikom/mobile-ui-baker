@@ -1,6 +1,6 @@
-import React from 'react'
-import { XYCoord, useDragLayer } from 'react-dnd'
-import BoxDragPreview from './BoxDragPreview'
+import React from 'react';
+import { XYCoord, useDragLayer } from 'react-dnd';
+import BoxDragPreview from './BoxDragPreview';
 import { ItemTypes } from 'views/Editor/store/ItemTypes';
 import { ControlTabItemPreview } from 'views/Editor/components/tabs/ControlTabItem';
 
@@ -10,7 +10,7 @@ const layerStyles: React.CSSProperties = {
   zIndex: 100,
   left: 0,
   top: 0,
-}
+};
 
 function getItemStyles(
   initialOffset: XYCoord | null,
@@ -31,7 +31,7 @@ function getItemStyles(
   }
 }
 
-const CustomDragLayer: React.FC = () => {
+const CustomDragLayer: React.FC<{scale: number}> = ({scale}) => {
   const {
     itemType,
     isDragging,
@@ -46,10 +46,13 @@ const CustomDragLayer: React.FC = () => {
     isDragging: monitor.isDragging(),
   }));
 
+  const style = getItemStyles(initialOffset, currentOffset);
+
   function renderItem() {
-    if (itemType === ItemTypes.CONTROL && item.type !== undefined) {
+    if (itemType === ItemTypes.CONTROL) {
       return <BoxDragPreview><ControlTabItemPreview
-        type={item.control ? item.control.title : item.typeControl} /></BoxDragPreview>;
+        type={item.control ? item.control.title : item.typeControl} />
+      </BoxDragPreview>;
     } else if (itemType === ItemTypes.TREE_CONTROL) {
       return <BoxDragPreview><ControlTabItemPreview
         type={item.control ? item.control.title : item.typeControl} /></BoxDragPreview>;
@@ -62,7 +65,7 @@ const CustomDragLayer: React.FC = () => {
   }
   return (
     <div style={layerStyles}>
-      <div style={getItemStyles(initialOffset, currentOffset)}>
+      <div style={style}>
         {renderItem()}
       </div>
     </div>

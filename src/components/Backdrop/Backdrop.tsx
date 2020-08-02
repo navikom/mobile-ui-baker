@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import Backdrop from '@material-ui/core/Backdrop';
 import { makeStyles } from '@material-ui/core/styles';
 import { createStyles, Theme } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 100,
       left: '50%',
       top: '50%',
-      transform: 'translate(-50%, -50%)',
+      transform: 'translate(-50%, -50%) !important',
       animation: '$Img 9s ease-in-out infinite',
     },
     img0: {
@@ -40,8 +41,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const CustomBackdrop: React.FC<{ open: boolean }> = ({ open }) => {
+const CustomBackdrop: React.FC<{ open: boolean; progress?: number | null}> = ({ open, progress }) => {
   const classes = useStyles();
+
   return (
     <Backdrop className={classes.root} open={open}>
       {
@@ -53,6 +55,16 @@ const CustomBackdrop: React.FC<{ open: boolean }> = ({ open }) => {
               alt="Facets UI"
               className={classNames(classes.img, classes[`img` + i as 'img0'])} />
           ))
+      }
+      {
+        progress !== undefined && progress !== null && (
+          <CircularProgress
+            thickness={1}
+            size={120}
+            variant="static"
+            value={progress}
+          />
+        )
       }
     </Backdrop>
   )

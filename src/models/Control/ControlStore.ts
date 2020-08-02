@@ -1,7 +1,7 @@
 import React from 'react';
 import { action, computed, IObservableArray, observable } from 'mobx';
 import sum from 'hash-sum';
-import IControl from 'interfaces/IControl';
+import IControl, { IScreen } from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import { DropEnum } from 'enums/DropEnum';
 import Movable from 'models/Movable';
@@ -11,6 +11,8 @@ import CSSProperty, { CSS_SET_VALUE, CSS_SWITCH_ENABLED, CSS_SWITCH_EXPANDED } f
 import {
   ACTION_DISABLE_STYLE,
   ACTION_ENABLE_STYLE,
+  ACTION_NAVIGATE_BACK,
+  ACTION_NAVIGATE_REPLACE,
   ACTION_NAVIGATE_TO,
   ACTION_TOGGLE_STYLE,
   CSS_CAT_ALIGN,
@@ -38,7 +40,6 @@ import EditorHistory, {
 } from 'views/Editor/store/EditorHistory';
 import IHistory from 'interfaces/IHistory';
 import IProject from 'interfaces/IProject';
-import { boxShadow } from 'assets/jss/material-dashboard-react';
 import DelayEnum from 'enums/DelayEnum';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
@@ -194,6 +195,7 @@ class ControlStore extends Movable implements IControl {
   hashChildrenWithStyle?: string;
   hashChildrenWithStyleAndTitles?: string;
   instance?: IProject;
+  refObj?: HTMLDivElement;
 
   @computed get cssStylesJSON() {
     const keys = Array.from(this.cssStyles.keys());
@@ -310,6 +312,10 @@ class ControlStore extends Movable implements IControl {
     return computed(() => this.classes.includes(key)).get();
   }
 
+  setRefObject(ref: HTMLDivElement) {
+    this.refObj = ref;
+  }
+
   constructor(type: ControlEnum, id: string, title: string, allowChildren = true) {
     super();
     this.id = id;
@@ -327,6 +333,11 @@ class ControlStore extends Movable implements IControl {
 
   setInstance(project?: IProject) {
     this.instance = project;
+  }
+
+  @action applyFoSelected() {
+    this.setOpened(true);
+    this.parentId !== undefined && ControlStore.getById(this.parentId)!.applyFoSelected();
   }
 
   @action setSaving(value: boolean): void {
@@ -551,7 +562,7 @@ class ControlStore extends Movable implements IControl {
     }
   }
 
-  private act(actions: Array<Array<string>>, cb?: (screen: IControl, behavior: string[]) => void) {
+  private act(actions: Array<Array<string>>, cb?: (action: string, screen?: IControl, behavior?: string[]) => void) {
     const action = actions.shift();
     if (!(action && ControlStore.has(action[1]))) {
       return;
@@ -559,8 +570,8 @@ class ControlStore extends Movable implements IControl {
     const control = ControlStore.getById(action[1]) as IControl;
     const delay = action.length > 3 && action[3];
     setTimeout(() => {
-      if (action[0] === ACTION_NAVIGATE_TO) {
-        cb && cb(control, action.slice(2));
+      if ([ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE, ACTION_NAVIGATE_BACK].includes(action[0])) {
+        cb && cb(action[0], action[0] === ACTION_NAVIGATE_BACK ? undefined : control, action.slice(2));
       } else {
 
         const style = action[2];
@@ -585,7 +596,7 @@ class ControlStore extends Movable implements IControl {
 
   }
 
-  applyActions = (cb?: (screen: IControl) => void) => {
+  applyActions = (cb?: (action: string, screen?: IControl) => void) => {
     const actions = this.actions.slice();
     this.act(actions, cb);
   };
@@ -667,6 +678,7 @@ class ControlStore extends Movable implements IControl {
     control.lockedChildren = json.lockedChildren;
     json.actions && control.actions.replace(json.actions.map(actions => observable(actions)));
     json.meta && (control.meta = json.meta);
+    json.type === ControlEnum.Screen && (control as IScreen).setScreenProps(json as IScreen);
     control.mergeStyles(new Map(json.cssStyles));
     if(json.classes) {
       const keys = Array.from(control.cssStyles.keys());

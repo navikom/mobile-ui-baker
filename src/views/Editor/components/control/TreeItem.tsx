@@ -21,10 +21,30 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       transition: 'all 0.1s',
+      position: 'relative'
     },
     input: {
-      width: theme.typography.pxToRem(80),
-      textOverflow: 'ellipsis'
+      textOverflow: 'ellipsis',
+      width: 140,
+      position: 'absolute',
+      left: 50,
+      top: 3,
+      height: '40%',
+    },
+    rowWrapper: {
+      minWidth: 300,
+      position: 'relative',
+      '&:hover': {
+        '& $row': {
+          opacity: 1,
+          transition: 'all 200ms linear',
+        }
+      }
+    },
+    row: {
+      opacity: 0,
+      transition: 'all 100ms linear',
+      minWidth: 300,
     },
     container: {
       flexWrap: 'nowrap',
@@ -35,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
     list: {
       margin: '0 .1em',
       padding: '.1em',
-      maxHeight: "30000px",
+      maxHeight: '30000px',
     },
     closed: {
       padding: '0 .1em',
@@ -48,10 +68,21 @@ const useStyles = makeStyles((theme: Theme) =>
       transition: 'all .1s'
     },
     selected: {
-      backgroundColor: warningOpacity(0.1)
+      backgroundColor: warningOpacity(0.1),
+      borderRadius: 5
     },
     selectedInput: {
       backgroundColor: warningOpacity(0.01),
+    },
+    iconButton: {
+      padding: 7
+    },
+    icon: {
+      width: 15,
+      height: 15
+    },
+    iconVisible: {
+      opacity: 0,
     }
   })
 );
@@ -115,9 +146,14 @@ const ElementComponent: React.FC<ElementProps> =
 
       const selected = isSelected(control);
 
+      const rowWrapper = classNames({
+        [classes.rowWrapper]: true,
+        [classes.selected]: selected
+      });
+
       const itemClass = classNames({
         [classes.container]: true,
-        [classes.selected]: selected
+        [classes.row]: true,
       });
       const inputClass = classNames({
         [classes.input]: true,
@@ -137,33 +173,40 @@ const ElementComponent: React.FC<ElementProps> =
           }}
           className={classes.root}
         >
-          <Grid container direction="row" className={itemClass} alignItems="center"
-                style={{ marginLeft: `${level * 10 - 10}px` }}>
-            {children && children.length > 0 ? (
-              <IconButton onClick={switchOpened} size="small">
-                {opened ? <Remove /> : <Add />}
+          <div className={rowWrapper} style={{ marginLeft: `${level * 10 - 10}px` }}>
+            <Grid container className={itemClass} alignItems="center">
+              {children && children.length > 0 ? (
+                <IconButton onClick={switchOpened} size="small" className={classes.iconButton}>
+                  {opened ? <Remove className={classes.icon} /> : <Add className={classes.icon} />}
+                </IconButton>
+              ) : <span style={{ marginLeft: 30 }} />}
+              <DragIndicator className={classes.hover} />
+              <IconButton size="small"
+                          onClick={control.switchVisibility}
+                          className={classes.iconButton}
+                          style={{ marginLeft: 'auto' }}>
+                {control.visible ?
+                  <Visibility className={classes.icon} /> :
+                  <VisibilityOff className={classes.icon} color="disabled" />}
               </IconButton>
-            ) : <span style={{ marginLeft: 30 }} />}
-            <DragIndicator className={classes.hover} />
+              <IconButton size="small" onClick={() => cloneControl(control)} className={classes.iconButton}>
+                <FilterNone className={classes.icon} />
+              </IconButton>
+              <IconButton size="small" className={classes.iconButton} onClick={() => {
+                selected && selectControl();
+                control.deleteSelf()
+              }}>
+                <Delete className={classes.icon} />
+              </IconButton>
+            </Grid>
             <TextInput
+              placeholder={control.type}
               className={inputClass}
               value={title}
               onChange={(e) => changeTitle(e.currentTarget.value)}
               onClick={() => selectControl(control, screen)}
             />
-            <IconButton size="small" onClick={control.switchVisibility} style={{ marginLeft: 'auto' }}>
-              {control.visible ? <Visibility /> : <VisibilityOff color="disabled" />}
-            </IconButton>
-            <IconButton size="small" onClick={() => cloneControl(control)}>
-              <FilterNone />
-            </IconButton>
-            <IconButton size="small" onClick={() => {
-              selected && selectControl();
-              control.deleteSelf()
-            }}>
-              <Delete />
-            </IconButton>
-          </Grid>
+          </div>
           <div className={list}>
             {children && !lockedChildren && children.map((child, i) =>
               <TreeItem
@@ -212,6 +255,10 @@ const ControlItem: React.FC<ControlItemProps> = React.forwardRef(
     useImperativeHandle(ref, () => ({
       getNode: () => elementRef.current,
     }));
+
+    useEffect(() => {
+      elementRef.current && control.setRefObject(elementRef.current);
+    }, [elementRef, control]);
 
     useEffect(() => {
       connectDragSource && connectDragSource(elementRef);

@@ -1,5 +1,5 @@
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
-import IControl from 'interfaces/IControl';
+import IControl, { IScreen } from 'interfaces/IControl';
 import { Mode } from 'enums/ModeEnum';
 import IProject, { IBackgroundColor } from 'interfaces/IProject';
 import AccessEnum from '../enums/AccessEnum';
@@ -28,6 +28,7 @@ export default interface IEditorTabsProps {
   changeProjectTitle?: (value: string) => void;
   project?: IProject;
   importProject?: () => void;
+  importFromFigma?: (token: string, key: string) => void;
   importControl?: () => void;
   importComponent?: () => void;
   clearProject?: () => void;
@@ -40,4 +41,5 @@ export default interface IEditorTabsProps {
   generate?: () => void;
   metaList?: string[][];
   setMeta?: (meta: ScreenMetaEnum, control: IControl) => void;
+  screen?: IScreen;
 }

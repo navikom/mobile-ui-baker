@@ -1,5 +1,5 @@
 import { action, computed, IObservableArray, observable } from "mobx";
-import IControl from "interfaces/IControl";
+import IControl, { IScreen } from 'interfaces/IControl';
 import IHistory, { IHistoryObject, SettingsPropType, ViewStore } from "interfaces/IHistory";
 import { ControlEnum } from "enums/ControlEnum";
 import { Mode } from "enums/ModeEnum";
@@ -29,6 +29,10 @@ export const HIST_CLONE_SCREEN = "cloneScreen";
 export const HIST_CLONE_CONTROL = "cloneControl";
 export const HIST_CONTROL_PROP_CHANGE = "controlProperties";
 export const HIST_PROJECT_TITLE_CHANGE = "projectTitle";
+export const HIST_SCREEN_BACKGROUND = "changeScreenBackground";
+export const HIST_SCREEN_STATUS_BAR_COLOR = "changeScreenStatusBarColor";
+export const HIST_SCREEN_STATUS_BAR_EXTENDED = "changeScreenStatusBarExtended";
+export const HIST_SCREEN_STATUS_BAR_MODE = "changeScreenStatusBarMode";
 
 export interface ControlStatic {
   getById(id: string): IControl;
@@ -138,6 +142,18 @@ class EditorHistory implements IHistory {
         break;
       case HIST_ADD_CSS_STYLE:
         control.removeCSSStyle(object.key as string, true);
+        break;
+      case HIST_SCREEN_BACKGROUND:
+        (control as IScreen).setBackground(object.background!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_COLOR:
+        (control as IScreen).setStatusBarColor(object.statusBarColor!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_EXTENDED:
+        (control as IScreen).setStatusBarExtended(object.statusBarExtended!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_MODE:
+        (control as IScreen).setMode(object.value!, true);
         break;
       case HIST_RENAME_CSS_STYLE:
         control.renameCSSStyle(object.oldKey as string, object.key as string, true);
@@ -338,6 +354,18 @@ class EditorHistory implements IHistory {
         break;
       case HIST_PROJECT_TITLE_CHANGE:
         this.viewStore!.project.update({ title: object.value } as unknown as IProject);
+        break;
+      case HIST_SCREEN_BACKGROUND:
+        (control as IScreen).setBackground(object.background!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_COLOR:
+        (control as IScreen).setStatusBarColor(object.statusBarColor!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_EXTENDED:
+        (control as IScreen).setStatusBarExtended(object.statusBarExtended!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_MODE:
+        (control as IScreen).setMode(object.value!, true);
         break;
     }
     this.viewStore!.save();

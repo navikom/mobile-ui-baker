@@ -19,6 +19,15 @@ export const ignoreStyle = {
   justifyContent: overflowRule
 }
 
+const round = (value: number) => {
+  let newValue = value * 1.3;
+  console.log(newValue, value);
+  if(newValue.toString().includes('.') && newValue.toString().split(".")[1].length > 3) {
+    newValue = Math.round(newValue * 1000) / 1000;
+  }
+  return newValue;
+}
+
 const image = {
   backgroundRepeat: {
     'no-repeat': { resizeMode: 'cover' },
@@ -88,7 +97,7 @@ export const specificRules = {
   },
   borderRadius: (rule: { [key: string]: any }, control: IControl) => {
     const object: { borderRadius: number; overflow?: string } = {
-      borderRadius: Math.round(Number(rule.value) * 1.3)
+      borderRadius: round(Number(rule.value))
     };
     control.type === ControlEnum.Text && (object.overflow = 'hidden');
     return object;
@@ -107,15 +116,20 @@ export const valueModifier = (rule: { [key: string]: string | number }) => {
         const [first, ...rest] = part!.split(substr);
         const substrings = [first, rest.join(substr)];
         const val = Number(substr.replace('px', ''));
-        const newSubstr = `${Math.round(val * 1.3)}px`;
+        const newSubstr = `${round(val)}px`;
         arr.push(substrings[0], newSubstr, substrings[1]);
 
       });
       value = arr.join('');
     } else if (rule.unit === 'px') {
-      value = Math.round(Number(rule.value) * 1.3).toString();
+      value = round(Number(rule.value)).toString();
     }
     return value;
+  } else if (['border', 'borderLeft', 'borderRight', 'borderTop', 'borderBottom'].includes(rule.key as string)) {
+    const matches = rule.value.toString().match(/\d+px/g);
+    const val = Number(matches![0].replace('px', ''));
+    const newSubstr = `${round(val)}px`;
+    return (rule.value as string).replace(matches![0], newSubstr);
   }
   return rule.value;
 }
@@ -168,6 +182,9 @@ export const metaRules = {
     return styles;
   },
   component: (styles: { [key: string]: any }) => {
+    return styles;
+  },
+  keyboard: (styles: { [key: string]: any }) => {
     return styles;
   }
 }

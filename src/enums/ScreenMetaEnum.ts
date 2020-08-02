@@ -3,4 +3,5 @@ export enum ScreenMetaEnum {
   RIGHT_DRAWER = 'rightDrawer',
   TABS = 'tabs',
   COMPONENT = 'component',
+  KEYBOARD = 'keyboard'
 }

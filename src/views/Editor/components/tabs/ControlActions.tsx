@@ -16,7 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ControlStore from 'models/Control/ControlStore';
 import {
   ACTION_DISABLE_STYLE,
-  ACTION_ENABLE_STYLE,
+  ACTION_ENABLE_STYLE, ACTION_NAVIGATE_BACK, ACTION_NAVIGATE_REPLACE,
   ACTION_NAVIGATE_TO,
   ACTION_TOGGLE_STYLE,
   EDITOR_ACTIONS
@@ -87,7 +87,7 @@ const Actions: React.FC<ActionsProps> = (
   let value = properties[0];
   const rest = properties.slice(1);
   let delay = false;
-  if (action !== ACTION_NAVIGATE_TO) {
+  if (![ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE, ACTION_NAVIGATE_BACK].includes(action)) {
     value = `${value}/${rest.shift()}`;
     delay = true;
   }
@@ -100,7 +100,6 @@ const Actions: React.FC<ActionsProps> = (
 
   const switchExtraParams = React.useCallback(() => {
     const newExtraParamsEnabled = !extraParamsEnabled;
-    // setExtraParamsEnabled(newExtraParamsEnabled);
     if (!newExtraParamsEnabled) {
       onChange(index, action, value);
     } else {
@@ -117,18 +116,28 @@ const Actions: React.FC<ActionsProps> = (
     onChange(index, action, [value, ...payload].join('/'));
   }
 
+  const isBack = action === ACTION_NAVIGATE_BACK;
+
   const expand = classNames(classes.propKeyWrapper, classes.pointer);
   return (
     <Grid container alignItems="center" className={classNames(classes.paragraph, classes.block)}>
       <Grid container spacing={1} alignItems="center">
-        <Grid item xs={5} sm={5} md={5}>
+        <Grid
+          item
+          xs={isBack ? 11 : 5}
+          sm={isBack ? 11 : 5}
+          md={isBack ? 11 : 5}>
           <CustomSelect fullWidth value={action} options={actions}
                         onChange={(e) => onChange(index, e.toString(), value)} />
         </Grid>
-        <Grid item xs={6} sm={6} md={6}>
-          <CustomSelect fullWidth value={value} options={values}
-                        onChange={(e) => onChange(index, action, e.toString())} />
-        </Grid>
+        {
+          !isBack && (
+            <Grid item xs={6} sm={6} md={6}>
+              <CustomSelect fullWidth value={value} options={values}
+                            onChange={(e) => onChange(index, action, e.toString())} />
+            </Grid>
+          )
+        }
         <Grid item xs={1} sm={1} md={1}>
           <Tooltip
             title={`${dictionary.defValue(EditorDictionary.keys.delete)} ${dictionary.defValue(EditorDictionary.keys.action)}`}
@@ -139,14 +148,19 @@ const Actions: React.FC<ActionsProps> = (
           </Tooltip>
         </Grid>
       </Grid>
-      <div className={expand} onClick={switchExtraParams}>
-        <Typography>
-          {dictionary.defValue(delay ? EditorDictionary.keys.delay : EditorDictionary.keys.transition)}
-        </Typography>
-        <Switch checked={extraParamsEnabled} color="primary" />
-      </div>
       {
-        extraParamsEnabled &&
+        !isBack && (
+          <div className={expand} onClick={switchExtraParams}>
+            <Typography>
+              {dictionary.defValue(delay ? EditorDictionary.keys.delay : EditorDictionary.keys.transition)}
+            </Typography>
+            <Switch checked={extraParamsEnabled} color="primary" />
+          </div>
+        )
+      }
+
+      {
+        extraParamsEnabled && !isBack &&
         <AnimationParams isDelay={delay} conditions={rest} onChange={editExtraParams} dictionary={dictionary} />
       }
     </Grid>
@@ -174,7 +188,7 @@ const ControlActions: React.FC<Props> = (
   const actionData: string[] = [];
   const actionList = EDITOR_ACTIONS.slice()
     .filter(e =>
-      (screens.length > 1 && e === ACTION_NAVIGATE_TO) ||
+      (screens.length > 1 && [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE, ACTION_NAVIGATE_BACK].includes(e)) ||
       (ControlStore.classes.length > 0 && [ACTION_TOGGLE_STYLE, ACTION_ENABLE_STYLE, ACTION_DISABLE_STYLE].includes(e)))
     .map(e => [e, dictionary.value(e)]);
 
@@ -202,7 +216,7 @@ const ControlActions: React.FC<Props> = (
               {
                 actions.map((action, i) => {
                   const [actionName, ...properties] = action;
-                  const props = actionName === ACTION_NAVIGATE_TO ?
+                  const props = [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE].includes(actionName) ?
                     screens.map(e => [e.id, e.title]) : ControlStore.classes.map(e => {
                       const arr = e.split('/');
                       return [e, `${ControlStore.getById(arr[0])!.title}/${arr[1]}`]

@@ -2,11 +2,13 @@ import { v4 as uuidv4 } from "uuid";
 import { ControlEnum } from "enums/ControlEnum";
 import GridStore from "models/Control/GridStore";
 import TextStore from "models/Control/TextStore";
+import ScreenStore from "models/Control//ScreenStore";
 import IControl from "interfaces/IControl";
 import ControlStore, { ModelCtor } from "models/Control/ControlStore";
 import IProject from "interfaces/IProject";
 
 export const ControlStores = {
+  [ControlEnum.Screen]: ScreenStore,
   [ControlEnum.Grid]: GridStore,
   [ControlEnum.Text]: TextStore,
 };

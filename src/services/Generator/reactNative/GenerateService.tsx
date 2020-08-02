@@ -1,7 +1,7 @@
 import { action, observable, runInAction, when } from 'mobx';
 
 import IMobileUIView from 'interfaces/IMobileUIView';
-import IControl from 'interfaces/IControl';
+import IControl, { IScreen } from 'interfaces/IControl';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import ITransitStyle from 'interfaces/ITransitSyle';
 import ICSSProperty from 'interfaces/ICSSProperty';
@@ -257,6 +257,9 @@ class GenerateService implements IGenerateService {
     while (l--) {
       const screen = this.store.screens[i];
       screen.setChecksum(0, [], i, async (depth: number, index: number, control: IControl) => {
+        if(control.meta === ScreenMetaEnum.KEYBOARD) {
+          return;
+        }
         if (!this.storeContent.has(screen.id)) {
           this.storeContent.set(screen.id, []);
         }
@@ -335,6 +338,9 @@ class GenerateService implements IGenerateService {
     (traverse = (controls: IControl[]) => {
 
       controls.forEach(child => {
+        if(child.meta === ScreenMetaEnum.KEYBOARD) {
+          return;
+        }
         const hash = child.hashChildren as string;
         if (!this.components.has(hash)) {
           this.components.set(hash, new GenerateComponent(this, this.components.size, hash));
@@ -406,7 +412,7 @@ class GenerateService implements IGenerateService {
         cmp.controls.forEach((control) => {
           const title = this.approveNameSpace('Screen' + control.title.replace(/\s/g, ''));
           cmp.styles.delete(control.hashChildrenWithStyle as string);
-          this.zipGenerator.screen2zip(title);
+          this.zipGenerator.screen2zip(control as IScreen, title);
           this.zipGenerator.initState2zip(`${SRC_FOLDER}/${SCREENS_FOLDER}/${title}`, this.getScreenStore(control.id));
           this.screenNames.push({ id: control.id, title });
         });

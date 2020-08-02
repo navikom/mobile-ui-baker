@@ -1,7 +1,7 @@
 import { ControlEnum } from "enums/ControlEnum";
 import IControl from "interfaces/IControl";
 import { Mode } from "enums/ModeEnum";
-import IProject, { IBackgroundColor } from "interfaces/IProject";
+import { IBackgroundColor } from "interfaces/IProject";
 import IMobileUIView from './IMobileUIView';
 import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 import { TextMetaEnum } from '../enums/TextMetaEnum';
@@ -23,6 +23,9 @@ export interface IHistoryObject {
   method?: (string | number | boolean | undefined)[];
   value?: Mode & string & IBackgroundColor;
   model?: { [key: string]: any };
+  background?: string;
+  statusBarColor?: string;
+  statusBarExtended?: boolean;
 }
 
 export interface ViewStore extends IMobileUIView {

@@ -45,7 +45,7 @@ export default createMuiTheme({
     MuiInputLabel: {
       outlined: {
         transform: 'translate(14px, 13px) scale(1)'
-      }
+      },
     },
     MuiInputAdornment: {
       positionEnd: {
@@ -88,6 +88,11 @@ export default createMuiTheme({
     MuiFormLabel: {
       root: {
         fontSize: '0.8rem'
+      }
+    },
+    MuiTab: {
+      root: {
+        fontSize: '0.7rem'
       }
     },
     MuiTypography: {

@@ -1,6 +1,6 @@
-import React, { CSSProperties } from "react";
-import { InputBaseComponentProps, PropTypes, withStyles } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
+import React, { CSSProperties } from 'react';
+import { InputBaseComponentProps, PropTypes, withStyles } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 
 interface InputProps {
   onChange?: (value: string | number) => void;
@@ -16,6 +16,7 @@ interface InputProps {
   fullWidth?: boolean;
   inputProps?: InputBaseComponentProps;
 }
+
 const Input: React.FC<InputProps> = ({ onChange, ...props }) => {
   return (
     <TextField
@@ -30,11 +31,14 @@ const Input: React.FC<InputProps> = ({ onChange, ...props }) => {
 
 export default withStyles({
   root: {
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: "1px solid #ced4da",
-        padding: "10px 26px 10px 12px"
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        border: '1px solid #ced4da',
+        padding: '10px 26px 10px 12px'
       }
+    },
+    '& .MuiInputLabel-shrink': {
+      transform: 'translate(25px, -6px) scale(0.75)'
     }
-  }
+  },
 })(Input);

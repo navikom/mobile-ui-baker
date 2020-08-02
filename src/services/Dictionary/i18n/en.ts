@@ -364,7 +364,7 @@ export default {
   cardNumber: 'Card number',
   signUpForFree: 'Sign up for free',
   editorAndViewerInYourApp: 'Mobile Editor & Viewer in your web application',
-  mobileDesignAvailableSamples: 'Mobile Design available samples',
+  mobileDesignAvailableSamples: 'Mobile Design available templates',
   youCanEmbedNowEditorInto: 'You can embed now Editor and Viewer into your web application',
   forBetterExperience: 'for a better experience',
   weAreMuiditor: 'We are FacetsUI',
@@ -659,5 +659,12 @@ export default {
   agreement52: `Other taxes. Prices, fees and charges are otherwise inclusive of other applicable taxes unless stated otherwise on our site. You are responsible for paying all such taxes and imposts associated with your use of FacetsUI wherever levied. Your responsibility includes withholding tax if it applies, unless we already process that withholding tax. We may collect geographical location information to determine your location, which may be used for tax purposes (so location information you give us must be accurate for tax residency purposes).`,
   weThankYouForPurchasing: 'We thank you for purchasing a project "$"!',
   weAreSorryButYourCurrent: 'We are sorry, but your current payment method could not be processed. Please contact your financial institution and [Try again] or [Try a different payment method]',
-  free: 'Free'
+  free: 'Free',
+  download: 'Download',
+  downloadFromFigma: 'Download from Figma error: $',
+  provideAccessTokenAndFileKeyToFetchDocument: 'Provide Access Token and file key to fetch a document',
+  accessToken: 'Access token',
+  fileKey: 'File key',
+  fromFile: 'From File',
+  fromFigma: 'From Figma'
 };

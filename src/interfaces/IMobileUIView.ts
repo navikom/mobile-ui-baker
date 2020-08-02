@@ -10,7 +10,7 @@ interface IMobileUIView {
   dictionary?: { setData: <T extends typeof data>(newData: T & IObject) => void };
   device: DeviceEnum;
   screens: IObservableArray<IControl>;
-  currentScreen: IControl;
+  currentScreen?: IControl;
   firstScreen?: IControl;
   secondScreen?: IControl;
   background: IBackgroundColor;
@@ -37,6 +37,9 @@ interface IMobileUIView {
   switchPortrait(): void;
   setIOS(value: boolean): void;
   setAutoSave?(value: boolean): void;
+  setError?(value: string | null): void;
+  setTimeOut?(cb: () => void, delay: number): void;
+  closeConverter?(): void;
 }
 
 export default IMobileUIView;

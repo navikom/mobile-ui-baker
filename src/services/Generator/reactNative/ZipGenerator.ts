@@ -16,7 +16,6 @@ import {
   FLAT_LIST_COMP,
   FUNCTION,
   IMAGE_BACKGROUND_COMP,
-  IMAGE_COMP,
   IMPORT_REACT,
   INIT_STATE,
   LEFT_DRAWER,
@@ -38,7 +37,8 @@ import {
   STORE,
   STORE_BASE,
   STORE_VARIABLE,
-  STYLES_FOLDER, SVG_FOLDER,
+  STYLES_FOLDER,
+  SVG_FOLDER,
   TABS,
   TEXT_BASE_COMP,
   TEXT_COMP,
@@ -53,6 +53,8 @@ import { Mode } from 'enums/ModeEnum';
 import IStoreContent from 'interfaces/IStoreContent';
 import IService from 'interfaces/IGenerateService';
 import { AnimationDirectionEnum } from 'enums/AnimationEnum';
+import { ACTION_NAVIGATE_BACK, ACTION_NAVIGATE_REPLACE } from '../../../models/Constants';
+import { IScreen } from '../../../interfaces/IControl';
 
 const contentString = (content: string, imports: string[]) => {
   let str = importFrom(['observer'], 'mobx-react-lite') + ';\n';
@@ -107,7 +109,29 @@ class ZipGenerator {
     this.source.setFinished();
   }
 
-  screen2zip(title: string) {
+  screen2zip(screen: IScreen, title: string) {
+    // <React.Fragment>
+    //   <StatusBar hidden={false} />
+    // <SafeAreaView style={{flex: 1, backgroundColor: "#cccccc"}}>
+    // <BaseComponent store={store} props={store.props(route.params.componentId)} />
+    // </SafeAreaView>
+    // </React.Fragment>
+
+    let statusBar = this.source.store.statusBarEnabled ?
+      `<StatusBar barStyle="${this.source.store.mode === Mode.DARK ? 'light-content' : 'dark-content'}" backgroundColor="${this.source.store.statusBarColor}" />`
+      : '<StatusBar hidden />';
+    let statusBarColor = this.source.store.statusBarColor;
+
+    if(screen.statusBarExtended) {
+      statusBar = `<StatusBar barStyle="${screen.mode === Mode.DARK ? 'light-content' : 'dark-content'}" backgroundColor="${screen.statusBarColor}" />\n`;
+      statusBarColor = screen.statusBarColor;
+    }
+
+    // ${statusBar}
+    // <SafeAreaView style={{flex: 1, backgroundColor: "${this.source.store.statusBarColor}"}}>
+    // <BaseComponent store={store} props={store.props(route.params.componentId)} />
+    // </SafeAreaView>
+
     let content = IMPORT_REACT + ';\n';
     content += importFrom(BASE_COMP, `${APP_ROOT}/${COMPONENTS_FOLDER}/${BASE_COMP}/${BASE_COMP}`) + ';\n';
     content += importFrom(STORE, `${APP_ROOT}/${SCREENS_FOLDER}/${title}/${STORE}`) + ';\n';
@@ -117,7 +141,14 @@ class ZipGenerator {
     content += '  React.useEffect(() => {\n';
     content += `    ${RETURN} store.dispose;\n`;
     content += '  });\n';
-    content += `  return <${BASE_COMP} ${STORE_VARIABLE}={store} ${PROPS_VARIABLE}={store.props(route.params.${COMPONENT_ID})} />;\n`;
+    content += '  return (\n';
+    content += '    <React.Fragment>\n';
+    content += `      ${statusBar}\n`;
+    content += `      <SafeAreaView style={{flex: 1, backgroundColor: "${statusBarColor}"}}>\n`;
+    content += `        <${BASE_COMP} ${STORE_VARIABLE}={store} ${PROPS_VARIABLE}={store.props(route.params.${COMPONENT_ID})} />;\n`;
+    content += '      </SafeAreaView>\n';
+    content += '    </React.Fragment>\n';
+    content += '  );\n'
     content += `}\nexport default ${title};`;
     this.zip.file(`${SRC_FOLDER}/${SCREENS_FOLDER}/${title}/${title}.js`, content);
     this.screenStore2zip(title);
@@ -350,7 +381,7 @@ ${EXPORT_DEFAULT} ${name};`;
 
   storeBase2zip() {
     let content = importFrom(['action'], 'mobx') + ';\n';
-    content += importFrom(['DrawerActions'], '@react-navigation/native') + ';\n';
+    content += importFrom(['DrawerActions', 'StackActions'], '@react-navigation/native') + ';\n';
     content += importFrom(SCREENS_LIST, `${APP_ROOT}/${NAVIGATION_FOLDER}/${SCREENS_LIST}`) + ';\n';
     content += importFrom(NAV_COMPONENTS, `${APP_ROOT}/${NAVIGATION_FOLDER}/${NAV_COMPONENTS}`) + ';\n';
     content += `\nclass ${STORE_BASE} {\n`;
@@ -432,6 +463,12 @@ ${EXPORT_DEFAULT} ${name};`;
     content += '      switch(entry[0]) {\n';
     content += `        case '${NAVIGATE_TO}':\n`;
     content += `          ${SCREENS_LIST}[entry[1]] && this.${NAVIGATION_VARIABLE}.navigate(${SCREENS_LIST}[entry[1]], {${COMPONENT_ID}: entry[1]});\n`;
+    content += `          ${BREAK};\n`;
+    content += `        case '${ACTION_NAVIGATE_REPLACE}':\n`;
+    content += `          ${SCREENS_LIST}[entry[1]] && this.${NAVIGATION_VARIABLE}.dispatch(StackActions.replace(${SCREENS_LIST}[entry[1]], {${COMPONENT_ID}: entry[1]}));\n`;
+    content += `          ${BREAK};\n`;
+    content += `        case '${ACTION_NAVIGATE_BACK}':\n`;
+    content += `          ${SCREENS_LIST}[entry[1]] && this.${NAVIGATION_VARIABLE}.goBack();\n`;
     content += `          ${BREAK};\n`;
     content += `        case '${ENABLE_STYLE}':\n`;
     content += `          this.enableStyle(entry);\n`;
@@ -661,13 +698,8 @@ ${EXPORT_DEFAULT} ${name};`;
     let content = `import 'mobx-react-lite/batchingForReactNative';\n`;
     content += IMPORT_REACT + ';\n';
 
-    const statusBar = this.source.store.statusBarEnabled ?
-      `<StatusBar barStyle="${this.source.store.mode === Mode.DARK ? 'light-content' : 'dark-content'}" backgroundColor="${this.source.store.statusBarColor}" />`
-      : '<StatusBar hidden />';
-
     content +=
       `import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
-import {SafeAreaView, StatusBar} from 'react-native';
 import AppContainer from '${APP_ROOT}/navigation/AppNavigator';
 
 const Fonts = {
@@ -694,10 +726,7 @@ const theme = {
 function App() {
   return (
     <NavigationContainer theme={theme}>
-      ${statusBar}
-      <SafeAreaView style={{flex: 1, backgroundColor: "${this.source.store.statusBarColor}"}}>
-        <AppContainer />
-      </SafeAreaView>
+      <AppContainer />
     </NavigationContainer>
   );
 }

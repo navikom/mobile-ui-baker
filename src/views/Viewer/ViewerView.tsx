@@ -88,7 +88,7 @@ interface ContentProps {
   firstItems: IControl[];
   secondItems: IControl[];
   device: DeviceEnum;
-  setCurrentScreen: (screen: IControl, behavior?: (string | number)[]) => void;
+  setCurrentScreen: (action: string, screen?: IControl, behavior?: (string | number)[]) => void;
 }
 
 const ContentComponent: React.FC<ContentProps> = (
@@ -152,11 +152,12 @@ const DeviceContent: React.FC<{ store: ViewerViewStore }> = observer(({ store })
     background={store.background}
     statusBarEnabled={store.statusBarEnabled}
     statusBarColor={store.statusBarColor}
+    scale={store.scale}
     portrait={store.portrait}>
     <Content
       device={store.device}
-      setCurrentScreen={(screen: IControl, behavior?: (string | number)[]) =>
-        store.setCurrentScreenAnimate(screen, behavior)}
+      setCurrentScreen={(action: string, screen?: IControl, behavior?: (string | number)[]) =>
+        store.setCurrentScreenAnimate(action, screen, behavior)}
       firstContainerVisible={store.firstContainerVisible}
       ios={store.ios}
       background={store.background}

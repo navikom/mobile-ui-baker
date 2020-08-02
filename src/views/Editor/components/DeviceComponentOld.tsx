@@ -15,6 +15,9 @@ import AndroidPixelNavBar from 'components/Icons/AndroidPixelNavBar';
 import { Mode } from 'enums/ModeEnum';
 import { DeviceComponentProps } from './DeviceComponent';
 
+const android = { width: 360, height: 640 };
+const iphoneSE = { width: 320, height: 568 };
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
@@ -23,13 +26,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     wrapper: {
       position: 'relative',
-      width: theme.typography.pxToRem(303),
       backgroundRepeat: 'no-repeat',
       backgroundSize: '100%',
     },
     inner: {
       position: 'absolute',
-      top: theme.typography.pxToRem(59),
+      top: 79,
       left: theme.typography.pxToRem(14),
       width: 'calc(100% - 30px)',
       backgroundRepeat: 'no-repeat',
@@ -48,39 +50,43 @@ const useStyles = makeStyles((theme: Theme) =>
 const androidStyles = makeStyles((theme: Theme) =>
   createStyles({
     wrapper: {
-      height: theme.typography.pxToRem(617),
+      width: android.width + 30,
+      height: android.height + 160,
       backgroundImage: `url(${AndroidWrapper})`,
     },
     inner: {
-      height: theme.typography.pxToRem(484),
+      height: android.height,
       overflowX: 'hidden'
     },
     landscape: {
       backgroundImage: `url(${AndroidWrapperLand})`,
-      height: theme.typography.pxToRem(303),
-      width: theme.typography.pxToRem(620),
+      height: android.width + 30,
+      width: android.height + 160,
     },
     landscapeInner: {
-      top: theme.typography.pxToRem(18),
-      left: theme.typography.pxToRem(62),
-      height: theme.typography.pxToRem(271),
-      width: theme.typography.pxToRem(490),
+      top: 19,
+      left: 70,
+      height: android.width,
+      width: android.height,
     },
     time: {
       position: 'absolute',
       right: theme.typography.pxToRem(2),
       fontSize: theme.typography.pxToRem(13)
     },
+    timeLandscape: {
+      right: 32
+    },
     content: {
       width: '100%',
-      marginTop: '6.75%',
-      height: '90%',
+      marginTop: '5.6%',
+      height: '91.8%',
       marginLeft: theme.typography.pxToRem(1),
       position: 'relative'
     },
     contentLandscape: {
-      marginTop: '3.7%',
-      height: '93%'
+      marginTop: '2.7%',
+      height: '95%'
     },
     fullHeight: {
       marginTop: 0,
@@ -92,28 +98,29 @@ const androidStyles = makeStyles((theme: Theme) =>
 const iosStyles = makeStyles((theme: Theme) =>
   createStyles({
     wrapper: {
-      height: theme.typography.pxToRem(620),
+      height: iphoneSE.height + 150,
+      width: iphoneSE.width + 30,
       backgroundImage: `url(${IOSWrapper})`
     },
     inner: {
-      height: theme.typography.pxToRem(490),
-      top: theme.typography.pxToRem(55),
-      left: theme.typography.pxToRem(15),
+      height: iphoneSE.height,
+      top: theme.typography.pxToRem(65),
+      left: theme.typography.pxToRem(16),
     },
     landscape: {
       backgroundImage: `url(${IOSWrapperLand})`,
-      height: theme.typography.pxToRem(303),
-      width: theme.typography.pxToRem(620),
+      height: theme.typography.pxToRem(iphoneSE.width + 30),
+      width: theme.typography.pxToRem(iphoneSE.height + 150),
     },
     landscapeInner: {
-      top: theme.typography.pxToRem(21),
-      left: theme.typography.pxToRem(60),
-      height: theme.typography.pxToRem(260),
-      width: theme.typography.pxToRem(490),
+      top: 17,
+      left: 65,
+      height: theme.typography.pxToRem(iphoneSE.width),
+      width: theme.typography.pxToRem(iphoneSE.height),
     },
     topBar: {
       position: 'absolute',
-      top: theme.typography.pxToRem(17)
+      top: 19
     },
     content: {
       width: '100%',
@@ -150,8 +157,8 @@ const IOSDevice: React.FC<DeviceComponentProps> = (
       {
         statusBarEnabled && (
           <IPhone6Inner
-            width={portrait ? undefined : 490}
-            height={portrait ? undefined : 260}
+            width={portrait ? iphoneSE.width : iphoneSE.height}
+            height={portrait ? iphoneSE.height : iphoneSE.width}
             style={{ position: 'absolute' }}
             mode={mode}
             background={background.backgroundColor}
@@ -180,26 +187,32 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
     [extraClasses.landscapeInner]: !portrait,
   });
   const time = moment().format('HH:mm');
-  const timeStyle = classNames(mode === Mode.DARK ? classes.text : classes.textBlack, extraClasses.time);
+  const timeStyle = classNames(
+    mode === Mode.DARK ? classes.text : classes.textBlack,
+    extraClasses.time,
+    {
+      [extraClasses.timeLandscape]: !portrait
+    }
+  );
   const content = classNames(extraClasses.content, {
     [extraClasses.contentLandscape]: !portrait,
     [extraClasses.fullHeight]: !statusBarEnabled
   });
   const navbar = portrait ?
-    { bottom: 0 } : { transform: 'rotate(-90deg)', right: -230, height: 271 };
+    { bottom: 0 } : { transform: 'rotate(-90deg)', right: -165, height: android.width, zIndex:2 };
   return (
     <div className={inner} id="capture">
       {
         statusBarEnabled && (
           <>
             <AndroidPixelInner
-              width={portrait ? undefined : 490}
+              width={portrait ? android.width : android.height - 30}
               style={{ position: 'absolute' }}
               mode={mode}
               background={background.backgroundColor}
               statusBarColor={statusBarColor} />
             <AndroidPixelNavBar
-              width={portrait ? undefined : 490}
+              width={android.width}
               style={{ position: 'absolute', ...navbar }}
               mode={mode}
               background={background.backgroundColor}
@@ -217,15 +230,16 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
 
 
 const DeviceComponent: React.FC<DeviceComponentProps> = (
-  { ios, children, portrait, ...rest }) => {
+  { ios, children, scale, portrait, ...rest }) => {
   const classes = useStyles();
   const extraClasses = ios ? iosStyles() : androidStyles();
   const wrapper = classNames(classes.wrapper, extraClasses.wrapper, {
     [extraClasses.landscape]: !portrait
   });
+  const marginTop = scale && scale <= 1 ? 0 : (scale || 1.1) * 80;
   return (
-    <Grid container className={classes.container} justify="center">
-      <div className={wrapper}>
+    <Grid container className={classes.container} justify="center" style={{width: `${150 * (scale || 1)}%`, marginTop: `${marginTop}px`}}>
+      <div id='viewport' className={wrapper}>
         {ios ?
           <IOSDevice portrait={portrait} {...rest}>{children}</IOSDevice> :
           <AndroidDevice portrait={portrait} {...rest}>{children}</AndroidDevice>}

@@ -17,7 +17,7 @@ import Paper from '@material-ui/core/Paper';
 import {
   Clear,
   Redo,
-  Undo
+  Undo, ZoomIn, ZoomOut
 } from '@material-ui/icons';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { Skeleton } from '@material-ui/lab';
@@ -49,6 +49,8 @@ import EditorDictionary from './store/EditorDictionary';
 
 import 'views/Editor/Editor.css';
 import CustomBackdrop from 'components/Backdrop/Backdrop';
+import ScreenTab from './components/tabs/ScreenTab';
+import IEditorTabsProps from 'interfaces/IEditorTabsProps';
 
 const contentStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -81,7 +83,7 @@ interface ContentProps {
   handleDropElement: (parent: IControl, source: IControl, dropAction: DropEnum) => void;
   selectControl: (control?: IControl) => void;
   isSelected: (control: IControl) => boolean;
-  setCurrentScreen: (screen: IControl, behavior?: (string | number)[]) => void;
+  setCurrentScreen: (action: string, screen?: IControl, behavior?: (string | number)[]) => void;
   background: IBackgroundColor;
   ios: boolean;
   device: DeviceEnum;
@@ -200,7 +202,7 @@ const editorStyles = makeStyles((theme: Theme) =>
       border: '1px solid ' + blackOpacity(0.12),
     },
     tab: {
-      minWidth: 120,
+      minWidth: 110,
     },
     headerButtons: {
       flexGrow: 1,
@@ -230,6 +232,12 @@ const editorStyles = makeStyles((theme: Theme) =>
       position: 'absolute',
       bottom: 20,
       right: -130,
+      zIndex: 99
+    },
+    scaleButtons: {
+      position: 'absolute',
+      bottom: 20,
+      left: -130,
       zIndex: 99
     },
     contentWrapper: {
@@ -267,7 +275,7 @@ function a11yProps(index: number) {
   };
 }
 
-const TabContent = [ProjectTab, ControlTab];
+const TabContent = [ProjectTab, ScreenTab, ControlTab];
 
 interface ContextComponentProps {
   store: EditorViewStore;
@@ -330,10 +338,10 @@ const ContextComponent: React.FC<ContextComponentProps> = (
       }
       <div className={contentWrapper}>
         <DndProvider debugMode={true} backend={Backend}>
-          <CustomDragLayer />
+          <CustomDragLayer scale={store.scale} />
           <Grid container style={{ height: '100%' }}>
             <Grid item xs={2} sm={2} md={3} style={{ padding: 5, position: 'relative' }}>
-              <div className={classes.bordered} style={{ overflow: 'auto', height: height - TABS_HEIGHT }}>
+              <div className={classes.bordered} style={{ overflow: 'auto', height: height - TABS_HEIGHT, padding: '0 3px' }}>
                 <TreeComponent
                   screens={store.screens}
                   moveControl={store.moveControl}
@@ -364,14 +372,15 @@ const ContextComponent: React.FC<ContextComponentProps> = (
             <Grid item xs={7} sm={7} md={6} style={{ padding: 5 }}>
               <div className={classes.bordered} style={{ overflow: 'auto', height: height - TABS_HEIGHT }}>
                 <div style={{ transform: 'translate3d(0, 0, 0)' }}>
-                  <div style={{ transform: 'scale(1)' }}>
+                  <div style={{ transform: `scale(${store.scale})` }}>
                     <DeviceComponent
                       device={store.device}
                       ios={store.ios}
-                      mode={store.mode}
-                      background={store.background}
-                      statusBarEnabled={store.statusBarEnabled}
-                      statusBarColor={store.statusBarColor}
+                      mode={store.screenMode}
+                      background={store.screenBackground}
+                      statusBarEnabled={store.screenStatusBarEnabled}
+                      statusBarColor={store.screenStatusBarColor}
+                      scale={store.scale}
                       portrait={store.portrait}>
                       <Content
                         firstContainerVisible={store.firstContainerVisible}
@@ -385,15 +394,15 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                         handleDropElement={store.handleDropElement}
                         selectControl={store.selectControl}
                         isSelected={store.isSelected}
-                        setCurrentScreen={(screen: IControl, behavior?: (string | number)[]) =>
-                          store.setCurrentScreenAnimate(screen, behavior)}
+                        setCurrentScreen={(action: string, screen?: IControl, behavior?: (string | number)[]) =>
+                          store.setCurrentScreenAnimate(action, screen, behavior)}
                       />
                     </DeviceComponent>
                   </div>
                 </div>
               </div>
             </Grid>
-            <Grid item xs={3} sm={3} md={3} style={{ padding: 5 }}>
+            <Grid item xs={3} sm={3} md={3} style={{ padding: 5, position: 'relative' }}>
               <Paper variant="outlined" square className={tabsStyle}>
                 <Tabs
                   value={store.tabToolsIndex}
@@ -412,7 +421,17 @@ const ContextComponent: React.FC<ContextComponentProps> = (
               </Paper>
               <div className={classes.bordered}
                    style={{ padding: 5, marginTop: 5, height: tabsHeight }}>
-                {React.createElement(TabContent[store.tabToolsIndex], store.tabProps)}
+                {React.createElement(TabContent[store.tabToolsIndex], store.tabProps as IEditorTabsProps)}
+              </div>
+              <div className={classes.scaleButtons}>
+                <ButtonGroup color="primary" variant="outlined">
+                  <Button disabled={store.scale >= EditorViewStore.MAX_ZOOM} onClick={() => store.zoomIn()}>
+                    <ZoomIn />
+                  </Button>
+                  <Button disabled={store.scale <= EditorViewStore.MIN_ZOOM} onClick={() => store.zoomOut()}>
+                    <ZoomOut />
+                  </Button>
+                </ButtonGroup>
               </div>
             </Grid>
           </Grid>
@@ -452,7 +471,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
           store.loadingPlugin && <Preview />
         }
       </div>
-      <CustomBackdrop open={store.savingProject || store.fetchingProject} />
+      <CustomBackdrop open={store.savingProject || store.fetchingProject} progress={store.progress} />
     </div>
   )
 };

@@ -7,6 +7,7 @@ import ICSSProperty from 'interfaces/ICSSProperty';
 import IProject from 'interfaces/IProject';
 import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 import { TextMetaEnum } from '../enums/TextMetaEnum';
+import { Mode } from '../enums/ModeEnum';
 
 export default interface IControl extends IMovable {
   type: ControlEnum;
@@ -34,7 +35,9 @@ export default interface IControl extends IMovable {
   hasImage: boolean;
   hasSVG: boolean;
   meta: ScreenMetaEnum | TextMetaEnum;
+  refObj?: HTMLDivElement;
 
+  setRefObject(ref: HTMLDivElement): void;
   setId(value: string): void;
 
   activeClass(style: string): boolean;
@@ -75,7 +78,7 @@ export default interface IControl extends IMovable {
 
   removeAction(index: number, noHistory?: boolean): void;
 
-  applyActions(cb?: (screen: IControl) => void): void;
+  applyActions(cb?: (action: string, screen?: IControl) => void): void;
 
   setAction(index: number, actions: string[]): void;
 
@@ -93,6 +96,8 @@ export default interface IControl extends IMovable {
 
   setMeta(meta: ScreenMetaEnum | TextMetaEnum): void;
 
+  applyFoSelected(): void;
+
   /// property
   switchExpanded(key: string, propName: string): () => void;
 
@@ -105,6 +110,23 @@ export default interface IControl extends IMovable {
 
 export interface IGrid extends IControl {
   clone(): IGrid;
+}
+
+export interface IScreen extends IControl {
+  background: string;
+  statusBarExtended: boolean;
+  statusBarColor: string;
+  mode: Mode;
+
+  setStatusBarExtended(value: boolean, noHistory?: boolean): void;
+  setStatusBarColor(color: string, noHistory?: boolean): void;
+  setBackground(background: string, noHistory?: boolean): void;
+  setMode(mode: Mode, noHistory?: boolean): void;
+  switchMode(): void;
+  switchExtended(): void;
+  setScreenProps(screen: IScreen): void;
+
+  clone(): IScreen;
 }
 
 export type IText = IControl;

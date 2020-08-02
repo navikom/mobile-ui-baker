@@ -16,9 +16,9 @@ const IPhone6Inner: React.FC<Props> = (
   {mode, background, antennaDX, statusBarColor, style, width = 273}) => {
   const fill = mode === Mode.WHITE ? "#030303" : whiteColor;
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={`${width}px`} height="20" viewBox={`0 0 ${width} 20`} version="1.1" style={style}>
+    <svg xmlns="http://www.w3.org/2000/svg" width={`${width}px`} height="23" viewBox={`0 0 ${width} 23`} version="1.1" style={style}>
       <g id="Status-Bar">
-        <rect id="Bounds" fill={statusBarColor} x="0" y="0" width={width} height="17.8035982"/>
+        <rect id="Bounds" fill={statusBarColor} x="0" y="0" width={width} height="20.8035982"/>
         <g id="Battery" transform={`translate(${width - 28}, 4.848576)`} fill={fill}>
           <g transform="translate(0.348000, 0.151424)">
             <path d="M1.06848613,0.356071964 L1.06848613,0.356071964 C0.674894615,0.356071964 0.356,0.674983001 0.356,1.06870974 L0.356,6.76487347 C0.356,7.15946208 0.673460835,7.47751124 1.06848613,7.47751124 L17.7995139,7.47751124 C18.1931054,7.47751124 18.512,7.15860021 18.512,6.76487347 L18.512,1.06870974 C18.512,0.674121133 18.1945392,0.356071964 17.7995139,0.356071964 L1.06848613,0.356071964 Z M1.06848613,0 L1.06848613,0 L17.7995139,0 C18.3921608,0 18.868,0.47847765 18.868,1.06870974 L18.868,6.76487347 C18.868,7.35534962 18.3896225,7.83358321 17.7995139,7.83358321 L1.06848613,7.83358321 C0.475839243,7.83358321 0,7.35510556 0,6.76487347 L0,1.06870974 C0,0.478233584 0.478377536,0 1.06848613,0 L1.06848613,0 Z" id="Shape"/>

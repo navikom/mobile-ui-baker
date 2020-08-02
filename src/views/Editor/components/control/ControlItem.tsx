@@ -1,6 +1,7 @@
-import React, { RefObject, useImperativeHandle } from 'react';
+import React, { RefObject, useEffect, useImperativeHandle } from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
 import { observer } from 'mobx-react-lite';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import { DropEnum } from 'enums/DropEnum';
 import { ItemTypes } from 'views/Editor/store/ItemTypes';
 import { makeStyles } from '@material-ui/core/styles';
@@ -133,7 +134,7 @@ export const ElementComponent: React.FC<ElementProps> =
           if (locked) {
             return;
           }
-          selectControl && selectControl(control);
+          selectControl && selectControl(control, undefined, true);
           if (!control.hasImage) {
             control.applyActions(setCurrentScreen);
             e.stopPropagation();
@@ -180,6 +181,7 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
       isOver,
       isOverCurrent,
       connectDragSource,
+      connectDragPreview,
       connectDropTarget,
       moveControl,
       handleDropElement,
@@ -189,11 +191,19 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
     },
     ref) => {
     const elementRef = React.useRef<HTMLDivElement>(null);
-    connectDragSource && connectDragSource(elementRef);
-    connectDropTarget && connectDropTarget(elementRef);
+    // connectDragSource && connectDragSource(elementRef);
+    // connectDropTarget && connectDropTarget(elementRef);
+    // connectDragPreview && connectDragPreview(getEmptyImage());
+
     useImperativeHandle(ref, () => ({
       getNode: () => elementRef.current,
     }));
+
+    useEffect(() => {
+      connectDragSource && connectDragSource(elementRef);
+      connectDropTarget && connectDropTarget(elementRef);
+      connectDragPreview && connectDragPreview(getEmptyImage())
+    }, [connectDragPreview, connectDragSource, connectDropTarget]);
 
     return (
       <ElementComponent
@@ -252,13 +262,15 @@ const Item = DropTarget(
   DragSource(
     ItemTypes.CONTROL,
     {
-      beginDrag: (props: ControlProps) => {
+      beginDrag: (props: ControlProps, monitor, component) => {
         return {
           control: props.control,
+          component
         }
       }
     },
     (connect, monitor) => ({
+      connectDragPreview: connect.dragPreview(),
       connectDragSource: connect.dragSource(),
       isDragging: monitor.isDragging(),
     }),

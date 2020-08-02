@@ -48,6 +48,8 @@ import { IHistoryObject, SettingsPropType } from 'interfaces/IHistory';
 import IProject, { IBackgroundColor, IProjectVersion } from 'interfaces/IProject';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import GenerateService from 'services/Generator/reactNative/GenerateService';
+import ConvertService from 'services/Converter/figma/ConvertService';
+import { IFigmaConverter } from 'services/Converter/figma/IFigmaConverter';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -59,7 +61,7 @@ export interface DragAndDropItem {
 class EditorViewStore extends DisplayViewStore {
   static STORE_JSON = 'storeJson';
   static AUTO_SAVE = 'autoSave';
-  static TABS = [EditorDictionary.keys.project, EditorDictionary.keys.controls];
+  static TABS = [EditorDictionary.keys.project, EditorDictionary.keys.screen, EditorDictionary.keys.controls];
   static CONTROLS = ControlEnum;
   @observable history = ControlStore.history;
   @observable selectedControl?: IControl;
@@ -69,12 +71,21 @@ class EditorViewStore extends DisplayViewStore {
   @observable generatorShowDialog = false;
   @observable generatorDialogContent: string[] | null = null;
   @observable generator: IGenerateService | null = null;
+  @observable figmaConverter: IFigmaConverter | null = null;
   generatorMessageReactionDisposer: IReactionDisposer;
-  generatorReactionDisposer?: IReactionDisposer;
+  whenReactionDisposer?: IReactionDisposer;
 
   moveOpened = true;
   debug = false;
   timer?: NodeJS.Timeout;
+
+  static get MAX_ZOOM() {
+    return DisplayViewStore.MAX_ZOOM;
+  }
+
+  static get MIN_ZOOM() {
+    return DisplayViewStore.MIN_ZOOM;
+  }
 
   isCurrent = (screen: IControl) => {
     return computed(() => this.currentScreen === screen).get();
@@ -110,8 +121,12 @@ class EditorViewStore extends DisplayViewStore {
     return JSON.stringify(this.toJSON);
   }
 
+  get progress() {
+    return this.figmaConverter && this.figmaConverter.progress;
+  }
+
   @computed get currentScreenMetaList() {
-    const screenMetaMap = this.screensMetaMap.get(this.currentScreen.id);
+    const screenMetaMap = this.screensMetaMap.get(this.currentScreen!.id);
 
     return Object.values(ScreenMetaEnum)
       .filter(value => !(screenMetaMap && screenMetaMap.has(value as ScreenMetaEnum)))
@@ -135,6 +150,7 @@ class EditorViewStore extends DisplayViewStore {
         project: this.project,
         changeProjectTitle: this.changeProjectTitle,
         importProject: () => this.importProject(),
+        importFromFigma: (token: string, key: string) => this.figmaConvert(token, key),
         clearProject: () => this.newProject(),
         deleteProject: () => this.deleteProject(),
         setAccess: (access: AccessEnum) => this.setAccess(access),
@@ -142,6 +158,11 @@ class EditorViewStore extends DisplayViewStore {
         navigation: this.navigation,
         setNavigation: (navigation: (string | number)[]) => this.setNavigation(navigation),
         generate: () => this.generate()
+      },
+      {
+        dictionary: this.dictionary,
+        screen: this.currentScreen,
+        cloneControl: this.cloneScreen,
       },
       {
         deleteControl: this.deleteControl,
@@ -167,13 +188,15 @@ class EditorViewStore extends DisplayViewStore {
 
     this.history.setFabric(CreateControl);
     this.history.setViewStore(this);
-    this.currentScreen.changeTitle('Screen', true);
-    this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
+    this.currentScreen!.addChild(CreateControl(ControlEnum.Grid));
     this.generatorMessageReactionDisposer = reaction(() => this.generatorDialogContent, (content) => {
       if(content) {
         this.openGeneratorDialog();
       }
     });
+    setTimeout(() => {
+      this.toCenter();
+    }, 1000);
   }
 
   importData(): Promise<string> {
@@ -396,10 +419,9 @@ class EditorViewStore extends DisplayViewStore {
     this.clearLocalStorage();
     this.clear();
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
-    this.screens = observable([CreateControl(ControlEnum.Grid)]);
+    this.screens = observable([CreateControl(ControlEnum.Screen)]);
     this.currentScreen = this.screens[0];
     this.placeContent(this.screens[0]);
-    this.currentScreen.changeTitle('Screen', true);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
     this.background = { backgroundColor: whiteColor };
     this.statusBarColor = whiteColor;
@@ -425,14 +447,47 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   async generate() {
+    if(this.whenReactionDisposer) {
+      return;
+    }
     this.setSavingProject(true);
     this.generator = await new GenerateService(this).generateRN();
-    this.generatorReactionDisposer = when(() => {
+    this.whenReactionDisposer = when(() => {
       return this.generator !== null && this.generator.finished;
     }, () => {
       this.setSavingProject(false);
       this.generator = null;
+      this.whenReactionDisposer = undefined;
     });
+  }
+
+  async figmaConvert(token: string, key: string) {
+    if(this.whenReactionDisposer) {
+      return;
+    }
+    this.setSavingProject(true);
+    // '55587-de2833b2-2101-4361-be55-7923873c031f',
+    //   'Q09rBNMM7vskgeyXmJqEYu'
+    this.figmaConverter = new ConvertService(this, token, key).convert();
+    this.whenReactionDisposer = when(() => {
+      return this.figmaConverter !== null && this.figmaConverter.finished;
+    }, () => {
+      this.setScreens(this.figmaConverter!.screensList);
+      this.closeConverter()
+    });
+  }
+
+  closeConverter() {
+    this.setSavingProject(false);
+    this.figmaConverter = null;
+    this.whenReactionDisposer = undefined;
+  }
+
+  @action setScreens(screens: IControl[]) {
+    ControlStore.clear();
+    this.screens.replace(screens.map((e) => CreateControl(ControlEnum.Grid, e)));
+    this.currentScreen = this.screens[0];
+    this.placeContent(this.screens[0]);
   }
 
   @action clear() {
@@ -594,7 +649,7 @@ class EditorViewStore extends DisplayViewStore {
   @action setMeta(meta: ScreenMetaEnum | TextMetaEnum, control: IControl, noHistory?: boolean) {
     const undo = { control: control.id, meta: control.meta };
     if(control.type === ControlEnum.Grid) {
-      this.setScreenMeta(meta as ScreenMetaEnum, this.currentScreen, control as IGrid);
+      this.setScreenMeta(meta as ScreenMetaEnum, this.currentScreen!, control as IGrid);
     } else {
       control.setMeta(meta);
     }
@@ -604,10 +659,10 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   @action switchMode() {
-    const undo = { control: this.currentScreen.id, key: 'mode', value: this.mode } as unknown as IHistoryObject;
+    const undo = { control: this.currentScreen!.id, key: 'mode', value: this.mode } as unknown as IHistoryObject;
 
     super.switchMode();
-    const redo = { control: this.currentScreen.id, key: 'mode', value: this.mode } as unknown as IHistoryObject;
+    const redo = { control: this.currentScreen!.id, key: 'mode', value: this.mode } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
   }
 
@@ -615,21 +670,21 @@ class EditorViewStore extends DisplayViewStore {
     if (value.length > 150) {
       return;
     }
-    const undo = { control: this.currentScreen.id, value: this.project.title } as unknown as IHistoryObject;
+    const undo = { control: this.currentScreen!.id, value: this.project.title } as unknown as IHistoryObject;
     this.project.update({ title: value } as IProject);
-    const redo = { control: this.currentScreen.id, value: this.project.title } as unknown as IHistoryObject;
+    const redo = { control: this.currentScreen!.id, value: this.project.title } as unknown as IHistoryObject;
     this.history.add([HIST_PROJECT_TITLE_CHANGE, undo, redo]);
   };
 
   @action setBackground(background: IBackgroundColor) {
     const undo = {
-      control: this.currentScreen.id,
+      control: this.currentScreen!.id,
       key: 'background',
       value: { ...this.background }
     } as unknown as IHistoryObject;
     super.setBackground(background);
     const redo = {
-      control: this.currentScreen.id,
+      control: this.currentScreen!.id,
       key: 'background',
       value: { ...this.background }
     } as unknown as IHistoryObject;
@@ -638,13 +693,13 @@ class EditorViewStore extends DisplayViewStore {
 
   @action setStatusBarColor(statusBarColor: string) {
     const undo = {
-      control: this.currentScreen.id,
+      control: this.currentScreen!.id,
       key: 'statusBarColor',
       value: this.statusBarColor
     } as unknown as IHistoryObject;
     super.setStatusBarColor(statusBarColor);
     const redo = {
-      control: this.currentScreen.id,
+      control: this.currentScreen!.id,
       key: 'statusBarColor',
       value: statusBarColor
     } as unknown as IHistoryObject;
@@ -857,12 +912,12 @@ class EditorViewStore extends DisplayViewStore {
 
     const undo = {
       control: control.id,
-      screen: this.currentScreen.id,
+      screen: this.currentScreen!.id,
       index: -1
     };
     const redo = {
       control: control.toJSON,
-      screen: this.currentScreen.id,
+      screen: this.currentScreen!.id,
       parent: control.parentId,
       index: -1
     };
@@ -875,21 +930,20 @@ class EditorViewStore extends DisplayViewStore {
         parent.removeChild(control);
       }
     } else {
-      redo.index = this.currentScreen.children.indexOf(control);
-      redo.index > -1 && (redo.parent = this.currentScreen.id);
+      redo.index = this.currentScreen!.children.indexOf(control);
+      redo.index > -1 && (redo.parent = this.currentScreen!.id);
       undo.index = redo.index;
-      this.currentScreen.removeChild(control);
+      this.currentScreen!.removeChild(control);
     }
-    this.currentScreen.addChild(control);
+    this.currentScreen!.addChild(control);
 
     this.history.add([HIST_HANDLE_DROP_CANVAS, undo, redo]);
   };
 
   @action addScreen = () => {
-    const screen = CreateControl(ControlEnum.Grid);
-    screen.changeTitle('Screen');
+    const screen = CreateControl(ControlEnum.Screen);
     this.screens.push(screen);
-    const undo = { control: screen.id, screen: this.currentScreen.id };
+    const undo = { control: screen.id, screen: this.currentScreen!.id };
     this.currentScreen = screen;
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
     const redo = { control: this.currentScreen.toJSON };
@@ -898,7 +952,7 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   @action removeScreen = (screen: IControl, noHistory?: boolean) => {
-    const undo = { control: screen.toJSON, screen: this.currentScreen.id };
+    const undo = { control: screen.toJSON, screen: this.currentScreen!.id };
     const redo = { control: screen.id };
     this.screens.splice(this.screens.indexOf(screen), 1);
     if (this.currentScreen === screen) {
@@ -939,7 +993,7 @@ class EditorViewStore extends DisplayViewStore {
     this.screens.splice(index, 0, screen);
   }
 
-  @action selectControl = (control?: IControl, screen?: IControl) => {
+  @action selectControl = (control?: IControl, screen?: IControl, fromDevice?: boolean) => {
     this.tabToolsIndex = 1;
     this.selectedControl = control;
     if(control && screen) {
@@ -947,10 +1001,18 @@ class EditorViewStore extends DisplayViewStore {
         this.setCurrentScreen(screen);
       }
     }
+    if(fromDevice && control) {
+      control.applyFoSelected();
+      setTimeout(() => {
+        control.refObj && control.refObj.scrollIntoView(true);
+      }, 400);
+
+    }
+
   };
 
   @action addItem(control: IControl) {
-    this.currentScreen.addChild(control);
+    this.currentScreen!.addChild(control);
   }
 
   @action handleTabTool = (_: any, index: number) => {
@@ -960,7 +1022,7 @@ class EditorViewStore extends DisplayViewStore {
   dispose() {
     super.dispose();
     this.generatorMessageReactionDisposer && this.generatorMessageReactionDisposer();
-    this.generatorReactionDisposer && this.generatorReactionDisposer();
+    this.whenReactionDisposer && this.whenReactionDisposer();
   }
 }
 

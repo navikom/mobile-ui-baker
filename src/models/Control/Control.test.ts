@@ -139,7 +139,7 @@ describe('Control', () => {
     const newScreen = CreateControl(ControlEnum.Grid);
     const grid = CreateControl(ControlEnum.Grid);
     grid.addAction([ACTION_NAVIGATE_TO, newScreen.id]);
-    grid.applyActions((screen: IControl) => {
+    grid.applyActions((action: string, screen?: IControl) => {
       jest.runAllTimers();
       expect(screen === newScreen).toBeTruthy();
     })
