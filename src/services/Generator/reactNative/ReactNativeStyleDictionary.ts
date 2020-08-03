@@ -19,10 +19,9 @@ export const ignoreStyle = {
   justifyContent: overflowRule
 }
 
-const round = (value: number) => {
-  let newValue = value * 1.3;
-  console.log(newValue, value);
-  if(newValue.toString().includes('.') && newValue.toString().split(".")[1].length > 3) {
+export const round = (value: number) => {
+  let newValue = value * 1.2;
+  if (newValue.toString().includes('.') && newValue.toString().split('.')[1].length > 3) {
     newValue = Math.round(newValue * 1000) / 1000;
   }
   return newValue;
@@ -210,21 +209,29 @@ export const reactNativeImage = {
 
     return { resizeMode: 'stretch' };
   },
-  svgMode: (width?: ICSSProperty, height?: ICSSProperty, backgroundColor?: ICSSProperty) => {
-    const style: { width: string | number; height: string | number; color?: string } =
-      { width: width!.value, height: height!.value };
+  svgMode: (width?: ICSSProperty, height?: ICSSProperty, backgroundColor?: ICSSProperty, color?: ICSSProperty) => {
+    const style: { width: string | number; height: string | number; color?: string; fill?: string } =
+      {
+        width: width!.value,
+        height: height!.value
+      };
     if (backgroundColor && backgroundColor.enabled) {
       style.color = backgroundColor.value as string;
+    } else {
+      style.color = '#ffffff';
+    }
+    if (color && color.enabled) {
+      style.fill = color.value as string;
     }
     return style;
   },
   size: (width: ICSSProperty, height: ICSSProperty) => {
     const style: { width?: string | number; height?: string | number } = {};
     if (width && width.enabled) {
-      style.width = width.unit && width.unit !== 'px' ? width.value + width.unit : width.value;
+      style.width = width.unit && (width.unit === 'px' ? width.value : width.value + width.unit);
     }
     if (height && height.enabled) {
-      style.height = height.unit && height.unit !== 'px' ? height.value + height.unit : height.value;
+      style.height = height.unit && (height.unit !== 'px' ? height.value : height.value + height.unit);
     }
     return style;
   }

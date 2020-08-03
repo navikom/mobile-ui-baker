@@ -35,13 +35,13 @@ import AnimationParams from '../AnimationParams';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import LabeledInput from 'components/CustomInput/LabeledInput';
 import FigmaIcon from 'components/Icons/FigmaIcon';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -122,6 +122,7 @@ const sectionStyles = makeStyles((theme) => ({
 }));
 
 interface ImportMenuProps {
+  dictionary: EditorDictionary;
   anchorEl: null | HTMLElement;
   handleClose: () => void;
   importFromFile: () => void;
@@ -130,19 +131,32 @@ interface ImportMenuProps {
 
 interface FigmaDialogProps {
   open: boolean;
+
+  dictionary: EditorDictionary;
+
+  loadAssetsEnabled: boolean;
+
+  switchLoadAssets(): void;
+
   handleClose(): void;
+
   onChange(field: string): (e: any) => void;
+
   onFigmaDialogClick(): void;
-  credentials: {token: string; key: string};
+
+  credentials: { token: string; key: string };
 }
 
-const FigmaDialog: React.FC<FigmaDialogProps> = (
+const FigmaDialog: React.FC<FigmaDialogProps> = observer((
   {
     open,
     handleClose,
     onChange,
     onFigmaDialogClick,
-    credentials
+    credentials,
+    loadAssetsEnabled,
+    switchLoadAssets,
+    dictionary
   }
 ) => {
 
@@ -151,43 +165,54 @@ const FigmaDialog: React.FC<FigmaDialogProps> = (
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="figma-dialog-title">
-        {Dictionary.defValue(DictionaryService.keys.downloadFromFigma)}
+        {dictionary.defValue(EditorDictionary.keys.downloadFromFigma)}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {Dictionary.defValue(DictionaryService.keys.provideAccessTokenAndFileKeyToFetchDocument)}
+          {dictionary.defValue(EditorDictionary.keys.provideAccessTokenAndFileKeyToFetchDocument)}
         </DialogContentText>
-            <FormControl fullWidth margin="dense">
-              <LabeledInput
-                label={Dictionary.defValue(DictionaryService.keys.accessToken)}
-                fullWidth
-                value={credentials.token}
-                className={classes.input}
-                onChange={onChange('token')}
-              />
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-              <LabeledInput
-                label={Dictionary.defValue(DictionaryService.keys.fileKey)}
-                fullWidth
-                value={credentials.key}
-                className={classes.input}
-                onChange={onChange('key')}
-              />
-            </FormControl>
-        <Grid container justify="center" style={{marginTop: 20}}>
+        <FormControl fullWidth margin="dense">
+          <LabeledInput
+            label={dictionary.defValue(EditorDictionary.keys.accessToken)}
+            fullWidth
+            value={credentials.token}
+            className={classes.input}
+            onChange={onChange('token')}
+          />
+        </FormControl>
+        <FormControl fullWidth margin="dense">
+          <LabeledInput
+            label={dictionary.defValue(EditorDictionary.keys.fileKey)}
+            fullWidth
+            value={credentials.key}
+            className={classes.input}
+            onChange={onChange('key')}
+          />
+        </FormControl>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={loadAssetsEnabled}
+              onChange={switchLoadAssets}
+              name="loadAssets"
+              color="primary"
+            />
+          }
+          label={dictionary.defValue(EditorDictionary.keys.downloadProjectAssets)}
+        />
+        <Grid container justify="center" style={{ marginTop: 20 }}>
           <Button
             variant="outlined"
             color="primary"
             onClick={onFigmaDialogClick}
             disabled={!(credentials.token.length > 10 && credentials.key.length > 10)}>
-            {Dictionary.defValue(DictionaryService.keys.download)}
+            {dictionary.defValue(EditorDictionary.keys.download)}
           </Button>
         </Grid>
       </DialogContent>
     </Dialog>
   );
-}
+});
 
 const ImportMenu: React.FC<ImportMenuProps> = (
   {
@@ -195,6 +220,7 @@ const ImportMenu: React.FC<ImportMenuProps> = (
     handleClose,
     importFromFile,
     importFromFigma,
+    dictionary
   }
 ) => {
   const classes = useStyles();
@@ -214,7 +240,7 @@ const ImportMenu: React.FC<ImportMenuProps> = (
           return (
             <MenuItem key={i.toString()} onClick={item[2] as () => void}>
               {React.createElement(item[0] as React.FunctionComponent)}
-              <ListItemText primary={Dictionary.value(item[1] as string)} className={classes.listItemText} />
+              <ListItemText primary={dictionary.value(item[1] as string)} className={classes.listItemText} />
             </MenuItem>
           )
         })
@@ -350,14 +376,16 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     navigation,
     setNavigation,
     generate,
-    importFromFigma
+    importFromFigma,
+    loadAssetsEnabled,
+    switchLoadAssets
   }
 ) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const [openFigma, setOpenFigma] = React.useState<boolean>(false);
   const [dangerAction, setDangerAction] = React.useState<string | null>(null);
-  const [figmaCreds, setFigmaCreds] = React.useState<{token: string; key: string}>({token: '', key: ''});
+  const [figmaCreds, setFigmaCreds] = React.useState<{ token: string; key: string }>({ token: '', key: '' });
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -378,7 +406,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
   };
 
   const onFigmaInputChange = (key: string) => (e: string) => {
-    const obj = Object.assign({}, figmaCreds, {[key]: e});
+    const obj = Object.assign({}, figmaCreds, { [key]: e });
     setFigmaCreds(obj);
   }
 
@@ -388,8 +416,8 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
   }
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    // setAnchorEl(event.currentTarget);
-    importFromFigma && importFromFigma('55587-de2833b2-2101-4361-be55-7923873c031f', 'Q09rBNMM7vskgeyXmJqEYu');
+    setAnchorEl(event.currentTarget);
+    // importFromFigma && importFromFigma('55587-de2833b2-2101-4361-be55-7923873c031f', 'Q09rBNMM7vskgeyXmJqEYu');
   };
 
   const handleDangerAction = (action: string) => {
@@ -548,9 +576,13 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
       onFigmaDialogClick={onFigmaDialogClick}
       credentials={figmaCreds}
       open={openFigma}
+      dictionary={dictionary as EditorDictionary}
       handleClose={handleCloseFigma}
-      onChange={onFigmaInputChange}/>
+      loadAssetsEnabled={loadAssetsEnabled || false}
+      switchLoadAssets={switchLoadAssets as () => void}
+      onChange={onFigmaInputChange} />
     <ImportMenu
+      dictionary={dictionary as EditorDictionary}
       importFromFile={handleImportProject}
       importFromFigma={handleClickOpenFigma}
       anchorEl={anchorEl}

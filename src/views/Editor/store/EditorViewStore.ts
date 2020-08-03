@@ -65,14 +65,18 @@ class EditorViewStore extends DisplayViewStore {
   static CONTROLS = ControlEnum;
   @observable history = ControlStore.history;
   @observable selectedControl?: IControl;
-  @observable tabToolsIndex = 1;
+  @observable tabToolsIndex = 2;
   @observable saving = false;
   @observable savingProject = false;
   @observable generatorShowDialog = false;
   @observable generatorDialogContent: string[] | null = null;
   @observable generator: IGenerateService | null = null;
   @observable figmaConverter: IFigmaConverter | null = null;
+  @observable converterShowDialog = false;
+  @observable converterDialogContent: string[] | null = null;
+  @observable fetchAssetsEnabled = false;
   generatorMessageReactionDisposer: IReactionDisposer;
+  converterMessageReactionDisposer: IReactionDisposer;
   whenReactionDisposer?: IReactionDisposer;
 
   moveOpened = true;
@@ -157,7 +161,9 @@ class EditorViewStore extends DisplayViewStore {
         switchStatusBar: () => this.switchStatusBar(),
         navigation: this.navigation,
         setNavigation: (navigation: (string | number)[]) => this.setNavigation(navigation),
-        generate: () => this.generate()
+        generate: () => this.generate(),
+        loadAssetsEnabled: this.fetchAssetsEnabled,
+        switchLoadAssets: () => this.switchFetchAssetsEnabled()
       },
       {
         dictionary: this.dictionary,
@@ -194,9 +200,14 @@ class EditorViewStore extends DisplayViewStore {
         this.openGeneratorDialog();
       }
     });
+    this.converterMessageReactionDisposer = reaction(() => this.converterDialogContent, (content) => {
+      if(content) {
+        this.openConverterDialog();
+      }
+    });
     setTimeout(() => {
       this.toCenter();
-    }, 1000);
+    }, 500);
   }
 
   importData(): Promise<string> {
@@ -389,18 +400,35 @@ class EditorViewStore extends DisplayViewStore {
     }
   };
 
+  @action switchFetchAssetsEnabled() {
+    this.fetchAssetsEnabled = !this.fetchAssetsEnabled;
+  }
+
   @action openGeneratorDialog() {
     this.generatorShowDialog = true;
+  }
+
+  @action openConverterDialog() {
+    this.converterShowDialog = true;
   }
 
   @action setContentGeneratorDialog(msg: string[] | null) {
     this.generatorDialogContent = msg;
   }
 
+  @action setContentConverterDialog(msg: string[] | null) {
+    this.converterDialogContent = msg;
+  }
+
   @action closeGeneratorDialog = (leaveProgress?: boolean) => {
     this.generatorShowDialog = false;
     this.setContentGeneratorDialog(null);
     !leaveProgress && this.generator!.setFinished();
+  }
+
+  @action closeConverterDialog = () => {
+    this.converterShowDialog = false;
+    this.setContentConverterDialog(null);
   }
 
   @action completeCodeGeneration = () => {
@@ -994,7 +1022,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   @action selectControl = (control?: IControl, screen?: IControl, fromDevice?: boolean) => {
-    this.tabToolsIndex = 1;
+    this.tabToolsIndex = 2;
     this.selectedControl = control;
     if(control && screen) {
       if(this.currentScreen !== screen) {

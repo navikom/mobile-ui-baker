@@ -62,6 +62,7 @@ const Prices = lazy(() => import('views/Prices/PricesView'));
 
 const Overview = lazy(() => import('views/Docs/Overview'));
 const EditorOverview = lazy(() => import('views/Docs/EditorOverview'));
+const FigmaConvert = lazy(() => import('views/Docs/FigmaConvert'));
 const MuiditorPlugin = lazy(() => import('views/Docs/MuiditorPlugin'));
 const EditorPlugin = lazy(() => import('views/Docs/EditorPlugin'));
 const EditorSample = lazy(() => import('views/Docs/ProjectSample'));
@@ -433,6 +434,14 @@ export const documentationRoutes = [
     path: '/editor-overview',
     name: 'Overview',
     component: EditorOverview,
+    layout: LAYOUT_DOCS,
+    category: SIDEBAR_DOCS_EDITOR,
+    docs: true
+  },
+  {
+    path: '/import-figma',
+    name: 'Import from Figma',
+    component: FigmaConvert,
     layout: LAYOUT_DOCS,
     category: SIDEBAR_DOCS_EDITOR,
     docs: true

@@ -31,6 +31,7 @@ import CookiePopup from 'components/CookiePopup';
 import useScreenSize from 'hooks/useScreenSize';
 import ContactSection from './Sections/ContactSection';
 import GenerateRNSection from './Sections/GenerateRNSection';
+import FigmaSection from './Sections/FigmaSection';
 
 const useStyles = makeStyles(styles);
 
@@ -79,6 +80,9 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
           <ProductSection />
+        </div>
+        <div className={classes.container}>
+          <FigmaSection />
         </div>
         <GenerateRNSection />
         <div className={classes.container}>

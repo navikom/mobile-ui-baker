@@ -4,10 +4,11 @@ import { ControlEnum } from 'enums/ControlEnum';
 import { MAIN_CSS_STYLE } from 'models/Control/ControlStore';
 import { correctGradients } from 'utils/parseGradient';
 import GenerateComponent from './GenerateComponent';
-import EditorViewStore from '../../../views/Editor/store/EditorViewStore';
+import EditorViewStore from 'views/Editor/store/EditorViewStore';
 import GenerateService from './GenerateService';
-import ITransitStyle from '../../../interfaces/ITransitSyle';
-import ICSSProperty from '../../../interfaces/ICSSProperty';
+import ITransitStyle from 'interfaces/ITransitSyle';
+import ICSSProperty from 'interfaces/ICSSProperty';
+import { round } from './ReactNativeStyleDictionary';
 
 const fetchMock = fetch as FetchMock;
 
@@ -234,12 +235,12 @@ describe('GenerateComponent', () => {
           top: '10%',
           height: '100%',
           minWidth: '10rem',
-          minHeight: Math.round(100 * 1.3),
-          paddingTop: Math.round(10 * 1.3),
-          paddingRight: Math.round(5 * 1.3),
-          paddingBottom: Math.round(7 * 1.3),
+          minHeight: round(100),
+          paddingTop: round(10),
+          paddingRight: round(5),
+          paddingBottom: round(7),
           paddingLeft: 0,
-          marginTop: Math.round(10 * 1.3),
+          marginTop: round(10),
           shadowOffset: { width: 2, height: 4 },
           shadowRadius: 20,
           shadowColor: 'rgba(0,0,0,0.4)',
@@ -270,7 +271,7 @@ describe('GenerateComponent', () => {
       JSON.stringify(generator.styles.get('96e913cc')) ===
       JSON.stringify({
         Main: {
-          transform: [{ translateY: 0 }, { translateX: -Math.round(50 * 1.3) }]
+          transform: [{ translateY: 0 }, { translateX: -round(50) }]
         }
       })
     ).toBeTruthy();
@@ -388,13 +389,13 @@ describe('GenerateComponent', () => {
           top: '10%',
           height: '100%',
           minWidth: '10rem',
-          minHeight: Math.round(100 * 1.3),
-          paddingTop: Math.round(10 * 1.3),
-          paddingRight: Math.round(5 * 1.3),
-          paddingBottom: Math.round(7 * 1.3),
+          minHeight: round(100),
+          paddingTop: round(10),
+          paddingRight: round(5),
+          paddingBottom: round(7),
           paddingLeft: 0,
-          lineHeight: Math.round(10 * 1.3),
-          marginTop: Math.round(10 * 1.3),
+          lineHeight: round(10),
+          marginTop: round(10),
           shadowOffset: { width: 2, height: 4 },
           shadowRadius: 20,
           shadowColor: 'rgba(0,0,0,0.4)',
@@ -421,13 +422,13 @@ describe('GenerateComponent', () => {
           "top": "10%",
           "height": "100%",
           "minWidth": "10rem",
-          "minHeight": ${Math.round(100 * 1.3)},
-          "paddingTop": ${Math.round(10 * 1.3)},
-          "paddingRight": ${Math.round(5 * 1.3)},
-          "paddingBottom": ${Math.round(7 * 1.3)},
+          "minHeight": ${round(100)},
+          "paddingTop": ${round(10)},
+          "paddingRight": ${round(5)},
+          "paddingBottom": ${round(7)},
           "paddingLeft": 0,
-          "lineHeight": ${Math.round(10 * 1.3)},
-          "marginTop": ${Math.round(10 * 1.3)},
+          "lineHeight": ${round(10)},
+          "marginTop": ${round(10)},
           "shadowOffset": { "width": 2, "height": 4 },
           "shadowRadius": 20,
           "shadowColor": "rgba(0,0,0,0.4)",

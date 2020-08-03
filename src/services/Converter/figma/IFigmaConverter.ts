@@ -1,4 +1,5 @@
 import IControl from 'interfaces/IControl';
+import ZipGenerator from './ZipGenerator';
 
 export interface IFigmaConverter {
   accessKey: string;
@@ -7,5 +8,6 @@ export interface IFigmaConverter {
   screens: IControl[];
   progress: number;
   screensList: IControl[];
+  zipGenerator: ZipGenerator;
   convert(): IFigmaConverter;
 }

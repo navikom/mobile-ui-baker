@@ -84,8 +84,8 @@ export const data = {
   clearWarning: '$ data will be cleared forever if data did not save.',
   yes: 'Yes',
   no: 'No',
-  toFile: 'to file',
-  fromFile: 'from file',
+  toFile: 'to File',
+  fromFile: 'from File',
   clear: 'Clear',
   share: 'Share',
   copy: 'Copy',
@@ -115,7 +115,15 @@ export const data = {
   generatorWarnings: 'Code generator warnings',
   converterWarnings: 'Convertor warnings',
   proceed: 'Proceed',
-  revoke: 'Revoke'
+  revoke: 'Revoke',
+  downloadFromFigma: 'Download from Figma',
+  downloadFromFigmaError: 'Download from Figma error: $',
+  provideAccessTokenAndFileKeyToFetchDocument: 'Provide Access Token and file key to fetch a document',
+  accessToken: 'Access token',
+  fileKey: 'File key',
+  fromFigma: 'From Figma',
+  downloadProjectAssets: 'Download project assets (they will expire in 10 days)',
+  download: 'Download',
 };
 
 class EditorDictionary extends AbstractDictionary {

@@ -17,7 +17,7 @@ describe("EditorHistory", () => {
     store = new EditorViewStore('');
     store.history.clear();
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
-    control = store.currentScreen.children[store.currentScreen.children.length - 1];
+    control = store.currentScreen!.children[store.currentScreen!.children.length - 1];
   });
 
   it("changeTitle history record", () => {
@@ -51,13 +51,13 @@ describe("EditorHistory", () => {
 
     expect(store.history.size).toBe(3);
     expect(store.history.carriage).toBe(2);
-    expect(store.currentScreen.children.find(e => e.id === control.id)).toBeFalsy();
+    expect(store.currentScreen!.children.find(e => e.id === control.id)).toBeFalsy();
     store.history.undo();
-    expect(store.currentScreen.children.find(e => e.id === control.id)).toBeTruthy();
+    expect(store.currentScreen!.children.find(e => e.id === control.id)).toBeTruthy();
     expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
 
     store.history.redo();
-    expect(store.currentScreen.children.find(e => e.id === control.id)).toBeFalsy();
+    expect(store.currentScreen!.children.find(e => e.id === control.id)).toBeFalsy();
     expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
   });
 
@@ -198,33 +198,33 @@ describe("EditorHistory", () => {
     const control2 = ControlStore.controls[ControlStore.controls.length - 1];
     store.handleDropCanvas({ control: GridStore.create(), type: "" });
     const control3 = ControlStore.controls[ControlStore.controls.length - 1];
-    expect(store.currentScreen.children.length).toBe(5);
+    expect(store.currentScreen!.children.length).toBe(5);
     expect(ControlStore.controls.length).toBe(6);
 
     store.history.undo();
-    expect(store.currentScreen.children.length).toBe(4);
+    expect(store.currentScreen!.children.length).toBe(4);
     expect(ControlStore.controls.length).toBe(5);
 
     store.history.undo();
-    expect(store.currentScreen.children.length).toBe(3);
+    expect(store.currentScreen!.children.length).toBe(3);
     expect(ControlStore.controls.length).toBe(4);
 
     store.history.undo();
-    expect(store.currentScreen.children.length).toBe(2);
+    expect(store.currentScreen!.children.length).toBe(2);
     expect(ControlStore.controls.length).toBe(3);
 
     store.history.redo();
-    expect(store.currentScreen.children.length).toBe(3);
+    expect(store.currentScreen!.children.length).toBe(3);
     expect(ControlStore.controls.length).toBe(4);
     expect(ControlStore.controls.find(e => e.id === control1.id)!.id).toBe(control1.id);
 
     store.history.redo();
-    expect(store.currentScreen.children.length).toBe(4);
+    expect(store.currentScreen!.children.length).toBe(4);
     expect(ControlStore.controls.length).toBe(5);
     expect(ControlStore.controls.find(e => e.id === control2.id)!.id).toBe(control2.id);
 
     store.history.redo();
-    expect(store.currentScreen.children.length).toBe(5);
+    expect(store.currentScreen!.children.length).toBe(5);
     expect(ControlStore.controls.length).toBe(6);
     expect(ControlStore.controls.find(e => e.id === control3.id)!.id).toBe(control3.id);
   });
@@ -309,13 +309,13 @@ describe("EditorHistory", () => {
     store.handleDropElement(control, GridStore.create(), DropEnum.Below);
 
     expect(control.children.length).toBe(1);
-    expect(store.currentScreen.children.length).toBe(4);
+    expect(store.currentScreen!.children.length).toBe(4);
 
     store.history.undo();
-    expect(store.currentScreen.children.length).toBe(3);
+    expect(store.currentScreen!.children.length).toBe(3);
 
     store.history.undo();
-    expect(store.currentScreen.children.length).toBe(2);
+    expect(store.currentScreen!.children.length).toBe(2);
 
     store.history.undo();
     expect(control.children.length).toBe(0);
@@ -323,9 +323,9 @@ describe("EditorHistory", () => {
     store.history.redo();
     expect(control.children.length).toBe(1);
     store.history.redo();
-    expect(store.currentScreen.children.length).toBe(3);
+    expect(store.currentScreen!.children.length).toBe(3);
     store.history.redo();
-    expect(store.currentScreen.children.length).toBe(4);
+    expect(store.currentScreen!.children.length).toBe(4);
   });
 
   it("view store settings history records", () => {
@@ -379,21 +379,21 @@ describe("EditorHistory", () => {
 
     store.history.undo();
     expect(store.screens.length).toBe(2);
-    expect(store.currentScreen.id).toBe(screen1.id);
+    expect(store.currentScreen!.id).toBe(screen1.id);
 
     store.history.undo();
     expect(store.screens.length).toBe(1);
 
     store.history.redo();
     expect(store.screens.length).toBe(2);
-    expect(store.currentScreen.id).toBe(screen2.id);
+    expect(store.currentScreen!.id).toBe(screen2.id);
 
     store.history.redo();
-    expect(store.currentScreen.id).toBe(screen2.id);
+    expect(store.currentScreen!.id).toBe(screen2.id);
 
     store.history.redo();
     expect(store.screens.length).toBe(1);
-    expect(store.currentScreen.id).toBe(screen2.id);
+    expect(store.currentScreen!.id).toBe(screen2.id);
   });
 
   it("screen clone history records", () => {

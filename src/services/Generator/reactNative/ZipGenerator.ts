@@ -53,8 +53,8 @@ import { Mode } from 'enums/ModeEnum';
 import IStoreContent from 'interfaces/IStoreContent';
 import IService from 'interfaces/IGenerateService';
 import { AnimationDirectionEnum } from 'enums/AnimationEnum';
-import { ACTION_NAVIGATE_BACK, ACTION_NAVIGATE_REPLACE } from '../../../models/Constants';
-import { IScreen } from '../../../interfaces/IControl';
+import { ACTION_NAVIGATE_BACK, ACTION_NAVIGATE_REPLACE } from 'models/Constants';
+import { IScreen } from 'interfaces/IControl';
 
 const contentString = (content: string, imports: string[]) => {
   let str = importFrom(['observer'], 'mobx-react-lite') + ';\n';
@@ -73,7 +73,7 @@ class ZipGenerator {
   get getDirection() {
     const direction = this.source.store.navigation[2];
     let navDirection = '';
-    if(direction === AnimationDirectionEnum.TOP) {
+    if (direction === AnimationDirectionEnum.TOP) {
       navDirection += `, ...TransitionPresets[Platform.OS === 'ios' ? 'ModalSlideFromBottomIOS' : 'RevealFromBottomAndroid']`;
     }
     return navDirection;
@@ -122,10 +122,12 @@ class ZipGenerator {
       : '<StatusBar hidden />';
     let statusBarColor = this.source.store.statusBarColor;
 
-    if(screen.statusBarExtended) {
+    if (screen.statusBarExtended) {
       statusBar = `<StatusBar barStyle="${screen.mode === Mode.DARK ? 'light-content' : 'dark-content'}" backgroundColor="${screen.statusBarColor}" />\n`;
       statusBarColor = screen.statusBarColor;
     }
+
+    const background = screen.statusBarExtended ? screen.background : this.source.store.background.backgroundColor;
 
     // ${statusBar}
     // <SafeAreaView style={{flex: 1, backgroundColor: "${this.source.store.statusBarColor}"}}>
@@ -133,6 +135,7 @@ class ZipGenerator {
     // </SafeAreaView>
 
     let content = IMPORT_REACT + ';\n';
+    content += importFrom(['SafeAreaView', 'StatusBar', 'View']) + ';\n';
     content += importFrom(BASE_COMP, `${APP_ROOT}/${COMPONENTS_FOLDER}/${BASE_COMP}/${BASE_COMP}`) + ';\n';
     content += importFrom(STORE, `${APP_ROOT}/${SCREENS_FOLDER}/${title}/${STORE}`) + ';\n';
 
@@ -141,11 +144,15 @@ class ZipGenerator {
     content += '  React.useEffect(() => {\n';
     content += `    ${RETURN} store.dispose;\n`;
     content += '  });\n';
+    content += '  let children = store.children[route.params.componentId];\n';
     content += '  return (\n';
     content += '    <React.Fragment>\n';
     content += `      ${statusBar}\n`;
     content += `      <SafeAreaView style={{flex: 1, backgroundColor: "${statusBarColor}"}}>\n`;
-    content += `        <${BASE_COMP} ${STORE_VARIABLE}={store} ${PROPS_VARIABLE}={store.props(route.params.${COMPONENT_ID})} />;\n`;
+    content += `        <View style={{flex: 1, backgroundColor: "${background}"}}>\n`;
+    content += `          {children.map((child, i) =>\n`;
+    content += `              React.createElement(child.component, {key: child.id + i, store: store, props: child}))}\n`;
+    content += `        </View>\n`;
     content += '      </SafeAreaView>\n';
     content += '    </React.Fragment>\n';
     content += '  );\n'
@@ -224,13 +231,18 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}}) {
     if(transit.isSvg) {
       Component = transit.Svg.default;
       if(transit.style && transit.style.color) {
-        properties.stroke = transit.style.color;
-      }
-      if(transit.style && transit.style.width) {
-        properties.width = transit.style.width;
-      }
-      if(transit.style && transit.style.height) {
-        properties.height = transit.style.height;
+        if(transit.style.color) {
+          properties.stroke = transit.style.color;
+        }
+        if(transit.style.fill) {
+          properties.fill = transit.style.fill;
+        }
+        if(transit.style.width) {
+          properties.width = transit.style.width;
+        }
+        if(transit.style.height) {
+          properties.height = transit.style.height;
+        }
       }
     } else if(transit.gradient) {
       Component = ${LINEAR_GRADIENT_COMP};
@@ -304,7 +316,7 @@ ${EXPORT_DEFAULT} ${name};`;
 
     map.forEach(([specComponentId], screenId) => {
       this.source.storeContent.get(specComponentId)!.forEach(e => {
-        if(e.id === specComponentId) {
+        if (e.id === specComponentId) {
           e.placeIndex = [0];
         }
         const nameSpace = this.source.components.get(e.hash)!.nameSpace;
@@ -493,9 +505,9 @@ ${EXPORT_DEFAULT} ${name};`;
     let stacks = '';
 
     const navDirection = this.getDirection;
-    const generated: string[]= [];
+    const generated: string[] = [];
     let screens: string[];
-    if(this.source.leftDrawer.size > 0 && this.source.rightDrawer.size > 0) {
+    if (this.source.leftDrawer.size > 0 && this.source.rightDrawer.size > 0) {
       screens = Array.from(this.source.leftDrawer.keys());
     } else {
       screens = [...Array.from(this.source.leftDrawer.keys()), ...Array.from(this.source.rightDrawer.keys())];
@@ -503,7 +515,7 @@ ${EXPORT_DEFAULT} ${name};`;
 
     screens.forEach(id => {
       const screen = this.source.screenNames.find(item => item.id === id);
-      if(generated.includes(id)) {
+      if (generated.includes(id)) {
         return;
       }
       generated.push(id);
@@ -530,7 +542,7 @@ ${EXPORT_DEFAULT} ${name};`;
 
   prepareDrawerScreens() {
     let singleDrawerNavContent = '';
-    if(this.source.leftDrawer.size || this.source.rightDrawer.size) {
+    if (this.source.leftDrawer.size || this.source.rightDrawer.size) {
       singleDrawerNavContent += this.prepareStack();
       singleDrawerNavContent += `\nfunction ${this.source.leftDrawer.size > 0 && this.source.rightDrawer.size === 0 ? 'DrawerNavigation' : 'LeftDrawerNavigation'}() {\n`;
       singleDrawerNavContent += '  return (\n';
@@ -542,7 +554,7 @@ ${EXPORT_DEFAULT} ${name};`;
       singleDrawerNavContent += '    </Drawer.Navigator>\n';
       singleDrawerNavContent += '  );\n';
       singleDrawerNavContent += '}\n\n';
-      if(this.source.leftDrawer.size && this.source.rightDrawer.size) {
+      if (this.source.leftDrawer.size && this.source.rightDrawer.size) {
         const outOfLeftDrawer = this.source.rightDrawerScreens[1];
         singleDrawerNavContent += 'function DrawerNavigation() {\n';
         singleDrawerNavContent += '  return (\n';
@@ -553,7 +565,7 @@ ${EXPORT_DEFAULT} ${name};`;
         singleDrawerNavContent += '      <Drawer.Screen name="LeftDrawer" component={LeftDrawerNavigation} />\n';
         outOfLeftDrawer.forEach(screen => {
           const item = this.source.screenNames.find(e => e.id === screen);
-          if(!item) return;
+          if (!item) return;
           singleDrawerNavContent += `      <Drawer.Screen\n`;
           singleDrawerNavContent += `        name="${item!.title}"\n`;
           singleDrawerNavContent += `        component={${item!.title}}\n`;
@@ -569,19 +581,19 @@ ${EXPORT_DEFAULT} ${name};`;
 
   prepareTabScreens() {
     let tabNavContent = '';
-    if(this.source.tab.size) {
+    if (this.source.tab.size) {
       const [inDrawer, outOfDrawer] = this.source.tabScreens;
       tabNavContent += 'function TabNavigation() {\n';
       tabNavContent += '  return (\n';
       tabNavContent += '    <Tab.Navigator tabBar={props => <Tabs {...props} />}>\n';
-      if(inDrawer.length) {
+      if (inDrawer.length) {
         tabNavContent += `      <Tab.Screen name="DrawerNavigation"\n`;
         tabNavContent += `        component={DrawerNavigation}\n`;
         tabNavContent += `        initialParams={{componentId: '${inDrawer[0]}'}} />\n`;
       }
       outOfDrawer.forEach(screen => {
         const item = this.source.screenNames.find(e => e.id === screen);
-        if(!item) return;
+        if (!item) return;
         tabNavContent += `      <Tab.Screen\n`;
         tabNavContent += `        name="${item!.title}"\n`;
         tabNavContent += `        component={${item!.title}}\n`;
@@ -598,7 +610,7 @@ ${EXPORT_DEFAULT} ${name};`;
     let stackContent = `function Navigation() {\n`;
     stackContent += `  ${RETURN} (\n`;
     stackContent += `    <Stack.Navigator initialRouteName="${this.source.screenNames[0].title}">\n`;
-    if(this.source.tab.size) {
+    if (this.source.tab.size) {
       stackContent += '      <Stack.Screen\n';
       stackContent += '        name="TabNavigation"\n';
       stackContent += '        component={TabNavigation}\n';
@@ -637,14 +649,14 @@ ${EXPORT_DEFAULT} ${name};`;
     let content = IMPORT_REACT + ';\n';
     content += importFrom(['createStackNavigator', 'TransitionPresets'], '@react-navigation/stack') + ';\n';
 
-    if(this.source.leftDrawer.size) {
+    if (this.source.leftDrawer.size) {
       content += importFrom(['createDrawerNavigator'], '@react-navigation/drawer') + ';\n';
       content += importFrom(LEFT_DRAWER, `${APP_ROOT}/${NAVIGATION_FOLDER}/${LEFT_DRAWER}/${LEFT_DRAWER}`) + ';\n';
     }
-    if(this.source.rightDrawer.size) {
+    if (this.source.rightDrawer.size) {
       content += importFrom(RIGHT_DRAWER, `${APP_ROOT}/${NAVIGATION_FOLDER}/${RIGHT_DRAWER}/${RIGHT_DRAWER}`) + ';\n';
     }
-    if(this.source.tab.size) {
+    if (this.source.tab.size) {
       content += importFrom(['createBottomTabNavigator'], '@react-navigation/bottom-tabs') + ';\n';
       content += importFrom(TABS, `${APP_ROOT}/${NAVIGATION_FOLDER}/${TABS}/${TABS}`) + ';\n';
     }
@@ -652,11 +664,11 @@ ${EXPORT_DEFAULT} ${name};`;
       (content += importFrom(screenName.title, `${APP_ROOT}/${SCREENS_FOLDER}/${screenName.title}/${screenName.title}`) + ';\n'));
 
     content += '\nconst Stack = createStackNavigator();\n';
-    if(this.source.leftDrawer.size || this.source.rightDrawer.size) {
+    if (this.source.leftDrawer.size || this.source.rightDrawer.size) {
       content += 'const Drawer = createDrawerNavigator();\n';
     }
 
-    if(this.source.tab.size) {
+    if (this.source.tab.size) {
       content += 'const Tab = createBottomTabNavigator();\n';
     }
 
@@ -675,17 +687,17 @@ ${EXPORT_DEFAULT} ${name};`;
 
   specNavComponents2zip() {
     let content = `const ${NAV_COMPONENTS} = {\n`;
-    if(this.source.leftDrawer.size) {
+    if (this.source.leftDrawer.size) {
       this.source.leftDrawer.forEach((([drawerId]) => {
         content += `  '${drawerId}': '${LEFT_DRAWER}',\n`;
       }));
     }
-    if(this.source.rightDrawer.size) {
+    if (this.source.rightDrawer.size) {
       this.source.rightDrawer.forEach((([drawerId]) => {
         content += `  '${drawerId}': '${RIGHT_DRAWER}',\n`;
       }));
     }
-    if(this.source.tab.size) {
+    if (this.source.tab.size) {
       this.source.tab.forEach((([drawerId]) => {
         content += `  '${drawerId}': '${TABS}',\n`;
       }));
@@ -806,7 +818,7 @@ export default App;`;
 
     content += '  @computed get style() {\n';
     content += '    const style = this.styles[this.styleId];\n';
-    content += `    ${RETURN} style ? [style[this.activeClass]] : {flex: 1};\n`;
+    content += `    ${RETURN} style ? [style[this.activeClass]] : {};\n`;
     content += '  }\n';
 
     content += '  constructor({id, title, path, styleId, action, classes, styles, isTextChildren, text, transitStyles, placeIndex, meta, component}) {\n';
@@ -905,8 +917,8 @@ export default App;`;
 
     content += 'const xml = `' + xml + '`;\n';
 
-    content += 'export default ({stroke, width, height, style}) => \n';
-    content += '  <SvgXml style={style} xml={xml} fill={stroke} stroke={stroke} width={width} height={height}/>;';
+    content += 'export default ({stroke, fill, width, height, style}) => \n';
+    content += '  <SvgXml style={style} xml={xml} fill={fill || stroke} stroke={stroke} width={width} height={height}/>;';
     const path = `${SRC_FOLDER}/${ASSETS_FOLDER}/${SVG_FOLDER}/${name}.js`;
     this.zip.file(path, content);
   }

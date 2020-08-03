@@ -7,7 +7,7 @@ import { data } from '../views/Editor/store/EditorDictionary';
 import { IObject } from '../services/Dictionary/AbstractDictionary';
 
 interface IMobileUIView {
-  dictionary?: { setData: <T extends typeof data>(newData: T & IObject) => void };
+  dictionary?: { setData: <T extends typeof data>(newData: T & IObject) => void } & {defValue(value: string, values?: string | string[]): string};
   device: DeviceEnum;
   screens: IObservableArray<IControl>;
   currentScreen?: IControl;
@@ -26,10 +26,13 @@ interface IMobileUIView {
   loadingPlugin: boolean;
   firstContainerVisible: boolean;
   navigation: (string | number)[];
+  fetchAssetsEnabled?: boolean;
 
   setLoadingPlugin(value: boolean): void;
   setContentGeneratorDialog?(msg: string[] | null): void;
   closeGeneratorDialog?(): void;
+
+  setContentConverterDialog?(msg: string[] | null): void;
 
   fromJSON(data: IProjectData): void;
   switchAutoSave?(): void;

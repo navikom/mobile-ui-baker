@@ -42,4 +42,6 @@ export default interface IEditorTabsProps {
   metaList?: string[][];
   setMeta?: (meta: ScreenMetaEnum, control: IControl) => void;
   screen?: IScreen;
+  loadAssetsEnabled?: boolean;
+  switchLoadAssets?: () => void;
 }

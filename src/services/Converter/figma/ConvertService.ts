@@ -12,7 +12,9 @@ import IMobileUIView from 'interfaces/IMobileUIView';
 import IProject from 'interfaces/IProject';
 import ItemStyleFit from './ItemStyleFit';
 import { ErrorHandler } from 'utils/ErrorHandler';
-import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
+import ZipGenerator from './ZipGenerator';
+import FigmaSource from './FigmaSource';
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
 
 type ColorType = { r: number; g: number; b: number; a: number };
 
@@ -34,24 +36,35 @@ class ConvertService implements IFigmaConverter {
   store: IMobileUIView;
   accessKey: string;
   fileKey: string;
-  transitionErrors: string[] = [];
+  errors: string[] = [];
   images: { [key: string]: string } = {};
   screens: IControl[] = [];
   isSvgFetching = false;
+  isAssetFetching = false;
   controlsWithSvg: IControl[] = [];
   controlsWithImages: IControl[] = [];
   name = '';
+  zipGenerator: ZipGenerator;
+  tryings: {[key: string]: number} = {};
   @observable generated = false;
   @observable finished = false;
   @observable fetchItems: string[] = [];
+  @observable assetsList: FigmaSource[] = [];
   @observable loadFullNumber = 0;
   @observable svgQueue: IFigmaNode[] = [];
 
   @computed get progress(): number {
-    if(!this.loadFullNumber) {
+    if (!this.loadFullNumber) {
       return 0;
     }
-    const l = this.loadFullNumber - this.svgQueue.length;
+    let sources;
+    if(this.store.fetchAssetsEnabled) {
+      sources = [...this.assetsList, ...this.svgQueue];
+    } else {
+      sources = this.svgQueue;
+    }
+
+    const l = this.loadFullNumber - sources.length;
     return Math.round(l / this.loadFullNumber * 100);
   }
 
@@ -63,10 +76,22 @@ class ConvertService implements IFigmaConverter {
     this.store = store;
     this.accessKey = accessKey;
     this.fileKey = fileKey;
+    this.zipGenerator = new ZipGenerator();
   }
 
   @action setFullNumber() {
-    this.loadFullNumber = this.svgQueue.length;
+    this.loadFullNumber = this.svgQueue.length * 2;
+  }
+
+  @action addAssetsItems(isSVG: boolean, paths: string[]) {
+    let l = paths.length;
+    while (l--) {
+      this.assetsList.push(new FigmaSource(this, isSVG, paths[l]));
+    }
+  }
+
+  @action getFromAssetsList() {
+    return this.assetsList.shift();
   }
 
   convert() {
@@ -97,11 +122,11 @@ class ConvertService implements IFigmaConverter {
         if (key === ('lineHeightPx' as 'fontSize')) {
           applyProperty(control, 'lineHeight', item.style!['lineHeightPx' as 'fontSize'] as string);
         }
-        if(key === ('textAlignHorizontal' as 'fontSize')) {
+        if (key === ('textAlignHorizontal' as 'fontSize')) {
           applyProperty(control, 'textAlign', (item.style!['textAlignHorizontal' as 'fontSize'] as string).toLowerCase());
         }
-        if(key === ('textCase' as 'fontSize')) {
-          if(item.style!['textCase' as 'fontSize'] === 'UPPER') {
+        if (key === ('textCase' as 'fontSize')) {
+          if (item.style!['textCase' as 'fontSize'] === 'UPPER') {
             control.changeTitle(item.characters!.toUpperCase(), true);
           }
         }
@@ -109,21 +134,21 @@ class ConvertService implements IFigmaConverter {
   }
 
   isSVG(item: IFigmaNode) {
-    if(item.fills.length && item.fills[0].type === 'IMAGE') {
+    if (item.fills.length && item.fills[0].type === 'IMAGE') {
       return false;
     }
 
     const vectorTypes = [FigmaTypeEnum.VECTOR, FigmaTypeEnum.BOOLEAN_OPERATION,
       FigmaTypeEnum.LINE, FigmaTypeEnum.STAR, FigmaTypeEnum.ELLIPSE, FigmaTypeEnum.REGULAR_POLYGON];
-    if(vectorTypes.includes(item.type)) {
+    if (vectorTypes.includes(item.type)) {
       return true;
     }
 
     return item.children && item.children.length &&
       item.children
-      .map(c => [...vectorTypes, FigmaTypeEnum.RECTANGLE].includes(c.type) && !(c.fills && c.fills.length && c.fills[0].imageRef))
-      .filter(e => e)
-      .length === item.children.length;
+        .map(c => [...vectorTypes, FigmaTypeEnum.RECTANGLE].includes(c.type) && !(c.fills && c.fills.length && c.fills[0].imageRef))
+        .filter(e => e)
+        .length === item.children.length;
   }
 
   componentProperties(control: IControl, item: IFigmaNode, fill?: ColorType, stroke?: ColorType, fillOpacity?: number, fillVisible?: boolean) {
@@ -139,11 +164,11 @@ class ConvertService implements IFigmaConverter {
       applyProperty(control, 'border', `${item.strokeWeight}px solid ${colorFromRGBA(stroke)}`);
     }
 
-    if(item.cornerRadius) {
+    if (item.cornerRadius) {
       applyProperty(control, 'borderRadius', item.cornerRadius);
     }
 
-    if(item.fills.length && item.fills[0].imageRef) {
+    if (item.fills.length && item.fills[0].imageRef) {
       applyProperty(control, 'backgroundImage', item.fills[0].imageRef);
       applyProperty(control, 'backgroundSize', '100% 100%');
       applyProperty(control, 'backgroundRepeat', 'no-repeat');
@@ -153,12 +178,12 @@ class ConvertService implements IFigmaConverter {
       control.lockedChildren = true;
     }
 
-    if(item.type === FigmaTypeEnum.ELLIPSE) {
+    if (item.type === FigmaTypeEnum.ELLIPSE) {
       applyProperty(control, 'borderRadius', item.absoluteBoundingBox.width);
     }
 
-    if(item.effects && item.effects.length > 0) {
-      if(item.effects[0].type === 'DROP_SHADOW' && item.effects[0].visible) {
+    if (item.effects && item.effects.length > 0) {
+      if (item.effects[0].type === 'DROP_SHADOW' && item.effects[0].visible) {
         const e = item.effects[0];
         applyProperty(control,
           'boxShadow',
@@ -181,7 +206,7 @@ class ConvertService implements IFigmaConverter {
           fill[key] = (item.fills[0].gradientStops![0].color![key] + item.fills[0].gradientStops![1].color![key]) / 2;
         })
 
-      } else if(item.fills[0].color) {
+      } else if (item.fills[0].color) {
         fill = item.fills[0].color as ColorType;
         fillOpacity = item.fills[0].opacity;
       }
@@ -191,20 +216,20 @@ class ConvertService implements IFigmaConverter {
     }
 
     opacity = opacity !== undefined ? Math.round(opacity * 100) / 100 : undefined;
-    return {opacity, stroke, fill, fillVisible, fillOpacity};
+    return { opacity, stroke, fill, fillVisible, fillOpacity };
   }
 
   retrieveStyle(control: IControl, item: IFigmaNode, type: FigmaTypeEnum) {
     const { width, height } = item.absoluteBoundingBox;
 
-    const {opacity, fillVisible, fillOpacity} = this.retrieveColor(item);
-    let {stroke, fill} = this.retrieveColor(item);
+    const { opacity, fillVisible, fillOpacity } = this.retrieveColor(item);
+    let { stroke, fill } = this.retrieveColor(item);
     opacity !== undefined && applyProperty(control, 'opacity', opacity);
 
     applyProperty(control, 'position', 'absolute');
 
     if (type === FigmaTypeEnum.VECTOR) {
-      if(item.children && item.children.length) {
+      if (item.children && item.children.length) {
         const childFill = this.retrieveColor(item.children[0]);
         fill = childFill.fill;
         stroke = childFill.stroke;
@@ -227,12 +252,11 @@ class ConvertService implements IFigmaConverter {
     const controls = [];
     while (l--) {
       const item = children[i++];
-      if(item.visible !== undefined && !item.visible) {
+      if (item.visible !== undefined && !item.visible) {
         continue;
       }
       let control: IControl;
       let stylesFit;
-      console.log(item.name, l, item);
       if (this.isSVG(item)) {
         control = new TextStore(item.id);
         control.changeTitle(item.name, true);
@@ -245,7 +269,7 @@ class ConvertService implements IFigmaConverter {
         control.changeTitle(item.characters!, true);
         this.retrieveStyle(control, item, FigmaTypeEnum.TEXT);
       } else {
-        if(item.children) {
+        if (item.children) {
           control = new GridStore(item.id);
           this.retrieveStyle(control, item, FigmaTypeEnum.COMPONENT);
           stylesFit = new ItemStyleFit(item);
@@ -254,7 +278,7 @@ class ConvertService implements IFigmaConverter {
         } else {
           control = new TextStore(item.id);
           this.retrieveStyle(control, item, FigmaTypeEnum.COMPONENT);
-          if(item.type !== FigmaTypeEnum.RECTANGLE) {
+          if (item.type !== FigmaTypeEnum.RECTANGLE) {
             control.changeTitle(item.name, true);
           } else {
             control.changeTitle('', true);
@@ -263,7 +287,7 @@ class ConvertService implements IFigmaConverter {
       }
 
       if (item.transitionNodeID) {
-        if(control.children.length) {
+        if (control.children.length) {
           control.setAction(0, [ACTION_NAVIGATE_TO, item.transitionNodeID]);
         } else {
           const button = GridStore.create();
@@ -277,11 +301,11 @@ class ConvertService implements IFigmaConverter {
       const styles = parentStyleFit.getRelativeBox(item);
       styles.forEach(style => applyProperty(control, style.key as 'font', style.value, style.unit));
       const position = control.cssProperty(MAIN_CSS_STYLE, 'position');
-      if(stylesFit && stylesFit.isChildrenAbsolute && (!position!.enabled || position!.value !== 'absolute')) {
+      if (stylesFit && stylesFit.isChildrenAbsolute && (!position!.enabled || position!.value !== 'absolute')) {
         applyProperty(control, 'position', 'relative');
       }
-      if(stylesFit && parentStyleFit.source.isScreen && stylesFit.isScrollHorizontal) {
-        const {width} = item.absoluteBoundingBox;
+      if (stylesFit && parentStyleFit.source.isScreen && stylesFit.isScrollHorizontal) {
+        const { width } = item.absoluteBoundingBox;
         const { container, wrapper } = this.wrapContentAxisX(width);
         wrapper.addChild(control);
         controls.push(container);
@@ -298,16 +322,16 @@ class ConvertService implements IFigmaConverter {
     while (l--) {
       const item = children[i++];
       item.isScreen = true;
-      const {height} = item.absoluteBoundingBox;
+      const { height } = item.absoluteBoundingBox;
       const screen = new GridStore(item.id);
       screen.changeTitle(item.name, true);
       const c = this.retrieveControls(item.children, new ItemStyleFit(item)) as IObservableArray<IControl>;
       const last = c[c.length - 1];
-      if(item.children.length && item.children[item.children.length - 1].absoluteBoundingBox.height === height) {
+      if (item.children.length && item.children[item.children.length - 1].absoluteBoundingBox.height === height) {
         applyProperty(last, 'zIndex', -1);
       }
-      if(height > 700) {
-        const {container, wrapper} = this.wrapContentAxisY(height);
+      if (height > 700) {
+        const { container, wrapper } = this.wrapContentAxisY(height);
 
         wrapper.children = c;
         screen.addChild(container);
@@ -327,25 +351,25 @@ class ConvertService implements IFigmaConverter {
     wrapper.changeTitle('ScrollWrapper', true);
     applyProperty(wrapper, 'position', 'relative');
     container.addChild(wrapper);
-    return {container, wrapper};
+    return { container, wrapper };
   }
 
   wrapContentAxisY(height: number) {
-    const { container, wrapper} = this.getScrollComponents();
+    const { container, wrapper } = this.getScrollComponents();
     applyProperty(container, 'height', 100, '%');
     applyProperty(container, 'overflowX', 'hidden');
     applyProperty(container, 'overflowY', 'scroll');
     applyProperty(wrapper, 'height', height);
-    return {container, wrapper};
+    return { container, wrapper };
   }
 
   wrapContentAxisX(width: number) {
-    const { container, wrapper} = this.getScrollComponents();
+    const { container, wrapper } = this.getScrollComponents();
     applyProperty(container, 'width', 100, '%');
     applyProperty(container, 'overflowX', 'scroll');
     applyProperty(container, 'overflowY', 'hidden');
     applyProperty(wrapper, 'width', width);
-    return {container, wrapper};
+    return { container, wrapper };
   }
 
   async fetchFile() {
@@ -357,16 +381,17 @@ class ConvertService implements IFigmaConverter {
         },
       });
       const json = await response.json();
-      if(json.err) {
+      if (json.err) {
         throw new ErrorHandler(json.err);
       }
       this.name = json.name;
       const children = this.traverseChildren(json.document.children);
-      this.retrieveScreens(children);
+      this.retrieveScreens(children.slice(1, 2));
       await this.fetchImages();
+      this.fetchAssets();
     } catch (err) {
       process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('File error', err);
-      this.store.setError!(Dictionary.defValue(DictionaryService.keys.downloadFromFigma, err.message));
+      this.store.setError!(this.store.dictionary!.defValue(EditorDictionary.keys.downloadFromFigmaError, err.message));
       this.store.setTimeOut!(() => this.store.setError!(null), 5000);
       this.store.closeConverter!();
     }
@@ -383,31 +408,36 @@ class ConvertService implements IFigmaConverter {
       const json = await response.json();
       if (!json.error) {
         Object.assign(this.images, json.meta.images);
+        runInAction(() => {
+          this.loadFullNumber = this.loadFullNumber + Object.keys(json.meta.images).length;
+        });
+        this.addAssetsItems(false, Object.values(json.meta.images));
       }
     } catch (err) {
       process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Images error', err.message);
-      this.store.setError!(Dictionary.defValue(DictionaryService.keys.downloadFromFigma, err.message));
+      this.store.setError!(this.store.dictionary!.defValue(EditorDictionary.keys.downloadFromFigmaError, err.message));
       this.store.setTimeOut!(() => this.store.setError!(null), 5000);
     }
   }
 
   addAssets() {
     this.controlsWithSvg.forEach(control => {
-      applyProperty(control, 'maskImage' , this.images[control.id]);
+      applyProperty(control, 'maskImage', this.images[control.id]);
     });
     this.controlsWithImages.forEach(control => {
       const property = control.cssProperty(MAIN_CSS_STYLE, 'backgroundImage');
-      if(!(property!.value as string).includes('https://s3-alpha-sig.figma.com')) {
-        applyProperty(control, 'backgroundImage' , this.images[property!.value]);
+      if (!(property!.value as string).includes('https://s3-alpha-sig.figma.com')) {
+        applyProperty(control, 'backgroundImage', this.images[property!.value]);
       }
     });
-    runInAction(() => {
-      this.finished = true;
-    });
-    if (this.transitionErrors.length) {
-      process.env.NODE_ENV === MODE_DEVELOPMENT &&  console.log('Errors', this.transitionErrors)
+
+    if (this.errors.length) {
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Errors', this.errors)
     }
     this.store.project.update({ title: this.name } as IProject);
+    if(!this.store.fetchAssetsEnabled) {
+      this.setFinished();
+    }
   }
 
   async fetchSVG() {
@@ -432,13 +462,69 @@ class ConvertService implements IFigmaConverter {
       });
       const json = await response.json();
       Object.assign(this.images, json.images);
+      this.addAssetsItems(true, Object.values(json.images));
     } catch (err) {
       process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('SVG error', err.message);
-      this.store.setError!(Dictionary.defValue(DictionaryService.keys.downloadFromFigma, err.message));
+      this.store.setError!(this.store.dictionary!.defValue(EditorDictionary.keys.downloadFromFigma, err.message));
       this.store.setTimeOut!(() => this.store.setError!(null), 5000);
     }
     this.isSvgFetching = false;
     this.fetchSVG();
+  }
+
+  async fetchAssets() {
+    if(!this.store.fetchAssetsEnabled) {
+      return;
+    }
+    if (!this.assetsList.length) {
+      this.finishLoadAssets();
+      return;
+    }
+    if (this.isAssetFetching) {
+      return;
+    }
+    this.isAssetFetching = true;
+    const item = this.getFromAssetsList();
+    try {
+      await item!.load();
+    } catch (err) {
+      this.isTryingReached(item!);
+    }
+    this.isAssetFetching = false;
+    this.fetchAssets();
+  }
+
+  isTryingReached(item: FigmaSource) {
+    if(this.tryings[item.path] === undefined) {
+      this.tryings[item.path] = 3;
+    }
+    if(this.tryings[item.path] > 0) {
+      this.addAssetsItems(item!.isSvg, [item!.path]);
+      this.tryings[item.path]--;
+    } else {
+      this.addToErrors(`Unable to fetch file (url expires in 10 days): (${item!.path})`);
+    }
+  }
+
+  @action finishLoadAssets() {
+    this.setFinished();
+    if (this.errors.length) {
+      this.store.setContentConverterDialog!(this.errors);
+    }
+    this.zipGenerator.generateZip(this.name);
+    this.clearErrors();
+  }
+
+  @action setFinished() {
+    this.finished = true;
+  }
+
+  addToErrors(error: string) {
+    this.errors.push(error);
+  }
+
+  clearErrors() {
+    this.errors = [];
   }
 }
 

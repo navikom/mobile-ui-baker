@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { container, title } from 'assets/jss/material-kit-react';
 import { Grid } from '@material-ui/core';
-import { whiteColor, whiteOpacity } from '../../../assets/jss/material-dashboard-react';
+import { whiteColor, whiteOpacity } from 'assets/jss/material-dashboard-react';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 
 const useStyles = makeStyles(theme => ({

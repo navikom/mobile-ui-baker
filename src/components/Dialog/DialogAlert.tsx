@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog } from '@material-ui/core';
+import { createStyles, Dialog, Theme } from '@material-ui/core';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -7,6 +7,20 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Slide from '@material-ui/core/Slide';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Button from 'components/CustomButtons/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import { blackOpacity } from 'assets/jss/material-dashboard-react';
+import Typography from '@material-ui/core/Typography';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    border: {
+      padding: '12px 0',
+      '&:not(:last-child)': {
+        borderBottom: '1px solid ' + blackOpacity(.07),
+      }
+    }
+  })
+);
 
 export const Transition: React.ComponentType<TransitionProps> =
   React.forwardRef(function Transition({ children, ...rest }, ref) {
@@ -22,6 +36,7 @@ interface Props {
   cancelTitle?: string;
   onCancel?: () => void;
   handleClose: () => void;
+  showCancel?: boolean;
 }
 
 export default function AlertDialogSlide(
@@ -33,8 +48,10 @@ export default function AlertDialogSlide(
     onOk,
     cancelTitle,
     onCancel,
-    handleClose
+    handleClose,
+    showCancel = true
   }: Props) {
+  const classes = useStyles();
   const onOkHandler = React.useCallback(() => {
     onOk && onOk();
     handleClose();
@@ -59,9 +76,9 @@ export default function AlertDialogSlide(
         {
           Array.isArray(content) ? (
             content.map((entry, i) => (
-              <DialogContentText key={i.toString()}>
+              <Typography key={i.toString()} className={classes.border}>
                 {entry.charAt(0).toUpperCase() + entry.slice(1)}
-              </DialogContentText>)
+              </Typography>)
             )
           ) : (
             <DialogContentText>
@@ -74,9 +91,13 @@ export default function AlertDialogSlide(
         <Button onClick={onOkHandler} color="primary" variant="outlined">
           {okTitle || 'Ok'}
         </Button>
-        <Button onClick={onCancelHandler} variant="outlined">
-          {cancelTitle || 'Cancel'}
-        </Button>
+        {
+          showCancel && (
+            <Button onClick={onCancelHandler} variant="outlined">
+              {cancelTitle || 'Cancel'}
+            </Button>
+          )
+        }
       </DialogActions>
     </Dialog>
   );

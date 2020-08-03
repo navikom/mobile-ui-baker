@@ -15,6 +15,13 @@ export default createMuiTheme({
     error: { main: dangerColor[0] }
   },
   overrides: {
+    MuiButtonGroup: {
+      groupedOutlinedHorizontal: {
+        '&:not(:last-child)': {
+          borderRightColor: 'none'
+        }
+      }
+    },
     MuiButtonBase: {
       root: {
         color: blackOpacity(0.4)

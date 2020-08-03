@@ -32,6 +32,7 @@ export const ROUTE_DOCS_PLUGIN_METHODS = '/docs/plugin-methods';
 export const ROUTE_DOCS_PLUGIN_EDITOR = '/docs/editor-plugin';
 export const ROUTE_DOCS_PLUGIN_VIEWER = '/docs/viewer-plugin';
 export const ROUTE_DOCS_EDITOR_OVERVIEW = '/docs/editor-overview';
+export const ROUTE_DOCS_IMPORT_FIGMA = '/docs/import-figma';
 export const ROUTE_DOCS_VIEWER_OVERVIEW = '/docs/viewer-overview';
 export const ROUTE_DOCS_EDITOR_SAMPLE = '/docs/editor-sample';
 export const ROUTE_DOCS_GENERATE_RN = '/docs/generate-rn-code';

@@ -96,7 +96,6 @@ export default function ShareSection() {
             </div>
           </Grid>
         </Grid>
-
       </div>
     </div>
   )

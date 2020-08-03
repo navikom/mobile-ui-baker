@@ -165,6 +165,8 @@ class GenerateService implements IGenerateService {
           }
         }
       }
+      const backgroundColor = control.cssProperty(style[0] as string, 'backgroundColor');
+      const color = control.cssProperty(style[0] as string, 'color');
       if (mask && mask.enabled) {
         const match = (mask.value as string).match(/url\((\S+)\)/i);
         if (match) {
@@ -172,6 +174,7 @@ class GenerateService implements IGenerateService {
           if (src!.includes('.svg')) {
             this.addToFetch(src, transitStyle);
             transitStyle.isSvg = true;
+            transitStyle.style = reactNativeImage.svgMode(width, height, backgroundColor, color);
           } else {
             transitStyle.src = src;
           }
@@ -182,7 +185,7 @@ class GenerateService implements IGenerateService {
         if (src!.includes('.svg')) {
           this.addToFetch(src, transitStyle);
           transitStyle.isSvg = true;
-          transitStyle.style = reactNativeImage.size(width as ICSSProperty, height as ICSSProperty);
+          transitStyle.style = reactNativeImage.svgMode(width, height, backgroundColor, color);
 
         } else {
           transitStyle.src = src;
@@ -196,8 +199,7 @@ class GenerateService implements IGenerateService {
         const src = maskImage.value as string;
         if (src!.includes('.svg')) {
           this.addToFetch(src, transitStyle);
-          const backgroundColor = control.cssProperty(style[0] as string, 'backgroundColor');
-          transitStyle.style = reactNativeImage.svgMode(width, height, backgroundColor);
+          transitStyle.style = reactNativeImage.svgMode(width, height, backgroundColor, color);
           transitStyle.isSvg = true;
         }
       }

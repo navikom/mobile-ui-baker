@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import { App } from 'models/App';
 import {
   ROUTE_DOCS_EDITOR_SAMPLE,
-  ROUTE_DOCS_GET_STARTED,
+  ROUTE_DOCS_GET_STARTED, ROUTE_DOCS_IMPORT_FIGMA,
 } from 'models/Constants';
 
 const useStyles = makeStyles(theme => ({
@@ -92,8 +92,8 @@ const EditorOverview: React.FC = () => {
         <Button
           color="primary"
           variant="text"
-          onClick={() => App.navigationHistory && App.navigationHistory.push(ROUTE_DOCS_EDITOR_SAMPLE)}>
-          {Dictionary.defValue(DictionaryService.keys.goToTheProjectSample)}
+          onClick={() => App.navigationHistory && App.navigationHistory.push(ROUTE_DOCS_IMPORT_FIGMA)}>
+          {Dictionary.defValue(DictionaryService.keys.goToTheImportFromFigma)}
         </Button>
       </Grid>
     </React.Fragment>

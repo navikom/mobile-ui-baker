@@ -466,6 +466,14 @@ const ContextComponent: React.FC<ContextComponentProps> = (
         onOk={store.completeCodeGeneration}
         onCancel={store.closeGeneratorDialog}
       />
+      <DialogAlert
+        open={store.converterShowDialog}
+        handleClose={store.closeConverterDialog}
+        title={`${store.dictionary!.defValue(EditorDictionary.keys.converterWarnings)}`}
+        content={store.converterDialogContent || ''}
+        onOk={store.closeConverterDialog}
+        showCancel={false}
+      />
       <div className={cover}>
         {
           store.loadingPlugin && <Preview />
