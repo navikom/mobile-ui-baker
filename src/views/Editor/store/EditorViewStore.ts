@@ -513,7 +513,7 @@ class EditorViewStore extends DisplayViewStore {
 
   @action setScreens(screens: IControl[]) {
     ControlStore.clear();
-    this.screens.replace(screens.map((e) => CreateControl(ControlEnum.Grid, e)));
+    this.screens.replace(screens.map((e) => CreateControl(ControlEnum.Screen, e)));
     this.currentScreen = this.screens[0];
     this.placeContent(this.screens[0]);
   }

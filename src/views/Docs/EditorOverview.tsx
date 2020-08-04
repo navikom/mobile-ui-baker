@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { App } from 'models/App';
 import {
-  ROUTE_DOCS_EDITOR_SAMPLE,
   ROUTE_DOCS_GET_STARTED, ROUTE_DOCS_IMPORT_FIGMA,
 } from 'models/Constants';
 

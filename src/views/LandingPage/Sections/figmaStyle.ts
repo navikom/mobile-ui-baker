@@ -25,6 +25,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       opacity: 0,
     }
   },
+  image: {
+    width: '100%',
+    height: '100%'
+  },
   img: {
     position: 'absolute',
     width: 117,

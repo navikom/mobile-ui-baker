@@ -88,7 +88,7 @@ class DisplayViewStore extends Errors {
 
   @computed get screenStatusBarEnabled() {
     const screen = this.currentScreen as IScreen;
-    return screen.statusBarExtended ? true : this.statusBarEnabled;
+    return screen.statusBarExtended ? screen.statusBarEnabled : this.statusBarEnabled;
   }
 
   @computed get screenStatusBarColor() {

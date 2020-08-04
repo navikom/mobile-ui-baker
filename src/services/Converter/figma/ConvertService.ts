@@ -15,6 +15,7 @@ import { ErrorHandler } from 'utils/ErrorHandler';
 import ZipGenerator from './ZipGenerator';
 import FigmaSource from './FigmaSource';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
+import ScreenStore from '../../../models/Control/ScreenStore';
 
 type ColorType = { r: number; g: number; b: number; a: number };
 
@@ -116,8 +117,8 @@ class ConvertService implements IFigmaConverter {
     (Object.keys(item.style!) as (keyof React.CSSProperties)[])
       .forEach(key => {
         const property = control.cssProperty(MAIN_CSS_STYLE, key);
-        if (property && (property.valueType !== 'select' || property.options?.includes(item.style![key] as string))) {
-          applyProperty(control, key, item.style![key]!);
+        if (property && (property.valueType !== 'select' || property.options?.includes(item.style![key]!.toString()))) {
+          applyProperty(control, key, item.style![key]!.toString());
         }
         if (key === ('lineHeightPx' as 'fontSize')) {
           applyProperty(control, 'lineHeight', item.style!['lineHeightPx' as 'fontSize'] as string);
@@ -323,7 +324,12 @@ class ConvertService implements IFigmaConverter {
       const item = children[i++];
       item.isScreen = true;
       const { height } = item.absoluteBoundingBox;
-      const screen = new GridStore(item.id);
+      const screen = new ScreenStore(item.id);
+      if (item.backgroundColor && item.backgroundColor.a > 0) {
+        screen.setStatusBarExtended(true, true);
+        screen.setBackground(colorFromRGBA(item.backgroundColor));
+      }
+
       screen.changeTitle(item.name, true);
       const c = this.retrieveControls(item.children, new ItemStyleFit(item)) as IObservableArray<IControl>;
       const last = c[c.length - 1];
@@ -386,7 +392,7 @@ class ConvertService implements IFigmaConverter {
       }
       this.name = json.name;
       const children = this.traverseChildren(json.document.children);
-      this.retrieveScreens(children.slice(1, 2));
+      this.retrieveScreens(children);
       await this.fetchImages();
       this.fetchAssets();
     } catch (err) {

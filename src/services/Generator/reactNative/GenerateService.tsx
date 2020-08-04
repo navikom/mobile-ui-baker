@@ -197,11 +197,9 @@ class GenerateService implements IGenerateService {
       }
       if (maskImage && maskImage.enabled) {
         const src = maskImage.value as string;
-        if (src!.includes('.svg')) {
-          this.addToFetch(src, transitStyle);
-          transitStyle.style = reactNativeImage.svgMode(width, height, backgroundColor, color);
-          transitStyle.isSvg = true;
-        }
+        this.addToFetch(src, transitStyle);
+        transitStyle.style = reactNativeImage.svgMode(width, height, backgroundColor, color);
+        transitStyle.isSvg = true;
       }
       if (width) {
         if (width.value > widthValue) {
@@ -279,10 +277,10 @@ class GenerateService implements IGenerateService {
 
         const keys = Array.from(control.cssStyles.keys());
         const classes = control.classes.filter(clazz => keys.includes(clazz));
-
+        const isText = control.type === ControlEnum.Text && (control.title.length || control.hasImage);
         const store =
           new StoreContent(
-            control.type,
+            isText ? ControlEnum.Text : ControlEnum.Grid,
             control.id as string,
             screen.id as string,
             control.path as string[],

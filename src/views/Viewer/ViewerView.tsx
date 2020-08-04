@@ -148,10 +148,10 @@ const DeviceContent: React.FC<{ store: ViewerViewStore }> = observer(({ store })
   <DeviceComponent
     device={store.device}
     ios={store.ios}
-    mode={store.mode}
-    background={store.background}
-    statusBarEnabled={store.statusBarEnabled}
-    statusBarColor={store.statusBarColor}
+    mode={store.screenMode}
+    background={store.screenBackground}
+    statusBarEnabled={store.screenStatusBarEnabled}
+    statusBarColor={store.screenStatusBarColor}
     scale={store.scale}
     portrait={store.portrait}>
     <Content
@@ -160,7 +160,7 @@ const DeviceContent: React.FC<{ store: ViewerViewStore }> = observer(({ store })
         store.setCurrentScreenAnimate(action, screen, behavior)}
       firstContainerVisible={store.firstContainerVisible}
       ios={store.ios}
-      background={store.background}
+      background={store.screenBackground}
       firstItems={store.firstScreen ? store.firstScreen.children : []}
       secondItems={store.secondScreen ? store.secondScreen.children : []}
     />

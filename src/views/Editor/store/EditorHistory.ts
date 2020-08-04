@@ -32,6 +32,7 @@ export const HIST_PROJECT_TITLE_CHANGE = "projectTitle";
 export const HIST_SCREEN_BACKGROUND = "changeScreenBackground";
 export const HIST_SCREEN_STATUS_BAR_COLOR = "changeScreenStatusBarColor";
 export const HIST_SCREEN_STATUS_BAR_EXTENDED = "changeScreenStatusBarExtended";
+export const HIST_SCREEN_STATUS_BAR_ENABLED = "changeScreenStatusBarEnabled";
 export const HIST_SCREEN_STATUS_BAR_MODE = "changeScreenStatusBarMode";
 
 export interface ControlStatic {
@@ -154,6 +155,9 @@ class EditorHistory implements IHistory {
         break;
       case HIST_SCREEN_STATUS_BAR_MODE:
         (control as IScreen).setMode(object.value!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_ENABLED:
+        (control as IScreen).setStatusBarEnabled(object.value!, true);
         break;
       case HIST_RENAME_CSS_STYLE:
         control.renameCSSStyle(object.oldKey as string, object.key as string, true);
@@ -366,6 +370,9 @@ class EditorHistory implements IHistory {
         break;
       case HIST_SCREEN_STATUS_BAR_MODE:
         (control as IScreen).setMode(object.value!, true);
+        break;
+      case HIST_SCREEN_STATUS_BAR_ENABLED:
+        (control as IScreen).setStatusBarEnabled(object.value!, true);
         break;
     }
     this.viewStore!.save();

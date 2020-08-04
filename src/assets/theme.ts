@@ -15,6 +15,12 @@ export default createMuiTheme({
     error: { main: dangerColor[0] }
   },
   overrides: {
+    MuiFormControl: {
+      marginDense: {
+        marginTop: 8,
+        marginBottom: 8
+      }
+    },
     MuiButtonGroup: {
       groupedOutlinedHorizontal: {
         '&:not(:last-child)': {

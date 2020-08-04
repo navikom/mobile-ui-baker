@@ -114,7 +114,7 @@ class GenerateComponent implements IGenerateComponent {
   }
 
   generateComponentString() {
-    const isText = this.controls[0].type === ControlEnum.Text;
+    const isText = this.controls[0].type === ControlEnum.Text && (this.controls[0].title.length || this.controls[0].hasImage);
     const comp = isText ? TEXT_BASE_COMP : BASE_COMP;
     const isObservable = this.controls.find(c => c.cssStyles.size > 1);
     const classes = isObservable ? `const classes = ${PROPS_VARIABLE}.classes.toJS();` : '';

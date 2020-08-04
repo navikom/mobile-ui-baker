@@ -30,24 +30,31 @@ export default function FigmaSection() {
               className={classNames(classes.laptopWrapper, extraClasses.laptopWrapper)}
               src={LaptopPng}
             />
-            <LazyLoadImage
-              className={extraClasses.figmaPopup}
-              src={figmaPopup}
-            />
+            <div className={extraClasses.figmaPopup}>
+              <LazyLoadImage
+                className={extraClasses.image}
+                src={figmaPopup}
+              />
+            </div>
+
             {
               [chat, login, signup, product, orders, basket].map((src, i) => (
-                <LazyLoadImage
-                  key={src}
-                  className={classNames(extraClasses.img, extraClasses[`img${i}` as 'img'])}
-                  src={src}
-                />
+                <div key={src} className={classNames(extraClasses.img, extraClasses[`img${i}` as 'img'])}>
+                  <LazyLoadImage
+                    className={extraClasses.image}
+                    src={src}
+                  />
+                </div>
               ))
             }
             <div className={extraClasses.cover} />
-            <LazyLoadImage
-              className={extraClasses.figmaLogo}
-              src={figmaLogo}
-            />
+            <div className={extraClasses.figmaLogo}>
+              <LazyLoadImage
+                className={extraClasses.image}
+                src={figmaLogo}
+              />
+            </div>
+
           </div>
         </GridItem>
         <GridItem xs={12} sm={12} md={4} lg={4} style={{ marginLeft: 'auto' }}>

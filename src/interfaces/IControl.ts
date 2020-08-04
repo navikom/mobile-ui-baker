@@ -115,15 +115,18 @@ export interface IGrid extends IControl {
 export interface IScreen extends IControl {
   background: string;
   statusBarExtended: boolean;
+  statusBarEnabled: boolean;
   statusBarColor: string;
   mode: Mode;
 
   setStatusBarExtended(value: boolean, noHistory?: boolean): void;
+  setStatusBarEnabled(value: boolean, noHistory?: boolean): void;
   setStatusBarColor(color: string, noHistory?: boolean): void;
   setBackground(background: string, noHistory?: boolean): void;
   setMode(mode: Mode, noHistory?: boolean): void;
   switchMode(): void;
   switchExtended(): void;
+  switchStatusBarEnabled(): void;
   setScreenProps(screen: IScreen): void;
 
   clone(): IScreen;

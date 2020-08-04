@@ -200,6 +200,7 @@ const AndroidDevice: React.FC<DeviceComponentProps> = (
   });
   const navbar = portrait ?
     { bottom: 0 } : { transform: 'rotate(-90deg)', right: -165, height: android.width, zIndex:2 };
+
   return (
     <div className={inner} id="capture">
       {

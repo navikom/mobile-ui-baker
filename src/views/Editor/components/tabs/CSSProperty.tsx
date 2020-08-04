@@ -51,6 +51,9 @@ const useStyles = makeStyles(theme => ({
   },
   pointer: {
     cursor: "pointer"
+  },
+  title: {
+    fontSize: 14
   }
 }));
 
@@ -107,7 +110,7 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
     <>
       <Grid container alignItems="center" justify="space-between" className={root} onClick={switchEnabled}>
         <div className={classes.propKeyWrapper}>
-          <Typography variant="body1">{title}</Typography>
+          <Typography className={classes.title}>{title}</Typography>
           {
             description && (
                 <IconButton onClick={(e) => {

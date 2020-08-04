@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     margin: '5px 3px 10px',
     padding: '5px 10px',
     backgroundColor: whiteOpacity(.5),
-    width: '100%'
+    width: '94%'
   },
   closed: {
     fontSize: 0,
@@ -128,6 +128,16 @@ const StatusBarExtendComponent: React.FC<IEditorTabsProps> = observer((
               <FormControlLabel value={Mode.DARK} control={<Radio color="primary" />}
                                 label={dictionary!.defValue(EditorDictionary.keys.dark)} />
             </RadioGroup>
+          </FormControl>
+        </Grid>
+        <Grid container className={classes.container} justify="space-between">
+          <FormControl component="fieldset">
+            <FormLabel
+              style={{ marginBottom: 10 }}>{dictionary!.defValue(EditorDictionary.keys.statusBar).toUpperCase()}</FormLabel>
+            <Switch
+              checked={screen ? screen.statusBarEnabled : false}
+              color="primary"
+              onChange={screen ? () => screen.switchStatusBarEnabled() : () => {}} />
           </FormControl>
         </Grid>
         <Grid container className={classes.container} justify="space-between">

@@ -82,18 +82,20 @@ class StoreContent implements IStoreContent {
   }
 
   toString(nameSpace: string): string {
+
     let component = this.type === ControlEnum.Grid ? BASE_COMP : TEXT_BASE_COMP;
     component = this.isObservable ? `observer(${component})` : component;
+    const title = this.title.replace(/(\r\n|\n|\r)/gm, ' ');
     let content = '{\n';
     content += `    id: "${this.id}",\n`;
-    content += `    title: "${this.title}",\n`;
+    content += `    title: "${title}",\n`;
     content += `    path: ${JSON.stringify(this.path)},\n`;
     content += `    classes: ${JSON.stringify(this.classes)},\n`;
     content += `    styleId: "${this.styleId}",\n`;
     content += `    isTextChildren: ${this.isTextChildren},\n`;
     content += `    transitStyles: ${this.transitStyles ? '[' + this.transitStyles.map(e => e.toString()) + ']' : undefined},\n`;
     content += `    action: ${JSON.stringify(this.action)},\n`;
-    content += `    text: "${this.text}",\n`;
+    content += `    text: "${title}",\n`;
     content += `    meta: "${this.meta}",\n`;
     content += `    placeIndex: ${JSON.stringify(this.placeIndex)},\n`;
     content += `    component: ${component},\n`;
