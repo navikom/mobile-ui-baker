@@ -110,12 +110,6 @@ class ZipGenerator {
   }
 
   screen2zip(screen: IScreen, title: string) {
-    // <React.Fragment>
-    //   <StatusBar hidden={false} />
-    // <SafeAreaView style={{flex: 1, backgroundColor: "#cccccc"}}>
-    // <BaseComponent store={store} props={store.props(route.params.componentId)} />
-    // </SafeAreaView>
-    // </React.Fragment>
 
     let statusBar = this.source.store.statusBarEnabled ?
       `<StatusBar barStyle="${this.source.store.mode === Mode.DARK ? 'light-content' : 'dark-content'}" backgroundColor="${this.source.store.statusBarColor}" />`
@@ -129,14 +123,8 @@ class ZipGenerator {
 
     const background = screen.statusBarExtended ? screen.background : this.source.store.background.backgroundColor;
 
-    // ${statusBar}
-    // <SafeAreaView style={{flex: 1, backgroundColor: "${this.source.store.statusBarColor}"}}>
-    // <BaseComponent store={store} props={store.props(route.params.componentId)} />
-    // </SafeAreaView>
-
     let content = IMPORT_REACT + ';\n';
     content += importFrom(['SafeAreaView', 'StatusBar', 'View']) + ';\n';
-    content += importFrom(BASE_COMP, `${APP_ROOT}/${COMPONENTS_FOLDER}/${BASE_COMP}/${BASE_COMP}`) + ';\n';
     content += importFrom(STORE, `${APP_ROOT}/${SCREENS_FOLDER}/${title}/${STORE}`) + ';\n';
 
     content += `\n${FUNCTION} ${title}({navigation, route}) {\n`;

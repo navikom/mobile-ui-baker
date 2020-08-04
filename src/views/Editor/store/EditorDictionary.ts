@@ -124,6 +124,14 @@ export const data = {
   fromFigma: 'From Figma',
   downloadProjectAssets: 'Download project assets (they will expire in 10 days)',
   download: 'Download',
+  dataSaveError: '%0 save error: %1',
+  dataFetchError: '%0 fetch error: %1',
+  dataSavedSuccessfully: '$ saved successfully',
+  dataDeletedSuccessfully: '$ deleted successfully',
+  dataDeleteError: '%0 delete error: %1',
+  fileCreatedSuccessfully: `The %0 %1.%2 created successfully. Check the "Downloads" folder or find out the downloads location in the browser settings.`,
+  package: 'package',
+  file: 'file'
 };
 
 class EditorDictionary extends AbstractDictionary {

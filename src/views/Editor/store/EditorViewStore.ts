@@ -292,7 +292,7 @@ class EditorViewStore extends DisplayViewStore {
       await ProjectsStore.save(this.project);
       App.loggedIn && this.project.userId === App.user!.userId && OwnProjects.push([this.project]);
       runInAction(() => {
-        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, this.project.title);
+        this.successMessage = this.dictionary.defValue(EditorDictionary.keys.dataSavedSuccessfully, this.project.title);
       });
       this.setSuccessRequest(true);
       this.setTimeOut(() => {
@@ -303,7 +303,7 @@ class EditorViewStore extends DisplayViewStore {
         }
       }, 5000);
     } catch (err) {
-      this.setError(Dictionary.defValue(DictionaryService.keys.dataSaveError, [this.project.title, Dictionary.value(err.message)]));
+      this.setError(this.dictionary.defValue(EditorDictionary.keys.dataSaveError, [this.project.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
       this.pluginStore.postMessage(PluginStore.LISTENER_ON_ERROR, err.message);
     }
@@ -354,13 +354,13 @@ class EditorViewStore extends DisplayViewStore {
       await ProjectsStore.save(control.instance as IProject, [file]);
       (control.instance!.type === ProjectEnum.CONTROL ? SharedControls : OwnComponents).push([control.instance!]);
       runInAction(() => {
-        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataSavedSuccessfully, control.title);
+        this.successMessage = this.dictionary.defValue(EditorDictionary.keys.dataSavedSuccessfully, control.title);
       });
 
       this.setSuccessRequest(true);
       this.setTimeOut(() => this.setSuccessRequest(false), 5000);
     } catch (err) {
-      this.setError(Dictionary.defValue(DictionaryService.keys.dataSaveError, [control.title, Dictionary.value(err.message)]));
+      this.setError(this.dictionary.defValue(EditorDictionary.keys.dataSaveError, [control.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
       this.pluginStore.postMessage(PluginStore.LISTENER_ON_ERROR, err.message);
     }
@@ -384,18 +384,19 @@ class EditorViewStore extends DisplayViewStore {
     a.download = `${data.title}.json`;
     a.click();
     this.setSavingProject(false);
+    this.fileCreatedNotification([EditorDictionary.keys.file, data.title, 'json']);
   }
 
   deleteControl = async (control: IControl) => {
     try {
       await (control.instance!.type === ProjectEnum.CONTROL ? SharedControls : OwnComponents).delete(control.instance!);
       runInAction(() => {
-        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataDeletedSuccessfully, control.title);
+        this.successMessage = this.dictionary.defValue(EditorDictionary.keys.dataDeletedSuccessfully, control.title);
       });
       this.setSuccessRequest(true);
       this.setTimeOut(() => this.setSuccessRequest(false), 5000);
     } catch (err) {
-      this.setError(Dictionary.defValue(DictionaryService.keys.dataDeleteError, [control.title, Dictionary.value(err.message)]));
+      this.setError(this.dictionary.defValue(EditorDictionary.keys.dataDeleteError, [control.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
     }
   };
@@ -436,6 +437,9 @@ class EditorViewStore extends DisplayViewStore {
       this.generator.generateZip();
     }
     this.closeGeneratorDialog(true);
+    setTimeout(() => {
+      this.fileCreatedNotification([EditorDictionary.keys.package, this.project.title, 'zip']);
+    }, 1000);
   }
 
   @action clearLocalStorage() {
@@ -461,7 +465,7 @@ class EditorViewStore extends DisplayViewStore {
     try {
       await OwnProjects.delete(this.project);
       runInAction(() => {
-        this.successMessage = Dictionary.defValue(DictionaryService.keys.dataDeletedSuccessfully, this.project.title);
+        this.successMessage = this.dictionary.defValue(EditorDictionary.keys.dataDeletedSuccessfully, this.project.title);
       });
       this.setSuccessRequest(true);
       this.newProject();
@@ -469,7 +473,7 @@ class EditorViewStore extends DisplayViewStore {
         this.setSuccessRequest(false);
       }, 3000);
     } catch (err) {
-      this.setError(Dictionary.defValue(DictionaryService.keys.dataDeleteError, [this.project.title, Dictionary.value(err.message)]));
+      this.setError(this.dictionary.defValue(EditorDictionary.keys.dataDeleteError, [this.project.title, Dictionary.value(err.message)]));
       this.setTimeOut(() => this.setError(null), 5000);
     }
   }
@@ -487,6 +491,14 @@ class EditorViewStore extends DisplayViewStore {
       this.generator = null;
       this.whenReactionDisposer = undefined;
     });
+  }
+
+  @action fileCreatedNotification(messages: string[]) {
+    runInAction(() => {
+      this.successMessage = this.dictionary.defValue(EditorDictionary.keys.fileCreatedSuccessfully, messages);
+    });
+    this.setSuccessRequest(true);
+    this.setTimeOut(() => this.setSuccessRequest(false), 15000);
   }
 
   async figmaConvert(token: string, key: string) {
