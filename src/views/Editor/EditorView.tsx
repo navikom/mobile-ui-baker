@@ -30,16 +30,12 @@ import { ItemTypes } from 'views/Editor/store/ItemTypes';
 import IControl from 'interfaces/IControl';
 import { DropEnum } from 'enums/DropEnum';
 import TreeComponent from 'views/Editor/components/TreeComponent';
-import { TABS_HEIGHT, FIRST_CONTAINER, SECOND_CONTAINER, MODE_DEVELOPMENT } from 'models/Constants';
+import { TABS_HEIGHT, FIRST_CONTAINER, SECOND_CONTAINER } from 'models/Constants';
 import ProjectTab from 'views/Editor/components/tabs/ProjectTab';
 import { blackOpacity, whiteColor, whiteOpacity } from 'assets/jss/material-dashboard-react';
 import { IBackgroundColor } from 'interfaces/IProject';
 import AddAlert from '@material-ui/icons/AddAlert';
 import Snackbar from 'components/Snackbar/Snackbar';
-import { SharedControls } from 'models/Project/ControlsStore';
-import { SharedComponents } from 'models/Project/SharedComponentsStore';
-import { App } from 'models/App';
-import { OwnComponents } from 'models/Project/OwnComponentsStore';
 
 import { DeviceEnum } from 'enums/DeviceEnum';
 import EditorHeader from 'components/Header/EditorHeader';
@@ -503,15 +499,8 @@ function Editor(props: RouteComponentProps) {
       });
     }, 10);
 
-    SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
-    SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
-    when(() => App.loggedIn, async () => {
-      try {
-        await OwnComponents.fetchItems();
-      } catch (err) {
-        process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Own components error %s', err.message);
-      }
-    });
+    // SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
+    // SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
 
   }, [store, id]);
   useEffect(() => {

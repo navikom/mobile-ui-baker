@@ -183,7 +183,8 @@ class EditorViewStore extends DisplayViewStore {
         importControl: () => this.importControl(),
         importComponent: () => this.importComponent(),
         metaList: this.currentScreenMetaList,
-        setMeta: (meta: ScreenMetaEnum, control: IControl) => this.setMeta(meta, control)
+        setMeta: (meta: ScreenMetaEnum, control: IControl) => this.setMeta(meta, control),
+        ownComponents: this.pluginStore.components
       }
     ];
     return props[this.tabToolsIndex];
@@ -341,8 +342,8 @@ class EditorViewStore extends DisplayViewStore {
       this.exportToFile({ ...control.instance!.JSON, type: control.instance!.type });
       return;
     }
-    const [file, base64] = await this.makeScreenshot(control);
-    this.pluginStore.postMessage(PluginStore.LISTENER_ON_SAVE_COMPONENT, [json, base64]);
+    const res = await this.makeScreenshot(control);
+    this.pluginStore.postMessage(PluginStore.LISTENER_ON_SAVE_COMPONENT, [json, res[1]]);
     if (this.pluginStore.proMode) {
       return;
     }
@@ -351,7 +352,7 @@ class EditorViewStore extends DisplayViewStore {
       if (!App.loggedIn) {
         throw new ErrorHandler(ERROR_USER_DID_NOT_LOGIN);
       }
-      await ProjectsStore.save(control.instance as IProject, [file]);
+      await ProjectsStore.save(control.instance as IProject);
       (control.instance!.type === ProjectEnum.CONTROL ? SharedControls : OwnComponents).push([control.instance!]);
       runInAction(() => {
         this.successMessage = this.dictionary.defValue(EditorDictionary.keys.dataSavedSuccessfully, control.title);

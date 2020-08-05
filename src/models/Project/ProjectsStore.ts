@@ -8,8 +8,8 @@ import { Project } from 'api/MainApi/Api';
 import { ROUTE_SCREENS } from 'models/Constants';
 import { App } from 'models/App';
 import AccessEnum from 'enums/AccessEnum';
-import { decrypt } from '../../utils/crypto';
-import isTests from '../../utils/isTests';
+import { decrypt } from 'utils/crypto';
+import isTests from 'utils/isTests';
 
 export const Access = {
   [AccessEnum.OWNER]: 'owner',

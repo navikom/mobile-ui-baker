@@ -54,7 +54,7 @@ class DisplayViewStore extends Errors {
   @observable mode: Mode = Mode.WHITE;
   @observable scale = 0.9;
   @observable portrait = true;
-  @observable ios = false;
+  @observable ios = true;
   @observable autoSave = false;
   @observable project: IProject;
   @observable fetchingProject = false;
@@ -64,7 +64,7 @@ class DisplayViewStore extends Errors {
   @observable navigation: (string | number)[] = [ScreenSwitcherEnum.NEXT, AnimationEnum.SLIDE, AnimationDirectionEnum.LEFT, 500];
   @observable screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
   @observable navigationStack: IObservableArray<NavigationItem> = observable([]);
-  pluginStore: PluginStore = new PluginStore(this);
+  pluginStore: PluginStore;
 
   debug = false;
 
@@ -103,10 +103,8 @@ class DisplayViewStore extends Errors {
 
   constructor(urlQuery: string) {
     super();
-    if (urlQuery.length) {
-      this.loadingPlugin = true;
-      this.pluginStore.fetchMode(urlQuery);
-    }
+    this.pluginStore = new PluginStore(this, urlQuery);
+
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
     this.screens = observable([CreateControl(ControlEnum.Screen)]);
     this.setCurrentScreen(this.screens[0]);

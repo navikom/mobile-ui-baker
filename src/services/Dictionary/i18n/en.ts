@@ -565,7 +565,9 @@ export default {
   adsFreeEditor: 'Ads-free Editor',
   reactNativeCode: 'React Native code',
   editorCustomization: 'Editor customization',
+  customComponentsManagement: 'Custom components management',
   viewerCustomization: 'Viewer customization',
+  possibleToManageUsersComponentsStoreAndDownload: `Possible to manage user's custom components, store and download in own way.`,
   possibleToHideHeaderWithReplacing: 'Possible to hide header with replacing your own solution to keep a consistent UX or provide custom functionalities.',
   possibleToHideHeaderWithReplacingOverride: 'Possible to hide header with replacing your own solution to keep a consistent UX or provide custom functionalities include override project saving method.',
   includedAPICalls: 'Included API calls',
@@ -669,4 +671,7 @@ export default {
   weThankYouForPurchasing: 'We thank you for purchasing a project "$"!',
   weAreSorryButYourCurrent: 'We are sorry, but your current payment method could not be processed. Please contact your financial institution and [Try again] or [Try a different payment method]',
   free: 'Free',
+  dataSavedSuccessfully: '$ saved successfully',
+  dataSaveError: '%0 save error: %1',
+  dataFetchError: '%0 fetch error: %1',
 };

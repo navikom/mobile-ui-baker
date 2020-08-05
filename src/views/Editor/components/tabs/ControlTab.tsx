@@ -32,13 +32,11 @@ import DialogAlert from 'components/Dialog/DialogAlert';
 import { App } from 'models/App';
 import { blackOpacity, primaryOpacity } from 'assets/jss/material-dashboard-react';
 import { SharedControls } from 'models/Project/ControlsStore';
-import { SharedComponents } from 'models/Project/SharedComponentsStore';
 import { CreateForMenu } from 'models/Control/ControlStores';
-import { OwnComponents } from 'models/Project/OwnComponentsStore';
-import ProjectsStore from 'models/Project/ProjectsStore';
 import CustomSelect from 'components/CustomSelect/CustomSelect';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
+import IProject from 'interfaces/IProject';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -89,21 +87,25 @@ const useStyles = makeStyles(theme => ({
     width: 15,
     height: 15
   },
+  box: {
+    height: 'calc(100% - 120px)',
+    overflow: 'auto'
+  }
 }));
 
 interface ControlInstanceProps {
   isAdmin: boolean;
   handleMenu: (control: IControl) => (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  store: ProjectsStore;
+  items: IProject[];
 }
 
 const ControlInstance: React.FC<ControlInstanceProps> =
-  observer(({ isAdmin, handleMenu, store }) => {
+  observer(({ isAdmin, handleMenu, items }) => {
     const classes = useStyles();
     return (
       <div className={classes.container}>
         {
-          store.items.map((instance, i) => {
+          items.map((instance, i) => {
             const control = CreateForMenu(instance);
             return <ControlTabItem
               key={i.toString()}
@@ -125,12 +127,13 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
     selectControl,
     deleteControl,
     importControl,
-    importComponent
+    importComponent,
+    ownComponents
   }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const classes = useStyles();
-  const keys = Object.keys(EditorViewStore.CONTROLS) as (keyof typeof ControlEnum)[];
+  const keys = Object.keys(EditorViewStore.CONTROLS).filter(e => e !== ControlEnum.Screen) as (keyof typeof ControlEnum)[];
   const open = Boolean(anchorEl);
   const isAdmin = App.isAdmin;
 
@@ -156,7 +159,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
     dictionary!.defValue(EditorDictionary.keys.deleteWarning, `${dictionary!.value(title)} "${selectedControl && selectedControl.title}"`);
 
   return (
-    <div>
+    <React.Fragment>
       <Typography align="center" variant="subtitle2" className={classes.paragraph}>
         {dictionary!.defValue(EditorDictionary.keys.elements)}
       </Typography>
@@ -167,7 +170,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
         }
       </div>
       {
-        SharedControls.size > 0 && (
+        SharedControls.size > 10000 && (
           <Grid container alignItems="center" justify={App.isAdmin ? 'space-between' : 'center'}
                 className={classes.tools}>
             <Typography align="center" variant="subtitle2" className={classes.paragraph}>
@@ -186,22 +189,6 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
           </Grid>
         )
       }
-      {
-        SharedControls.size > 0 && <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedControls} />
-      }
-      {
-        SharedComponents.size > 0 && (
-          <Grid container alignItems="center" justify="space-between" className={classes.tools}>
-            <Typography variant="subtitle2" className={classes.paragraph}>
-              {dictionary!.defValue(EditorDictionary.keys.sharedComponents)}
-            </Typography>
-          </Grid>
-        )
-      }
-      {
-        SharedComponents.size > 0 &&
-        <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={SharedComponents} />
-      }
 
       <Grid container alignItems="center" justify="space-between" className={classes.tools}>
         <Typography align="center" variant="subtitle2" className={classes.paragraph}>
@@ -216,7 +203,12 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
       </Grid>
 
       {
-        OwnComponents.size > 0 && <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} store={OwnComponents} />
+        ownComponents && ownComponents.length > 0 && (
+          <div className={classes.box}>
+            <ControlInstance isAdmin={isAdmin} handleMenu={handleMenu} items={ownComponents} />
+          </div>
+
+          )
       }
       <Popover
         id="menu-controls"
@@ -251,7 +243,7 @@ const ControlTabComponent: React.FC<ControlTabProps> = (
         }}
         onCancel={() => selectControl && selectControl()}
       />
-    </div>
+    </React.Fragment>
   )
 };
 
@@ -426,7 +418,8 @@ const Control: React.FC<IEditorTabsProps> = (
     importControl,
     importComponent,
     metaList,
-    setMeta
+    setMeta,
+    ownComponents
   }
 ) => {
   const [element, setElement] = React.useState<IControl | undefined>();
@@ -450,6 +443,7 @@ const Control: React.FC<IEditorTabsProps> = (
             deleteControl={deleteElement}
             importComponent={importComponent}
             importControl={importControl}
+            ownComponents={ownComponents}
             dictionary={dictionary} /> :
           <ControlDetails
             saveControl={saveControl as (control: IControl) => void}

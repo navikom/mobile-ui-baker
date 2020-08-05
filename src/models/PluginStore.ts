@@ -1,9 +1,13 @@
-import { action, observable } from 'mobx';
-import { ROUTE_ROOT } from 'models/Constants';
+import { action, computed, IObservableArray, observable, when } from 'mobx';
+import { MODE_DEVELOPMENT, ROUTE_ROOT } from 'models/Constants';
 import { data } from 'views/Editor/store/EditorDictionary';
-import { IProjectData } from 'interfaces/IProject';
+import IProject, { IProjectData } from 'interfaces/IProject';
 import { api, Apis } from 'api';
 import IMobileUIView from 'interfaces/IMobileUIView';
+import { App } from './App';
+import { OwnComponents } from './Project/OwnComponentsStore';
+import { SubscriptionPlanEnum } from 'enums/SubscriptionPlanEnum';
+import ProjectStore from './Project/ProjectStore';
 
 interface IMuiConfig {
   autoSave?: boolean;
@@ -45,8 +49,8 @@ class PluginStore {
   static FRAME_PRO_ACTION_SWITCH_AUTO_SAVE = 'switch_auto_save';
   static FRAME_PRO_ACTION_SET_PROJECT = 'set_project';
   static FRAME_PRO_ACTION_MAKE_SCREENSHOT = 'make_screenshot';
+  static FRAME_PRO_SILVER_ACTION_SET_COMPONENTS = 'set_components';
 
-  proMode = false;
   token = '';
   store: IMobileUIView;
 
@@ -54,15 +58,48 @@ class PluginStore {
   proData?: EditorData;
   origin?: string;
 
+  @observable proMode = false;
+  @observable plan: SubscriptionPlanEnum = SubscriptionPlanEnum.FREE;
   @observable data: EditorData;
+  @observable componentsList: IObservableArray<IProject> = observable([]);
 
-  constructor(store: IMobileUIView) {
+  @computed get components() {
+    if(this.proMode) {
+      if([SubscriptionPlanEnum.SILVER, SubscriptionPlanEnum.GOLD].includes(this.plan)) {
+        return this.componentsList;
+      } else {
+        return []
+      }
+    }
+    return OwnComponents.items;
+  }
+
+  constructor(store: IMobileUIView, urlQuery: string) {
     this.store = store;
     this.data = this.freeData;
+    if (urlQuery.length) {
+      this.store.setLoadingPlugin(true);
+      this.fetchMode(urlQuery);
+      when(() => !this.proMode || (this.proMode && this.plan === SubscriptionPlanEnum.START_UP), () => {
+        this.fetchOwnComponents();
+      });
+    } else {
+      when(() => App.loggedIn, () => {
+        this.fetchOwnComponents();
+      });
+    }
   }
 
   init() {
     window.addEventListener('message', this.onMessage);
+  }
+
+  async fetchOwnComponents() {
+    try {
+      await OwnComponents.fetchItems();
+    } catch (err) {
+      process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Own components error %s', err.message);
+    }
   }
 
   async fetchMode(query: string) {
@@ -84,8 +121,17 @@ class PluginStore {
     }
   }
 
-  setProMode(proMode: boolean) {
-    this.proMode = proMode;
+  @action setProMode(proMode: { planId: SubscriptionPlanEnum} | null) {
+    this.proMode = proMode !== null;
+    if(proMode !== null) {
+      this.plan = proMode.planId;
+    }
+  }
+
+  @action setComponents(components: IProject[]) {
+    this.componentsList.replace(
+      components.map(data => ProjectStore.from(data).update(data).setId(data.projectId).updateVersions(data.versions || []))
+    )
   }
 
   setOrigin(origin: string) {
@@ -125,12 +171,15 @@ class PluginStore {
           break;
         case PluginStore.FRAME_PRO_ACTION_MAKE_SCREENSHOT:
           this.store.handleScreenshot && this.store.handleScreenshot();
+          break;
+        case PluginStore.FRAME_PRO_SILVER_ACTION_SET_COMPONENTS:
+          this.setComponents(data[1]);
       }
     }
   };
 
   postMessage(action: string, message: string | { [key: string]: any }) {
-    this.origin && window.parent.postMessage(JSON.stringify([action, message]), this.origin);
+    this.origin && this.origin !== 'none' && window.parent.postMessage(JSON.stringify([action, message]), this.origin);
   }
 
   dispose() {

@@ -44,4 +44,5 @@ export default interface IEditorTabsProps {
   screen?: IScreen;
   loadAssetsEnabled?: boolean;
   switchLoadAssets?: () => void;
+  ownComponents?: IProject[];
 }
