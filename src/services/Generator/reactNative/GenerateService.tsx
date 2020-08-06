@@ -25,6 +25,7 @@ import TransitStyle from '../TransitStyle';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
 import { ControlEnum } from 'enums/ControlEnum';
+import EditorDictionary from '../../../views/Editor/store/EditorDictionary';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
@@ -440,6 +441,9 @@ class GenerateService implements IGenerateService {
 
   generateZip() {
     this.zipGenerator.generateZip();
+    setTimeout(() => {
+      this.store.fileCreatedNotification!([EditorDictionary.keys.package, this.store.project.title, 'zip']);
+    }, 1000);
     this.clearTransitionErrors();
   }
 

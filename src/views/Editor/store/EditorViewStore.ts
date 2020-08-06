@@ -438,9 +438,6 @@ class EditorViewStore extends DisplayViewStore {
       this.generator.generateZip();
     }
     this.closeGeneratorDialog(true);
-    setTimeout(() => {
-      this.fileCreatedNotification([EditorDictionary.keys.package, this.project.title, 'zip']);
-    }, 1000);
   }
 
   @action clearLocalStorage() {

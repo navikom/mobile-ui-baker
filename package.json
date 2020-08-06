@@ -74,7 +74,8 @@
     "deploy:s3:temp": "aws s3 sync build/ s3://facetsuitemp --delete",
     "deploy:s3": "aws s3 sync s3://facetsuitemp s3://muiditorweb --delete",
     "deploy:s3:deltemp": "aws s3 rm s3://facetsuitemp --recursive",
-    "postdeploy:s3": "aws cloudfront create-invalidation --distribution-id E2S0NGZ7OWUNSX --paths \"/*\""
+    "postdeploy:s3": "aws cloudfront create-invalidation --distribution-id E2S0NGZ7OWUNSX --paths \"/*\"",
+    "sitemap": "babel-node sitemap-generator.js"
   },
   "repository": {
     "type": "git",

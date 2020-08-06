@@ -43,6 +43,7 @@ interface IMobileUIView {
   setError?(value: string | null): void;
   setTimeOut?(cb: () => void, delay: number): void;
   closeConverter?(): void;
+  fileCreatedNotification?(values: string[]): void;
 }
 
 export default IMobileUIView;

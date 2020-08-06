@@ -68,6 +68,7 @@ interface ActionsProps {
   properties: string[];
   onChange: (index: number, action: string, value: string) => void;
   removeAction: (index: number) => void;
+  onKeyChange: (index: number, action: string) => void;
   index: number;
   dictionary: EditorDictionary;
 }
@@ -81,7 +82,8 @@ const Actions: React.FC<ActionsProps> = (
     index,
     dictionary,
     removeAction,
-    onChange
+    onChange,
+    onKeyChange
   }) => {
   const classes = useStyles();
   let value = properties[0];
@@ -116,6 +118,10 @@ const Actions: React.FC<ActionsProps> = (
     onChange(index, action, [value, ...payload].join('/'));
   }
 
+  const onKeyChangeHandle = (e: string | number) => {
+    onKeyChange(index, e.toString());
+  }
+
   const isBack = action === ACTION_NAVIGATE_BACK;
 
   const expand = classNames(classes.propKeyWrapper, classes.pointer);
@@ -128,7 +134,7 @@ const Actions: React.FC<ActionsProps> = (
           sm={isBack ? 11 : 5}
           md={isBack ? 11 : 5}>
           <CustomSelect fullWidth value={action} options={actions}
-                        onChange={(e) => onChange(index, e.toString(), value)} />
+                        onChange={onKeyChangeHandle} />
         </Grid>
         {
           !isBack && (
@@ -198,6 +204,18 @@ const ControlActions: React.FC<Props> = (
     actionData.push(ACTION_NAVIGATE_TO, screens[1].id);
   }
 
+  const screensProps = screens.map(e => [e.id, e.title]);
+  const controlsProps = ControlStore.classes.map(e => {
+    const arr = e.split('/');
+    return [e, `${ControlStore.getById(arr[0])!.title}/${arr[1]}`]
+  });
+
+  const onKeyChange = (index: number, action: string) => {
+    const value = [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE].includes(action) ?
+      screensProps[0][0] : controlsProps[0][0];
+    editAction(index, action, value);
+  }
+
   return (
     <>
       <Typography variant="subtitle2" align="center"
@@ -217,10 +235,7 @@ const ControlActions: React.FC<Props> = (
                 actions.map((action, i) => {
                   const [actionName, ...properties] = action;
                   const props = [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE].includes(actionName) ?
-                    screens.map(e => [e.id, e.title]) : ControlStore.classes.map(e => {
-                      const arr = e.split('/');
-                      return [e, `${ControlStore.getById(arr[0])!.title}/${arr[1]}`]
-                    });
+                    screensProps.slice() : controlsProps.map(e => e.slice());
                   return <Actions
                     key={i.toString()}
                     index={i}
@@ -230,6 +245,7 @@ const ControlActions: React.FC<Props> = (
                     properties={properties}
                     removeAction={removeAction}
                     dictionary={dictionary}
+                    onKeyChange={onKeyChange}
                     onChange={editAction} />
                 })
               }

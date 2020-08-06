@@ -58,7 +58,7 @@ const LandingPage: React.FC<RouteComponentProps> = (props) => {
               <h1 className={classes.title}>Create Mobile UI, fast.</h1>
               <h4>
                 FacetsUI is the easiest, quickest way to design Mobile UI&apos;s
-                and share them to attract people.
+                and convert it into React Native code.
                 <br />
                 Create beautiful mobile UI&apos;s or embed Editor
                 and/or Viewer to your own web application and allow

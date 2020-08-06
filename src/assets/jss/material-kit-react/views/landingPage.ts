@@ -49,6 +49,8 @@ const landingPageStyle = createStyles({
     '@media (min-width: 576px)': {
       margin: '-60px 30px 0px',
     },
+  },
+  cover: {
   }
 });
 

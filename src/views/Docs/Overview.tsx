@@ -1,14 +1,21 @@
 import React from 'react';
-import { Link } from '@material-ui/core';
+import { Card, CardMedia, Link, makeStyles } from '@material-ui/core';
 import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { App } from '../../models/App';
+import { App } from 'models/App';
 import { ROUTE_DOCS_EDITOR_OVERVIEW } from 'models/Constants';
 import Grid from '@material-ui/core/Grid';
 
+const useStyles = makeStyles({
+  cover: {
+    width: '100%',
+    minHeight: 300,
+  }
+});
 
 const Overview: React.FC = () => {
+  const classes = useStyles();
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -21,6 +28,14 @@ const Overview: React.FC = () => {
       <br />
       <Typography>{Dictionary.defValue(DictionaryService.keys.isADragNDropEditor)}</Typography>
       <br />
+      <Grid container justify="center">
+        <Grid item xs={12} sm={8} md={6}>
+          <Card>
+            <CardMedia component="iframe" className={classes.cover} src="https://www.youtube.com/embed/ycvGCaWxtPI" />
+          </Card>
+        </Grid>
+      </Grid>
+      <br/>
       <Typography variant="h3">{Dictionary.defValue(DictionaryService.keys.aboutTheEditor)}</Typography>
       <br />
       <Typography>

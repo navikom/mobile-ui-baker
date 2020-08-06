@@ -56,7 +56,7 @@ const Documentation: React.FC<RouteComponentProps> = (props) => {
     <div className={classes.wrapper}>
       <Sidebar
         routes={documentationRoutes}
-        logoText={TITLE + ' Docs'}
+        logoText={TITLE}
         logo={logo}
         handleDrawerToggle={handleDrawerToggle}
         open={mobileOpen}
