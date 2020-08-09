@@ -65,7 +65,7 @@ class GenerateComponent implements IGenerateComponent {
 
         let rule = specificRules[item.key as 'display'] && specificRules[item.key as 'display'](item, control);
         if (!rule) {
-          const modifiedValue = valueModifier(item);
+          const modifiedValue = item.value;
           try {
             const propName = getPropertyName(item.key);
 

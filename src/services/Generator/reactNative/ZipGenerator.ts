@@ -1,7 +1,10 @@
+/* eslint-disable */
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import {
+  ANIMATED_VIEW,
+  ANIMATED_VIEW_COMP,
   APP_ROOT,
   APP_STORE,
   ASSETS_FOLDER,
@@ -86,6 +89,7 @@ class ZipGenerator {
   generateRest() {
     this.baseComponent2zip(true);
     this.baseComponent2zip(false);
+    this.animatedView2zip();
     this.navigation2zip();
     this.screens2zip();
     this.specNavComponents2zip();
@@ -205,7 +209,8 @@ class ZipGenerator {
 
     const content = `${IMPORT_REACT};
 ${importFrom([TEXT_COMP, VIEW_COMP, IMAGE_BACKGROUND_COMP, SCROLL_VIEW_COMP, FLAT_LIST_COMP, TOUCHABLE_OPACITY_COMP, TEXT_INPUT_COMP].filter(e => !(isText && [VIEW_COMP, IMAGE_BACKGROUND_COMP].includes(e))))};
-${importFrom(LINEAR_GRADIENT_COMP, 'react-native-linear-gradient')};${fastImage}
+${importFrom(LINEAR_GRADIENT_COMP, 'react-native-linear-gradient')};
+${importFrom(ANIMATED_VIEW_COMP, `${APP_ROOT}/${COMPONENTS_FOLDER}/${ANIMATED_VIEW_COMP}/${ANIMATED_VIEW_COMP}`)};${fastImage}
     
 ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}}) {
   let Component = ${isText ? TEXT_COMP : VIEW_COMP};
@@ -214,8 +219,9 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}}) {
   let ${CHILDREN} = ${STORE_VARIABLE}.${CHILDREN}[${PROPS_VARIABLE}.id];
   
   properties.style = ${PROPS_VARIABLE}.style;
+  const animation = props.animation;
   
-  if(transit) {
+  if(transit && (transit.isSvg || transit.gradient || transit.scroll || transit.src)) {
     if(transit.isSvg) {
       Component = transit.Svg.default;
       if(transit.style && transit.style.color) {
@@ -248,11 +254,60 @@ ${FUNCTION} ${name}({${STORE_VARIABLE}, ${PROPS_VARIABLE}}) {
     }
   } ${elseCause}
   
+  if(animation && animation[0]) {
+    properties.Component = Component;
+    properties.animation = animation;
+    Component = ${ANIMATED_VIEW_COMP};
+  }
+  
   ${returnCause}
 }
     
 ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${COMPONENTS_FOLDER}/${name}/${name}.js`, content);
+  }
+
+  animatedView2zip() {
+
+    let content = IMPORT_REACT + ';\n';
+    content += importFrom([ANIMATED_VIEW]) + ';\n';
+
+    content += `\n${FUNCTION} ${ANIMATED_VIEW_COMP}({ Component, children, animation, style, ...rest }) {\n`;
+
+    content += '  const animatedValues = Object.keys(animation[0]).map(key => ({\n';
+    content += '    name: key,\n';
+    content += '    value: React.useRef(new Animated.Value(0)).current\n';
+    content += '  }));\n';
+    content += '  const [values] = React.useState(animation[0])\n';
+    content += '  const AnimatedComponent = Animated.createAnimatedComponent(Component);\n';
+    content += '  React.useEffect(() => {\n';
+    content += '    animatedValues.forEach(e => {\n';
+    content += '      Animated.timing(\n';
+    content += '        e.value,\n';
+    content += '        { ...animation[0][e.name].to, toValue: e.value._value ? 0 : 1 }\n';
+    content += '      ).start();\n';
+    content += '    });\n';
+    content += '  }, [animation[1], values]);\n\n';
+
+    content += '  const styles = [\n';
+    content += '    ...style,\n';
+    content += '    ...animatedValues.map(e => ({\n';
+    content += '      [e.name]: e.value.interpolate({\n';
+    content += '        inputRange: [0, 1],\n';
+    content += '        outputRange: values[e.name].range\n';
+    content += '      })\n';
+    content += '    }))\n';
+    content += '  ];\n\n';
+
+    content += '  return (\n';
+    content += '    <AnimatedComponent{ ...rest } style={ styles }>\n';
+    content += '    { children }\n';
+    content += '    </AnimatedComponent>\n';
+    content += '  )\n';
+
+    content += `}\nexport default ${ANIMATED_VIEW_COMP};`;
+    this.zip.file(`${SRC_FOLDER}/${COMPONENTS_FOLDER}/${ANIMATED_VIEW_COMP}/${ANIMATED_VIEW_COMP}.js`, content);
+
   }
 
   navSpec2zip(title: string, map: Map<string, string[]>) {
@@ -669,7 +724,7 @@ ${EXPORT_DEFAULT} ${name};`;
   screens2zip() {
     let content = `const ${SCREENS_LIST} = {\n`;
     this.source.screenNames.map(e => content += `  '${e.id}': '${e.title}',\n`);
-    content += `};export default ${SCREENS_LIST};`;
+    content += `};\nexport default ${SCREENS_LIST};`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${SCREENS_LIST}.js`, content);
   }
 
@@ -749,6 +804,32 @@ export default App;`;
 
   transitStyle2zip() {
     let content = importFrom(['observable'], 'mobx') + ';\n';
+    content += importFrom(['Easing']) + ';\n';
+
+    content += 'const colorRegex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;\n\n';
+
+    content += 'const hexToRgbIfHexColor = (value) => {\n';
+    content += '  const result = colorRegex.exec(value);\n';
+    content += '  if(!result) return value;\n';
+    content += '  const [r, g, b] = value.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i,\n';
+    content += `    (m, r, g, b) => '#' + r + r + g + g + b + b)\n`;
+    content += '    .substring(1).match(/.{2}/g)\n';
+    content += '    .map(x => parseInt(x, 16));\n';
+    content += `  return 'rgb(' + r + "," + g + "," + b + ')';\n`;
+    content += '};\n';
+
+    content += 'const easingFunctions = {\n';
+    content += '  linear: Easing.linear,\n';
+    content += `  'ease': Easing.ease,\n`;
+    content += `  'ease-in': Easing.quad,\n`;
+    content += `  'ease-out': Easing.cubic,\n`;
+    content += `  'ease-in-out': Easing.elastic(4),\n`;
+    content += '}\n';
+
+    content += 'const getEasing = (key) => {\n';
+    content += '  return easingFunctions[key] ? easingFunctions[key] : Easing.linear;\n';
+    content += '}\n';
+
     content += `\nclass ${TRANSIT_STYLE_MODEL} {\n`;
     content += '  className;\n';
     content += '  isSvg;\n';
@@ -757,9 +838,10 @@ export default App;`;
     content += '  gradient;\n';
     content += '  scroll;\n';
     content += '  Svg;\n';
+    content += '  transition;\n';
     content += '  @observable enabled;\n\n';
 
-    content += '  constructor({className, isSvg, src, Svg, style, gradient, scroll, enabled}) {\n';
+    content += '  constructor({className, isSvg, src, Svg, style, gradient, scroll, enabled, transition}) {\n';
     content += '    this.className = className;\n';
     content += '    this.isSvg = isSvg;\n';
     content += '    this.src = src;\n';
@@ -768,6 +850,28 @@ export default App;`;
     content += '    this.gradient = gradient;\n';
     content += '    this.scroll = scroll;\n';
     content += '    this.enabled = enabled;\n';
+    content += '    this.transition = transition;\n';
+    content += '  }\n';
+
+    content += '  animationFrom(prevTransit, prevStyle, currentStyle) {\n';
+    content += '    if(!this.transition) {\n';
+    content += '      return null;\n';
+    content += '    }\n';
+    content += '    const animation = {};\n';
+    content += '    this.transition.forEach(e => {\n';
+    content += '      if(currentStyle[e.name] !== undefined && prevStyle[e.name] !== undefined &&\n';
+    content += '        currentStyle[e.name] !== prevStyle[e.name]) {\n';
+    content += '        animation[e.name] = {\n';
+    content += '          range: [hexToRgbIfHexColor(prevStyle[e.name]), hexToRgbIfHexColor(currentStyle[e.name])],\n';
+    content += '          to: {\n';
+    content += '            duration: e.duration,\n';
+    content += '            easing: getEasing(e.easing),\n';
+    content += '            useNativeDriver: false\n';
+    content += '          }\n';
+    content += '        }\n';
+    content += '      }\n';
+    content += '    });\n';
+    content += '    return Object.keys(animation).length ? animation : null;\n';
     content += '  }\n';
 
     content += `}\nexport default ${TRANSIT_STYLE_MODEL};`;
@@ -791,6 +895,7 @@ export default App;`;
     content += '  styles;\n';
     content += '  @observable classes;\n';
     content += '  @observable text;\n';
+    content += '  animation;\n\n';
 
     content += '  @computed get hasAction() {\n';
     content += `    ${RETURN} this.action && this.action.length > 0;\n`;
@@ -830,11 +935,13 @@ export default App;`;
     content += '  }\n';
 
     content += '  @action addStyle(style) {\n';
+    content += '    this.checkAnimation(style);\n';
     content += '    !this.classes.includes(style) && this.classes.push(style);\n';
     content += '  }\n';
 
     content += '  @action removeStyle(style) {\n';
     content += '    this.classes.includes(style) && this.classes.splice(this.classes.indexOf(style), 1);\n';
+    content += '    this.checkAnimation(style, true);\n';
     content += '  }\n';
 
     content += '  @action toggleStyle(style) {\n';
@@ -847,6 +954,27 @@ export default App;`;
 
     content += '  @action setText(value) {\n';
     content += '    this.text = value;\n';
+    content += '  }\n';
+
+    content += '  checkAnimation(clazz, reverse) {\n';
+    content += '    const currentTransit = reverse ?\n';
+    content += '      (this.transitStyles || []).find(e => e.className === clazz) :\n';
+    content += '      this.activeTransit;\n';
+    content += '    const nextTransit = reverse ? this.activeTransit :\n';
+    content += '      (this.transitStyles || []).find(e => e.className === clazz);\n';
+
+    content += '    if(!currentTransit || !nextTransit) {\n';
+    content += '      this.animation = null;\n';
+    content += '      return;\n';
+    content += '    }\n';
+    content += '    const styles = this.styles[this.styleId];\n';
+    content += '    const currentStyle = Object.assign({}, reverse ? styles[clazz] : this.style[0]);\n';
+    content += '    const nextStyle = Object.assign({}, reverse ? this.style[0] : styles[clazz]);\n';
+
+    content += '    this.animation = [\n';
+    content += '      nextTransit.animationFrom(currentTransit, currentStyle, nextStyle),\n';
+    content += '      reverse\n';
+    content += '     ]\n';
     content += '  }\n';
 
     content += `}\nexport default ${PROPERTY_MODEL};`;
@@ -871,8 +999,7 @@ export default App;`;
   }
 
   screenStore2zip(title: string) {
-    let content = importFrom(['action'], 'mobx') + ';\n';
-    content += importFrom(INIT_STATE, `${APP_ROOT}/${SCREENS_FOLDER}/${title}/${INIT_STATE}`) + ';\n';
+    let content = importFrom(INIT_STATE, `${APP_ROOT}/${SCREENS_FOLDER}/${title}/${INIT_STATE}`) + ';\n';
     content += importFrom(STORE_BASE, `${APP_ROOT}/${MODELS_FOLDER}/${STORE_BASE}`) + ';\n';
     content += importFrom(APP_STORE, `${APP_ROOT}/${MODELS_FOLDER}/${APP_STORE}`) + ';\n';
     content += `\nclass ${STORE} extends ${STORE_BASE} {\n\n`;

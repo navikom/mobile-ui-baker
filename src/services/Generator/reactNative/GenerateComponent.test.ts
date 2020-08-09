@@ -158,21 +158,21 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![55].setValue('scroll'); // overflow
+    mainStyle![54].setValue('scroll'); // overflow
     expect(generator.transitStyle(grid).length).toBe(2);
-    mainStyle![55].switchEnabled();
+    mainStyle![54].switchEnabled();
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeFalsy();
 
-    mainStyle![56].switchEnabled(); // overflowX
-    mainStyle![56].setValue('scroll');
+    mainStyle![55].switchEnabled(); // overflowX
+    mainStyle![55].setValue('scroll');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeTruthy();
 
-    mainStyle![57].switchEnabled(); // overflowY
-    mainStyle![57].setValue('scroll');
+    mainStyle![56].switchEnabled(); // overflowY
+    mainStyle![56].setValue('scroll');
     // doesn't change until overflowX enabled
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeTruthy();
 
-    mainStyle![56].switchEnabled();
+    mainStyle![55].switchEnabled();
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeFalsy();
   });
 
@@ -214,16 +214,17 @@ describe('GenerateComponent', () => {
     mainStyle![32].switchEnabled(); // transform
     mainStyle![32].setValue('translate(-50%,20%)');
 
-    mainStyle![49].switchEnabled(); // boxShadow
+    getStyle(mainStyle as ICSSProperty[], 'boxShadow')!.switchEnabled();
 
-    mainStyle![50].switchEnabled(); // display
+    getStyle(mainStyle as ICSSProperty[], 'display')!.switchEnabled();
 
-    mainStyle![54].switchEnabled(); // flexWrap
-    mainStyle![54].setValue('wrap');
+    const flexWrap = getStyle(mainStyle as ICSSProperty[], 'flexWrap');
+    flexWrap!.switchEnabled();
+    flexWrap!.setValue('wrap');
 
-    mainStyle![55].switchEnabled(); // overflow
+    getStyle(mainStyle as ICSSProperty[], 'overflow')!.switchEnabled();
 
-    mainStyle![58].switchEnabled(); // white-space
+    getStyle(mainStyle as ICSSProperty[], 'whiteSpace')!.switchEnabled();
 
     generator.addControl(grid);
 
@@ -362,22 +363,25 @@ describe('GenerateComponent', () => {
     mainStyle![32].switchEnabled(); // transform
     mainStyle![32].setValue('translate(-50%,20%)');
 
-    mainStyle![49].switchEnabled(); // boxShadow
+    getStyle(mainStyle as ICSSProperty[], 'boxShadow')!.switchEnabled();
 
-    mainStyle![50].switchEnabled(); // color
-    mainStyle![50].setValue('#fff');
+    const color = getStyle(mainStyle as ICSSProperty[], 'color');
+    color!.switchEnabled(); // color
+    color!.setValue('#fff');
 
-    mainStyle![51].switchEnabled(); // textAlign
-    mainStyle![52].switchEnabled(); // fontFamily
-    mainStyle![53].switchEnabled(); // fontStyle
-    mainStyle![53].setValue('oblique');
+    getStyle(mainStyle as ICSSProperty[], 'textAlign')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'fontFamily')!.switchEnabled();
+    const fontStyle = getStyle(mainStyle as ICSSProperty[], 'fontStyle');
+    fontStyle!.switchEnabled();
+    fontStyle!.setValue('oblique');
 
-    mainStyle![56].switchEnabled(); // fontDecoration
-    mainStyle![56].setValue('line-through');
+    const textDecoration = getStyle(mainStyle as ICSSProperty[], 'textDecoration');
+    textDecoration!.switchEnabled();
+    textDecoration!.setValue('line-through');
 
-    getStyle(mainStyle as ICSSProperty[], 'lineHeight')!.switchEnabled(); // lineHeight
+    getStyle(mainStyle as ICSSProperty[], 'lineHeight')!.switchEnabled();
 
-    mainStyle![57].switchEnabled(); // textOverflow
+    getStyle(mainStyle as ICSSProperty[], 'textOverflow')!.switchEnabled();
 
     generator.addControl(text);
 

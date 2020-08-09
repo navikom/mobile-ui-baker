@@ -1,7 +1,9 @@
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IControl from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
-
+import { ITransition, ObjectType } from 'interfaces/ITransitSyle';
+import { getPropertyName, getStylesForProperty } from 'css-to-react-native';
+import { MODE_DEVELOPMENT } from '../../../models/Constants';
 
 export const blockStyle = ['transition', 'background', 'backgroundImage', 'backgroundRepeat', 'backgroundSize', 'backgroundPosition',
   'mask', 'maskImage', 'maskRepeat', 'transition', 'transitionProperty', 'transitionDuration', 'transitionTimingFunction',
@@ -20,7 +22,7 @@ export const ignoreStyle = {
 }
 
 export const round = (value: number) => {
-  let newValue = value * 1.2;
+  let newValue = value * 1;
   if (newValue.toString().includes('.') && newValue.toString().split('.')[1].length > 3) {
     newValue = Math.round(newValue * 1000) / 1000;
   }
@@ -236,3 +238,73 @@ export const reactNativeImage = {
     return style;
   }
 };
+
+const checkModifiedProperty = (item: ObjectType) => {
+  let willModify: { key: string }[] = [];
+  const propName = getPropertyName(item.key);
+  try {
+    const rule = getStylesForProperty(propName, item.unit ? `${item.value}${item.unit}` : item.value!.toString());
+    willModify = Object.keys(rule).filter(e => ['borderWidth', 'borderColor'].includes(e)).map(e => ({ key: e }));
+  } catch (err) {
+    process.env.NODE_ENV === MODE_DEVELOPMENT && console.log('Check modified rules', item, err.message);
+  }
+  return willModify;
+}
+
+const allTransitionProperties = (style: ObjectType[], duration: number, easing?: string) => {
+  const willModify: { key: string }[] = [];
+  const propertyNames = style.filter(e => {
+    const willModifyList = checkModifiedProperty(e);
+    willModify.push(...willModifyList);
+    return ['width', 'height', 'top', 'left', 'right', 'bottom', 'opacity', 'color', 'marginLeft', 'marginRight',
+      'marginTop', 'marginBottom', 'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom', 'backgroundColor',
+      'fontSize', 'lineHeight', 'borderRadius', 'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius',
+      'borderBottomRightRadius']
+      .includes(e.key as string)
+  });
+  return propertyNames.concat(willModify).map(e => easing ? { name: e.key, duration, easing } : { name: e.key, duration });
+}
+
+const transitionItem = (style: ObjectType[], name: string, durationString: string, easing?: string) => {
+  const duration = durationString.includes('ms') ?
+    Number(durationString.replace('ms', '')) :
+    Number(durationString.replace('s', '')) * 1000;
+  if (name === 'all') {
+    return allTransitionProperties(style, duration, easing);
+  } else {
+    return [easing ? { name, duration, easing } : { name, duration }];
+  }
+}
+
+export const transitionRule = (style: ObjectType[]) => {
+  const transition = style.find(e => e.key === 'transition');
+  const transitionProperty = style.find(e => e.key === 'transitionProperty');
+  const rulesList: ITransition[] = [];
+  if (transition && transition.enabled) {
+    const roles = (transition.value as string).split(',');
+    let l = roles.length, i = 0;
+    while (l--) {
+      const role = roles[i++];
+      const [name, durationString, easing] = role.split(' ');
+      rulesList.push(
+        ...(transitionItem(style, name, durationString, easing) as ITransition[])
+      );
+    }
+  }
+  const transitionDuration = style.find(e => e.key === 'transitionDuration');
+
+  if (transitionProperty && transitionProperty.enabled && transitionDuration && transitionDuration.enabled) {
+    const name = transitionProperty.value as string;
+    const durationString = `${transitionDuration.value}${transitionDuration.unit}`;
+    const transitionTiming = style.find(e => e.key === 'transitionTimingFunction');
+    rulesList.push(
+      ...(transitionItem(
+        style,
+        name,
+        durationString,
+        transitionTiming && transitionTiming.enabled ? transitionTiming.value as string : undefined
+      ) as ITransition[])
+    );
+  }
+  return rulesList;
+}

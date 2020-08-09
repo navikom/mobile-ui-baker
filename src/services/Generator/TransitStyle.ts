@@ -1,4 +1,4 @@
-import ITransitStyle from 'interfaces/ITransitSyle';
+import ITransitStyle, { ITransition } from 'interfaces/ITransitSyle';
 import { ReactNativeGradient } from 'utils/parseGradient';
 
 class TransitStyle implements ITransitStyle {
@@ -9,6 +9,7 @@ class TransitStyle implements ITransitStyle {
   scroll?: { horizontal: boolean; contentContainerStyle: { alignItems?: string; justifyContent?: string } };
   src?: string;
   style?: { resizeMode?: string; color?: string; width?: string | number; height?: string | number };
+  transition?: ITransition[];
 
   constructor(className: string, enabled: boolean, isSvg: boolean) {
     this.className = className;
@@ -25,6 +26,7 @@ class TransitStyle implements ITransitStyle {
     this.style && (content += `, style: ${JSON.stringify(this.style)}`);
     this.gradient && (content += `, gradient: ${JSON.stringify(this.gradient)}`);
     this.src && (content += this.isSvg ? `, Svg: require("${this.src}")` : `, src: "${this.src}"`);
+    this.transition && (content += `, transition: ${JSON.stringify(this.transition)}`);
     content += '}';
     return content;
   }

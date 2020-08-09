@@ -3,7 +3,7 @@ import { action, observable, runInAction, when } from 'mobx';
 import IMobileUIView from 'interfaces/IMobileUIView';
 import IControl, { IScreen } from 'interfaces/IControl';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
-import ITransitStyle from 'interfaces/ITransitSyle';
+import ITransitStyle, { ObjectType } from 'interfaces/ITransitSyle';
 import ICSSProperty from 'interfaces/ICSSProperty';
 import IGenerateService from 'interfaces/IGenerateService';
 import IStoreContent from 'interfaces/IStoreContent';
@@ -19,15 +19,13 @@ import {
 } from '../Constants';
 import StoreContent from '../StoreContent';
 import GradientParser, { correctGradients } from 'utils/parseGradient';
-import { reactNativeImage } from './ReactNativeStyleDictionary';
+import { reactNativeImage, transitionRule } from './ReactNativeStyleDictionary';
 import ZipGenerator from './ZipGenerator';
 import TransitStyle from '../TransitStyle';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
 import { ControlEnum } from 'enums/ControlEnum';
-import EditorDictionary from '../../../views/Editor/store/EditorDictionary';
-
-type ObjectType = { [key: string]: string | number | boolean | undefined | null };
+import EditorDictionary from 'views/Editor/store/EditorDictionary';
 
 const propToTransitScroll = (transitStyle: ITransitStyle, prop?: ObjectType | ICSSProperty) => {
   if (prop && prop.enabled) {
@@ -131,6 +129,8 @@ class GenerateService implements IGenerateService {
       const justifyContent = (style[1] as unknown as ObjectType[]).find(e => e.key === 'justifyContent');
       const width = control.cssProperty(style[0] as string, 'width');
       const height = control.cssProperty(style[0] as string, 'height');
+      const transition = control.cssProperty(style[0] as string, 'transition');
+      const transitionProperty = control.cssProperty(style[0] as string, 'transitionProperty');
 
       const transitStyle = new TransitStyle(style[0] as string, control.activeClass(style[0] as string), false);
 
@@ -208,7 +208,11 @@ class GenerateService implements IGenerateService {
           unit = width.unit;
         }
       }
-      (transitStyle.src || transitStyle.gradient || transitStyle.scroll) && transitStyles.push(transitStyle);
+      if((transition && transition.enabled) || (transitionProperty && transitionProperty.enabled)) {
+        transitStyle.transition = transitionRule(style[1] as unknown as ObjectType[]);
+      }
+      (transitStyle.src || transitStyle.gradient || transitStyle.scroll || transitStyle.transition)
+      && transitStyles.push(transitStyle);
     }
 
     return [transitStyles.length ? transitStyles : undefined, unit === '%' ? widthValue + '%' : widthValue];

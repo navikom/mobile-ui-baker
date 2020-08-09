@@ -165,9 +165,6 @@ const styles = [
   new CSSProperty('transitionTimingFunction', 'ease-in', 'ease-in', CSS_CAT_ANIMATIONS)
     .setDescription(['transitionTimingDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function'])
     .setShowWhen(['transition', 'expanded']),
-  new CSSProperty('transitionDelay', 0.5, 0.5, CSS_CAT_ANIMATIONS, false, CSS_VALUE_NUMBER)
-    .setDescription(['transitionDelayDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transition-delay'])
-    .setShowWhen(['transition', 'expanded']).setUnits('s', ['s', 'ms']),
   new CSSProperty('boxShadow', '2px 4px 20px rgba(0,0,0,0.4)', '2px 4px 20px rgba(0,0,0,0.4)', CSS_CAT_BACKGROUND)
     .setDescription(['boxShadow', 'https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow']),
 ];
