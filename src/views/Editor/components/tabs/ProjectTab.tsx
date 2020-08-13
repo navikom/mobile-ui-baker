@@ -8,7 +8,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import IEditorTabsProps from 'interfaces/IEditorTabsProps';
-import ColorInput from 'components/CustomInput/ColorInput';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
@@ -42,6 +41,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import LabeledInput from 'components/CustomInput/LabeledInput';
 import FigmaIcon from 'components/Icons/FigmaIcon';
 import Checkbox from '@material-ui/core/Checkbox';
+import ColorPicker from '../ColorPicker';
+import ProjectColors from './ProjectColors';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -378,7 +379,8 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     generate,
     importFromFigma,
     loadAssetsEnabled,
-    switchLoadAssets
+    switchLoadAssets,
+    setColor
   }
 ) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -532,20 +534,22 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
                 style={{ marginBottom: 10 }}>
                 {`${dictionary!.defValue(EditorDictionary.keys.statusBar)} ${dictionary!.defValue(EditorDictionary.keys.background)}`.toUpperCase()}
               </FormLabel>
-              <ColorInput
+              <ColorPicker
+                dictionary={dictionary as EditorDictionary}
                 color={statusBarColor!.toString()}
                 onChange={(e) => setStatusBarColor && setStatusBarColor(e)}
-                label={dictionary!.defValue(EditorDictionary.keys.background)} />
+                />
             </FormControl>
           )
         }
         <FormControl component="fieldset">
           <FormLabel
             style={{ marginBottom: 10 }}>{dictionary!.defValue(EditorDictionary.keys.background).toUpperCase()}</FormLabel>
-          <ColorInput
+          <ColorPicker
+            dictionary={dictionary as EditorDictionary}
             color={background!.backgroundColor}
             onChange={(e) => setBackground && setBackground({ backgroundColor: e })}
-            label={dictionary!.defValue(EditorDictionary.keys.background)} />
+            />
         </FormControl>
       </Grid>
       {
@@ -553,9 +557,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
         <ShareProject dictionary={dictionary} project={project} setAccess={setAccess} />
       }
       <br />
-      <Typography variant="subtitle2" className={classes.title}>
-        {dictionary!.defValue(EditorDictionary.keys.navigationAnimations)}
-      </Typography>
+      <ProjectColors dictionary={dictionary as EditorDictionary} setColor={setColor} />
       <AnimationParams
         isDelay={false}
         conditions={(navigation || []) as string[]}

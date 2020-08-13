@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { action, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import IControl, { IScreen } from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import CreateControl from 'models/Control/ControlStores';
@@ -13,6 +13,7 @@ import {
 } from 'views/Editor/store/EditorHistory';
 import { Mode } from 'enums/ModeEnum';
 import { IHistoryObject } from 'interfaces/IHistory';
+import ColorsStore from '../ColorsStore';
 
 class ScreenStore extends ControlStore implements IScreen {
   @observable background: string = whiteColor;
@@ -49,17 +50,21 @@ class ScreenStore extends ControlStore implements IScreen {
   // ###### apply history start ######## //
 
   @action setBackground(background: string, noHistory?: boolean): void {
+    ColorsStore.deleteColor(this, true);
     const undo = { control: this.id, background: this.background };
     this.background = background;
     const redo = { control: this.id, background: this.background };
     !noHistory && ControlStore.history.add([HIST_SCREEN_BACKGROUND, undo, redo]);
+    ColorsStore.addColor(this, true);
   }
 
   @action setStatusBarColor(color: string, noHistory?: boolean): void {
+    ColorsStore.deleteColor(this, false);
     const undo = { control: this.id, statusBarColor: this.statusBarColor };
     this.statusBarColor = color;
     const redo = { control: this.id, statusBarColor: this.statusBarColor };
     !noHistory && ControlStore.history.add([HIST_SCREEN_STATUS_BAR_COLOR, undo, redo]);
+    ColorsStore.addColor(this, false);
   }
 
   @action setStatusBarExtended(value: boolean, noHistory?: boolean): void {
@@ -81,6 +86,7 @@ class ScreenStore extends ControlStore implements IScreen {
     this.statusBarEnabled = value;
     const redo = { control: this.id, value: this.statusBarEnabled } as unknown as IHistoryObject;
     !noHistory && ControlStore.history.add([HIST_SCREEN_STATUS_BAR_EXTENDED, undo, redo]);
+    value ? ColorsStore.addColor(this, false) : ColorsStore.deleteColor(this, false);
   }
 
   // ###### apply history end ######## //
@@ -115,7 +121,10 @@ class ScreenStore extends ControlStore implements IScreen {
     screen.statusBarColor !== undefined && this.setStatusBarColor(screen.statusBarColor, true);
     screen.statusBarExtended !== undefined && this.setStatusBarExtended(screen.statusBarExtended, true);
     screen.statusBarEnabled !== undefined && this.setStatusBarEnabled(screen.statusBarEnabled, true);
+    return this;
   }
+
+  //######### static ##########//
 
   static create() {
     return new ScreenStore(uuidv4());

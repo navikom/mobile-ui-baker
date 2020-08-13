@@ -1,5 +1,6 @@
 import React from 'react';
 import { CSSValueType } from 'types/commonTypes';
+import IControl from './IControl';
 
 export default interface ICSSProperty {
   controlProps?: { [key: string]: any };
@@ -23,6 +24,7 @@ export default interface ICSSProperty {
   units?: string[];
   unit?: string;
   valueWithUnit: string | number;
+  cssValue: string | number;
 
   setUnits(unit: string, units: string[]): ICSSProperty;
 
@@ -44,9 +46,9 @@ export default interface ICSSProperty {
 
   switchExpanded(): void;
 
-  switchEnabled(): void;
+  switchEnabled(control: IControl, styleName: string): void;
 
-  updateProperties(props: { [key: string]: string | number | boolean }): void;
+  updateProperties(props: { [key: string]: string | number | boolean }, control: IControl, styleName: string): void;
 
   setControlProps(props: { [key: string]: any }): void;
 

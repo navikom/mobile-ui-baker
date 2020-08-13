@@ -15,11 +15,10 @@ import { ErrorHandler } from 'utils/ErrorHandler';
 import ZipGenerator from './ZipGenerator';
 import FigmaSource from './FigmaSource';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
-import ScreenStore from '../../../models/Control/ScreenStore';
+import ScreenStore from 'models/Control/ScreenStore';
+import IColor from 'interfaces/IColor';
 
-type ColorType = { r: number; g: number; b: number; a: number };
-
-const colorFromRGBA = (color: ColorType, opacity = 1) =>
+const colorFromRGBA = (color: IColor, opacity = 1) =>
   `rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(color.b * 255)}, ${opacity * color.a})`;
 
 const applyProperty = (control: IControl, prop: keyof React.CSSProperties, value: string | number, unit?: string) => {
@@ -152,7 +151,7 @@ class ConvertService implements IFigmaConverter {
         .length === item.children.length;
   }
 
-  componentProperties(control: IControl, item: IFigmaNode, fill?: ColorType, stroke?: ColorType, fillOpacity?: number, fillVisible?: boolean) {
+  componentProperties(control: IControl, item: IFigmaNode, fill?: IColor, stroke?: IColor, fillOpacity?: number, fillVisible?: boolean) {
     if (item.backgroundColor && item.backgroundColor.a > 0) {
       applyProperty(control, 'backgroundColor', colorFromRGBA(item.backgroundColor));
     }
@@ -196,24 +195,24 @@ class ConvertService implements IFigmaConverter {
 
   retrieveColor(item: IFigmaNode) {
     let opacity: number | undefined = item.opacity;
-    let fill: ColorType = { r: 0, g: 0, b: 0, a: 0 };
+    let fill: IColor = { r: 0, g: 0, b: 0, a: 0 };
     let stroke;
     let fillOpacity;
     let fillVisible = true;
     if (item.fills.length) {
       fillVisible = item.fills[0].visible;
       if (item.fills[0].gradientStops) {
-        (Object.keys(fill) as (keyof ColorType)[]).forEach(key => {
+        (Object.keys(fill) as (keyof IColor)[]).forEach(key => {
           fill[key] = (item.fills[0].gradientStops![0].color![key] + item.fills[0].gradientStops![1].color![key]) / 2;
         })
 
       } else if (item.fills[0].color) {
-        fill = item.fills[0].color as ColorType;
+        fill = item.fills[0].color as IColor;
         fillOpacity = item.fills[0].opacity;
       }
     }
     if (item.strokes && item.strokes.length) {
-      stroke = item.strokes[0].color as ColorType;
+      stroke = item.strokes[0].color as IColor;
     }
 
     opacity = opacity !== undefined ? Math.round(opacity * 100) / 100 : undefined;

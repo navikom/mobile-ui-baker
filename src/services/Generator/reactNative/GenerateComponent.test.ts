@@ -25,7 +25,7 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![5].switchEnabled();
+    mainStyle![5].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![5].setValue('no-repeat url("../../media/examples/lizard.png")');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0]!.src).toBe('../../media/examples/lizard.png');
   });
@@ -35,11 +35,11 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![7].switchEnabled();
+    mainStyle![7].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![7].setValue('../../media/examples/lizard.png');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].src).toBe('../../media/examples/lizard.png');
 
-    mainStyle![8].switchEnabled();
+    mainStyle![8].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![8].setValue('100% 100%');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].style!.resizeMode).toBe('stretch');
     mainStyle![8].setValue('100%');
@@ -49,7 +49,7 @@ describe('GenerateComponent', () => {
     mainStyle![8].setValue('contain');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].style!.resizeMode).toBe('repeat');
 
-    mainStyle![9].switchEnabled();
+    mainStyle![9].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![9].setValue('repeat');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].style!.resizeMode).toBe('repeat');
     mainStyle![9].setValue('space');
@@ -59,7 +59,7 @@ describe('GenerateComponent', () => {
     mainStyle![9].setValue('no-repeat');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].style!.resizeMode).toBe('cover');
 
-    mainStyle![10].switchEnabled();
+    mainStyle![10].switchEnabled(grid, MAIN_CSS_STYLE);
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].style!.resizeMode).toBe('contain');
   });
 
@@ -68,7 +68,7 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![7].switchEnabled();
+    mainStyle![7].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![7].setValue('../../media/examples/lizard.svg');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].isSvg).toBeTruthy();
   });
@@ -79,7 +79,7 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![11].switchEnabled();
+    mainStyle![11].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![11].setValue('no-repeat url("../../media/examples/lizard.svg")');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].isSvg).toBeTruthy();
   });
@@ -89,11 +89,11 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![12].switchEnabled();
+    mainStyle![12].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![12].setValue('../../media/examples/lizard.svg');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].isSvg).toBeTruthy();
 
-    mainStyle![6].switchEnabled();
+    mainStyle![6].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![6].setValue('red');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].style!.color).toBe('red');
   });
@@ -103,7 +103,7 @@ describe('GenerateComponent', () => {
     const generator = new GenerateService(viewStore);
     const grid = CreateControl(ControlEnum.Grid);
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![5].switchEnabled();
+    mainStyle![5].switchEnabled(grid, MAIN_CSS_STYLE);
     generator.transitStyle(grid);
 
     const results = [
@@ -160,19 +160,19 @@ describe('GenerateComponent', () => {
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
     mainStyle![54].setValue('scroll'); // overflow
     expect(generator.transitStyle(grid).length).toBe(2);
-    mainStyle![54].switchEnabled();
+    mainStyle![54].switchEnabled(grid, MAIN_CSS_STYLE);
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeFalsy();
 
-    mainStyle![55].switchEnabled(); // overflowX
+    mainStyle![55].switchEnabled(grid, MAIN_CSS_STYLE); // overflowX
     mainStyle![55].setValue('scroll');
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeTruthy();
 
-    mainStyle![56].switchEnabled(); // overflowY
+    mainStyle![56].switchEnabled(grid, MAIN_CSS_STYLE); // overflowY
     mainStyle![56].setValue('scroll');
     // doesn't change until overflowX enabled
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeTruthy();
 
-    mainStyle![55].switchEnabled();
+    mainStyle![55].switchEnabled(grid, MAIN_CSS_STYLE);
     expect((generator.transitStyle(grid)[0] as ITransitStyle[])[0].scroll!.horizontal).toBeFalsy();
   });
 
@@ -184,47 +184,47 @@ describe('GenerateComponent', () => {
     grid.setChecksum(0, [], 0, () => {
     });
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![0].switchEnabled();
+    mainStyle![0].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![0].setValue('absolute');
 
-    mainStyle![1].switchEnabled();
+    mainStyle![1].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![1].setValue(10);
     mainStyle![1].setUnit('%');
 
-    mainStyle![7].switchEnabled();
+    mainStyle![7].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![7].setValue('red');
 
-    mainStyle![16].switchEnabled();
+    mainStyle![16].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![16].setValue(100);
     mainStyle![16].setUnit('%');
 
-    mainStyle![17].switchEnabled();
+    mainStyle![17].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![17].setValue(10);
     mainStyle![17].setUnit('rem');
 
-    mainStyle![18].switchEnabled();
+    mainStyle![18].switchEnabled(grid, MAIN_CSS_STYLE);
     mainStyle![18].setValue(100);
 
-    mainStyle![21].switchEnabled(); // padding
+    mainStyle![21].switchEnabled(grid, MAIN_CSS_STYLE); // padding
     mainStyle![21].setValue('10px 5px 7px 0');
 
-    mainStyle![28].switchEnabled(); // marginTop
+    mainStyle![28].switchEnabled(grid, MAIN_CSS_STYLE); // marginTop
     mainStyle![28].setValue(10);
 
-    mainStyle![32].switchEnabled(); // transform
+    mainStyle![32].switchEnabled(grid, MAIN_CSS_STYLE); // transform
     mainStyle![32].setValue('translate(-50%,20%)');
 
-    getStyle(mainStyle as ICSSProperty[], 'boxShadow')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'boxShadow')!.switchEnabled(grid, MAIN_CSS_STYLE);
 
-    getStyle(mainStyle as ICSSProperty[], 'display')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'display')!.switchEnabled(grid, MAIN_CSS_STYLE);
 
     const flexWrap = getStyle(mainStyle as ICSSProperty[], 'flexWrap');
-    flexWrap!.switchEnabled();
+    flexWrap!.switchEnabled(grid, MAIN_CSS_STYLE);
     flexWrap!.setValue('wrap');
 
-    getStyle(mainStyle as ICSSProperty[], 'overflow')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'overflow')!.switchEnabled(grid, MAIN_CSS_STYLE);
 
-    getStyle(mainStyle as ICSSProperty[], 'whiteSpace')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'whiteSpace')!.switchEnabled(grid, MAIN_CSS_STYLE);
 
     generator.addControl(grid);
 
@@ -263,7 +263,7 @@ describe('GenerateComponent', () => {
     grid.setChecksum(0, [], 0, () => {
     });
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
-    mainStyle![32].switchEnabled(); // transform
+    mainStyle![32].switchEnabled(grid, MAIN_CSS_STYLE); // transform
     mainStyle![32].setValue('translate(-50px,0)');
 
     generator.addControl(grid);
@@ -287,14 +287,7 @@ describe('GenerateComponent', () => {
     });
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
 
-    mainStyle![5].switchEnabled();
-    mainStyle![7].switchEnabled();
-    mainStyle![8].switchEnabled();
-    mainStyle![9].switchEnabled();
-    mainStyle![10].switchEnabled();
-    mainStyle![11].switchEnabled();
-    mainStyle![12].switchEnabled();
-    mainStyle![13].switchEnabled();
+    [5,7,8,9,10,11,12,13].forEach(i => mainStyle![i].switchEnabled(grid, MAIN_CSS_STYLE))
 
     generator.addControl(grid);
     expect(JSON.stringify(generator.styles.get('21eabfa8')) === JSON.stringify({ Main: {} })).toBeTruthy();
@@ -309,14 +302,7 @@ describe('GenerateComponent', () => {
     });
     const mainStyle = text.cssStyles.get(MAIN_CSS_STYLE);
 
-    mainStyle![5].switchEnabled();
-    mainStyle![7].switchEnabled();
-    mainStyle![8].switchEnabled();
-    mainStyle![9].switchEnabled();
-    mainStyle![10].switchEnabled();
-    mainStyle![11].switchEnabled();
-    mainStyle![12].switchEnabled();
-    mainStyle![13].switchEnabled();
+    [5,7,8,9,10,11,12,13].forEach(i => mainStyle![i].switchEnabled(text, MAIN_CSS_STYLE));
 
     generator.addControl(text);
     expect(JSON.stringify(generator.styles.get('21eabfa8')) === JSON.stringify({ Main: {} })).toBeTruthy();
@@ -333,55 +319,55 @@ describe('GenerateComponent', () => {
     text.setChecksum(0, [], 0, () => {
     });
 
-    mainStyle![0].switchEnabled();
+    mainStyle![0].switchEnabled(text, MAIN_CSS_STYLE);
     mainStyle![0].setValue('absolute');
 
-    mainStyle![1].switchEnabled();
+    mainStyle![1].switchEnabled(text, MAIN_CSS_STYLE);
     mainStyle![1].setValue(10);
     mainStyle![1].setUnit('%');
 
-    mainStyle![7].switchEnabled();
+    mainStyle![7].switchEnabled(text, MAIN_CSS_STYLE);
     mainStyle![7].setValue('red');
 
-    mainStyle![16].switchEnabled();
+    mainStyle![16].switchEnabled(text, MAIN_CSS_STYLE);
     mainStyle![16].setValue(100);
     mainStyle![16].setUnit('%');
 
-    mainStyle![17].switchEnabled();
+    mainStyle![17].switchEnabled(text, MAIN_CSS_STYLE);
     mainStyle![17].setValue(10);
     mainStyle![17].setUnit('rem');
 
-    mainStyle![18].switchEnabled();
+    mainStyle![18].switchEnabled(text, MAIN_CSS_STYLE);
     mainStyle![18].setValue(100);
 
-    mainStyle![21].switchEnabled(); // padding
+    mainStyle![21].switchEnabled(text, MAIN_CSS_STYLE); // padding
     mainStyle![21].setValue('10px 5px 7px 0');
 
-    mainStyle![28].switchEnabled(); // marginTop
+    mainStyle![28].switchEnabled(text, MAIN_CSS_STYLE); // marginTop
     mainStyle![28].setValue(10);
 
-    mainStyle![32].switchEnabled(); // transform
+    mainStyle![32].switchEnabled(text, MAIN_CSS_STYLE); // transform
     mainStyle![32].setValue('translate(-50%,20%)');
 
-    getStyle(mainStyle as ICSSProperty[], 'boxShadow')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'boxShadow')!.switchEnabled(text, MAIN_CSS_STYLE);
 
     const color = getStyle(mainStyle as ICSSProperty[], 'color');
-    color!.switchEnabled(); // color
+    color!.switchEnabled(text, MAIN_CSS_STYLE); // color
     color!.setValue('#fff');
 
-    getStyle(mainStyle as ICSSProperty[], 'textAlign')!.switchEnabled();
-    getStyle(mainStyle as ICSSProperty[], 'fontFamily')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'textAlign')!.switchEnabled(text, MAIN_CSS_STYLE);
+    getStyle(mainStyle as ICSSProperty[], 'fontFamily')!.switchEnabled(text, MAIN_CSS_STYLE);
     const fontStyle = getStyle(mainStyle as ICSSProperty[], 'fontStyle');
-    fontStyle!.switchEnabled();
+    fontStyle!.switchEnabled(text, MAIN_CSS_STYLE);
     fontStyle!.setValue('oblique');
 
     const textDecoration = getStyle(mainStyle as ICSSProperty[], 'textDecoration');
-    textDecoration!.switchEnabled();
+    textDecoration!.switchEnabled(text, MAIN_CSS_STYLE);
     textDecoration!.setValue('line-through');
 
-    getStyle(mainStyle as ICSSProperty[], 'lineHeight')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'lineHeight')!.switchEnabled(text, MAIN_CSS_STYLE);
 
-    getStyle(mainStyle as ICSSProperty[], 'textOverflow')!.switchEnabled();
+    getStyle(mainStyle as ICSSProperty[], 'textOverflow')!.switchEnabled(text, MAIN_CSS_STYLE);
 
     generator.addControl(text);
 

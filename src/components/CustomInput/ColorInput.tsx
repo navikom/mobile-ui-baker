@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, withStyles } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import classNames from 'classnames';
-import { blackOpacity } from '../../assets/jss/material-dashboard-react';
+import { blackOpacity } from 'assets/jss/material-dashboard-react';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -15,15 +15,15 @@ const useStyles = makeStyles(theme => ({
     top: '50%',
     left: 5,
     transform: 'translate(0, -51%)',
-    height: 35,
-    width: 35,
+    height: 30,
+    width: 30,
     border: 'none',
-    opacity: 0
+    opacity: 0,
   },
   colorWrapper: {
     borderRadius: 3,
-    height: 27,
-    width: 28,
+    height: 25,
+    width: 26,
     display: 'flex',
     padding: 2,
     border: '1px solid ' + blackOpacity(.15),
@@ -39,13 +39,14 @@ interface ColorInputProps {
   color: string;
   label?: React.ReactNode;
   onChange?: (value: string) => void;
+  onColorClick?: () => void;
 }
 
 const ColorInput: React.FC<ColorInputProps> = (
   {
     color,
     onChange,
-    label,
+    onColorClick,
     ...rest
   }) => {
   const classes = useStyles();
@@ -63,7 +64,7 @@ const ColorInput: React.FC<ColorInputProps> = (
         {...rest}
         variant="outlined"
         inputProps={{
-          style: { marginLeft: 40, width: 70 }
+          style: { marginLeft: 40, width: 70, fontSize: 14 }
         }}
         value={color}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -71,12 +72,15 @@ const ColorInput: React.FC<ColorInputProps> = (
         }
       />
 
-      <div className={colorBox}>
+      <div className={colorBox} onClick={onColorClick}>
         <div className={classes.colorBox} style={{ backgroundColor: color }} />
       </div>
-      <input type="color" className={input} value={color} onChange={(e) =>
-        onChange && onChange(e.currentTarget.value)} />
-
+      {
+        onColorClick === undefined && (
+          <input type="color" className={input} value={color} onChange={(e) =>
+            onChange && onChange(e.currentTarget.value)} />
+        )
+      }
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { action, computed, IReactionDisposer, observable, reaction, runInAction,
 import html2canvas from 'html2canvas';
 
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
-import IControl, { IGrid } from 'interfaces/IControl';
+import IControl, { IGrid, IScreen } from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import { DropEnum } from 'enums/DropEnum';
 import CreateControl from 'models/Control/ControlStores';
@@ -15,7 +15,7 @@ import {
   HIST_DROP,
   HIST_DROP_INDEX,
   HIST_DROP_PARENT,
-  HIST_HANDLE_DROP_CANVAS,
+  HIST_HANDLE_DROP_CANVAS, HIST_PROJECT_COLOR,
   HIST_PROJECT_TITLE_CHANGE,
   HIST_SETTINGS
 } from 'views/Editor/store/EditorHistory';
@@ -50,6 +50,7 @@ import { Dictionary, DictionaryService } from 'services/Dictionary/Dictionary';
 import GenerateService from 'services/Generator/reactNative/GenerateService';
 import ConvertService from 'services/Converter/figma/ConvertService';
 import { IFigmaConverter } from 'services/Converter/figma/IFigmaConverter';
+import ColorsStore from 'models/ColorsStore';
 
 export interface DragAndDropItem {
   typeControl?: ControlEnum;
@@ -61,6 +62,7 @@ export interface DragAndDropItem {
 class EditorViewStore extends DisplayViewStore {
   static STORE_JSON = 'storeJson';
   static AUTO_SAVE = 'autoSave';
+  static PROJECT = 'Project';
   static TABS = [EditorDictionary.keys.project, EditorDictionary.keys.screen, EditorDictionary.keys.controls];
   static CONTROLS = ControlEnum;
   @observable history = ControlStore.history;
@@ -163,7 +165,8 @@ class EditorViewStore extends DisplayViewStore {
         setNavigation: (navigation: (string | number)[]) => this.setNavigation(navigation),
         generate: () => this.generate(),
         loadAssetsEnabled: this.fetchAssetsEnabled,
-        switchLoadAssets: () => this.switchFetchAssetsEnabled()
+        switchLoadAssets: () => this.switchFetchAssetsEnabled(),
+        setColor: (oldColor: string, newColor: string) => this.setColor(oldColor, newColor)
       },
       {
         dictionary: this.dictionary,
@@ -196,13 +199,15 @@ class EditorViewStore extends DisplayViewStore {
     this.history.setFabric(CreateControl);
     this.history.setViewStore(this);
     this.currentScreen!.addChild(CreateControl(ControlEnum.Grid));
+    this.applyHistorySettings('background', { backgroundColor: whiteColor } as Mode & string & IBackgroundColor);
+    this.applyHistorySettings('statusBarColor', whiteColor as Mode & string & IBackgroundColor);
     this.generatorMessageReactionDisposer = reaction(() => this.generatorDialogContent, (content) => {
-      if(content) {
+      if (content) {
         this.openGeneratorDialog();
       }
     });
     this.converterMessageReactionDisposer = reaction(() => this.converterDialogContent, (content) => {
-      if(content) {
+      if (content) {
         this.openConverterDialog();
       }
     });
@@ -434,7 +439,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   @action completeCodeGeneration = () => {
-    if(this.generator) {
+    if (this.generator) {
       this.generator.generateZip();
     }
     this.closeGeneratorDialog(true);
@@ -477,7 +482,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   async generate() {
-    if(this.whenReactionDisposer) {
+    if (this.whenReactionDisposer) {
       return;
     }
     this.setSavingProject(true);
@@ -500,7 +505,7 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   async figmaConvert(token: string, key: string) {
-    if(this.whenReactionDisposer) {
+    if (this.whenReactionDisposer) {
       return;
     }
     this.setSavingProject(true);
@@ -645,12 +650,32 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   @action applyHistorySettings(key: SettingsPropType, value: Mode & string & IBackgroundColor) {
+    if (key === 'background') {
+      const object = { id: EditorViewStore.PROJECT, background: this.background.backgroundColor } as IScreen;
+      ColorsStore.deleteColor(object, true);
+      ColorsStore.addColor(
+        Object.assign({}, object, { background: (value as IBackgroundColor).backgroundColor }), true);
+    } else if (key === 'statusBarColor') {
+      const object = { id: EditorViewStore.PROJECT, statusBarColor: this.statusBarColor } as IScreen;
+      ColorsStore.deleteColor(object, true);
+      ColorsStore.addColor(
+        Object.assign({}, object, { statusBarColor: value }), true);
+    }
     this[key] = value;
   }
 
   @action switchStatusBar() {
     super.switchStatusBar();
     this.save();
+  }
+
+  @action setStatusBarEnabled(enabled: boolean) {
+    super.setStatusBarEnabled(enabled);
+    this.save();
+    const object = { id: EditorViewStore.PROJECT, statusBarColor: this.statusBarColor } as IScreen;
+    enabled ?
+      ColorsStore.addColor(object, false) :
+      ColorsStore.deleteColor(object, false);
   }
 
   @action switchPortrait() {
@@ -684,9 +709,19 @@ class EditorViewStore extends DisplayViewStore {
 
   // ####### apply history start ######## //
 
+  @action setColor(oldColor: string, newColor: string, noHistory?: boolean) {
+    if(oldColor === newColor) {
+      return;
+    }
+    const undo = { control: this.currentScreen!.id, oldValue: newColor, value: oldColor } as unknown as IHistoryObject;
+    const redo = { control: this.currentScreen!.id, oldValue: oldColor, value: newColor } as unknown as IHistoryObject;
+    ColorsStore.setColor(oldColor, newColor);
+    !noHistory && ControlStore.history.add([HIST_PROJECT_COLOR, undo, redo]);
+  }
+
   @action setMeta(meta: ScreenMetaEnum | TextMetaEnum, control: IControl, noHistory?: boolean) {
     const undo = { control: control.id, meta: control.meta };
-    if(control.type === ControlEnum.Grid) {
+    if (control.type === ControlEnum.Grid) {
       this.setScreenMeta(meta as ScreenMetaEnum, this.currentScreen!, control as IGrid);
     } else {
       control.setMeta(meta);
@@ -715,6 +750,11 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   @action setBackground(background: IBackgroundColor) {
+    const object = { id: EditorViewStore.PROJECT, background: this.background.backgroundColor } as IScreen;
+    ColorsStore.deleteColor(object, true);
+    ColorsStore.addColor(
+      Object.assign({}, object, { background: background.backgroundColor }),
+      true);
     const undo = {
       control: this.currentScreen!.id,
       key: 'background',
@@ -730,6 +770,9 @@ class EditorViewStore extends DisplayViewStore {
   }
 
   @action setStatusBarColor(statusBarColor: string) {
+    const object = { id: EditorViewStore.PROJECT, statusBarColor: this.statusBarColor } as IScreen;
+    ColorsStore.deleteColor(object, false);
+    ColorsStore.addColor(Object.assign({}, object, { statusBarColor }), false);
     const undo = {
       control: this.currentScreen!.id,
       key: 'statusBarColor',
@@ -742,7 +785,6 @@ class EditorViewStore extends DisplayViewStore {
       value: statusBarColor
     } as unknown as IHistoryObject;
     this.history.add([HIST_SETTINGS, undo, redo]);
-
   }
 
   // 2. source.parent is not null and parent.parent is not null
@@ -1034,12 +1076,12 @@ class EditorViewStore extends DisplayViewStore {
   @action selectControl = (control?: IControl, screen?: IControl, fromDevice?: boolean) => {
     this.tabToolsIndex = 2;
     this.selectedControl = control;
-    if(control && screen) {
-      if(this.currentScreen !== screen) {
+    if (control && screen) {
+      if (this.currentScreen !== screen) {
         this.setCurrentScreen(screen);
       }
     }
-    if(fromDevice && control) {
+    if (fromDevice && control) {
       control.applyFoSelected();
       setTimeout(() => {
         control.refObj && control.refObj.scrollIntoView(true);

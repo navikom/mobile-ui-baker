@@ -8,7 +8,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import IEditorTabsProps from 'interfaces/IEditorTabsProps';
-import ColorInput from 'components/CustomInput/ColorInput';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
@@ -21,6 +20,7 @@ import TextInput from 'components/CustomInput/TextInput';
 import { TABS_HEIGHT } from 'models/Constants';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
+import ColorPicker from '../ColorPicker';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -146,18 +146,20 @@ const StatusBarExtendComponent: React.FC<IEditorTabsProps> = observer((
               style={{ marginBottom: 10 }}>
               {`${dictionary!.defValue(EditorDictionary.keys.statusBar)} ${dictionary!.defValue(EditorDictionary.keys.background)}`.toUpperCase()}
             </FormLabel>
-            <ColorInput
+            <ColorPicker
+              dictionary={dictionary as EditorDictionary}
               color={screen ? screen.statusBarColor : whiteColor}
               onChange={(e) => screen && screen.setStatusBarColor(e)}
-              label={dictionary!.defValue(EditorDictionary.keys.background)} />
+              />
           </FormControl>
           <FormControl component="fieldset">
             <FormLabel
               style={{ marginBottom: 10 }}>{dictionary!.defValue(EditorDictionary.keys.background).toUpperCase()}</FormLabel>
-            <ColorInput
+            <ColorPicker
+              dictionary={dictionary as EditorDictionary}
               color={screen ? screen.background : whiteColor}
               onChange={(e) => screen && screen.setBackground(e)}
-              label={dictionary!.defValue(EditorDictionary.keys.background)} />
+              />
           </FormControl>
         </Grid>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core';
+import { ExpansionPanel, makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
@@ -12,6 +12,9 @@ import AnimationEnum, { AnimationDirectionEnum } from 'enums/AnimationEnum';
 import { blackOpacity } from 'assets/jss/material-dashboard-react';
 import ScreenSwitcherEnum from 'enums/ScreenSwitcherEnum';
 import { getSwitcherParams } from 'models/DisplayViewStore';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import { ExpandMore } from '@material-ui/icons';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -160,14 +163,14 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
   const params = [AnimationDirectionEnum.NONE, AnimationDirectionEnum.TOP, AnimationDirectionEnum.BOTTOM,
     AnimationDirectionEnum.LEFT, AnimationDirectionEnum.RIGHT];
 
-  if(conditions.length > 1) {
+  if (conditions.length > 1) {
 
-    if(currentSwitcherParams) {
+    if (currentSwitcherParams) {
       currentScreenAction = currentSwitcherParams[0] as AnimationEnum;
       currentScreenParam = currentSwitcherParams[1] as AnimationDirectionEnum;
       currentScreenDuration = Number(currentSwitcherParams[2]);
     }
-    if(nextSwitcherParams) {
+    if (nextSwitcherParams) {
       nextScreenAction = nextSwitcherParams[0] as AnimationEnum;
       nextScreenParam = nextSwitcherParams[1] as AnimationDirectionEnum;
       nextScreenDuration = Number(nextSwitcherParams[2]);
@@ -181,12 +184,12 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
     const newExpanded = expanded.slice();
     newExpanded[index] = isExpanded;
     const payload = [];
-    if(newExpanded[0]) {
+    if (newExpanded[0]) {
       payload.push(
         ScreenSwitcherEnum.CURRENT, currentScreenAction, currentScreenParam, currentScreenDuration
       )
     }
-    if(newExpanded[1]) {
+    if (newExpanded[1]) {
       payload.push(
         ScreenSwitcherEnum.NEXT, nextScreenAction, nextScreenParam, nextScreenDuration
       )
@@ -195,54 +198,68 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
   }
 
   return (
-    <>
-      <div className={expand} onClick={switchExpanded(0)}>
-        <Typography>
-          {dictionary.defValue(EditorDictionary.keys.current)}{' '}
-          {dictionary.defValue(EditorDictionary.keys.screen)}
+    <ExpansionPanel className={classes.root}>
+      <ExpansionPanelSummary
+        expandIcon={<ExpandMore />}
+        aria-controls={`panel-animations`}
+        id={`panel-header-animations`}
+      >
+        <Typography variant="subtitle2">
+          {dictionary!.defValue(EditorDictionary.keys.project)}{' '}
+          {dictionary!.defValue(EditorDictionary.keys.navigation)}
         </Typography>
-        <Switch checked={expanded[0]} color="primary" />
-      </div>
-      {
-        expanded[0] && (
-          <Transition
-            screenSwitcher={ScreenSwitcherEnum.CURRENT}
-            action={currentScreenAction}
-            actions={[AnimationEnum.FADE, AnimationEnum.SLIDE]}
-            param={currentScreenParam}
-            params={params.slice()}
-            duration={currentScreenDuration}
-            onChange={onChange}
-            nextParams={
-              expanded[1] ? [ScreenSwitcherEnum.NEXT, nextScreenAction, nextScreenParam, nextScreenDuration] : undefined
-            }
-          />
-        )
-      }
-      <div className={expand} onClick={switchExpanded(1)}>
-        <Typography>
-          {dictionary.defValue(EditorDictionary.keys.next)}{' '}
-          {dictionary.defValue(EditorDictionary.keys.screen)}
-        </Typography>
-        <Switch checked={expanded[1]} color="primary" />
-      </div>
-      {
-        expanded[1] && (
-          <Transition
-            screenSwitcher={ScreenSwitcherEnum.NEXT}
-            action={nextScreenAction}
-            actions={[AnimationEnum.FADE, AnimationEnum.SLIDE]}
-            param={nextScreenParam}
-            params={params.slice()}
-            duration={nextScreenDuration}
-            onChange={onChange}
-            currentParams={
-              expanded[0] ? [ScreenSwitcherEnum.CURRENT, currentScreenAction, currentScreenParam, currentScreenDuration] : undefined
-            }
-          />
-        )
-      }
-    </>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails className={classes.details}>
+        <Grid container>
+          <div className={expand} onClick={switchExpanded(0)}>
+            <Typography>
+              {dictionary.defValue(EditorDictionary.keys.current)}{' '}
+              {dictionary.defValue(EditorDictionary.keys.screen)}
+            </Typography>
+            <Switch checked={expanded[0]} color="primary" />
+          </div>
+          {
+            expanded[0] && (
+              <Transition
+                screenSwitcher={ScreenSwitcherEnum.CURRENT}
+                action={currentScreenAction}
+                actions={[AnimationEnum.FADE, AnimationEnum.SLIDE]}
+                param={currentScreenParam}
+                params={params.slice()}
+                duration={currentScreenDuration}
+                onChange={onChange}
+                nextParams={
+                  expanded[1] ? [ScreenSwitcherEnum.NEXT, nextScreenAction, nextScreenParam, nextScreenDuration] : undefined
+                }
+              />
+            )
+          }
+          <div className={expand} onClick={switchExpanded(1)}>
+            <Typography>
+              {dictionary.defValue(EditorDictionary.keys.next)}{' '}
+              {dictionary.defValue(EditorDictionary.keys.screen)}
+            </Typography>
+            <Switch checked={expanded[1]} color="primary" />
+          </div>
+          {
+            expanded[1] && (
+              <Transition
+                screenSwitcher={ScreenSwitcherEnum.NEXT}
+                action={nextScreenAction}
+                actions={[AnimationEnum.FADE, AnimationEnum.SLIDE]}
+                param={nextScreenParam}
+                params={params.slice()}
+                duration={nextScreenDuration}
+                onChange={onChange}
+                currentParams={
+                  expanded[0] ? [ScreenSwitcherEnum.CURRENT, currentScreenAction, currentScreenParam, currentScreenDuration] : undefined
+                }
+              />
+            )
+          }
+        </Grid>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
   )
 
 }

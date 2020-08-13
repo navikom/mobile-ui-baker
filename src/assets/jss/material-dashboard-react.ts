@@ -65,7 +65,7 @@ const grayColor = [
   "#999",
   "#777",
   "#3C4858",
-  "#AAAAAA",
+  "#aaaaaa",
   "#D2D2D2",
   "#DDD",
   "#b4b4b4",
@@ -76,7 +76,7 @@ const grayColor = [
   "#e7e7e7"
 ];
 const blackColor = "#000000";
-const whiteColor = "#FFFFFF";
+const whiteColor = "#ffffff";
 const blackOpacity = (opacity: number) => `rgba(0,0,0,${opacity})`;
 const whiteOpacity = (opacity: number) => `rgba(255,255,255,${opacity})`;
 const primaryOpacity = (opacity: number) => `rgba(156,39,176,${opacity})`;

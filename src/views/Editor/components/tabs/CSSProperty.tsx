@@ -13,10 +13,10 @@ import Popover from "@material-ui/core/Popover";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import NumberInput from "components/CustomInput/NumberInput";
-import ColorInput from "components/CustomInput/ColorInput";
 import LabeledInput from "components/CustomInput/LabeledInput";
 import CustomSelect from "components/CustomSelect/CustomSelect";
 import Switch from "@material-ui/core/Switch";
+import ColorPicker from '../ColorPicker';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,7 +67,6 @@ interface CSSPropertyProps {
 
 const CSSProperty: React.FC<CSSPropertyProps> = (
   { prop: {
-    value,
     enabled,
     title,
     description,
@@ -79,7 +78,8 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
     unit,
     units,
     setUnit,
-    controlProps
+    controlProps,
+    cssValue
     },
     setValue,
     switchExpanded,
@@ -106,6 +106,7 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
     [classes.closed]: !enabled
   });
   const expand = classNames(classes.propKeyWrapper, classes.pointer);
+
   return (
     <>
       <Grid container alignItems="center" justify="space-between" className={root} onClick={switchEnabled}>
@@ -158,13 +159,13 @@ const CSSProperty: React.FC<CSSPropertyProps> = (
         <Grid container justify="space-between">
           {
             isNumber ? (
-              <NumberInput disabled={expanded} value={Number(value)} onChange={setValue} {...controlProps} />
+              <NumberInput disabled={expanded} value={cssValue as number} onChange={setValue} {...controlProps} />
             ) : isString ? (
-              <LabeledInput fullWidth value={value.toString()} onChange={setValue} />
+              <LabeledInput fullWidth value={cssValue} onChange={setValue} />
             ) : isColor ? (
-              <ColorInput color={value.toString()} onChange={setValue} />
+              <ColorPicker color={cssValue as string} onChange={setValue} dictionary={dictionary} />
             ) : (
-              <CustomSelect options={options || []} onChange={setValue} value={value} />
+              <CustomSelect options={options || []} onChange={setValue} value={cssValue} />
             )
           }
           {

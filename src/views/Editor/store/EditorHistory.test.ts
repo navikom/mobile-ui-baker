@@ -1,27 +1,28 @@
-import "@testing-library/jest-dom";
-import EditorViewStore from "views/Editor/store/EditorViewStore";
-import GridStore from "models/Control/GridStore";
-import IControl from "interfaces/IControl";
-import { ACTION_TOGGLE_STYLE } from "models/Constants";
-import { DropEnum } from "enums/DropEnum";
-import { Mode } from "enums/ModeEnum";
-import ControlStore, { MAIN_CSS_STYLE } from "models/Control/ControlStore";
+import '@testing-library/jest-dom';
+import EditorViewStore from 'views/Editor/store/EditorViewStore';
+import GridStore from 'models/Control/GridStore';
+import IControl from 'interfaces/IControl';
+import { ACTION_TOGGLE_STYLE } from 'models/Constants';
+import { DropEnum } from 'enums/DropEnum';
+import { Mode } from 'enums/ModeEnum';
+import ControlStore, { MAIN_CSS_STYLE } from 'models/Control/ControlStore';
 import CreateControl from 'models/Control/ControlStores';
 import { ControlEnum } from 'enums/ControlEnum';
+import CSSProperty from '../../../models/Control/CSSProperty';
 
-describe("EditorHistory", () => {
+describe('EditorHistory', () => {
   let store: EditorViewStore, control: IControl;
   beforeEach(() => {
     jest.clearAllTimers();
     ControlStore.clear();
     store = new EditorViewStore('');
     store.history.clear();
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     control = store.currentScreen!.children[store.currentScreen!.children.length - 1];
   });
 
-  it("changeTitle history record", () => {
-    const title = "Hello World";
+  it('changeTitle history record', () => {
+    const title = 'Hello World';
     jest.useFakeTimers();
     control.changeTitle(title);
     jest.runAllTimers();
@@ -30,7 +31,7 @@ describe("EditorHistory", () => {
     expect(store.history.carriage).toBe(1);
 
     store.history.undo();
-    expect(control.title).toBe("Grid");
+    expect(control.title).toBe('Grid');
     expect(store.history.carriage).toBe(0);
 
     store.history.redo();
@@ -38,114 +39,166 @@ describe("EditorHistory", () => {
     expect(store.history.carriage).toBe(1);
   });
 
-  it("deleteSelf with child which added a new style history records", () => {
+  it('deleteSelf with child which added a new style history records', () => {
     const grid = CreateControl(ControlEnum.Grid);
     control.addChild(grid);
     grid.addCSSStyle();
 
+    grid.switchEnabled('Style1', 'backgroundColor')();
+    grid.setValue('Style1', 'backgroundColor')('red');
     expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
+    expect(CSSProperty.colors.has('red')).toBeTruthy();
 
     control.deleteSelf();
 
+    expect(CSSProperty.colors.has('red')).toBeFalsy();
     expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
 
-    expect(store.history.size).toBe(3);
-    expect(store.history.carriage).toBe(2);
+    expect(store.history.size).toBe(5);
+    expect(store.history.carriage).toBe(4);
     expect(store.currentScreen!.children.find(e => e.id === control.id)).toBeFalsy();
     store.history.undo();
     expect(store.currentScreen!.children.find(e => e.id === control.id)).toBeTruthy();
     expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeTruthy();
+    expect(CSSProperty.colors.has('red')).toBeTruthy();
 
     store.history.redo();
     expect(store.currentScreen!.children.find(e => e.id === control.id)).toBeFalsy();
     expect(ControlStore.classes.includes(`${grid.id}/Style1`)).toBeFalsy();
+    expect(CSSProperty.colors.has('red')).toBeFalsy();
   });
 
-  it("handleCSSProperty history records", () => {
-    expect(Object.prototype.hasOwnProperty.call(control.styles,"position")).toBeFalsy();
+  it('handleCSSProperty history records', () => {
+    expect(Object.prototype.hasOwnProperty.call(control.styles, 'position')).toBeFalsy();
 
-    control.switchEnabled(MAIN_CSS_STYLE, "position")();
-    expect(Object.prototype.hasOwnProperty.call(control.styles,"position")).toBeTruthy();
-    expect(control.styles.position === "static").toBeTruthy();
+    control.switchEnabled(MAIN_CSS_STYLE, 'position')();
+    expect(Object.prototype.hasOwnProperty.call(control.styles, 'position')).toBeTruthy();
+    expect(control.styles.position === 'static').toBeTruthy();
 
-    control.setValue(MAIN_CSS_STYLE, "position")("absolute");
-    const position = control.cssProperty(MAIN_CSS_STYLE, "position");
-    expect(control.styles.position === "absolute").toBeTruthy();
+    control.setValue(MAIN_CSS_STYLE, 'position')('absolute');
+    expect(control.styles.position === 'absolute').toBeTruthy();
 
-    control.switchExpanded(MAIN_CSS_STYLE, "padding")();
-    const padding = control.cssProperty(MAIN_CSS_STYLE, "padding");
+    control.switchExpanded(MAIN_CSS_STYLE, 'padding')();
+    const padding = control.cssProperty(MAIN_CSS_STYLE, 'padding');
     expect(padding!.expanded).toBeTruthy();
 
     store.history.undo();
     expect(padding!.expanded).toBeFalsy();
 
     store.history.undo();
-    expect(control.styles.position === "static").toBeTruthy();
+    expect(control.styles.position === 'static').toBeTruthy();
 
     store.history.undo();
-    expect(Object.prototype.hasOwnProperty.call(control.styles,"position")).toBeFalsy();
+    expect(Object.prototype.hasOwnProperty.call(control.styles, 'position')).toBeFalsy();
 
     store.history.redo();
-    expect(control.styles.position === "static").toBeTruthy();
+    expect(control.styles.position === 'static').toBeTruthy();
 
     store.history.redo();
-    expect(control.styles.position === "absolute").toBeTruthy();
+    expect(control.styles.position === 'absolute').toBeTruthy();
 
     store.history.redo();
     expect(padding!.expanded).toBeTruthy();
   });
 
-  it("addCSSStyle/renameCSSStyle/removeCSSStyle history records", () => {
+  it('addCSSStyle/renameCSSStyle/removeCSSStyle history records', () => {
     control.addCSSStyle();
     expect(store.history.size).toBe(2);
     expect(store.history.carriage).toBe(1);
 
-    const oldName = "Style1";
-    const newName = "New Style";
+    const oldName = 'Style1';
+    const newName = 'New Style';
 
     expect(control.cssStyles.has(oldName)).toBeTruthy();
     expect(control.cssStyles.get(oldName)!.length).toBe(58);
-    control.switchEnabled(oldName, "position")();
+    const backgroundColor = control.cssProperty(oldName, 'backgroundColor');
+    control.switchEnabled(oldName, 'backgroundColor')();
+    control.setValue(oldName, 'backgroundColor')('red');
 
-    expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
+    expect(backgroundColor!.enabled).toBeTruthy();
+    expect(CSSProperty.colors.has('red')).toBeTruthy();
+    expect(CSSProperty.controlBackgroundColor.has(control.id + '_' + oldName)).toBeTruthy();
 
     control.renameCSSStyle(oldName, newName);
+
     expect(control.cssStyles.has(newName)).toBeTruthy();
-    expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
+    expect(backgroundColor!.enabled).toBeTruthy();
     expect(control.cssStyles.get(newName)!.length).toBe(58);
+    expect(CSSProperty.controlBackgroundColor.has(control.id + '_' + oldName)).toBeFalsy();
+    expect(CSSProperty.controlBackgroundColor.has(control.id + '_' + newName)).toBeTruthy();
 
     control.removeCSSStyle(newName);
     expect(control.cssStyles.has(newName)).toBeFalsy();
+    expect(CSSProperty.controlBackgroundColor.has(control.id + '_' + newName)).toBeFalsy();
+    expect(CSSProperty.colors.has('red')).toBeFalsy();
 
+    // set style
     store.history.undo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
-    expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
+    expect(backgroundColor!.enabled).toBeTruthy();
     expect(control.cssStyles.get(newName)!.length).toBe(58);
+    expect(CSSProperty.controlBackgroundColor.has(control.id + '_' + newName)).toBeTruthy();
+    expect(CSSProperty.colors.has('red')).toBeTruthy();
 
+    const backgroundColorAfterRemove = control.cssProperty(newName, 'backgroundColor');
+    expect(backgroundColorAfterRemove !== backgroundColor).toBeTruthy();
+
+    // rename style
     store.history.undo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
-    expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
+    expect(backgroundColorAfterRemove!.enabled).toBeTruthy();
     expect(control.cssStyles.get(oldName)!.length).toBe(58);
+    expect(CSSProperty.controlBackgroundColor.has(control.id + '_' + oldName)).toBeTruthy();
+    expect(CSSProperty.controlBackgroundColor.has(control.id + '_' + newName)).toBeFalsy();
 
+    // set value red => #ffffff
     store.history.undo();
-    expect(control.cssStyles.get(oldName)![0].enabled).toBeFalsy();
+    expect(backgroundColorAfterRemove!.value).toBe('#ffffff');
+    expect(CSSProperty.colors.has('red')).toBeFalsy();
+    expect(CSSProperty.colors.has('#ffffff')).toBeTruthy();
+    expect(CSSProperty.controlBackgroundColor.get(control.id + '_' + oldName)).toBe('#ffffff');
 
+    // disable backgroundColor property
+    store.history.undo();
+    expect(backgroundColorAfterRemove!.enabled).toBeFalsy();
+    expect(CSSProperty.colors.has('#ffffff')).toBeFalsy();
+    expect(CSSProperty.controlBackgroundColor.get(control.id + '_' + oldName)).toBeFalsy();
+    expect(CSSProperty.colors.has('#ffffff')).toBeFalsy();
+
+    // delete style Style1
     store.history.undo();
     expect(control.cssStyles.has(oldName)).toBeFalsy();
 
+    // add style Style1
+    console.log('add style Style1');
     store.history.redo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
     expect(control.cssStyles.get(oldName)!.length).toBe(58);
 
+    const backgroundColorAfterRevertRemove = control.cssProperty(oldName, 'backgroundColor');
+    // enable backgroundColor property
     store.history.redo();
-    expect(control.cssStyles.get(oldName)![0].enabled).toBeTruthy();
+    expect(backgroundColorAfterRevertRemove!.enabled).toBeTruthy();
+    expect(CSSProperty.colors.has('#ffffff')).toBeTruthy();
+    expect(CSSProperty.controlBackgroundColor.get(control.id + '_' + oldName)).toBe('#ffffff');
+
+    // set value #ffffff => red
+    store.history.redo();
+    expect(CSSProperty.colors.has('#ffffff')).toBeFalsy();
+    expect(CSSProperty.colors.has('red')).toBeTruthy();
+    expect(CSSProperty.controlBackgroundColor.get(control.id + '_' + oldName)).toBe('red');
+
+    // rename style Style1 => New Style
     store.history.redo();
     expect(control.cssStyles.has(newName)).toBeTruthy();
-    expect(control.cssStyles.get(newName)![0].enabled).toBeTruthy();
+    expect(backgroundColorAfterRevertRemove!.enabled).toBeTruthy();
     expect(control.cssStyles.get(newName)!.length).toBe(58);
+    expect(CSSProperty.controlBackgroundColor.get(control.id + '_' + oldName)).toBeFalsy();
+    expect(CSSProperty.controlBackgroundColor.get(control.id + '_' + newName)).toBeTruthy();
+    expect(CSSProperty.controlBackgroundColor.get(control.id + '_' + newName)).toBe('red');
   });
 
-  it("add/remove style records", () => {
+  it('add/remove style records', () => {
     store.history.clear();
     control.addCSSStyle();
     expect(control.cssStyles.size).toBe(2);
@@ -162,41 +215,41 @@ describe("EditorHistory", () => {
     store.history.undo();
   });
 
-  it("add/edit/remove action history records", () => {
-    control.addAction([ACTION_TOGGLE_STYLE, "", "Style1"]);
-    expect(control.actions[0][2]).toBe("Style1");
+  it('add/edit/remove action history records', () => {
+    control.addAction([ACTION_TOGGLE_STYLE, '', 'Style1']);
+    expect(control.actions[0][2]).toBe('Style1');
 
-    control.editAction(0, ACTION_TOGGLE_STYLE, "11/NewStyle");
-    expect(control.actions[0][2]).toBe("NewStyle");
+    control.editAction(0, ACTION_TOGGLE_STYLE, '11/NewStyle');
+    expect(control.actions[0][2]).toBe('NewStyle');
 
     control.removeAction(0);
     expect(control.actions.length).toBe(0);
 
     store.history.undo();
-    expect(control.actions[0][2]).toBe("NewStyle");
+    expect(control.actions[0][2]).toBe('NewStyle');
 
     store.history.undo();
-    expect(control.actions[0][2]).toBe("Style1");
+    expect(control.actions[0][2]).toBe('Style1');
 
     store.history.undo();
     expect(control.actions.length).toBe(0);
 
     store.history.redo();
-    expect(control.actions[0][2]).toBe("Style1");
+    expect(control.actions[0][2]).toBe('Style1');
 
     store.history.redo();
-    expect(control.actions[0][2]).toBe("NewStyle");
+    expect(control.actions[0][2]).toBe('NewStyle');
 
     store.history.redo();
     expect(control.actions.length).toBe(0);
   });
 
-  it("dropCanvas history record", () => {
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+  it('dropCanvas history record', () => {
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control1 = ControlStore.controls[ControlStore.controls.length - 1];
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control2 = ControlStore.controls[ControlStore.controls.length - 1];
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control3 = ControlStore.controls[ControlStore.controls.length - 1];
     expect(store.currentScreen!.children.length).toBe(5);
     expect(ControlStore.controls.length).toBe(6);
@@ -229,12 +282,12 @@ describe("EditorHistory", () => {
     expect(ControlStore.controls.find(e => e.id === control3.id)!.id).toBe(control3.id);
   });
 
-  it("drop element with parent", () => {
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+  it('drop element with parent', () => {
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control1 = ControlStore.controls[ControlStore.controls.length - 1];
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control2 = ControlStore.controls[ControlStore.controls.length - 1];
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control3 = ControlStore.controls[ControlStore.controls.length - 1];
 
     store.handleDropElement(control, control1, DropEnum.Inside);
@@ -269,12 +322,12 @@ describe("EditorHistory", () => {
     expect(control.children.find(e => e.id === control3.id)!.id).toBe(control3.id);
   });
 
-  it("move controls inside parent", () => {
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+  it('move controls inside parent', () => {
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control1 = ControlStore.controls[ControlStore.controls.length - 1];
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control2 = ControlStore.controls[ControlStore.controls.length - 1];
-    store.handleDropCanvas({ control: GridStore.create(), type: "" });
+    store.handleDropCanvas({ control: GridStore.create(), type: '' });
     const control3 = ControlStore.controls[ControlStore.controls.length - 1];
 
     store.handleDropElement(control, control1, DropEnum.Inside);
@@ -303,7 +356,7 @@ describe("EditorHistory", () => {
     expect(control.children.find(e => e.id === control3.id)!.id).toBe(control3.id);
   });
 
-  it("drop/remove new control", () => {
+  it('drop/remove new control', () => {
     store.handleDropElement(control, GridStore.create(), DropEnum.Inside);
     store.handleDropElement(control, GridStore.create(), DropEnum.Above);
     store.handleDropElement(control, GridStore.create(), DropEnum.Below);
@@ -328,24 +381,24 @@ describe("EditorHistory", () => {
     expect(store.currentScreen!.children.length).toBe(4);
   });
 
-  it("view store settings history records", () => {
+  it('view store settings history records', () => {
     expect(store.mode).toBe(Mode.WHITE);
     store.switchMode();
     expect(store.mode).toBe(Mode.DARK);
 
-    expect(store.background.backgroundColor).toBe("#FFFFFF");
-    store.setBackground({backgroundColor: "red"});
-    expect(store.background.backgroundColor).toBe("red");
+    expect(store.background.backgroundColor).toBe('#ffffff');
+    store.setBackground({ backgroundColor: 'red' });
+    expect(store.background.backgroundColor).toBe('red');
 
-    expect(store.statusBarColor).toBe("#FFFFFF");
-    store.setStatusBarColor("blue");
-    expect(store.statusBarColor).toBe("blue");
-
-    store.history.undo();
-    expect(store.statusBarColor).toBe("#FFFFFF");
+    expect(store.statusBarColor).toBe('#ffffff');
+    store.setStatusBarColor('blue');
+    expect(store.statusBarColor).toBe('blue');
 
     store.history.undo();
-    expect(store.background.backgroundColor).toBe("#FFFFFF");
+    expect(store.statusBarColor).toBe('#ffffff');
+
+    store.history.undo();
+    expect(store.background.backgroundColor).toBe('#ffffff');
 
     store.history.undo();
     expect(store.mode).toBe(Mode.WHITE);
@@ -354,13 +407,13 @@ describe("EditorHistory", () => {
     expect(store.mode).toBe(Mode.DARK);
 
     store.history.redo();
-    expect(store.background.backgroundColor).toBe("red");
+    expect(store.background.backgroundColor).toBe('red');
 
     store.history.redo();
-    expect(store.statusBarColor).toBe("blue");
+    expect(store.statusBarColor).toBe('blue');
   });
 
-  it("add/delete/setCurrent screen history records", () => {
+  it('add/delete/setCurrent screen history records', () => {
     expect(store.screens.length).toBe(1);
     const screen1 = store.screens[0];
     expect(store.currentScreen).toBe(screen1);
@@ -396,7 +449,7 @@ describe("EditorHistory", () => {
     expect(store.currentScreen!.id).toBe(screen2.id);
   });
 
-  it("screen clone history records", () => {
+  it('screen clone history records', () => {
     const screen = store.screens[0];
     expect(screen.children.length).toBe(2);
 
@@ -430,7 +483,7 @@ describe("EditorHistory", () => {
     expect(store.screens[3].children.length).toBe(2);
   });
 
-  it("control clone history records", () => {
+  it('control clone history records', () => {
 
     expect(store.screens[0].children.length).toBe(2);
 
@@ -456,4 +509,60 @@ describe("EditorHistory", () => {
     store.history.redo();
     expect(store.screens[0].children.length).toBe(5);
   });
+
+  it('Project color management', () => {
+    const grid = CreateControl(ControlEnum.Grid);
+    control.addChild(grid);
+
+    const style1 = 'Style1';
+
+    grid.addCSSStyle();
+
+    grid.switchEnabled(style1, 'backgroundColor')();
+    grid.setValue(style1, 'backgroundColor')('red');
+    expect(CSSProperty.colors.has('red')).toBeTruthy();
+    expect(CSSProperty.colors.get('red')!.length).toBe(1);
+
+    control.switchEnabled(MAIN_CSS_STYLE, 'backgroundColor')();
+    control.setValue(MAIN_CSS_STYLE, 'backgroundColor')('red');
+    expect(CSSProperty.colors.get('red')!.length).toBe(2);
+
+    expect(store.history.size).toBe(6);
+    store.setColor('red', 'red');
+    expect(store.history.size).toBe(6);
+
+    store.setColor('red', 'blue');
+    expect(store.history.size).toBe(7);
+
+    expect(CSSProperty.colors.has('red')).toBeFalsy();
+    expect(CSSProperty.colors.has('blue')).toBeTruthy();
+    expect(CSSProperty.colors.get('blue')!.length).toBe(2);
+    expect(grid.cssProperty(style1, 'backgroundColor')!.value).toBe('blue');
+    expect(control.cssProperty(MAIN_CSS_STYLE, 'backgroundColor')!.value).toBe('blue');
+
+    store.setColor('blue', 'green');
+    expect(store.history.size).toBe(8);
+    expect(store.history.carriage).toBe(7);
+    expect(CSSProperty.colors.has('blue')).toBeFalsy();
+    expect(CSSProperty.colors.has('green')).toBeTruthy();
+    expect(CSSProperty.colors.get('green')!.length).toBe(2);
+    expect(grid.cssProperty(style1, 'backgroundColor')!.value).toBe('green');
+    expect(control.cssProperty(MAIN_CSS_STYLE, 'backgroundColor')!.value).toBe('green');
+
+    store.history.undo();
+    expect(store.history.carriage).toBe(6);
+    expect(CSSProperty.colors.has('green')).toBeFalsy();
+    expect(CSSProperty.colors.has('blue')).toBeTruthy();
+    expect(CSSProperty.colors.get('blue')!.length).toBe(2);
+    expect(grid.cssProperty(style1, 'backgroundColor')!.value).toBe('blue');
+    expect(control.cssProperty(MAIN_CSS_STYLE, 'backgroundColor')!.value).toBe('blue');
+
+    store.history.undo();
+    expect(store.history.carriage).toBe(5);
+    expect(CSSProperty.colors.has('blue')).toBeFalsy();
+    expect(CSSProperty.colors.has('red')).toBeTruthy();
+    expect(CSSProperty.colors.get('red')!.length).toBe(2);
+    expect(grid.cssProperty(style1, 'backgroundColor')!.value).toBe('red');
+    expect(control.cssProperty(MAIN_CSS_STYLE, 'backgroundColor')!.value).toBe('red');
+  })
 });

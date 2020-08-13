@@ -43,6 +43,7 @@ import IProject from 'interfaces/IProject';
 import DelayEnum from 'enums/DelayEnum';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
+import ColorsStore from '../ColorsStore';
 
 export const MAIN_CSS_STYLE = 'Main';
 
@@ -296,6 +297,13 @@ class ControlStore extends Movable implements IControl {
             // @ts-ignore
             styles[`WebkitM${key}`] = prop.inject ? prop.inject.replace('$', prop.value) : prop.valueWithUnit;
           }
+          const id = this.id + '_' + clazz;
+          if(prop.key === 'color') {
+            styles[prop.key] = CSSProperty.controlColor.get(id);
+          }
+          if(prop.key === 'backgroundColor') {
+            styles[prop.key] = CSSProperty.controlBackgroundColor.get(id);
+          }
         });
     }
     return styles;
@@ -368,9 +376,12 @@ class ControlStore extends Movable implements IControl {
   @action setCSSStyle(key: string, style: ICSSProperty[]) {
     this.cssStyles.set(key, observable(style.map(e => CSSProperty.fromJSON(e))));
     ControlStore.addClass(this.id, key);
+    this.cssStyles.get(key)!.forEach(prop => CSSProperty.addColor(this, key, prop));
   }
 
   @action deleteSelfTraverseChildren() {
+    Array.from(this.cssStyles.keys()).forEach(key =>
+      this.cssStyles.get(key)!.forEach(prop => CSSProperty.deleteColor(this, key, prop.key, prop.value as string)));
     this.children.forEach(child => child.deleteSelfTraverseChildren());
     ControlStore.removeItem(this);
   }
@@ -406,6 +417,7 @@ class ControlStore extends Movable implements IControl {
     const key = `Style${this.cssStyles.size}`;
     this.cssStyles.set(key, observable(this.cssStyles.get(MAIN_CSS_STYLE)!.map(prop => prop.clone())));
     ControlStore.addClass(this.id, key);
+    this.cssStyles.get(key)!.forEach(prop => CSSProperty.addColor(this, key, prop));
     !noHistory && ControlStore.history.add([HIST_ADD_CSS_STYLE, { control: this.id, key }, { control: this.id }]);
   };
 
@@ -413,6 +425,8 @@ class ControlStore extends Movable implements IControl {
     if (!this.cssStyles.has(oldKey)) {
       return;
     }
+    this.cssStyles.get(oldKey)!.forEach(prop => CSSProperty.deleteColor(this, oldKey, prop.key, prop.value as string));
+
     let key = newKey.replace(/\//g, '1');
     if (key === MAIN_CSS_STYLE || key === oldKey) {
       key = newKey + '' + 1;
@@ -420,12 +434,14 @@ class ControlStore extends Movable implements IControl {
     this.cssStyles.set(key, this.cssStyles.get(oldKey) as IObservableArray<ICSSProperty>);
     this.cssStyles.delete(oldKey);
     ControlStore.renameClass(this.id, oldKey, key);
+    this.cssStyles.get(key)!.forEach(prop => CSSProperty.addColor(this, key, prop));
     !noHistory && ControlStore.history.add([HIST_RENAME_CSS_STYLE,
       { control: this.id, oldKey: key, key: oldKey }, { control: this.id, key, oldKey }]);
   };
 
   @action removeCSSStyle(key: string, noHistory?: boolean): void {
     const undo = { control: this.id, style: this.cssStyles.get(key)!.map(prop => prop.toJSON), key };
+    this.cssStyles.get(key)!.forEach(prop => CSSProperty.deleteColor(this, key, prop.key, prop.value as string));
     this.cssStyles.delete(key);
     ControlStore.removeClass(this.id, key);
     const redo = { control: this.id, key };
@@ -477,7 +493,7 @@ class ControlStore extends Movable implements IControl {
     const property = this.cssProperty(key, propName);
     if (property) {
       const undo = { control: this.id, key, method: [CSS_SWITCH_ENABLED, propName, property.enabled] };
-      property.switchEnabled();
+      property.switchEnabled(this, key);
       const redo = { control: this.id, key, method: [CSS_SWITCH_ENABLED, propName, property.enabled] };
       ControlStore.history.add([HIST_CSS_PROP, undo, redo]);
     }
@@ -486,10 +502,12 @@ class ControlStore extends Movable implements IControl {
   @action setValue = (key: string, propName: string) => (value: string | number) => {
     const property = this.cssProperty(key, propName);
     if (property) {
+      CSSProperty.deleteColor(this, key, property.key, property.value as string);
       const undo = { control: this.id, key, method: [CSS_SET_VALUE, propName, property.value] }
       property.setValue(value);
       const redo = { control: this.id, key, method: [CSS_SET_VALUE, propName, property.value] }
       ControlStore.history.add([HIST_CSS_PROP, undo, redo]);
+      CSSProperty.addColor(this, key, property);
     }
   };
 
@@ -499,11 +517,13 @@ class ControlStore extends Movable implements IControl {
     const property = this.cssProperty(styleKey, propName);
     if (property) {
       if (method === CSS_SWITCH_ENABLED) {
-        property.updateProperties({ enabled: value });
+        property.updateProperties({ enabled: value }, this, styleKey);
       } else if (method === CSS_SWITCH_EXPANDED) {
-        property.updateProperties({ expanded: value });
+        property.updateProperties({ expanded: value }, this, styleKey);
       } else {
+        CSSProperty.deleteColor(this, styleKey, property.key, property.value as string);
         property.setValue(value as string | number);
+        CSSProperty.addColor(this, styleKey, property);
       }
     }
   }
@@ -551,10 +571,11 @@ class ControlStore extends Movable implements IControl {
       }
       const same = this.cssStyles.get(key)!.find(p => p.key === prop.key);
       if (same) {
-        same.updateProperties(prop as unknown as { [key: string]: string | number });
+        same.updateProperties(prop as unknown as { [key: string]: string | number }, this, key);
       } else {
         const property = prop instanceof CSSProperty ? prop.clone() : CSSProperty.fromJSON(prop);
         this.cssStyles.get(key)!.push(property);
+        CSSProperty.addColor(this, key, property);
       }
     }
   }
@@ -720,6 +741,8 @@ class ControlStore extends Movable implements IControl {
   static clear() {
     this.controls = [];
     this.classes.replace([]);
+    CSSProperty.clear();
+    ColorsStore.clear();
   }
 
   static create(instance: ModelCtor, control: IControl, isMenu?: boolean) {

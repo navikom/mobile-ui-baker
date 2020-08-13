@@ -20,6 +20,7 @@ import ControlStore from './Control/ControlStore';
 import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import { ACTION_NAVIGATE_REPLACE, ACTION_NAVIGATE_TO, FIRST_CONTAINER, SECOND_CONTAINER } from './Constants';
 import NavigationItem from './NavigationItem';
+import { SettingsPropType } from '../interfaces/IHistory';
 
 export const getSwitcherParams = (list: (string | number)[], screenSwitcher: ScreenSwitcherEnum) => {
   if (Number(list[0]) === screenSwitcher) {
@@ -184,9 +185,9 @@ class DisplayViewStore extends Errors {
     this.currentScreen = this.screens[0];
     this.placeContent(this.screens[0]);
     this.mode = data.mode;
-    this.background = data.background;
-    data.statusBarEnabled !== undefined && (this.statusBarEnabled = data.statusBarEnabled);
-    this.statusBarColor = data.statusBarColor;
+    data.background && this.applyHistorySettings('background', data.background as Mode & string & IBackgroundColor);
+    data.statusBarEnabled !== undefined && (this.setStatusBarEnabled(data.statusBarEnabled));
+    data.statusBarColor && this.applyHistorySettings('statusBarColor', data.statusBarColor as Mode & string & IBackgroundColor);
     this.ios = data.ios;
     this.portrait = data.portrait;
     data.navigation && (this.navigation = data.navigation);
@@ -201,15 +202,22 @@ class DisplayViewStore extends Errors {
     data.owner && this.project.update({ owner: data.owner, userId: data.owner.userId } as IProject);
   }
 
+  applyHistorySettings(key: SettingsPropType, value: Mode & string & IBackgroundColor) {
+    this[key] = value;
+  }
+
   @action switchStatusBar() {
-    this.statusBarEnabled = !this.statusBarEnabled;
+    this.setStatusBarEnabled(!this.statusBarEnabled);
+  }
+
+  @action setStatusBarEnabled(enabled: boolean) {
+    this.statusBarEnabled = enabled;
   }
 
   @action switchPortrait() {
     this.portrait = !this.portrait;
     this.pluginStore.postMessage(PluginStore.LISTENER_ON_SWITCH_ORIENTATION, this.portrait ? 'portrait' : 'landscape');
   }
-
 
   @action switchMode() {
     this.mode = this.mode === Mode.WHITE ? Mode.DARK : Mode.WHITE;

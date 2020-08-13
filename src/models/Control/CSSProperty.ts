@@ -3,6 +3,7 @@ import ICSSProperty from "interfaces/ICSSProperty";
 import React from "react";
 import { CSSValueType } from "types/commonTypes";
 import { CSS_VALUE_COLOR, CSS_VALUE_NUMBER, CSS_VALUE_SELECT, CSS_VALUE_STRING } from "models/Constants";
+import IControl from 'interfaces/IControl';
 
 export const PROPERTY_EXPANDED = "expanded";
 export const CSS_SWITCH_ENABLED = "switchEnabled";
@@ -10,6 +11,9 @@ export const CSS_SWITCH_EXPANDED = "switchExpanded";
 export const CSS_SET_VALUE = "setValue";
 
 export default class CSSProperty implements ICSSProperty {
+  @observable static colors: Map<string, string[]> = new Map<string, string[]>();
+  @observable static controlColor: Map<string, string> = new Map<string, string>();
+  @observable static controlBackgroundColor: Map<string, string> = new Map<string, string>();
   key: keyof React.CSSProperties;
   defaultValue: string | number;
   category: string;
@@ -33,6 +37,17 @@ export default class CSSProperty implements ICSSProperty {
       title.push(char === char.toUpperCase() ? "-" + char.toLowerCase() : char);
     }
     return title.join("");
+  }
+
+  get cssValue() {
+    if(this.isNumber) {
+      return Number(this.value);
+    } else if(this.isString) {
+      return this.value.toString();
+    } else if(this.isColor) {
+      return this.value.toString();
+    }
+    return this.value;
   }
 
   get isNumber() {
@@ -132,8 +147,13 @@ export default class CSSProperty implements ICSSProperty {
     this.expanded = !this.expanded;
   };
 
-  @action switchEnabled = () => {
+  @action switchEnabled = (control: IControl, styleName: string) => {
     this.enabled = !this.enabled;
+    if(this.enabled) {
+      CSSProperty.addColor(control, styleName, this);
+    } else {
+      CSSProperty.deleteColor(control, styleName, this.key, this.value as string);
+    }
   };
 
   @action setValue = (value: string | number) => {
@@ -142,8 +162,14 @@ export default class CSSProperty implements ICSSProperty {
 
   //####### add to the history end #######//
 
-  @action updateProperties(props: {[key: string]: string | number | boolean}) {
+  @action updateProperties(props: {[key: string]: string | number | boolean}, control: IControl, styleName: string) {
     Object.assign(this, props);
+    if(props.enabled) {
+      CSSProperty.addColor(control, styleName, this);
+    } else if(!props.enabled) {
+      CSSProperty.deleteColor(control, styleName, this.key, this.value as string);
+    }
+
   }
 
   @action clone() {
@@ -157,6 +183,56 @@ export default class CSSProperty implements ICSSProperty {
       value: ${this.valueType === CSS_VALUE_NUMBER ? this.value : '"' + this.value + '"'},
       unit: ${this.unit ? '"' + this.unit + '"' : undefined},
     }`
+  }
+
+  //######### static ##########//
+
+  @action
+  static addColor(control: IControl, styleName: string, property: ICSSProperty) {
+    const key = property.key;
+    if(!['color', 'backgroundColor'].includes(key) || !property.enabled) {
+      return;
+    }
+    const value = property.value as string;
+    const id = control.id + '_' + styleName;
+
+    if(!this.colors.has(value)) {
+      this.colors.set(value, []);
+    }
+    !this.colors.get(value)!.includes(id) && this.colors.get(value)!.push(control.id);
+
+    if(key === 'color') {
+      this.controlColor.set(id, value);
+    } else if(key === 'backgroundColor') {
+      this.controlBackgroundColor.set(id, value);
+    }
+  }
+
+  @action
+  static deleteColor(control: IControl, styleName: string, key: keyof React.CSSProperties, value: string) {
+    if(!['color','backgroundColor'].includes(key)) {
+      return;
+    }
+    const id = control.id + '_' + styleName;
+    if(key === 'color') {
+      this.controlColor.has(id) && this.controlColor.delete(id);
+    } else if(key === 'backgroundColor') {
+      this.controlBackgroundColor.has(id) && this.controlBackgroundColor.delete(id);
+    }
+    if(!this.controlColor.has(id) && !this.controlBackgroundColor.has(id) && this.colors.has(value)) {
+      const arr = this.colors.get(value);
+      const index = arr!.indexOf(control.id);
+      index > -1 && arr!.splice(index, 1);
+      if(arr!.length === 0) {
+        this.colors.delete(value);
+      }
+    }
+  }
+
+  static clear() {
+    Array.from(this.colors.keys()).forEach(key => this.colors.delete(key));
+    Array.from(this.controlColor.keys()).forEach(key => this.controlColor.delete(key));
+    Array.from(this.controlBackgroundColor.keys()).forEach(key => this.controlBackgroundColor.delete(key));
   }
 
   static fromJSON(json: ICSSProperty) {

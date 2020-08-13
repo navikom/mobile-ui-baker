@@ -21,7 +21,6 @@ import {
   metaRules,
   ruleValidator,
   specificRules,
-  valueModifier
 } from './ReactNativeStyleDictionary';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';

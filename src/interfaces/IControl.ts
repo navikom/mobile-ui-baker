@@ -127,7 +127,7 @@ export interface IScreen extends IControl {
   switchMode(): void;
   switchExtended(): void;
   switchStatusBarEnabled(): void;
-  setScreenProps(screen: IScreen): void;
+  setScreenProps(screen: IScreen): IScreen;
 
   clone(): IScreen;
 }
