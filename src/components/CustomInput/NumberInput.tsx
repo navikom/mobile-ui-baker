@@ -31,6 +31,10 @@ const useExtraStyles = makeStyles(theme => (
         borderRight: '1px solid ' + primaryColor[0],
       }
     },
+    addButtonSmall: {
+      borderBottomLeftRadius: 2,
+      borderTopLeftRadius: 2,
+    },
     removeButton: {
       borderRight: '1px solid ' + blackOpacity(.15),
       borderBottomRightRadius: 5,
@@ -46,6 +50,10 @@ const useExtraStyles = makeStyles(theme => (
         borderLeft: '1px solid ' + primaryColor[0],
       }
     },
+    removeButtonSmall: {
+      borderBottomRightRadius: 2,
+      borderTopRightRadius: 2,
+    },
     input: {
       border: '1px solid ' + blackOpacity(.15),
       width: theme.typography.pxToRem(50),
@@ -53,6 +61,8 @@ const useExtraStyles = makeStyles(theme => (
     },
     small: {
       width: theme.typography.pxToRem(35),
+      fontSize: 12,
+      padding: '2px'
     }
   }
 ));
@@ -92,23 +102,35 @@ const NumberInput: React.FC<NumberInputProps> = (
     double,
     ...otherProps
   }) => {
+  const [valid, setValidity] = React.useState(true);
   const classes = useStyles();
   const eClasses = useExtraStyles();
 
-  const addButton = classNames(eClasses.button, eClasses.addButton);
+  const addButton = classNames(eClasses.button, {
+    [eClasses.addButton]: true,
+    [eClasses.addButtonSmall]: size && size === 'small'
+  });
 
-  const removeButton = classNames(eClasses.button, eClasses.removeButton);
+  const removeButton = classNames(eClasses.button, {
+    [eClasses.removeButton]: true,
+    [eClasses.removeButtonSmall]: size && size === 'small'
+  });
+
+  React.useEffect(() => {
+    setValidity(!isNaN(Number(value)) && value !== undefined && value.toString().length > 0);
+  }, [setValidity, value]);
 
   const input = classNames(classes.input, eClasses.input, className, {
     [classes.fullWidth]: fullWidth,
-    [classes.error]: error,
+    [classes.error]: error || !valid,
     [eClasses.small]: size && size === 'small'
   });
 
   const handleClick = (increase?: boolean) => () => {
     let val = Number(value);
-    val = increase ? val + (double ? .1 : 1) : val - (double ? .1 : 1);
-    if(double) {
+    const hasPoint = val.toString().includes('.');
+    val = increase ? val + (double || hasPoint ? .1 : 1) : val - (double || hasPoint ? .1 : 1);
+    if(double || hasPoint) {
       val = Math.round((val + Number.EPSILON) * 100) / 100;
     }
     min !== undefined && (val = Math.max(val, min));
@@ -116,23 +138,26 @@ const NumberInput: React.FC<NumberInputProps> = (
     onChange && onChange(val);
   };
 
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange && onChange(e.target.value as unknown as number);
+  }
   return (
     <FormControl>
       {label && <label>{label}</label>}
       <div className={eClasses.wrapper}>
         <IconButton size={size || 'medium'} disabled={otherProps.disabled} onClick={handleClick(true)}
                     className={addButton}>
-          <Add />
+          <Add fontSize={(size as 'small') || 'default'}/>
         </IconButton>
         <input
-          value={Number(value) || 0}
-          onChange={(e) => onChange && onChange(isNaN(Number(e.target.value)) ? 0 : Number(e.target.value))}
+          value={value}
+          onChange={onInputChange}
           className={input}
           {...otherProps}
         />
         <IconButton size={size || 'medium'} disabled={otherProps.disabled} onClick={handleClick(false)}
                     className={removeButton}>
-          <Remove />
+          <Remove fontSize={(size as 'small') || 'default'} />
         </IconButton>
       </div>
 

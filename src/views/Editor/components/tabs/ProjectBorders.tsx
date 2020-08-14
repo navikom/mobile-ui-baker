@@ -32,52 +32,53 @@ const useStyles = makeStyles(theme => (
   })
 );
 
-interface ProjectColorsProps {
+interface ProjectBordersProps {
   dictionary: EditorDictionary;
-  setColor?: (oldColor: string, newColor: string) => void;
+  setBorder?: (oldBorder: string, newBorder: string) => void;
 }
 
-const ProjectColors: React.FC<ProjectColorsProps> = (
-  { dictionary, setColor }
+const ProjectBorders: React.FC<ProjectBordersProps> = (
+  { dictionary, setBorder }
 ) => {
-  const [currentColor, setCurrentColor] = React.useState('#ffffff');
+  const [currentBorder, setCurrentBorder] = React.useState('#ffffff');
   const [open, setOpen] = React.useState(false);
 
   const handleClose = React.useCallback(() => {
     setOpen(false);
   }, [setOpen]);
 
-  const onColorChange = (hex: string) => {
-    setColor && setColor(currentColor, hex);
-    setCurrentColor(hex);
+  const onBorderChange = (border: string) => {
+    setBorder && setBorder(currentBorder, border);
+    setCurrentBorder(border);
   }
 
   const classes = useStyles();
-  const onColor = (color: string) => () => {
-    setCurrentColor(color);
+  const onBorder = (color: string) => () => {
+    setCurrentBorder(color);
     setOpen(true);
   }
+  const [width, style, ...rest] = currentBorder.split(' ');
   return (
     <ExpansionPanel className={classes.root}>
       <ExpansionPanelSummary
         expandIcon={<ExpandMore />}
-        aria-controls={`panel-colors`}
-        id={`panel-header-colors`}
+        aria-controls={`panel-borders`}
+        id={`panel-header-borders`}
       >
         <Typography variant="subtitle2">
           {dictionary.value(EditorDictionary.keys.project)}{' '}
-          {dictionary.value(EditorDictionary.keys.colors)}
+          {dictionary.value(EditorDictionary.keys.borders)}
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.details}>
         {
-          ColorsStore.colors.map(item =>
+          ColorsStore.borders.map(item =>
             (
-              <Tooltip key={item.color} title={item.title}>
+              <Tooltip key={item.border} title={item.title}>
                 <div
                   className={classes.box}
-                  style={{ backgroundColor: item.color }}
-                  onClick={onColor(item.color)} />
+                  style={{ border: item.border }}
+                  onClick={onBorder(item.border)} />
               </Tooltip>
             )
           )
@@ -85,14 +86,17 @@ const ProjectColors: React.FC<ProjectColorsProps> = (
       </ExpansionPanelDetails>
       <ColorPicker
         dictionary={dictionary}
-        color={currentColor}
+        borderWidth={Number(width.replace('px', ''))}
+        borderStyle={style}
+        color={rest.join(' ')}
         openPicker={open}
         handleClose={handleClose}
-        onChange={onColorChange}
+        onChange={onBorderChange}
         noInput
+        noBorderInput
       />
     </ExpansionPanel>
   )
 }
 
-export default observer(ProjectColors);
+export default observer(ProjectBorders);

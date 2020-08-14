@@ -12,11 +12,13 @@ import { blackOpacity, whiteColor } from 'assets/jss/material-dashboard-react';
 import AndroidPixelInner from 'components/Icons/AndroidPixelInner';
 import IPhone6Inner from 'components/Icons/IPhone6Inner';
 import AndroidPixelNavBar from 'components/Icons/AndroidPixelNavBar';
-import { Mode } from 'enums/ModeEnum';
 import { DeviceComponentProps } from './DeviceComponent';
+import { Mode } from 'enums/ModeEnum';
+import { DeviceEnum } from 'enums/DeviceEnum';
+import DeviceSizes from 'models/DeviceSizes';
 
-const android = { width: 360, height: 640 };
-const iphoneSE = { width: 320, height: 568 };
+const android = DeviceSizes[DeviceEnum.PIXEL_5];
+const iphoneSE = DeviceSizes[DeviceEnum.IPHONE_6];
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

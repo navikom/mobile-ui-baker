@@ -20,10 +20,10 @@ import {
   CSS_CAT_ANIMATIONS,
   CSS_CAT_BACKGROUND,
   CSS_CAT_BORDERS,
-  CSS_CAT_DIMENSIONS,
+  CSS_CAT_DIMENSIONS, CSS_VALUE_BORDER,
   CSS_VALUE_COLOR,
   CSS_VALUE_NUMBER,
-  CSS_VALUE_SELECT
+  CSS_VALUE_SELECT, DEVICE_HEIGHT, DEVICE_WIDTH
 } from 'models/Constants';
 import EditorHistory, {
   ControlStatic,
@@ -44,6 +44,7 @@ import DelayEnum from 'enums/DelayEnum';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
 import ColorsStore from '../ColorsStore';
+import { DeviceEnum } from 'enums/DeviceEnum';
 
 export const MAIN_CSS_STYLE = 'Main';
 
@@ -57,13 +58,13 @@ const styles = [
     .setOptions(['static', 'relative', 'absolute', 'sticky'])
     .setDescription(['positionDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/position']),
   new CSSProperty('top', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('bottom', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('left', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('right', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['position', 'absolute']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('background', 'linear-gradient( to bottom,rgba(0,0,0,0.01),rgba(0,0,0,0.7) )', 'linear-gradient( to bottom,rgba(0,0,0,0.01),rgba(0,0,0,0.7) )', CSS_CAT_BACKGROUND),
   new CSSProperty('backgroundColor', '#ffffff', '#ffffff', CSS_CAT_BACKGROUND, false,
     CSS_VALUE_COLOR),
@@ -97,52 +98,57 @@ const styles = [
   new CSSProperty('opacity', 1, 1, CSS_CAT_BACKGROUND, false, CSS_VALUE_NUMBER)
     .setControlProps({ min: 0, max: 1, double: true }),
   new CSSProperty('width', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits('px', ['px', '%', 'rem']),
+    .setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('height', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits('px', ['px', '%', 'rem']),
+    .setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('minWidth', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits('px', ['px', '%', 'rem']),
+    .setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('minHeight', 10, 10, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits('px', ['px', '%', 'rem']),
+    .setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('maxWidth', 40, 40, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits('px', ['px', '%', 'rem']),
+    .setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('maxHeight', 20, 20, CSS_CAT_DIMENSIONS, false, CSS_VALUE_NUMBER)
-    .setUnits('px', ['px', '%', 'rem']),
+    .setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('padding', '15px', 0, CSS_CAT_ALIGN_CHILDREN)
     .makeExpandable(),
   new CSSProperty('paddingTop', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('paddingRight', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('paddingBottom', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('paddingLeft', 0, 0, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['padding', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('lineHeight', 10, 10, CSS_CAT_ALIGN_CHILDREN, false, CSS_VALUE_NUMBER)
     .setControlProps({ min: 0 })
     .setUnits('px', ['px'])
     .setDescription(['lineHeightDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/line-height']),
   new CSSProperty('margin', 0, 0, CSS_CAT_ALIGN).makeExpandable(),
   new CSSProperty('marginTop', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('marginRight', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('marginBottom', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('marginLeft', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER)
-    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem']),
+    .setShowWhen(['margin', 'expanded']).setUnits('px', ['px', '%', 'rem', DEVICE_WIDTH, DEVICE_HEIGHT]),
   new CSSProperty('transform', 'translate(-50%,0)', 'translate(-50%,0)', CSS_CAT_ALIGN)
     .setDescription(['transformDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform']),
   new CSSProperty('zIndex', 0, 0, CSS_CAT_ALIGN, false, CSS_VALUE_NUMBER),
-  new CSSProperty('border', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+  new CSSProperty('border', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)',
+    CSS_CAT_BORDERS, false, CSS_VALUE_BORDER)
     .makeExpandable().setDescription(['borderDescription', 'https://developer.mozilla.org/en-US/docs/Web/CSS/border']),
-  new CSSProperty('borderTop', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+  new CSSProperty('borderTop', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)',
+    CSS_CAT_BORDERS,false, CSS_VALUE_BORDER)
     .setShowWhen(['border', 'expanded']),
-  new CSSProperty('borderRight', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+  new CSSProperty('borderRight', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)',
+    CSS_CAT_BORDERS, false, CSS_VALUE_BORDER)
     .setShowWhen(['border', 'expanded']),
-  new CSSProperty('borderBottom', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+  new CSSProperty('borderBottom', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)',
+    CSS_CAT_BORDERS, false, CSS_VALUE_BORDER)
     .setShowWhen(['border', 'expanded']),
-  new CSSProperty('borderLeft', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)', CSS_CAT_BORDERS)
+  new CSSProperty('borderLeft', '1px solid rgba(0,0,0,0.2)', '1px solid rgba(0,0,0,0.2)',
+    CSS_CAT_BORDERS, false, CSS_VALUE_BORDER)
     .setShowWhen(['border', 'expanded']),
   new CSSProperty('borderRadius', 5, 5, CSS_CAT_BORDERS, false, CSS_VALUE_NUMBER)
     .makeExpandable().setUnits('px', ['px', 'rem']),
@@ -278,35 +284,43 @@ class ControlStore extends Movable implements IControl {
     }
   }
 
-  @computed get styles() {
-    const styles: React.CSSProperties = {};
-    let l = this.classes.length, i = 0;
-    while (l--) {
-      const clazz = this.classes[i++];
-      this.cssStyles.has(clazz) && this.cssStyles.get(clazz)!.filter(prop => {
-        if (!prop.enabled && Object.prototype.hasOwnProperty.call(styles, prop.key)) {
-          delete styles[prop.key];
-        }
-        return prop.enabled;
-      })
-        .forEach((prop) => {
-          // @ts-ignore
-          styles[prop.key] = prop.inject ? prop.inject.replace('$', prop.value) : prop.valueWithUnit;
-          if(prop.key.includes('mask') || prop.key === 'mask') {
-            const key = prop.key.substring(1);
+  styles(device: DeviceEnum, isPortrait: boolean) {
+    return computed(() => {
+      const styles: React.CSSProperties = {};
+      let l = this.classes.length, i = 0;
+      while (l--) {
+        const clazz = this.classes[i++];
+        this.cssStyles.has(clazz) && this.cssStyles.get(clazz)!.filter(prop => {
+          if (!prop.enabled && Object.prototype.hasOwnProperty.call(styles, prop.key)) {
+            delete styles[prop.key];
+          }
+          return prop.enabled;
+        })
+          .forEach((prop) => {
             // @ts-ignore
-            styles[`WebkitM${key}`] = prop.inject ? prop.inject.replace('$', prop.value) : prop.valueWithUnit;
-          }
-          const id = this.id + '_' + clazz;
-          if(prop.key === 'color') {
-            styles[prop.key] = CSSProperty.controlColor.get(id);
-          }
-          if(prop.key === 'backgroundColor') {
-            styles[prop.key] = CSSProperty.controlBackgroundColor.get(id);
-          }
-        });
-    }
-    return styles;
+            styles[prop.key] =
+              prop.inject ?
+                prop.inject.replace('$', prop.value as string) :
+                prop.valueWithUnit(device, isPortrait);
+            if(prop.key.includes('mask') || prop.key === 'mask') {
+              const key = prop.key.substring(1);
+              // @ts-ignore
+              styles[`WebkitM${key}`] =
+                prop.inject ?
+                  prop.inject.replace('$', prop.value as string) :
+                  prop.valueWithUnit(device, isPortrait);
+            }
+            const id = this.id + '_' + clazz;
+            if(prop.key === 'color') {
+              styles[prop.key] = CSSProperty.controlColor.get(id);
+            }
+            if(prop.key === 'backgroundColor') {
+              styles[prop.key] = CSSProperty.controlBackgroundColor.get(id);
+            }
+          });
+      }
+      return styles;
+    }).get();
   }
 
   cssProperty(key: string, propName: string) {
@@ -377,6 +391,7 @@ class ControlStore extends Movable implements IControl {
     this.cssStyles.set(key, observable(style.map(e => CSSProperty.fromJSON(e))));
     ControlStore.addClass(this.id, key);
     this.cssStyles.get(key)!.forEach(prop => CSSProperty.addColor(this, key, prop));
+
   }
 
   @action deleteSelfTraverseChildren() {

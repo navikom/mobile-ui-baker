@@ -83,6 +83,7 @@ interface ContentProps {
   background: IBackgroundColor;
   ios: boolean;
   device: DeviceEnum;
+  isPortrait: boolean;
 }
 
 const Content: React.FC<ContentProps> = observer((
@@ -98,6 +99,7 @@ const Content: React.FC<ContentProps> = observer((
     firstContainerVisible,
     ios,
     device,
+    isPortrait,
     setCurrentScreen
   }
 ) => {
@@ -145,6 +147,8 @@ const Content: React.FC<ContentProps> = observer((
         {
           firstItems.map((control, i) => {
             return <ControlItem
+              device={device}
+              isPortrait={isPortrait}
               key={control.id}
               control={control}
               moveControl={moveControl}
@@ -164,6 +168,8 @@ const Content: React.FC<ContentProps> = observer((
         {
           secondItems.map((control, i) => {
             return <ControlItem
+              device={device}
+              isPortrait={isPortrait}
               key={control.id}
               control={control}
               moveControl={moveControl}
@@ -381,6 +387,7 @@ const ContextComponent: React.FC<ContextComponentProps> = (
                       <Content
                         firstContainerVisible={store.firstContainerVisible}
                         device={store.device}
+                        isPortrait={store.portrait}
                         ios={store.ios}
                         background={store.screenBackground}
                         firstItems={store.firstScreen ? store.firstScreen.children : []}

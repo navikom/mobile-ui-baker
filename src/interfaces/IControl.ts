@@ -8,6 +8,7 @@ import IProject from 'interfaces/IProject';
 import { ScreenMetaEnum } from '../enums/ScreenMetaEnum';
 import { TextMetaEnum } from '../enums/TextMetaEnum';
 import { Mode } from '../enums/ModeEnum';
+import { DeviceEnum } from '../enums/DeviceEnum';
 
 export default interface IControl extends IMovable {
   type: ControlEnum;
@@ -15,7 +16,6 @@ export default interface IControl extends IMovable {
   allowChildren: boolean;
   parentId?: string;
   cssStyles: Map<string, IObservableArray<ICSSProperty>>;
-  styles: React.CSSProperties;
   dropTarget?: DropEnum;
   visible: boolean;
   lockedChildren: boolean;
@@ -36,6 +36,8 @@ export default interface IControl extends IMovable {
   hasSVG: boolean;
   meta: ScreenMetaEnum | TextMetaEnum;
   refObj?: HTMLDivElement;
+
+  styles(device: DeviceEnum, isPortrait: boolean): React.CSSProperties;
 
   setRefObject(ref: HTMLDivElement): void;
   setId(value: string): void;

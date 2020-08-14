@@ -10,6 +10,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import ColorsStore from 'models/ColorsStore';
 import { blackOpacity, whiteColor } from 'assets/jss/material-dashboard-react';
 import EditorDictionary from '../store/EditorDictionary';
+import NumberInput from 'components/CustomInput/NumberInput';
+import CustomSelect from 'components/CustomSelect/CustomSelect';
+import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,24 +23,23 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'transparent'
   },
   sketch: {
-    boxShadow: 'none'
+    boxShadow: 'none !important'
   },
   title: {
-    padding: '10px 30px',
-    color: blackOpacity(.5),
-    transition: 'color 200ms linear',
+    height: 10,
+    transition: 'background-color 200ms linear',
     fontWeight: 'bold',
+    backgroundColor: whiteColor,
     cursor: 'move'
   },
   paper: {
-    boxShadow: 'none',
-    backgroundColor: blackOpacity(0),
-    transition: 'background-color 200ms linear',
+    opacity: .8,
+    transition: 'opacity 200ms linear',
     '&:hover': {
-      backgroundColor: blackOpacity(.1),
+      opacity: 1,
       '& $title': {
-        color: whiteColor,
-        transition: 'color 200ms linear',
+        backgroundColor: blackOpacity(.05),
+        transition: 'background-color 200ms linear',
       }
     }
   },
@@ -50,6 +53,28 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     padding: '0 30px 30px 30px'
+  },
+  bordersBox: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTop: '1px solid rgb(238, 238, 238)'
+  },
+  borderInput: {
+    cursor: 'pointer',
+    width: 25,
+    height: 25,
+    borderRadius: 4
+  },
+  borderItems: {
+    marginTop: 10,
+    borderTop: '1px solid rgb(238, 238, 238)'
+  },
+  borderItem: {
+    cursor: 'pointer',
+    margin: 5,
+    width: 15,
+    height: 15,
+    borderRadius: 3
   }
 }));
 
@@ -60,7 +85,10 @@ interface ColorPickerProps {
   onChange?: (value: string) => void;
   noInput?: boolean;
   handleClose?: () => void;
-  dictionary: EditorDictionary;
+  dictionary?: EditorDictionary;
+  noBorderInput?: boolean;
+  borderWidth?: number;
+  borderStyle?: string;
 }
 
 const colorFromRGBA = (color: RGBColor) => `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
@@ -80,13 +108,18 @@ const ColorPicker: React.FC<ColorPickerProps> = (
     onChange,
     label,
     noInput,
+    noBorderInput,
     handleClose,
     openPicker = false,
-    dictionary
+    dictionary,
+    borderWidth,
+    borderStyle,
   }
 ) => {
   const [open, setOpen] = React.useState(openPicker);
   const [currentColor, setCurrentColor] = React.useState(color);
+  const [currentWidth, setCurrentWidth] = React.useState(borderWidth);
+  const [currentStyle, setCurrentStyle] = React.useState(borderStyle);
   const classes = useStyles();
 
   const onSwitch = React.useCallback(() => {
@@ -107,15 +140,54 @@ const ColorPicker: React.FC<ColorPickerProps> = (
     setCurrentColor(color);
   }, [color, setCurrentColor]);
 
+  React.useEffect(() => {
+    setCurrentWidth(borderWidth);
+  }, [borderWidth, setCurrentWidth]);
+
+  React.useEffect(() => {
+    setCurrentStyle(borderStyle);
+  }, [borderStyle, setCurrentStyle]);
+
   const onPickerChange = React.useCallback((color: ColorResult) => {
-    onChange!(color.rgb && color.rgb.a !== undefined && color.rgb.a < 1 ? colorFromRGBA(color.rgb) : color.hex);
+    const val = color.rgb && color.rgb.a !== undefined && color.rgb.a < 1 ? colorFromRGBA(color.rgb) : color.hex
+
+    onChange!(borderWidth !== undefined ? `${currentWidth}px ${currentStyle} ${val}` : val);
     setCurrentColor(color.hex);
-  }, [onChange, setCurrentColor]);
+  }, [onChange, setCurrentColor, currentWidth, currentStyle, borderWidth]);
+
+  const onWidthChange = React.useCallback((value: number) => {
+    onChange!(`${value}px ${currentStyle} ${currentColor}`);
+    setCurrentWidth(value);
+  }, [setCurrentWidth, currentStyle, currentColor, onChange]);
+
+  const onStyleChange = React.useCallback((value: string) => {
+    onChange!(`${currentWidth}px ${value} ${currentColor}`);
+    setCurrentStyle(value);
+  }, [setCurrentStyle, currentWidth, currentColor, onChange]);
+
+  const onBorderClick = React.useCallback((value: string) => {
+    onChange && onChange(value);
+    const [width, style, ...rest] = value.split(' ');
+    const color = rest.join(' ');
+    setCurrentColor(color);
+    setCurrentWidth(Number(width.replace('px', '')));
+    setCurrentStyle(style);
+  }, [onChange, setCurrentColor, setCurrentWidth, setCurrentStyle]);
+
+  const isWhite = ['white', '#ffffff', '#FFFFFF', 'rgba(255, 255, 255, 1)'].includes(currentColor);
 
   return (
     <div className={classes.root}>
       {
         !noInput && <ColorInput color={currentColor} onChange={onChange} label={label} onColorClick={onSwitch} />
+      }
+      {
+        borderWidth !== undefined && !noBorderInput && (
+          <div
+            onClick={onSwitch}
+            className={classes.borderInput}
+            style={{backgroundColor: isWhite ? '#ccc' : '#ffffff', border: `${currentWidth}px ${currentStyle} ${currentColor}`}}/>
+        )
       }
       <Dialog
         BackdropProps={{
@@ -129,15 +201,43 @@ const ColorPicker: React.FC<ColorPickerProps> = (
         aria-labelledby="draggable-dialog-title"
       >
         <DialogTitle id="draggable-dialog-title" disableTypography classes={{root: classes.title}}>
-          {dictionary.defValue(EditorDictionary.keys.change)}{' '}
-          {dictionary.defValue(EditorDictionary.keys.color)}
+          {' '}
         </DialogTitle>
         <DialogContent classes={{root: classes.content}}>
           <SketchPicker
+            className={classes.sketch}
             color={currentColor}
             onChange={onPickerChange}
             presetColors={ColorsStore.colors}
           />
+          {
+            borderWidth !== undefined && (
+              <Grid container className={classes.bordersBox} justify="space-between" alignItems="center">
+                <NumberInput value={borderWidth} size="small" onChange={onWidthChange}/>
+                <CustomSelect
+                  options={['solid', 'dotted', 'dashed']}
+                  onChange={onStyleChange}
+                  value={borderStyle}
+                  small/>
+              </Grid>
+            )
+          }
+          {
+            borderWidth !== undefined && (
+              <Grid container className={classes.borderItems}>
+                {
+                  ColorsStore.borders.map(item => (
+                    <Tooltip title={item.title} key={item.border}>
+                      <div
+                        className={classes.borderItem}
+                        style={{border: item.border}}
+                        onClick={() => onBorderClick(item.border)}/>
+                    </Tooltip>
+                  ))
+                }
+              </Grid>
+            )
+          }
         </DialogContent>
       </Dialog>
     </div>

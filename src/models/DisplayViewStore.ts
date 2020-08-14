@@ -188,7 +188,7 @@ class DisplayViewStore extends Errors {
     data.background && this.applyHistorySettings('background', data.background as Mode & string & IBackgroundColor);
     data.statusBarEnabled !== undefined && (this.setStatusBarEnabled(data.statusBarEnabled));
     data.statusBarColor && this.applyHistorySettings('statusBarColor', data.statusBarColor as Mode & string & IBackgroundColor);
-    this.ios = data.ios;
+    this.setIOS(data.ios);
     this.portrait = data.portrait;
     data.navigation && (this.navigation = data.navigation);
     this.project.update({ title: data.title } as IProject);

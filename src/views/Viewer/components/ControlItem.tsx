@@ -5,6 +5,7 @@ import { ControlEnum } from 'enums/ControlEnum';
 import { ControlProps } from 'interfaces/IControlProps';
 import { makeStyles } from '@material-ui/core/styles';
 import { createStyles, Theme } from '@material-ui/core';
+import { DeviceEnum } from '../../../enums/DeviceEnum';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,9 +23,12 @@ const ElementComponent: React.FC<ControlProps & { locked?: boolean }> =
       {
         control,
         setCurrentScreen,
-        locked
+        locked,
+        device,
+        isPortrait
       }) => {
-      const { title, styles, children, lockedChildren } = control;
+      const { title, children, lockedChildren } = control;
+      const styles = control.styles(device as DeviceEnum, !!isPortrait);
       const classes = useStyles();
       const backgroundColor = styles.backgroundColor;
 

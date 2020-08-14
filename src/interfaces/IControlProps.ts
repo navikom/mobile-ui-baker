@@ -1,6 +1,7 @@
+import { RefObject } from "react";
 import IControl from "interfaces/IControl";
 import { DropEnum } from "enums/DropEnum";
-import { RefObject } from "react";
+import { DeviceEnum } from 'enums/DeviceEnum';
 
 export interface ControlProps {
   control: IControl;
@@ -12,6 +13,8 @@ export interface ControlProps {
   connectDragPreview?: (ref: HTMLImageElement, options?: {captureDraggingState: boolean}) => void;
   isOver?: boolean;
   isOverCurrent?: boolean;
+  device?: DeviceEnum;
+  isPortrait?: boolean;
   selectControl?(control?: IControl, screen?: IControl, fromDevice?: boolean): void;
   isSelected?(control: IControl): boolean;
   setCurrentScreen?: (action: string, screen?: IControl, behavior?: (string | number)[]) => void;

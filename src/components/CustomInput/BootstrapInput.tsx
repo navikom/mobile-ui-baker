@@ -11,6 +11,7 @@ import {
   whiteColor
 } from "assets/jss/material-dashboard-react";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import { WithStyles } from '@material-ui/core/styles/withStyles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,10 +39,25 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Input = ({ ...props }) => {
+interface InputProps extends WithStyles {
+  fullWidth?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  small?: boolean;
+  error?: boolean;
+  placeholder?: string;
+  multiline?: boolean;
+  rows?: number;
+  value?: string;
+  root?: string;
+  label?: React.ReactNode;
+  endAdornment?: React.ReactNode;
+}
+
+const Input: React.FC<InputProps> = ({ small, ...props }) => {
   const classes = useStyles();
   const underline = classNames({
     [props.classes.input]: true,
+    [props.classes.inputSmall]: small,
     [classes.inputError]: props.error,
     [classes.inputSuccess]: !props.error
   });
@@ -50,8 +66,10 @@ const Input = ({ ...props }) => {
     [classes.labelError]: props.error
   });
 
+  const root = classNames(classes.root, props.root || {});
+
   return (
-    <div className={classes.root}>
+    <div className={root}>
       <InputBase
         {...props}
         classes={{ input: underline }}
@@ -100,6 +118,11 @@ export const ThemedInput = withStyles((theme: Theme) =>
         backgroundColor: whiteColor,
         borderColor: primaryColor[0]
       }
+    },
+    inputSmall: {
+      borderRadius: 2,
+      fontSize: 13,
+      padding: "2px 26px 6px 12px",
     }
   })
 );

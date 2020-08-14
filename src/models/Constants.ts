@@ -126,8 +126,11 @@ export const CSS_VALUE_STRING = 'string';
 export const CSS_VALUE_NUMBER = 'number';
 export const CSS_VALUE_COLOR = 'color';
 export const CSS_VALUE_SELECT = 'select';
+export const CSS_VALUE_BORDER = 'border';
 
 //********** Expressions *********//
+export const DEVICE_WIDTH = '* device width';
+export const DEVICE_HEIGHT = '* device height';
 export const AND = 'and';
 export const OR = 'or';
 

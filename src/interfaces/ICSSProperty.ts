@@ -1,6 +1,7 @@
 import React from 'react';
 import { CSSValueType } from 'types/commonTypes';
 import IControl from './IControl';
+import { DeviceEnum } from '../enums/DeviceEnum';
 
 export default interface ICSSProperty {
   controlProps?: { [key: string]: any };
@@ -20,11 +21,14 @@ export default interface ICSSProperty {
   isString: boolean;
   isColor: boolean;
   isSelect: boolean;
+  isBorder: boolean;
   inject?: string;
   units?: string[];
   unit?: string;
-  valueWithUnit: string | number;
   cssValue: string | number;
+
+  setEnabled(value: boolean): void;
+  valueWithUnit(device: DeviceEnum, isPortrait: boolean): string | number;
 
   setUnits(unit: string, units: string[]): ICSSProperty;
 

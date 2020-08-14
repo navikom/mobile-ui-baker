@@ -11,6 +11,7 @@ import { ControlProps } from 'interfaces/IControlProps';
 import hover from 'utils/hover';
 import classNames from 'classnames';
 import { ControlEnum } from 'enums/ControlEnum';
+import { DeviceEnum } from '../../../../enums/DeviceEnum';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,8 +75,11 @@ export const ElementComponent: React.FC<ElementProps> =
         handleDropElement,
         locked,
         setCurrentScreen,
+        device,
+        isPortrait
       }) => {
-      const { title, styles, dropTarget, allowChildren, children, lockedChildren } = control;
+      const { title, dropTarget, allowChildren, children, lockedChildren } = control;
+      const styles = control.styles(device as DeviceEnum, !!isPortrait);
       const classes = useStyles();
       let backgroundColor = isOverCurrent ? 'rgba(0,0,0,0.05)' : styles.backgroundColor;
       let borderStyles = {};
@@ -187,13 +191,12 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
       handleDropElement,
       selectControl,
       setCurrentScreen,
-      isSelected
+      isSelected,
+      device,
+      isPortrait
     },
     ref) => {
     const elementRef = React.useRef<HTMLDivElement>(null);
-    // connectDragSource && connectDragSource(elementRef);
-    // connectDropTarget && connectDropTarget(elementRef);
-    // connectDragPreview && connectDragPreview(getEmptyImage());
 
     useImperativeHandle(ref, () => ({
       getNode: () => elementRef.current,
@@ -207,6 +210,8 @@ const ControlItem: React.FC<ControlProps> = React.forwardRef(
 
     return (
       <ElementComponent
+        device={device}
+        isPortrait={isPortrait}
         elementRef={elementRef}
         control={control}
         isDragging={isDragging}

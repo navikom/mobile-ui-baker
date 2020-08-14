@@ -11,6 +11,7 @@ import {
 } from 'models/Constants';
 import IControl from 'interfaces/IControl';
 import ControlStore, { MAIN_CSS_STYLE } from 'models/Control/ControlStore';
+import { DeviceEnum } from '../../enums/DeviceEnum';
 
 describe('Control', () => {
   beforeEach(() => {
@@ -31,7 +32,7 @@ describe('Control', () => {
 
   it(`New Control element has enabled style 'padding'`, () => {
     const grid = CreateControl(ControlEnum.Grid);
-    expect(Object.prototype.hasOwnProperty.call(grid.styles, 'padding')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(grid.styles(DeviceEnum.IPHONE_6, true), 'padding')).toBe(false);
   });
 
   it('Add new style will add clone of the main style and makes record [control.id]/[styleName]' +
@@ -89,8 +90,12 @@ describe('Control', () => {
 
   it('Merge styles', () => {
     const grid = CreateControl(ControlEnum.Grid);
-    expect(Object.prototype.hasOwnProperty.call(grid.styles, 'width')).toBeFalsy();
-    expect(Object.prototype.hasOwnProperty.call(grid.styles, 'padding')).toBeFalsy();
+    expect(
+      Object.prototype.hasOwnProperty.call(grid.styles(DeviceEnum.IPHONE_6, true), 'width')
+    ).toBeFalsy();
+    expect(
+      Object.prototype.hasOwnProperty.call(grid.styles(DeviceEnum.IPHONE_6, true), 'padding')
+    ).toBeFalsy();
     const mainStyle = grid.cssStyles.get(MAIN_CSS_STYLE);
     const width = mainStyle![15];
     expect(width.key === 'width').toBeTruthy();
@@ -103,8 +108,12 @@ describe('Control', () => {
           .makeExpandable()
       ]]
     ]));
-    expect(Object.prototype.hasOwnProperty.call(grid.styles, 'width')).toBeTruthy();
-    expect(Object.prototype.hasOwnProperty.call(grid.styles, 'padding')).toBeFalsy();
+    expect(
+      Object.prototype.hasOwnProperty.call(grid.styles(DeviceEnum.IPHONE_6, true), 'width')
+    ).toBeTruthy();
+    expect(
+      Object.prototype.hasOwnProperty.call(grid.styles(DeviceEnum.IPHONE_6, true), 'padding')
+    ).toBeFalsy();
     const width2 = mainStyle![15];
     expect(width2.enabled).toBeTruthy();
     expect(width === width2).toBeTruthy();
@@ -125,16 +134,16 @@ describe('Control', () => {
     expect(CSSProperty.controlBackgroundColor.has(grid1.id + '_Style1')).toBeTruthy();
     expect(CSSProperty.colors.has('red')).toBeTruthy();
 
-    expect(grid1.styles.backgroundColor).toBe('#ffffff');
+    expect(grid1.styles(DeviceEnum.IPHONE_6, true).backgroundColor).toBe('#ffffff');
     jest.useFakeTimers();
 
     grid2.addAction([ACTION_TOGGLE_STYLE, grid1.id, 'Style1']);
     grid2.applyActions();
     jest.runAllTimers();
-    expect(grid1.styles.backgroundColor).toBe('red');
+    expect(grid1.styles(DeviceEnum.IPHONE_6, true).backgroundColor).toBe('red');
     grid2.applyActions();
     jest.runAllTimers();
-    expect(grid1.styles.backgroundColor).toBe('#ffffff');
+    expect(grid1.styles(DeviceEnum.IPHONE_6, true).backgroundColor).toBe('#ffffff');
 
     grid1.renameCSSStyle('Style1', 'NewStyle');
     expect(CSSProperty.controlBackgroundColor.has(grid1.id + '_Style1')).toBeFalsy();
@@ -143,21 +152,21 @@ describe('Control', () => {
     // action will not be working after style rename
     grid2.applyActions();
     jest.runAllTimers();
-    expect(grid1.styles.backgroundColor === 'red').toBeFalsy();
+    expect(grid1.styles(DeviceEnum.IPHONE_6, true).backgroundColor === 'red').toBeFalsy();
 
     // to make it working need to edit the action
     grid2.editAction(0, ACTION_TOGGLE_STYLE, `${grid1.id}/NewStyle`);
     grid2.applyActions();
     jest.runAllTimers();
-    expect(grid1.styles.backgroundColor === 'red').toBeTruthy();
+    expect(grid1.styles(DeviceEnum.IPHONE_6, true).backgroundColor === 'red').toBeTruthy();
     grid2.applyActions();
     jest.runAllTimers();
-    expect(grid1.styles.backgroundColor === '#ffffff').toBeTruthy();
+    expect(grid1.styles(DeviceEnum.IPHONE_6, true).backgroundColor === '#ffffff').toBeTruthy();
 
     grid2.removeAction(0);
     grid2.applyActions();
     jest.runAllTimers();
-    expect(grid1.styles.backgroundColor === 'red').toBeFalsy();
+    expect(grid1.styles(DeviceEnum.IPHONE_6, true).backgroundColor === 'red').toBeFalsy();
   });
 
   it('Add and apply navigation action', () => {
@@ -191,7 +200,7 @@ describe('Control', () => {
     expect(CSSProperty.colors.get('red')!.includes(grid2.id)).toBeTruthy();
     expect(Object.prototype.hasOwnProperty.call(grid2.styles, 'backgroundColor')).toBeFalsy();
     grid2.addClass('Style1');
-    expect(grid2.styles.backgroundColor === 'red').toBeTruthy();
+    expect(grid2.styles(DeviceEnum.IPHONE_6, true).backgroundColor === 'red').toBeTruthy();
   });
 
   it('Convert control tree to JSON and vice versa', () => {

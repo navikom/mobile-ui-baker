@@ -166,7 +166,8 @@ class EditorViewStore extends DisplayViewStore {
         generate: () => this.generate(),
         loadAssetsEnabled: this.fetchAssetsEnabled,
         switchLoadAssets: () => this.switchFetchAssetsEnabled(),
-        setColor: (oldColor: string, newColor: string) => this.setColor(oldColor, newColor)
+        setColor: (oldColor: string, newColor: string) => this.setColor(oldColor, newColor),
+        setBorder: (oldBorder: string, newBorder: string) => this.setBorder(oldBorder, newBorder),
       },
       {
         dictionary: this.dictionary,
@@ -710,12 +711,16 @@ class EditorViewStore extends DisplayViewStore {
   // ####### apply history start ######## //
 
   @action setColor(oldColor: string, newColor: string, noHistory?: boolean) {
-    if(oldColor === newColor) {
-      return;
-    }
     const undo = { control: this.currentScreen!.id, oldValue: newColor, value: oldColor } as unknown as IHistoryObject;
     const redo = { control: this.currentScreen!.id, oldValue: oldColor, value: newColor } as unknown as IHistoryObject;
     ColorsStore.setColor(oldColor, newColor);
+    !noHistory && ControlStore.history.add([HIST_PROJECT_COLOR, undo, redo]);
+  }
+
+  @action setBorder(oldBorder: string, newBorder: string, noHistory?: boolean) {
+    const undo = { control: this.currentScreen!.id, oldValue: newBorder, value: oldBorder } as unknown as IHistoryObject;
+    const redo = { control: this.currentScreen!.id, oldValue: oldBorder, value: newBorder } as unknown as IHistoryObject;
+    ColorsStore.setBorder(oldBorder, newBorder);
     !noHistory && ControlStore.history.add([HIST_PROJECT_COLOR, undo, redo]);
   }
 

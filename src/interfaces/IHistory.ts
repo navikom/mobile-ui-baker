@@ -42,6 +42,8 @@ export interface ViewStore extends IMobileUIView {
 
   setColor(oldColor: string, newColor: string, noHistory?: boolean): void;
 
+  setBorder(oldColor: string, newColor: string, noHistory?: boolean): void;
+
   save(): void;
 
   setMeta(meta: ScreenMetaEnum, control: IControl, noHistory?: boolean): void;

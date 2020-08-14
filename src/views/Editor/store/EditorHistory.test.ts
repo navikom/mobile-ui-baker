@@ -9,6 +9,7 @@ import ControlStore, { MAIN_CSS_STYLE } from 'models/Control/ControlStore';
 import CreateControl from 'models/Control/ControlStores';
 import { ControlEnum } from 'enums/ControlEnum';
 import CSSProperty from '../../../models/Control/CSSProperty';
+import { DeviceEnum } from '../../../enums/DeviceEnum';
 
 describe('EditorHistory', () => {
   let store: EditorViewStore, control: IControl;
@@ -69,14 +70,18 @@ describe('EditorHistory', () => {
   });
 
   it('handleCSSProperty history records', () => {
-    expect(Object.prototype.hasOwnProperty.call(control.styles, 'position')).toBeFalsy();
+    expect(
+      Object.prototype.hasOwnProperty.call(control.styles(DeviceEnum.IPHONE_6, true), 'position')
+    ).toBeFalsy();
 
     control.switchEnabled(MAIN_CSS_STYLE, 'position')();
-    expect(Object.prototype.hasOwnProperty.call(control.styles, 'position')).toBeTruthy();
-    expect(control.styles.position === 'static').toBeTruthy();
+    expect(
+      Object.prototype.hasOwnProperty.call(control.styles(DeviceEnum.IPHONE_6, true), 'position')
+    ).toBeTruthy();
+    expect(control.styles(DeviceEnum.IPHONE_6, true).position === 'static').toBeTruthy();
 
     control.setValue(MAIN_CSS_STYLE, 'position')('absolute');
-    expect(control.styles.position === 'absolute').toBeTruthy();
+    expect(control.styles(DeviceEnum.IPHONE_6, true).position === 'absolute').toBeTruthy();
 
     control.switchExpanded(MAIN_CSS_STYLE, 'padding')();
     const padding = control.cssProperty(MAIN_CSS_STYLE, 'padding');
@@ -86,16 +91,18 @@ describe('EditorHistory', () => {
     expect(padding!.expanded).toBeFalsy();
 
     store.history.undo();
-    expect(control.styles.position === 'static').toBeTruthy();
+    expect(control.styles(DeviceEnum.IPHONE_6, true).position === 'static').toBeTruthy();
 
     store.history.undo();
-    expect(Object.prototype.hasOwnProperty.call(control.styles, 'position')).toBeFalsy();
+    expect(
+      Object.prototype.hasOwnProperty.call(control.styles(DeviceEnum.IPHONE_6, true), 'position')
+    ).toBeFalsy();
 
     store.history.redo();
-    expect(control.styles.position === 'static').toBeTruthy();
+    expect(control.styles(DeviceEnum.IPHONE_6, true).position === 'static').toBeTruthy();
 
     store.history.redo();
-    expect(control.styles.position === 'absolute').toBeTruthy();
+    expect(control.styles(DeviceEnum.IPHONE_6, true).position === 'absolute').toBeTruthy();
 
     store.history.redo();
     expect(padding!.expanded).toBeTruthy();
@@ -170,7 +177,6 @@ describe('EditorHistory', () => {
     expect(control.cssStyles.has(oldName)).toBeFalsy();
 
     // add style Style1
-    console.log('add style Style1');
     store.history.redo();
     expect(control.cssStyles.has(oldName)).toBeTruthy();
     expect(control.cssStyles.get(oldName)!.length).toBe(58);
@@ -529,10 +535,10 @@ describe('EditorHistory', () => {
 
     expect(store.history.size).toBe(6);
     store.setColor('red', 'red');
-    expect(store.history.size).toBe(6);
+    expect(store.history.size).toBe(7);
 
     store.setColor('red', 'blue');
-    expect(store.history.size).toBe(7);
+    expect(store.history.size).toBe(8);
 
     expect(CSSProperty.colors.has('red')).toBeFalsy();
     expect(CSSProperty.colors.has('blue')).toBeTruthy();
@@ -541,8 +547,8 @@ describe('EditorHistory', () => {
     expect(control.cssProperty(MAIN_CSS_STYLE, 'backgroundColor')!.value).toBe('blue');
 
     store.setColor('blue', 'green');
-    expect(store.history.size).toBe(8);
-    expect(store.history.carriage).toBe(7);
+    expect(store.history.size).toBe(9);
+    expect(store.history.carriage).toBe(8);
     expect(CSSProperty.colors.has('blue')).toBeFalsy();
     expect(CSSProperty.colors.has('green')).toBeTruthy();
     expect(CSSProperty.colors.get('green')!.length).toBe(2);
@@ -550,7 +556,7 @@ describe('EditorHistory', () => {
     expect(control.cssProperty(MAIN_CSS_STYLE, 'backgroundColor')!.value).toBe('green');
 
     store.history.undo();
-    expect(store.history.carriage).toBe(6);
+    expect(store.history.carriage).toBe(7);
     expect(CSSProperty.colors.has('green')).toBeFalsy();
     expect(CSSProperty.colors.has('blue')).toBeTruthy();
     expect(CSSProperty.colors.get('blue')!.length).toBe(2);
@@ -558,7 +564,7 @@ describe('EditorHistory', () => {
     expect(control.cssProperty(MAIN_CSS_STYLE, 'backgroundColor')!.value).toBe('blue');
 
     store.history.undo();
-    expect(store.history.carriage).toBe(5);
+    expect(store.history.carriage).toBe(6);
     expect(CSSProperty.colors.has('blue')).toBeFalsy();
     expect(CSSProperty.colors.has('red')).toBeTruthy();
     expect(CSSProperty.colors.get('red')!.length).toBe(2);

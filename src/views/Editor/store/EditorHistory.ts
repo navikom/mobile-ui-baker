@@ -23,6 +23,7 @@ export const HIST_DROP = "handleDropElement";
 export const HIST_CSS_PROP = "handleCSSProperty";
 export const HIST_SETTINGS = "handleSettings";
 export const HIST_PROJECT_COLOR = 'projectColor';
+export const HIST_PROJECT_BORDER = 'projectBorder';
 export const HIST_CURRENT_SCREEN = "currentScreen";
 export const HIST_ADD_SCREEN = "addScreen";
 export const HIST_DELETE_SCREEN = "deleteScreen";
@@ -218,6 +219,9 @@ class EditorHistory implements IHistory {
       case HIST_PROJECT_COLOR:
         this.viewStore!.setColor(object.oldValue as string, object.value as unknown as string, true);
         break;
+      case HIST_PROJECT_BORDER:
+        this.viewStore!.setBorder(object.oldValue as string, object.value as unknown as string, true);
+        break;
       case HIST_CURRENT_SCREEN:
         this.viewStore!.setCurrentScreen(control, undefined, true);
         break;
@@ -340,6 +344,9 @@ class EditorHistory implements IHistory {
         break;
       case HIST_PROJECT_COLOR:
         this.viewStore!.setColor(object.oldValue as string, object.value as unknown as string, true);
+        break;
+      case HIST_PROJECT_BORDER:
+        this.viewStore!.setBorder(object.oldValue as string, object.value as unknown as string, true);
         break;
       case HIST_CURRENT_SCREEN:
         this.viewStore!.setCurrentScreen(control, undefined, true);

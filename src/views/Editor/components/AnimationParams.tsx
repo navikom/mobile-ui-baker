@@ -127,8 +127,8 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
 ) => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState([false, false]);
-  const currentSwitcherParams = getSwitcherParams(conditions, ScreenSwitcherEnum.CURRENT);
-  const nextSwitcherParams = getSwitcherParams(conditions, ScreenSwitcherEnum.NEXT);
+  const [currentSwitcherParams] = React.useState(getSwitcherParams(conditions, ScreenSwitcherEnum.CURRENT));
+  const [nextSwitcherParams] = React.useState(getSwitcherParams(conditions, ScreenSwitcherEnum.NEXT));
 
   React.useEffect(() => {
     setExpanded([!!currentSwitcherParams, !!nextSwitcherParams]);
@@ -148,12 +148,13 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
                         onChange={(e) => onChange([e.toString(), value])} />
         </Grid>
         <Grid item xs={6} sm={6} md={6}>
-          <NumberInput size="small" value={Number(value)} onChange={(e) => onChange([action, e])} />
+          <NumberInput size="small" value={value} onChange={(e) => onChange([action, e])} />
         </Grid>
       </Grid>
     )
   }
-
+  const currentSwitcherParams1 = getSwitcherParams(conditions, ScreenSwitcherEnum.CURRENT);
+  const nextSwitcherParams1 = getSwitcherParams(conditions, ScreenSwitcherEnum.NEXT);
   let currentScreenAction = AnimationEnum.FADE;
   let currentScreenParam = AnimationDirectionEnum.NONE;
   let currentScreenDuration = 300;
@@ -165,15 +166,15 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
 
   if (conditions.length > 1) {
 
-    if (currentSwitcherParams) {
-      currentScreenAction = currentSwitcherParams[0] as AnimationEnum;
-      currentScreenParam = currentSwitcherParams[1] as AnimationDirectionEnum;
-      currentScreenDuration = Number(currentSwitcherParams[2]);
+    if (currentSwitcherParams1) {
+      currentScreenAction = currentSwitcherParams1[0] as AnimationEnum;
+      currentScreenParam = currentSwitcherParams1[1] as AnimationDirectionEnum;
+      currentScreenDuration = Number(currentSwitcherParams1[2]);
     }
-    if (nextSwitcherParams) {
-      nextScreenAction = nextSwitcherParams[0] as AnimationEnum;
-      nextScreenParam = nextSwitcherParams[1] as AnimationDirectionEnum;
-      nextScreenDuration = Number(nextSwitcherParams[2]);
+    if (nextSwitcherParams1) {
+      nextScreenAction = nextSwitcherParams1[0] as AnimationEnum;
+      nextScreenParam = nextSwitcherParams1[1] as AnimationDirectionEnum;
+      nextScreenDuration = Number(nextSwitcherParams1[2]);
     }
   }
 
@@ -195,6 +196,7 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
       )
     }
     onChange(payload);
+    setExpanded(newExpanded);
   }
 
   return (
@@ -264,4 +266,4 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
 
 }
 
-export default AnimationParams;
+export default React.memo(AnimationParams);

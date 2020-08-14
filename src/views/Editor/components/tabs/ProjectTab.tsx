@@ -43,6 +43,7 @@ import FigmaIcon from 'components/Icons/FigmaIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColorPicker from '../ColorPicker';
 import ProjectColors from './ProjectColors';
+import ProjectBorders from './ProjectBorders';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -380,7 +381,8 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
     importFromFigma,
     loadAssetsEnabled,
     switchLoadAssets,
-    setColor
+    setColor,
+    setBorder
   }
 ) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -558,6 +560,7 @@ const ProjectTab: React.FC<IEditorTabsProps> = (
       }
       <br />
       <ProjectColors dictionary={dictionary as EditorDictionary} setColor={setColor} />
+      <ProjectBorders dictionary={dictionary as EditorDictionary} setBorder={setBorder} />
       <AnimationParams
         isDelay={false}
         conditions={(navigation || []) as string[]}

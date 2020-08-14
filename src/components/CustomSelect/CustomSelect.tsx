@@ -12,19 +12,29 @@ type CustomSelectType = {
   options: (string | (string | number)[])[];
   onChange(value: string | number): void;
   fullWidth?: boolean;
+  className?: string;
+  small?: boolean;
 };
 
-function CustomSelect(props: CustomSelectType) {
+const CustomSelect: React.FC<CustomSelectType> = (
+  {fullWidth,
+    value,
+    onChange,
+    label,
+    options,
+    small = false,
+    className}
+  ) => {
   return (
     <NativeSelect
-      fullWidth={props.fullWidth}
-      value={props.value}
+      fullWidth={fullWidth}
+      value={value}
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-        props.onChange(e.target.value)
+        onChange(e.target.value)
       }
-      input={<BootstrapInput label={props.label} />}
+      input={<BootstrapInput label={label} root={className} small={small} />}
     >
-      {props.options.map((e: string | (number | string)[], i: number) => (
+      {options.map((e: string | (number | string)[], i: number) => (
         <option key={i} value={Array.isArray(e) ? e[0] : e}>
           {Array.isArray(e) ? e[1].toString() : e}
         </option>
