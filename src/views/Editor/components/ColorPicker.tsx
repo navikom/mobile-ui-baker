@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'move'
   },
   paper: {
-    opacity: .8,
+    opacity: .9,
     transition: 'opacity 200ms linear',
     '&:hover': {
       opacity: 1,
@@ -52,7 +52,9 @@ const useStyles = makeStyles(theme => ({
     margin: '1px 3px'
   },
   content: {
-    padding: '0 30px 30px 30px'
+    padding: '0 30px 30px 30px',
+    overflow: 'auto',
+    maxHeight: window.innerHeight * .8
   },
   bordersBox: {
     marginTop: 10,
@@ -66,12 +68,16 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 4
   },
   borderItems: {
+    width: 220,
     marginTop: 10,
+    paddingTop: 10,
     borderTop: '1px solid rgb(238, 238, 238)'
+  },
+  wrapper: {
+    margin: '3px',
   },
   borderItem: {
     cursor: 'pointer',
-    margin: 5,
     width: 15,
     height: 15,
     borderRadius: 3
@@ -224,18 +230,22 @@ const ColorPicker: React.FC<ColorPickerProps> = (
           }
           {
             borderWidth !== undefined && (
-              <Grid container className={classes.borderItems}>
-                {
-                  ColorsStore.borders.map(item => (
-                    <Tooltip title={item.title} key={item.border}>
-                      <div
-                        className={classes.borderItem}
-                        style={{border: item.border}}
-                        onClick={() => onBorderClick(item.border)}/>
-                    </Tooltip>
-                  ))
-                }
-              </Grid>
+              <div className={classes.borderItems}>
+                <Grid container>
+                  {
+                    ColorsStore.borders.map(item => (
+                      <Grid item xs={1} sm={1} md={1} className={classes.wrapper} key={item.border}>
+                        <Tooltip title={item.title}>
+                          <div
+                            className={classes.borderItem}
+                            style={{border: item.border}}
+                            onClick={() => onBorderClick(item.border)}/>
+                        </Tooltip>
+                      </Grid>
+                    ))
+                  }
+                </Grid>
+              </div>
             )
           }
         </DialogContent>

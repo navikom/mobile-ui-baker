@@ -16,6 +16,8 @@ export default class ColorsStore {
   @observable static backgroundMap: Map<string, string> = new Map<string, string>();
   @observable static barColorsMap: Map<string, string> = new Map<string, string>();
 
+  static borderKeys = CSSProperty.BORDER_KEYS;
+
   @computed
   static get colors() {
     const controlColorsList = Array.from(CSSProperty.colors.keys());
@@ -55,6 +57,16 @@ export default class ColorsStore {
   static get borders() {
     return Array.from(CSSProperty.borders.keys())
       .map(border => ({ title: `${border} (${CSSProperty.borders.get(border)!.length})`, border }));
+  }
+
+  static getBorderVariable(border: string) {
+    const i = Array.from(CSSProperty.borders.keys()).indexOf(border);
+    return `borders[${i}]`;
+  }
+
+  static getColorVariable(color: string) {
+    const i = this.colors.map(color => color.color).indexOf(color);
+    return i > -1 ? `colors[${i}]` : '#ffffff';
   }
 
   @action

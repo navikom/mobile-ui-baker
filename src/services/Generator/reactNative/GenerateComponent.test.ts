@@ -353,7 +353,7 @@ describe('GenerateComponent', () => {
 
     const color = getStyle(mainStyle as ICSSProperty[], 'color');
     color!.switchEnabled(text, MAIN_CSS_STYLE); // color
-    color!.setValue('#fff');
+    color!.setValue('#ffffff');
 
     getStyle(mainStyle as ICSSProperty[], 'textAlign')!.switchEnabled(text, MAIN_CSS_STYLE);
     getStyle(mainStyle as ICSSProperty[], 'fontFamily')!.switchEnabled(text, MAIN_CSS_STYLE);
@@ -390,7 +390,7 @@ describe('GenerateComponent', () => {
           shadowRadius: 20,
           shadowColor: 'rgba(0,0,0,0.4)',
           shadowOpacity: 1,
-          color: '#fff',
+          color: 'colors[0]',
           textAlign: 'center',
           fontFamily: 'Verdana',
           fontStyle: 'oblique',
@@ -404,34 +404,34 @@ describe('GenerateComponent', () => {
     expect(service.transitionErrors.length).toBe(1);
 
     expect(generator.stylesString().trim().replace(/\t|\s/g, '') === `import {StyleSheet} from 'react-native';
-    
+    import colors from '@app/assets/colors.js';
     const styles = {
       "21eabfa8": StyleSheet.create({
        "Main": {
-          "position": "absolute",
-          "top": "10%",
-          "height": "100%",
-          "minWidth": "10rem",
-          "minHeight": ${round(100)},
-          "paddingTop": ${round(10)},
-          "paddingRight": ${round(5)},
-          "paddingBottom": ${round(7)},
-          "paddingLeft": 0,
-          "lineHeight": ${round(10)},
-          "marginTop": ${round(10)},
-          "shadowOffset": { "width": 2, "height": 4 },
-          "shadowRadius": 20,
-          "shadowColor": "rgba(0,0,0,0.4)",
-          "shadowOpacity": 1,
-          "color": "#fff",
-          "textAlign": "center",
-          "fontFamily": "Verdana",
-          "fontStyle": "oblique",
-          "textDecorationLine": "line-through",
-          "textDecorationColor": "black",
-          "textDecorationStyle": "solid",
-          "textOverflow": "ellipsis"
-       }
+          position:"absolute",
+          top:"10%",
+          height:"100%",
+          minWidth:"10rem",
+          minHeight:100,
+          paddingTop:10,
+          paddingRight:5,
+          paddingBottom:7,
+          paddingLeft:0,
+          lineHeight:10,
+          marginTop:10,
+          shadowOffset: { "width": 2, "height": 4 },
+          shadowRadius: 20,
+          shadowColor: "rgba(0,0,0,0.4)",
+          shadowOpacity: 1,
+          color: colors[0],
+          textAlign: "center",
+          fontFamily: "Verdana",
+          fontStyle: "oblique",
+          textDecorationLine: "line-through",
+          textDecorationColor: "black",
+          textDecorationStyle: "solid",
+          textOverflow: "ellipsis",
+       },
     }),
     };
     export default styles;`.trim().replace(/\t|\s/g, '')).toBeTruthy();

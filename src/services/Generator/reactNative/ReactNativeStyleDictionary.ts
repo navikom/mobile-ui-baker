@@ -3,11 +3,15 @@ import IControl from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import { ITransition, ObjectType } from 'interfaces/ITransitSyle';
 import { getPropertyName, getStylesForProperty } from 'css-to-react-native';
-import { MODE_DEVELOPMENT } from '../../../models/Constants';
+import { MODE_DEVELOPMENT } from 'models/Constants';
+import ColorsStore from 'models/ColorsStore';
 
 export const blockStyle = ['transition', 'background', 'backgroundImage', 'backgroundRepeat', 'backgroundSize', 'backgroundPosition',
   'mask', 'maskImage', 'maskRepeat', 'transition', 'transitionProperty', 'transitionDuration', 'transitionTimingFunction',
   'transitionDelay', 'overflowX', 'overflowY', 'whiteSpace'];
+
+export const variableProps = ['color', 'backgroundColor', 'borderColor', 'borderLeftColor', 'borderRightColor',
+  'borderTopColor', 'borderBottomColor'];
 
 const overflowRule = (overflow?: { [key: string]: any }, overflowX?: { [key: string]: any }, overflowY?: { [key: string]: any }) => {
   if ((overflow && overflow.enabled) || (overflowX && overflowX.enabled) || (overflowY && overflowY.enabled)) {
@@ -56,43 +60,43 @@ export const specificRules = {
   },
   backgroundColor: (rule: { [key: string]: any }, control: IControl) => {
     if (!control.hasSVG) {
-      return { backgroundColor: rule.value }
+      return { backgroundColor: ColorsStore.getColorVariable(rule.value) }
     }
     return {};
   },
   borderBottom: (rule: { [key: string]: any }, control: IControl) => {
-    const values = rule.value.split(' ');
+    const [width, style, ...rest] = rule.value.split(' ');
     const object = {
-      borderBottomWidth: Number(values[0].replace(/\D/g, '')),
-      borderBottomColor: values[2],
-      borderStyle: values[1]
+      borderBottomWidth: Number(width.replace(/\D/g, '')),
+      borderBottomColor: ColorsStore.getColorVariable(rest.join(' ')),
+      borderStyle: style
     }
     return object;
   },
   borderTop: (rule: { [key: string]: any }, control: IControl) => {
-    const values = rule.value.split(' ');
+    const [width, style, ...rest] = rule.value.split(' ');
     const object = {
-      borderTopWidth: Number(values[0].replace(/\D/g, '')),
-      borderTopColor: values[2],
-      borderStyle: values[1]
+      borderTopWidth: Number(width.replace(/\D/g, '')),
+      borderTopColor: ColorsStore.getColorVariable(rest.join(' ')),
+      borderStyle: style
     }
     return object;
   },
   borderLeft: (rule: { [key: string]: any }, control: IControl) => {
-    const values = rule.value.split(' ');
+    const [width, style, ...rest] = rule.value.split(' ');
     const object = {
-      borderLeftWidth: Number(values[0].replace(/\D/g, '')),
-      borderLeftColor: values[2],
-      borderStyle: values[1]
+      borderLeftWidth: Number(width.replace(/\D/g, '')),
+      borderLeftColor: ColorsStore.getColorVariable(rest.join(' ')),
+      borderStyle: style
     }
     return object;
   },
   borderRight: (rule: { [key: string]: any }, control: IControl) => {
-    const values = rule.value.split(' ');
+    const [width, style, ...rest] = rule.value.split(' ');
     const object = {
-      borderRightWidth: Number(values[0].replace(/\D/g, '')),
-      borderRightColor: values[2],
-      borderStyle: values[1]
+      borderRightWidth: Number(width.replace(/\D/g, '')),
+      borderRightColor: ColorsStore.getColorVariable(rest.join(' ')),
+      borderStyle: style
     }
     return object;
   },
@@ -307,4 +311,17 @@ export const transitionRule = (style: ObjectType[]) => {
     );
   }
   return rulesList;
+}
+
+export const withVariable = (style: ObjectType) => {
+  const keys = Object.keys(style);
+  let l = keys.length;
+  while (l--) {
+    const key = keys[l];
+    if(variableProps.includes(key)) {
+      style[key] = ColorsStore.getColorVariable(style[key] as string);
+      break;
+    }
+  }
+  return style;
 }

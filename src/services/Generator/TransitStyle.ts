@@ -1,5 +1,6 @@
 import ITransitStyle, { ITransition } from 'interfaces/ITransitSyle';
 import { ReactNativeGradient } from 'utils/parseGradient';
+import ColorsStore from '../../models/ColorsStore';
 
 class TransitStyle implements ITransitStyle {
   className: string;
@@ -8,7 +9,7 @@ class TransitStyle implements ITransitStyle {
   gradient?: ReactNativeGradient;
   scroll?: { horizontal: boolean; contentContainerStyle: { alignItems?: string; justifyContent?: string } };
   src?: string;
-  style?: { resizeMode?: string; color?: string; width?: string | number; height?: string | number };
+  style?: { resizeMode?: string; color?: string; fill?: string; width?: string | number; height?: string | number };
   transition?: ITransition[];
 
   constructor(className: string, enabled: boolean, isSvg: boolean) {
@@ -18,12 +19,24 @@ class TransitStyle implements ITransitStyle {
   }
 
   toString() {
+    let style = '';
+    if(this.style) {
+      const styles: string[] = [];
+      style = ', style: {';
+      Object.keys(this.style).forEach(key => {
+        styles.push(
+          `"${key}": ${['color', 'fill'].includes(key) ? ColorsStore.getColorVariable(this.style![key as 'color'] as string) : JSON.stringify(this.style![key as 'color'])}`
+        );
+      });
+      style += styles.join(', ');
+      style += '}';
+    }
     let content = '{';
     content += `className: "${this.className}", `;
     content += `enabled: ${this.enabled}, `;
     content += `isSvg: ${this.isSvg}`;
     this.scroll && (content += `, scroll: ${JSON.stringify(this.scroll)}`);
-    this.style && (content += `, style: ${JSON.stringify(this.style)}`);
+    style.length && (content += style);
     this.gradient && (content += `, gradient: ${JSON.stringify(this.gradient)}`);
     this.src && (content += this.isSvg ? `, Svg: require("${this.src}")` : `, src: "${this.src}"`);
     this.transition && (content += `, transition: ${JSON.stringify(this.transition)}`);

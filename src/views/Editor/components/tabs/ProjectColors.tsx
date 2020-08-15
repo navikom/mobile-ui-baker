@@ -10,6 +10,7 @@ import EditorDictionary from 'views/Editor/store/EditorDictionary';
 import ColorsStore from 'models/ColorsStore';
 import ColorPicker from '../ColorPicker';
 import Tooltip from '@material-ui/core/Tooltip';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles(theme => (
   {
@@ -21,13 +22,15 @@ const useStyles = makeStyles(theme => (
       backgroundColor: theme.palette.background.paper,
       padding: 8,
     },
+    wrapper: {
+      margin: '3px 0'
+    },
     box: {
       width: 15,
       height: 15,
       borderRadius: 2,
       border: '1px solid ' + blackOpacity(.5),
       cursor: 'pointer',
-      margin: '1px 3px'
     }
   })
 );
@@ -70,18 +73,23 @@ const ProjectColors: React.FC<ProjectColorsProps> = (
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.details}>
-        {
-          ColorsStore.colors.map(item =>
-            (
-              <Tooltip key={item.color} title={item.title}>
-                <div
-                  className={classes.box}
-                  style={{ backgroundColor: item.color }}
-                  onClick={onColor(item.color)} />
-              </Tooltip>
+        <Grid container>
+          {
+            ColorsStore.colors.map(item =>
+              (
+                <Grid item xs={1} sm={1} md={1} key={item.color} className={classes.wrapper}>
+                  <Tooltip title={item.title}>
+                    <div
+                      className={classes.box}
+                      style={{ backgroundColor: item.color }}
+                      onClick={onColor(item.color)} />
+                  </Tooltip>
+                </Grid>
+              )
             )
-          )
-        }
+          }
+        </Grid>
+
       </ExpansionPanelDetails>
       <ColorPicker
         dictionary={dictionary}

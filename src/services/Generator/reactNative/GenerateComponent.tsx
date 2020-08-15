@@ -11,20 +11,21 @@ import {
   STYLE_SHEET,
   STYLES,
   TEXT_BASE_COMP,
-  STORE_VARIABLE, PROPS_VARIABLE,
+  STORE_VARIABLE, PROPS_VARIABLE, DIMENSIONS, ASSETS_FOLDER,
 } from '../Constants';
 import { ControlEnum } from 'enums/ControlEnum';
 import { importFrom } from '../utils';
 import {
-  blockStyle,
+  blockStyle, withVariable,
   ignoreStyle,
   metaRules,
   ruleValidator,
-  specificRules,
+  specificRules, variableProps,
 } from './ReactNativeStyleDictionary';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';
 import IGenerateService from 'interfaces/IGenerateService';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from 'models/Constants';
 
 type ObjectType = { [key: string]: string | number | boolean | undefined | null };
 
@@ -37,6 +38,9 @@ class GenerateComponent implements IGenerateComponent {
   depth: number;
   hash: string;
   nameSpace: string;
+  hasDeviceWidth = false;
+  hasDeviceHeight = false;
+  hasColors = false;
 
   constructor(generator: IGenerateService, depth: number, hash: string) {
     this.generator = generator;
@@ -62,14 +66,25 @@ class GenerateComponent implements IGenerateComponent {
           return;
         }
 
+        if(!this.hasDeviceHeight && item.unit === DEVICE_HEIGHT) {
+          this.hasDeviceHeight = true;
+        }
+
+        if(!this.hasDeviceWidth && item.unit === DEVICE_HEIGHT) {
+          this.hasDeviceWidth = true;
+        }
+
         let rule = specificRules[item.key as 'display'] && specificRules[item.key as 'display'](item, control);
         if (!rule) {
           const modifiedValue = item.value;
           try {
             const propName = getPropertyName(item.key);
 
-            const value = item.unit ? modifiedValue.toString() + item.unit : modifiedValue.toString();
-            rule = getStylesForProperty(propName, value);
+            const value = item.unit ? [DEVICE_WIDTH, DEVICE_HEIGHT].includes(item.unit as string) ?
+              modifiedValue + (item.unit === DEVICE_WIDTH ? '_width' : '_height')
+              : modifiedValue.toString() + item.unit :
+              modifiedValue.toString();
+            rule = withVariable(getStylesForProperty(propName, value)) as {};
             const invalid = ruleValidator(item, control);
             invalid && this.generator.addToTransitionErrors(invalid);
           } catch (e) {
@@ -77,6 +92,9 @@ class GenerateComponent implements IGenerateComponent {
               'Control #' + control.id + ' style "' + item.key + '"  error: ' + e.message + '.'
             )
           }
+        }
+        if(rule && !this.hasColors && JSON.stringify(rule).includes('[')) {
+          this.hasColors = true;
         }
         rule && Object.assign(styles[k], rule);
       });
@@ -103,10 +121,49 @@ class GenerateComponent implements IGenerateComponent {
   }
 
   stylesString() {
-    let content = importFrom([STYLE_SHEET]) + ';\n';
+    const dependencies = [STYLE_SHEET];
+    let dimension;
+    if(this.hasDeviceHeight || this.hasDeviceWidth) {
+      dependencies.push(DIMENSIONS);
+      dimension = '\nconst {';
+      this.hasDeviceHeight && (dimension += `height`);
+      this.hasDeviceWidth && (dimension += this.hasDeviceHeight ? `, width` : `width`);
+      dimension += `} = ${DIMENSIONS}.get('window');\n`;
+    }
+
+    let content = importFrom(dependencies) + ';\n';
+    if(this.hasColors) {
+      content += importFrom('colors', `${APP_ROOT}/${ASSETS_FOLDER}/colors.js`) + ';\n';
+    }
+
+    dimension && (content += dimension);
     content += `\nconst styles = {\n`;
     this.styles.forEach((value, key) => {
-      content += `  "${key}": ${STYLE_SHEET}.create(` + JSON.stringify(value, null, 2) + '),\n';
+      content += `  "${key}": ${STYLE_SHEET}.create({\n`;
+      Object.keys(value).forEach(k => {
+        content += `    "${k}": {\n`;
+        Object.keys(value[k]).forEach(j => {
+          let val = value[k][j];
+          val = val.toString().includes('_width') ?
+            `${val.toString().split('_')[0]} * width` :
+            val.toString().includes('_height') ?
+              `${val.toString().split('_')[0]} * height` : val;
+
+          let obj;
+          if(value[k][j].toString().includes('{')) {
+            obj = '{\n';
+            const objs = [];
+            Object.keys(value[k][j]).forEach(f => {
+              objs.push(`  ${f}: ${JSON.stringify(value[k][j])}`)
+            });
+            obj += '}\n';
+          }
+          content +=
+            `      ${j}: ${value[k][j].toString().includes('_') || value[k][j].toString().includes('colors[') ? val : JSON.stringify(val)},\n`;
+        });
+        content += '    },\n';
+      });
+      content += '  }),\n';
     });
     content += `};\nexport default styles;`;
     return content;

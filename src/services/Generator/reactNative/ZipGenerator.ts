@@ -58,6 +58,7 @@ import IService from 'interfaces/IGenerateService';
 import { AnimationDirectionEnum } from 'enums/AnimationEnum';
 import { ACTION_NAVIGATE_BACK, ACTION_NAVIGATE_REPLACE } from 'models/Constants';
 import { IScreen } from 'interfaces/IControl';
+import ColorsStore from 'models/ColorsStore';
 
 const contentString = (content: string, imports: string[]) => {
   let str = importFrom(['observer'], 'mobx-react-lite') + ';\n';
@@ -89,6 +90,7 @@ class ZipGenerator {
   generateRest() {
     this.baseComponent2zip(true);
     this.baseComponent2zip(false);
+    this.variables2Zip();
     this.animatedView2zip();
     this.navigation2zip();
     this.screens2zip();
@@ -267,6 +269,15 @@ ${EXPORT_DEFAULT} ${name};`;
     this.zip.file(`${SRC_FOLDER}/${COMPONENTS_FOLDER}/${name}/${name}.js`, content);
   }
 
+  variables2Zip() {
+    let content = 'const colors = [\n';
+    ColorsStore.colors.forEach(item => {
+      content += `  "${item.color}",\n`;
+    })
+    content += '];\nexport default colors;';
+    this.zip.file(`${SRC_FOLDER}/${ASSETS_FOLDER}/colors.js`, content);
+  }
+
   animatedView2zip() {
 
     let content = IMPORT_REACT + ';\n';
@@ -355,6 +366,7 @@ ${EXPORT_DEFAULT} ${name};`;
   navSpecInitState2zip(title: string, map: Map<string, string[]>) {
     const imports: string[] = [];
     let content = importFrom(PROPERTY_MODEL, `${APP_ROOT}/${MODELS_FOLDER}/${PROPERTY_MODEL}`) + ';\n';
+    content += importFrom('colors', `${APP_ROOT}/${ASSETS_FOLDER}/colors.js`) + ';\n';
     content += `const ${INIT_STATE} = [`;
 
     map.forEach(([specComponentId], screenId) => {
@@ -984,6 +996,7 @@ export default App;`;
   initState2zip(path: string, stateContent: IStoreContent[]) {
     const imports: string[] = [];
     let content = importFrom(PROPERTY_MODEL, `${APP_ROOT}/${MODELS_FOLDER}/${PROPERTY_MODEL}`) + ';\n';
+    content += importFrom('colors', `${APP_ROOT}/${ASSETS_FOLDER}/colors.js`) + ';\n';
 
     content += `\nconst ${INIT_STATE} = [`;
     content += stateContent.map(e => {

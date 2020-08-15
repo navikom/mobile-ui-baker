@@ -21,6 +21,7 @@ export const LINEAR_GRADIENT_COMP = 'LinearGradient';
 export const ANIMATED_VIEW_COMP = 'AnimatedView';
 export const SVG_URI_COMP = 'SvgUri';
 export const STYLE_SHEET = 'StyleSheet';
+export const DIMENSIONS = 'Dimensions';
 export const SCREENS_FOLDER = 'screens';
 export const ASSETS_FOLDER = 'assets';
 export const STYLES_FOLDER = 'styles';

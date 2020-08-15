@@ -351,7 +351,7 @@ export const OccurExpressionsMap: Map<string,
 
 const DevicePropertiesArray: [
   string,
-  Map<string, ExpressionValueType | undefined> | undefined
+    Map<string, ExpressionValueType | undefined> | undefined
 ][] = [
   [DeviceProperties[0], DateExpressionsMap],
   [DeviceProperties[1], DateExpressionsMap],
