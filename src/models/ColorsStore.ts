@@ -102,7 +102,22 @@ export default class ColorsStore {
         }
       });
     }
-
+    if(CSSProperty.colorsBorders.has(oldColor)) {
+      CSSProperty.colorsBorders.get(oldColor)!.forEach(border => {
+        Array.from(CSSProperty.controlBorders.keys()).forEach(key => {
+          const [style, id] = getKeys(key);
+          const arrayBorders = CSSProperty.controlBorders.get(key) as (string | null)[];
+          arrayBorders.forEach((itemBorder, i) => {
+            if(itemBorder !== null && border === itemBorder) {
+              const control = ControlStore.getById(id);
+              const [width, borderStyle] = itemBorder.split(' ');
+              const newBorder = `${width} ${borderStyle} ${newColor}`;
+              control && control.applyPropertyMethod(style, CSS_SET_VALUE, CSSProperty.BORDER_KEYS[i], newBorder);
+            }
+          })
+        })
+      });
+    }
   }
 
   @action
@@ -110,7 +125,7 @@ export default class ColorsStore {
     if (oldBorder === newBorder) {
       return;
     }
-    if (CSSProperty.borders.has(oldBorder)) {
+    if (CSSProperty.controlBorders.has(oldBorder)) {
       Array.from(CSSProperty.controlBorders.keys()).forEach(key => {
         const [style, id] = getKeys(key);
         const control = ControlStore.getById(id);

@@ -286,7 +286,7 @@ export default class CSSProperty implements ICSSProperty {
     if (!this.borders.has(value)) {
       this.borders.set(value, []);
     }
-    !this.borders.get(value)!.includes(id) && this.borders.get(value)!.push(control.id);
+    !this.borders.get(value)!.includes(control.id) && this.borders.get(value)!.push(control.id);
     !this.colorsBorders.has(color) && this.colorsBorders.set(color, []);
     !this.colorsBorders.get(color)!.includes(value) && this.colorsBorders.get(color)!.push(value);
 
