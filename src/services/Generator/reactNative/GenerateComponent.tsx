@@ -20,7 +20,7 @@ import {
   ignoreStyle,
   metaRules,
   ruleValidator,
-  specificRules, variableProps,
+  specificRules,
 } from './ReactNativeStyleDictionary';
 import IGenerateComponent from 'interfaces/IGenerateComponent';
 import IControl from 'interfaces/IControl';
@@ -149,15 +149,6 @@ class GenerateComponent implements IGenerateComponent {
             val.toString().includes('_height') ?
               `${val.toString().split('_')[0]} * height` : val;
 
-          let obj;
-          if(value[k][j].toString().includes('{')) {
-            obj = '{\n';
-            const objs = [];
-            Object.keys(value[k][j]).forEach(f => {
-              objs.push(`  ${f}: ${JSON.stringify(value[k][j])}`)
-            });
-            obj += '}\n';
-          }
           content +=
             `      ${j}: ${value[k][j].toString().includes('_') || value[k][j].toString().includes('colors[') ? val : JSON.stringify(val)},\n`;
         });

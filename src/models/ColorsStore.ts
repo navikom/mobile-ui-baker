@@ -82,7 +82,8 @@ export default class ColorsStore {
       });
       Array.from(this.barColorsMap.keys()).forEach(key => {
         if (this.barColorsMap.get(key) === oldColor) {
-          (ControlStore.getById(key) as IScreen).setStatusBarColor(newColor, true);
+          const screen = ControlStore.getById(key) as IScreen;
+          screen && screen.setStatusBarColor(newColor, true);
         }
       });
     }

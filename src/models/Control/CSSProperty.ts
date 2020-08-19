@@ -230,7 +230,7 @@ export default class CSSProperty implements ICSSProperty {
       this.addBorder(control, styleName, property);
       return;
     }
-    if(!property.enabled) {
+    if (!property.enabled) {
       return;
     }
 
@@ -290,7 +290,6 @@ export default class CSSProperty implements ICSSProperty {
     !this.colorsBorders.has(color) && this.colorsBorders.set(color, []);
     !this.colorsBorders.get(color)!.includes(value) && this.colorsBorders.get(color)!.push(value);
 
-
     if (!this.controlBorders.has(id)) {
       this.controlBorders.set(id, [null, null, null, null, null]);
     }
@@ -307,7 +306,7 @@ export default class CSSProperty implements ICSSProperty {
 
     const id = control.id + '_' + styleName;
 
-    if(!this.controlBorders.has(id)) {
+    if (!this.controlBorders.has(id)) {
       return;
     }
 
@@ -316,7 +315,7 @@ export default class CSSProperty implements ICSSProperty {
     const index = this.BORDER_KEYS.indexOf(key);
     this.controlBorders.get(id)![index] = null;
     const hasValue = this.controlBorders.get(id)!.find(e => e !== null);
-    if(!hasValue) {
+    if (!hasValue) {
       this.controlBorders.delete(id);
 
       // delete control ids list from borders map if list empty after control id deletion
@@ -326,11 +325,33 @@ export default class CSSProperty implements ICSSProperty {
       !controls!.length && this.borders.delete(value);
 
       // delete border values list from colorsBorders map if list empty after border value deletion
-      const borders = this.colorsBorders.get(color);
-      const bordersIndex = borders!.indexOf(value);
-      borders!.splice(bordersIndex, 1);
-      !borders!.length && this.colorsBorders.delete(color);
+      this.checkColorInBorders(color, value);
     }
+  }
+
+  static checkColorInBorders(color: string, borderValue: string) {
+    if (!this.colorsBorders.has(color)) {
+      return;
+    }
+    const borders = this.colorsBorders.get(color) as string[];
+    let l = borders.length;
+    while (l--) {
+      const border = borders[l];
+      if(border === borderValue) {
+        const ids = Array.from(this.controlBorders.keys());
+        let ll = ids.length;
+        while (ll--) {
+          const id = ids[ll];
+          if (this.controlBorders.get(id)!.find(item => item === border)) {
+            return;
+          }
+        }
+      }
+    }
+
+    const bordersIndex = borders!.indexOf(borderValue);
+    borders!.splice(bordersIndex, 1);
+    !borders!.length && this.colorsBorders.delete(color);
   }
 
   static clear() {
