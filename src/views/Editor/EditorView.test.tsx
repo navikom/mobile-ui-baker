@@ -16,7 +16,7 @@ describe('EditorContext.js', () => {
     } as RouteComponentProps;
     editor = render(<MemoryRouter><EditorView {...props} /></MemoryRouter>);
     const controls = editor.getAllByTestId('control');
-    expect(controls.length).toBe(2);
+    expect(controls.length).toBe(1);
   });
 
 });

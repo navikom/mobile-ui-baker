@@ -11,7 +11,7 @@ import { ControlProps } from 'interfaces/IControlProps';
 import hover from 'utils/hover';
 import classNames from 'classnames';
 import { ControlEnum } from 'enums/ControlEnum';
-import { DeviceEnum } from '../../../../enums/DeviceEnum';
+import { DeviceEnum } from 'enums/DeviceEnum';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -160,6 +160,7 @@ export const ElementComponent: React.FC<ElementProps> =
             key={child.id}
             control={child}
             device={device}
+            isPortrait={isPortrait}
             locked={true}
           />
         ) : (
@@ -171,6 +172,7 @@ export const ElementComponent: React.FC<ElementProps> =
             handleDropElement={handleDropElement}
             isSelected={isSelected}
             setCurrentScreen={setCurrentScreen}
+            isPortrait={isPortrait}
             selectControl={selectControl} />
         )
       ) : showPlaceholder ? [placeholder] : [];
