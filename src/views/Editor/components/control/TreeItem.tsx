@@ -207,21 +207,25 @@ const ElementComponent: React.FC<ElementProps> =
               onClick={() => selectControl(control, screen)}
             />
           </div>
-          <div className={list}>
-            {children && !lockedChildren && children.map((child, i) =>
-              <TreeItem
-                key={child.id}
-                control={child}
-                moveControl={moveControl}
-                handleDropElement={handleDropElement}
-                level={level + 1}
-                cloneControl={cloneControl}
-                selectControl={selectControl}
-                isSelected={isSelected}
-                screen={screen}
-              />)
-            }
-          </div>
+          {
+            opened && (
+              <div className={list}>
+                {children && !lockedChildren && children.map((child, i) =>
+                  <TreeItem
+                    key={child.id}
+                    control={child}
+                    moveControl={moveControl}
+                    handleDropElement={handleDropElement}
+                    level={level + 1}
+                    cloneControl={cloneControl}
+                    selectControl={selectControl}
+                    isSelected={isSelected}
+                    screen={screen}
+                  />)
+                }
+              </div>
+            )
+          }
         </div>
       )
     });

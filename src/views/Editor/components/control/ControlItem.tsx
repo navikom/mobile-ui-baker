@@ -159,12 +159,14 @@ export const ElementComponent: React.FC<ElementProps> =
           <ElementComponent
             key={child.id}
             control={child}
+            device={device}
             locked={true}
           />
         ) : (
           <Item
             key={child.id}
             control={child}
+            device={device}
             moveControl={moveControl}
             handleDropElement={handleDropElement}
             isSelected={isSelected}

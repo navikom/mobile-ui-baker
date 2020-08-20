@@ -219,7 +219,9 @@ class ControlStore extends Movable implements IControl {
       parentId: this.parentId,
       actions: this.actions.toJS(),
       classes: this.classes.toJS(),
-      children: this.children.map(child => child.toJSON),
+      children: this.children.map(child => {
+        return child.toJSON;
+      }),
       id: this.id,
       lockedChildren: this.lockedChildren,
       allowChildren: this.allowChildren,

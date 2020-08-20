@@ -191,7 +191,7 @@ const TreeComponent: React.FC<TreeComponentProps> = (
           </div>
           <ScreenComponent
             opened={screen.opened}
-            controls={screen.children}
+            controls={screen.opened ? screen.children : []}
             moveControl={moveControl}
             handleDropElement={handleDropElement}
             handleDropCanvas={handleDropCanvas}
