@@ -16,7 +16,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ControlStore from 'models/Control/ControlStore';
 import {
   ACTION_DISABLE_STYLE,
-  ACTION_ENABLE_STYLE, ACTION_NAVIGATE_BACK, ACTION_NAVIGATE_REPLACE,
+  ACTION_ENABLE_STYLE,
+  ACTION_NAVIGATE_BACK,
+  ACTION_NAVIGATE_REPLACE,
   ACTION_NAVIGATE_TO,
   ACTION_TOGGLE_STYLE,
   EDITOR_ACTIONS
@@ -211,7 +213,7 @@ const ControlActions: React.FC<Props> = (
   });
 
   const onKeyChange = (index: number, action: string) => {
-    const value = [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE].includes(action) ?
+    const value = [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE, ACTION_NAVIGATE_BACK].includes(action) ?
       screensProps[0][0] : controlsProps[0][0];
     editAction(index, action, value);
   }
@@ -234,7 +236,7 @@ const ControlActions: React.FC<Props> = (
               {
                 actions.map((action, i) => {
                   const [actionName, ...properties] = action;
-                  const props = [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE].includes(actionName) ?
+                  const props = [ACTION_NAVIGATE_TO, ACTION_NAVIGATE_REPLACE, ACTION_NAVIGATE_BACK].includes(actionName) ?
                     screensProps.slice() : controlsProps.map(e => e.slice());
                   return <Actions
                     key={i.toString()}

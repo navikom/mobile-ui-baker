@@ -12,7 +12,7 @@ import {
   BREAK,
   CHILDREN,
   COMPONENT_ID,
-  COMPONENTS_FOLDER,
+  COMPONENTS_FOLDER, DIMENSIONS,
   DISABLE_STYLE,
   ENABLE_STYLE,
   EXPORT_DEFAULT,
@@ -34,7 +34,7 @@ import {
   RETURN, RIGHT_DRAWER,
   SCREEN_ID_VARIABLE,
   SCREENS_FOLDER,
-  SCREENS_LIST,
+  SCREENS_LIST, SCREENS_PARENT_LIST,
   SCROLL_VIEW_COMP,
   SRC_FOLDER,
   STORE,
@@ -73,6 +73,7 @@ const contentString = (content: string, imports: string[]) => {
 class ZipGenerator {
   zip = new JSZip();
   source: IService;
+  inTabOutOfDrawer: string[] = [];
 
   get getDirection() {
     const direction = this.source.store.navigation[2];
@@ -123,7 +124,11 @@ class ZipGenerator {
     let statusBarColor = this.source.store.statusBarColor;
 
     if (screen.statusBarExtended) {
-      statusBar = `<StatusBar barStyle="${screen.mode === Mode.DARK ? 'light-content' : 'dark-content'}" backgroundColor="${screen.statusBarColor}" />\n`;
+      if(screen.statusBarEnabled) {
+        statusBar = `<StatusBar barStyle="${screen.mode === Mode.DARK ? 'light-content' : 'dark-content'}" backgroundColor="${screen.statusBarColor}" />\n`;
+      } else {
+        statusBar = '<StatusBar hidden />';
+      }
       statusBarColor = screen.statusBarColor;
     }
 
@@ -439,7 +444,7 @@ ${EXPORT_DEFAULT} ${name};`;
     content += '  }\n';
 
     content += '  dispose = () => {\n';
-    content += '    this.generatorMessageReactionDisposer();\n';
+    content += '    this.reactionDisposer();\n';
     content += '  }\n';
 
     content += `}\nexport default ${STORE};`;
@@ -449,7 +454,7 @@ ${EXPORT_DEFAULT} ${name};`;
   storeBase2zip() {
     let content = importFrom(['action'], 'mobx') + ';\n';
     content += importFrom(['DrawerActions', 'StackActions'], '@react-navigation/native') + ';\n';
-    content += importFrom(SCREENS_LIST, `${APP_ROOT}/${NAVIGATION_FOLDER}/${SCREENS_LIST}`) + ';\n';
+    content += importFrom([SCREENS_LIST, SCREENS_PARENT_LIST], `${APP_ROOT}/${NAVIGATION_FOLDER}/${SCREENS_LIST}`) + ';\n';
     content += importFrom(NAV_COMPONENTS, `${APP_ROOT}/${NAVIGATION_FOLDER}/${NAV_COMPONENTS}`) + ';\n';
     content += `\nclass ${STORE_BASE} {\n`;
     content += `  ${PROPERTIES_VARIABLE} = {};\n`;
@@ -528,12 +533,30 @@ ${EXPORT_DEFAULT} ${name};`;
     content += '    while(l--) {\n';
     content += '      const entry = property.action[i++];\n';
     content += '      switch(entry[0]) {\n';
-    content += `        case '${NAVIGATE_TO}':\n`;
-    content += `          ${SCREENS_LIST}[entry[1]] && this.${NAVIGATION_VARIABLE}.navigate(${SCREENS_LIST}[entry[1]], {${COMPONENT_ID}: entry[1]});\n`;
+    content += `        case '${NAVIGATE_TO}': {\n`;
+    content += `          const screen = ${SCREENS_LIST}[entry[1]];\n`;
+    content += '          if(screen) {\n';
+    content += `            const parent = ${SCREENS_PARENT_LIST}[screen];\n`;
+    content += '            if(parent) {\n';
+    content += `              this.${NAVIGATION_VARIABLE}.navigate(parent, {screen, ${COMPONENT_ID}: entry[1]});\n`;
+    content += '            } else {\n';
+    content += `              this.${NAVIGATION_VARIABLE}.navigate(screen, {${COMPONENT_ID}: entry[1]});\n`;
+    content += '            }\n';
+    content += '          }\n';
     content += `          ${BREAK};\n`;
-    content += `        case '${ACTION_NAVIGATE_REPLACE}':\n`;
-    content += `          ${SCREENS_LIST}[entry[1]] && this.${NAVIGATION_VARIABLE}.dispatch(StackActions.replace(${SCREENS_LIST}[entry[1]], {${COMPONENT_ID}: entry[1]}));\n`;
+    content += '        }\n';
+    content += `        case '${ACTION_NAVIGATE_REPLACE}': {\n`;
+    content += `          const screen = ${SCREENS_LIST}[entry[1]];\n`;
+    content += '          if(screen) {\n';
+    content += `            const parent = ${SCREENS_PARENT_LIST}[screen];\n`;
+    content += '            if(parent) {\n';
+    content += `              this.${NAVIGATION_VARIABLE}.dispatch(StackActions.replace(parent, {screen, ${COMPONENT_ID}: entry[1]}));\n`;
+    content += '            } else {\n';
+    content += `              this.${NAVIGATION_VARIABLE}.dispatch(StackActions.replace(screen, {${COMPONENT_ID}: entry[1]}));\n`;
+    content += '            }\n';
+    content += '          }\n';
     content += `          ${BREAK};\n`;
+    content += '        }\n';
     content += `        case '${ACTION_NAVIGATE_BACK}':\n`;
     content += `          ${SCREENS_LIST}[entry[1]] && this.${NAVIGATION_VARIABLE}.goBack();\n`;
     content += `          ${BREAK};\n`;
@@ -649,9 +672,10 @@ ${EXPORT_DEFAULT} ${name};`;
       outOfDrawer.forEach(screen => {
         const item = this.source.screenNames.find(e => e.id === screen);
         if (!item) return;
+        this.inTabOutOfDrawer.push(item.title);
         tabNavContent += `      <Tab.Screen\n`;
-        tabNavContent += `        name="${item!.title}"\n`;
-        tabNavContent += `        component={${item!.title}}\n`;
+        tabNavContent += `        name="${item.title}"\n`;
+        tabNavContent += `        component={${item.title}}\n`;
         tabNavContent += `        initialParams={{componentId: '${screen}'}} />\n`;
       });
       tabNavContent += '    </Tab.Navigator>\n';
@@ -662,6 +686,7 @@ ${EXPORT_DEFAULT} ${name};`;
   }
 
   prepareStackScreens() {
+    const navDirection = this.getDirection;
     let stackContent = `function Navigation() {\n`;
     stackContent += `  ${RETURN} (\n`;
     stackContent += `    <Stack.Navigator initialRouteName="${this.source.screenNames[0].title}">\n`;
@@ -669,7 +694,7 @@ ${EXPORT_DEFAULT} ${name};`;
       stackContent += '      <Stack.Screen\n';
       stackContent += '        name="TabNavigation"\n';
       stackContent += '        component={TabNavigation}\n';
-      stackContent += '        options={{headerShown: false}}\n';
+      stackContent += `        options={{headerShown: false, cardStyleInterpolator: CardStyleInterpolators.forNoAnimation}}\n`;
       stackContent += '      />\n';
     } else if (this.source.leftDrawer.size || this.source.rightDrawer.size) {
       stackContent += '      <Stack.Screen\n';
@@ -678,7 +703,6 @@ ${EXPORT_DEFAULT} ${name};`;
       stackContent += '        options={{headerShown: false}}\n';
       stackContent += '      />\n';
     }
-    const navDirection = this.getDirection;
     this.source.bareScreens.forEach(screen => {
       stackContent += '      <Stack.Screen\n';
       stackContent += `        name="${screen.title}"\n`;
@@ -702,7 +726,7 @@ ${EXPORT_DEFAULT} ${name};`;
     navigationContent += this.prepareStackScreens();
 
     let content = IMPORT_REACT + ';\n';
-    content += importFrom(['createStackNavigator', 'TransitionPresets'], '@react-navigation/stack') + ';\n';
+    content += importFrom(['createStackNavigator', 'TransitionPresets', 'CardStyleInterpolators'], '@react-navigation/stack') + ';\n';
 
     if (this.source.leftDrawer.size) {
       content += importFrom(['createDrawerNavigator'], '@react-navigation/drawer') + ';\n';
@@ -734,9 +758,14 @@ ${EXPORT_DEFAULT} ${name};`;
   }
 
   screens2zip() {
-    let content = `const ${SCREENS_LIST} = {\n`;
+    let content = `export const ${SCREENS_PARENT_LIST} = {\n`;
+    this.inTabOutOfDrawer.forEach(screen => {
+      content += `  '${screen}': 'TabNavigation',\n`;
+    });
+    content += '};\n\n';
+    content += `export const ${SCREENS_LIST} = {\n`;
     this.source.screenNames.map(e => content += `  '${e.id}': '${e.title}',\n`);
-    content += `};\nexport default ${SCREENS_LIST};`;
+    content += `};\n`;
     this.zip.file(`${SRC_FOLDER}/${NAVIGATION_FOLDER}/${SCREENS_LIST}.js`, content);
   }
 
@@ -995,8 +1024,12 @@ export default App;`;
 
   initState2zip(path: string, stateContent: IStoreContent[]) {
     const imports: string[] = [];
-    let content = importFrom(PROPERTY_MODEL, `${APP_ROOT}/${MODELS_FOLDER}/${PROPERTY_MODEL}`) + ';\n';
+
+    let content = importFrom([DIMENSIONS]) + ';\n';
+    content += importFrom(PROPERTY_MODEL, `${APP_ROOT}/${MODELS_FOLDER}/${PROPERTY_MODEL}`) + ';\n';
     content += importFrom('colors', `${APP_ROOT}/${ASSETS_FOLDER}/colors.js`) + ';\n';
+
+    content += `const {width, height} = ${DIMENSIONS}.get('window');\n`;
 
     content += `\nconst ${INIT_STATE} = [`;
     content += stateContent.map(e => {

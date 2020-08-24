@@ -15,6 +15,7 @@ export interface ControlProps {
   isOverCurrent?: boolean;
   device?: DeviceEnum;
   isPortrait?: boolean;
+  portrait?: boolean;
   selectControl?(control?: IControl, screen?: IControl, fromDevice?: boolean): void;
   isSelected?(control: IControl): boolean;
   setCurrentScreen?: (action: string, screen?: IControl, behavior?: (string | number)[]) => void;

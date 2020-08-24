@@ -88,6 +88,7 @@ interface ContentProps {
   firstItems: IControl[];
   secondItems: IControl[];
   device: DeviceEnum;
+  portrait: number;
   setCurrentScreen: (action: string, screen?: IControl, behavior?: (string | number)[]) => void;
 }
 
@@ -98,7 +99,8 @@ const ContentComponent: React.FC<ContentProps> = (
     firstItems,
     secondItems,
     firstContainerVisible,
-    setCurrentScreen
+    setCurrentScreen,
+    portrait
   }
 ) => {
   const classes = useStyles();
@@ -119,6 +121,8 @@ const ContentComponent: React.FC<ContentProps> = (
         {
           firstItems.map((control, i) => {
             return <ElementComponent
+              device={device}
+              portrait={portrait as unknown as boolean}
               setCurrentScreen={setCurrentScreen}
               key={control.id}
               control={control} />
@@ -132,6 +136,8 @@ const ContentComponent: React.FC<ContentProps> = (
         {
           secondItems.map((control, i) => {
             return <ElementComponent
+              device={device}
+              portrait={portrait as unknown as boolean}
               setCurrentScreen={setCurrentScreen}
               key={control.id}
               control={control} />
@@ -153,9 +159,10 @@ const DeviceContent: React.FC<{ store: ViewerViewStore }> = observer(({ store })
     statusBarEnabled={store.screenStatusBarEnabled}
     statusBarColor={store.screenStatusBarColor}
     scale={store.scale}
-    portrait={store.portrait}>
+    portrait={(store.portrait ? 1 : 0) as unknown as boolean}>
     <Content
       device={store.device}
+      portrait={store.portrait ? 1 : 0}
       setCurrentScreen={(action: string, screen?: IControl, behavior?: (string | number)[]) =>
         store.setCurrentScreenAnimate(action, screen, behavior)}
       firstContainerVisible={store.firstContainerVisible}
@@ -232,10 +239,10 @@ const ContextComponent: React.FC<ContextComponentProps> = ({ store, header }) =>
         header && (
           <div className={container}>
             <Grid container>
-              <Grid item xs={12} sm={6} md={6}>
+              <Grid item xs={12} sm={7} md={7} style={{overflow: 'auto'}}>
                 <DeviceContent store={store} />
               </Grid>
-              <Grid item xs={12} sm={6} md={6}>
+              <Grid item xs={12} sm={5} md={5}>
                 <Card className={classes.cardRoot}>
                   <CardHeader color="primary">
                     <Grid container justify="space-between">

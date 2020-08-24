@@ -24,8 +24,12 @@ class TransitStyle implements ITransitStyle {
       const styles: string[] = [];
       style = ', style: {';
       Object.keys(this.style).forEach(key => {
+        const value = this.style![key as 'color'] as string;
         styles.push(
-          `"${key}": ${['color', 'fill'].includes(key) ? ColorsStore.getColorVariable(this.style![key as 'color'] as string) : JSON.stringify(this.style![key as 'color'])}`
+          `"${key}": ${['color', 'fill'].includes(key) ?
+            ColorsStore.getColorVariable(value) :
+            value.toString().includes('_') ? `${value.split('_').join('*')}` :
+              JSON.stringify(value)}`
         );
       });
       style += styles.join(', ');

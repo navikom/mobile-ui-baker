@@ -36,6 +36,7 @@ export const DISABLE_STYLE = 'disableStyle';
 export const ENABLE_STYLE = 'enableStyle';
 export const TOGGLE_STYLE = 'toggleStyle';
 export const SCREENS_LIST = 'screensList';
+export const SCREENS_PARENT_LIST = 'screensParentList';
 export const NAV_COMPONENTS = 'navComponents';
 export const BREAK = 'break';
 export const TRANSIT_STYLE_MODEL = 'TransitStyle';

@@ -132,7 +132,11 @@ class GenerateService implements IGenerateService {
       const transition = control.cssProperty(style[0] as string, 'transition');
       const transitionProperty = control.cssProperty(style[0] as string, 'transitionProperty');
 
-      const transitStyle = new TransitStyle(style[0] as string, control.activeClass(style[0] as string), false);
+      const transitStyle = new TransitStyle(
+        style[0] as string,
+        control.activeClass(style[0] as string),
+        false,
+      );
 
       if ((overflow && overflow.enabled && overflow.value !== 'hidden') ||
         (overflowY && overflowY.enabled && overflowY.value !== 'hidden')) {

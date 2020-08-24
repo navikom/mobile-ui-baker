@@ -25,10 +25,10 @@ const ElementComponent: React.FC<ControlProps & { locked?: boolean }> =
         setCurrentScreen,
         locked,
         device,
-        isPortrait
+        portrait
       }) => {
       const { title, children, lockedChildren } = control;
-      const styles = control.styles(device as DeviceEnum, !!isPortrait);
+      const styles = control.styles(device as DeviceEnum, !!portrait);
       const classes = useStyles();
       const backgroundColor = styles.backgroundColor;
 
@@ -47,6 +47,8 @@ const ElementComponent: React.FC<ControlProps & { locked?: boolean }> =
 
       const elementChildren = children.length ? children.map((child, i) =>
         <ElementComponent
+          device={device}
+          portrait={portrait}
           key={child.id}
           setCurrentScreen={setCurrentScreen}
           control={child}
@@ -65,7 +67,9 @@ const ElementComponent: React.FC<ControlProps & { locked?: boolean }> =
           e.stopPropagation();
         },
         style: { ...styles, backgroundColor },
-        className: controlClass
+        className: controlClass,
+        device,
+        portrait
       }, elementChildren);
     }
   );

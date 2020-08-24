@@ -70,7 +70,7 @@ class GenerateComponent implements IGenerateComponent {
           this.hasDeviceHeight = true;
         }
 
-        if(!this.hasDeviceWidth && item.unit === DEVICE_HEIGHT) {
+        if(!this.hasDeviceWidth && item.unit === DEVICE_WIDTH) {
           this.hasDeviceWidth = true;
         }
 

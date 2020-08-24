@@ -3,7 +3,7 @@ import IControl from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import { ITransition, ObjectType } from 'interfaces/ITransitSyle';
 import { getPropertyName, getStylesForProperty } from 'css-to-react-native';
-import { MODE_DEVELOPMENT } from 'models/Constants';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, MODE_DEVELOPMENT } from 'models/Constants';
 import ColorsStore from 'models/ColorsStore';
 
 export const blockStyle = ['transition', 'background', 'backgroundImage', 'backgroundRepeat', 'backgroundSize', 'backgroundPosition',
@@ -194,6 +194,11 @@ export const metaRules = {
   }
 }
 
+const sizeDictionary = {
+  [DEVICE_WIDTH]: 'width',
+  [DEVICE_HEIGHT]: 'height'
+};
+
 export const reactNativeImage = {
   imageMode: (backgroundRepeat?: ICSSProperty, backgroundSize?: ICSSProperty, backgroundPosition?: ICSSProperty) => {
     if (backgroundRepeat && backgroundRepeat.enabled && backgroundRepeat.value === 'no-repeat' &&
@@ -218,8 +223,8 @@ export const reactNativeImage = {
   svgMode: (width?: ICSSProperty, height?: ICSSProperty, backgroundColor?: ICSSProperty, color?: ICSSProperty) => {
     const style: { width: string | number; height: string | number; color?: string; fill?: string } =
       {
-        width: width!.value,
-        height: height!.value
+        width: [DEVICE_WIDTH, DEVICE_HEIGHT].includes(width!.unit as string) ? width!.value + '_' + sizeDictionary[width!.unit as typeof DEVICE_WIDTH] : width!.value,
+        height: [DEVICE_WIDTH, DEVICE_HEIGHT].includes(width!.unit as string) ? height!.value + '_' + sizeDictionary[height!.unit as typeof DEVICE_WIDTH] : height!.value,
       };
     if (backgroundColor && backgroundColor.enabled) {
       style.color = backgroundColor.value as string;

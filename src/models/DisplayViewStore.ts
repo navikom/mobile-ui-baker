@@ -53,7 +53,7 @@ class DisplayViewStore extends Errors {
   @observable statusBarEnabled = true;
   @observable statusBarColor: string = whiteColor;
   @observable mode: Mode = Mode.WHITE;
-  @observable scale = 0.9;
+  @observable scale = 0.8;
   @observable portrait = true;
   @observable ios = true;
   @observable autoSave = false;
