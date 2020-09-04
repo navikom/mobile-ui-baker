@@ -63,6 +63,7 @@ export default interface IProject extends WithPrimaryKey {
   hasPreview?: boolean;
   preview?: string;
   previews?: string[];
+  temp?: boolean;
   previewSize?: {width?: number; height?: number};
   JSON: {title: string; description?: string; price: number; data: IProjectData | IControl; versionId: number};
 

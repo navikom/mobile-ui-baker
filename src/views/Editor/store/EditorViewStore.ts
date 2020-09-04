@@ -271,7 +271,9 @@ class EditorViewStore extends DisplayViewStore {
       if (json.versionId === undefined) {
         throw new ErrorHandler(ERROR_DATA_IS_INCOMPATIBLE);
       }
-      OwnComponents.push([{ type: json.type, projectId: 0, versions: [json], title: json.title } as IProject]);
+      OwnComponents.push([
+        { type: json.type, projectId: OwnComponents.size, versions: [json], title: json.title, temp: true } as IProject
+      ]);
     } catch (e) {
       this.setError(Dictionary.value(e.message, Dictionary.defValue(DictionaryService.keys.component)));
       this.setTimeOut(() => this.setError(null), 5000);

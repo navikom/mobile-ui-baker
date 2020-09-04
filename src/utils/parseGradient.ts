@@ -392,7 +392,7 @@ GradientParser.parse = () => {
         if (result[0].orientation.type === 'directional') {
           gradient.orientation = orientations[result[0].orientation.value as 'top'];
         } else if (result[0].orientation.type === 'angular') {
-          gradient.orientation = { useAngle: true, angle: result[0].orientation.value, angleCenter: { x: 0.5, y: 0.5 } }
+          gradient.orientation = { useAngle: true, angle: Number(result[0].orientation.value), angleCenter: { x: 0.5, y: 0.5 } }
         }
       }
       const locations: number[] = [];

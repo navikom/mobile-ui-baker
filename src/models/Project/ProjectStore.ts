@@ -24,6 +24,7 @@ export default class ProjectStore implements IProject {
   @observable title = "Project";
   @observable versions: IObservableArray<IProjectVersion> = observable([]);
   type: ProjectEnum;
+  temp?: boolean;
   updatedAt?: Date;
   userId: number;
   fullDataFetched = false;
@@ -102,6 +103,7 @@ export default class ProjectStore implements IProject {
     model.tags && (this.tags = model.tags);
     model.title && (this.title = model.title);
     model.userId && (this.userId = model.userId);
+    model.temp && (this.temp = model.temp);
     model.owner && (this.owner = Users.getOrCreate({...model.owner, userId: this.userId}));
     return this;
   }

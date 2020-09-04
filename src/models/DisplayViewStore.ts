@@ -65,6 +65,7 @@ class DisplayViewStore extends Errors {
   @observable navigation: (string | number)[] = [ScreenSwitcherEnum.NEXT, AnimationEnum.SLIDE, AnimationDirectionEnum.LEFT, 500];
   @observable screensMetaMap = new Map<string, Map<ScreenMetaEnum, string>>();
   @observable navigationStack: IObservableArray<NavigationItem> = observable([]);
+  navProcessing = false;
   pluginStore: PluginStore;
 
   debug = false;
@@ -236,7 +237,10 @@ class DisplayViewStore extends Errors {
     const firstContainer = document.getElementById(FIRST_CONTAINER);
     const secondContainer = document.getElementById(SECOND_CONTAINER);
 
-    if (!(firstContainer && secondContainer)) return;
+    if (!(firstContainer && secondContainer)) {
+      this.navProcessing = false;
+      return;
+    }
 
     const visibleContainer = this.firstContainerVisible ? firstContainer : secondContainer;
     const invisibleContainer = this.firstContainerVisible ? secondContainer : firstContainer;
@@ -322,7 +326,8 @@ class DisplayViewStore extends Errors {
         visibleContainer.style.setProperty('z-index', '-1');
         runInAction(() => {
           this.placeContent(undefined, !!behavior);
-        })
+          this.navProcessing = false;
+        });
       }, duration + 400);
 
     }, 100);
@@ -367,11 +372,19 @@ class DisplayViewStore extends Errors {
 
   @action navigate(screen: IControl, behavior: (string | number)[]) {
     this.currentScreen = screen;
-    this.placeContent(screen, !!behavior && behavior.length > 1);
-    !!behavior && this.effect(behavior);
+    this.placeContent(screen, behavior && behavior.length > 1);
+    if (behavior) {
+      this.effect(behavior);
+    } else {
+      this.navProcessing = false;
+    }
   }
 
   @action setCurrentScreenAnimate(action: string, screen?: IControl, behavior?: (string | number)[]) {
+    if(this.navProcessing) {
+      return;
+    }
+    this.navProcessing = true;
     if (action === ACTION_NAVIGATE_TO) {
       this.navigateTo(screen as IControl, behavior);
     } else if (action === ACTION_NAVIGATE_REPLACE) {

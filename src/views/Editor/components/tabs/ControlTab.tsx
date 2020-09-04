@@ -102,6 +102,11 @@ interface ControlInstanceProps {
 const ControlInstance: React.FC<ControlInstanceProps> =
   observer(({ isAdmin, handleMenu, items }) => {
     const classes = useStyles();
+
+    const handler = React.useCallback((control: IControl) => {
+      return handleMenu(control);
+    }, []);
+
     return (
       <div className={classes.container}>
         {
@@ -110,8 +115,7 @@ const ControlInstance: React.FC<ControlInstanceProps> =
             return <ControlTabItem
               key={i.toString()}
               control={control}
-              handleMenu={isAdmin ? handleMenu(control) : () => {
-              }} />
+              handleMenu={handler(control)} />
           })
         }
       </div>

@@ -59,7 +59,9 @@ export default class ProjectsStore extends Pagination<IProject> {
 
   @action
   async delete(project: IProject) {
-    await ProjectsStore.delete(project);
+    if(!project.temp) {
+      await ProjectsStore.delete(project);
+    }
     this.items.splice(this.items.indexOf(project), 1);
   }
 

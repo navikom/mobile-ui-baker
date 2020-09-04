@@ -133,11 +133,11 @@ describe('GenerateComponent', () => {
         }
       },
       {
-        orientation: { useAngle: true, angle: '45', angleCenter: { x: 0.5, y: 0.5 } },
+        orientation: { useAngle: true, angle: 45, angleCenter: { x: 0.5, y: 0.5 } },
         colorStops: { colors: ['red', 'blue'] }
       },
       {
-        orientation: { useAngle: true, angle: '135', angleCenter: { x: 0.5, y: 0.5 } },
+        orientation: { useAngle: true, angle: 135, angleCenter: { x: 0.5, y: 0.5 } },
         colorStops: { colors: ['orange', 'orange', 'cyan'], locations: [0.6] }
       }
     ];
