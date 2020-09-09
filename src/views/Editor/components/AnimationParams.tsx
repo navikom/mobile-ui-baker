@@ -148,7 +148,7 @@ const AnimationParams: React.FC<AnimationParamsProps> = (
                         onChange={(e) => onChange([e.toString(), value])} />
         </Grid>
         <Grid item xs={6} sm={6} md={6}>
-          <NumberInput size="small" value={value} onChange={(e) => onChange([action, e])} />
+          <NumberInput value={value} onChange={(e) => onChange([action, e])} />
         </Grid>
       </Grid>
     )

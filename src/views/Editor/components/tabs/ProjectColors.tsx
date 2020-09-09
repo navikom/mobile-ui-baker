@@ -50,16 +50,16 @@ const ProjectColors: React.FC<ProjectColorsProps> = (
     setOpen(false);
   }, [setOpen]);
 
-  const onColorChange = (hex: string) => {
+  const onColorChange = React.useCallback((hex: string) => {
     setColor && setColor(currentColor, hex);
     setCurrentColor(hex);
-  }
+  }, [currentColor]);
 
   const classes = useStyles();
-  const onColor = (color: string) => () => {
+  const onColor = React.useCallback((color: string) => () => {
     setCurrentColor(color);
     setOpen(true);
-  }
+  }, []);
   return (
     <ExpansionPanel className={classes.root}>
       <ExpansionPanelSummary

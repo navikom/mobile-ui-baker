@@ -199,7 +199,7 @@ export default class CSSProperty implements ICSSProperty {
   //####### add to the history end #######//
 
   @action updateProperties(props: { [key: string]: string | number | boolean }, control: IControl, styleName: string) {
-    Object.assign(this, props);
+    Object.assign(this, props, {units: this.units});
     if (props.enabled) {
       CSSProperty.addColor(control, styleName, this);
     } else if (!props.enabled) {

@@ -14,6 +14,7 @@ import NumberInput from 'components/CustomInput/NumberInput';
 import CustomSelect from 'components/CustomSelect/CustomSelect';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
+import { Settings } from 'models/Settings';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -101,8 +102,14 @@ const colorFromRGBA = (color: RGBColor) => `rgba(${color.r}, ${color.g}, ${color
 
 const PaperComponent: React.FC<PaperProps> = (props) => {
   const classes = useStyles();
+  const onDrag = React.useCallback((e, data) => {
+    Settings.onDrag(data.x, data.y);
+  }, []);
   return (
-    <Draggable handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
+    <Draggable
+      defaultPosition={{x: Settings.x, y: Settings.y}}
+      onStop={onDrag}
+      handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
       <Paper {...props} className={classes.paper} />
     </Draggable>
   );

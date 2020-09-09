@@ -660,9 +660,9 @@ class EditorViewStore extends DisplayViewStore {
         Object.assign({}, object, { background: (value as IBackgroundColor).backgroundColor }), true);
     } else if (key === 'statusBarColor') {
       const object = { id: EditorViewStore.PROJECT, statusBarColor: this.statusBarColor } as IScreen;
-      ColorsStore.deleteColor(object, true);
+      ColorsStore.deleteColor(object, false);
       ColorsStore.addColor(
-        Object.assign({}, object, { statusBarColor: value }), true);
+        Object.assign({}, object, { statusBarColor: value }), false);
     }
     this[key] = value;
   }
@@ -715,7 +715,7 @@ class EditorViewStore extends DisplayViewStore {
   @action setColor(oldColor: string, newColor: string, noHistory?: boolean) {
     const undo = { control: this.currentScreen!.id, oldValue: newColor, value: oldColor } as unknown as IHistoryObject;
     const redo = { control: this.currentScreen!.id, oldValue: oldColor, value: newColor } as unknown as IHistoryObject;
-    ColorsStore.setColor(oldColor, newColor);
+    ColorsStore.setColor(oldColor, newColor, this);
     !noHistory && ControlStore.history.add([HIST_PROJECT_COLOR, undo, redo]);
   }
 

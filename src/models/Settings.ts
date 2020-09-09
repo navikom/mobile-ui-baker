@@ -20,6 +20,8 @@ class Beefree implements IBeefree {
 
 class SettingsStore implements ISettings {
  @observable loaded = false;
+ x = 0;
+ y = 0;
  beefree: IBeefree;
  bucket: string;
  cloudinaryFolder: string;
@@ -32,6 +34,11 @@ class SettingsStore implements ISettings {
   this.beefree = Beefree.from(
     process.env.REACT_APP_BEE_PLUGIN_CLIENT_ID || '',
     process.env.REACT_APP_BEE_PLUGIN_CLIENT_SECRET || '');
+ }
+
+ onDrag(x: number, y: number) {
+  this.x = x;
+  this.y = y;
  }
 
  @action

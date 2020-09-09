@@ -2,6 +2,7 @@ import { action, computed, observable } from 'mobx';
 import { IScreen } from 'interfaces/IControl';
 import CSSProperty, { CSS_SET_VALUE } from './Control/CSSProperty';
 import ControlStore from './Control/ControlStore';
+import { ViewStore } from 'interfaces/IHistory';
 
 const getKeys = (value: string): string[] => {
   const keys = value.split('_');
@@ -22,7 +23,10 @@ export default class ColorsStore {
   static get colors() {
     const controlColorsList = Array.from(CSSProperty.colors.keys());
     const controlColors =
-      controlColorsList.map(color => ({ color, title: `Controls (${CSSProperty.colors.get(color)!.length})` }));
+      controlColorsList.map(color => ({
+        color,
+        title: `${color} Controls (${CSSProperty.colors.get(color)!.length})`
+      }));
 
     const colorsBordersList = Array.from(CSSProperty.colorsBorders.keys());
     const colorsBorders =
@@ -31,9 +35,12 @@ export default class ColorsStore {
           if (controlColorsList.includes(item.color)) {
             const controlItem = getByColor(controlColors, item.color);
             if (controlItem) {
-              controlItem.title = `${controlItem.title} ${item.title}`;
+              controlItem.title = controlItem.title.replace(`${item.color} `, '');
+              controlItem.title = `${item.color} ${controlItem.title} ${item.title}`;
             }
             return false;
+          } else {
+            item.title = `${item.color} ${item.title}`;
           }
           return true;
         })
@@ -45,9 +52,12 @@ export default class ColorsStore {
       if (controlColorsList.includes(item.color)) {
         const controlItem = getByColor(controlColors, item.color);
         if (controlItem) {
-          controlItem.title = `${item.title} ${controlItem.title}`;
+          controlItem.title = controlItem.title.replace(`${item.color} `, '');
+          controlItem.title = `${item.color} ${item.title} ${controlItem.title}`;
         }
         return false;
+      } else {
+        item.title = `${item.color} ${item.title}`;
       }
       return true;
     }).concat(colorsBorders, controlColors);
@@ -70,20 +80,29 @@ export default class ColorsStore {
   }
 
   @action
-  static setColor(oldColor: string, newColor: string) {
+  static setColor(oldColor: string, newColor: string, store: ViewStore) {
     if (oldColor === newColor) {
       return;
     }
     if (this.colorsMap.has(oldColor)) {
       Array.from(this.backgroundMap.keys()).forEach(key => {
         if (this.backgroundMap.get(key) === oldColor) {
-          (ControlStore.getById(key) as IScreen).setBackground(newColor, true);
+          if (key === 'Project') {
+            store.applyHistorySettings('background', { backgroundColor: newColor } as never);
+          } else {
+            const screen = ControlStore.getById(key) as IScreen;
+            screen && screen.setBackground(newColor, true);
+          }
         }
       });
       Array.from(this.barColorsMap.keys()).forEach(key => {
         if (this.barColorsMap.get(key) === oldColor) {
-          const screen = ControlStore.getById(key) as IScreen;
-          screen && screen.setStatusBarColor(newColor, true);
+          if (key === 'Project') {
+            store.applyHistorySettings('statusBarColor', newColor as never);
+          } else {
+            const screen = ControlStore.getById(key) as IScreen;
+            screen && screen.setStatusBarColor(newColor, true);
+          }
         }
       });
     }
@@ -103,13 +122,13 @@ export default class ColorsStore {
         }
       });
     }
-    if(CSSProperty.colorsBorders.has(oldColor)) {
+    if (CSSProperty.colorsBorders.has(oldColor)) {
       CSSProperty.colorsBorders.get(oldColor)!.forEach(border => {
         Array.from(CSSProperty.controlBorders.keys()).forEach(key => {
           const [style, id] = getKeys(key);
           const arrayBorders = CSSProperty.controlBorders.get(key) as (string | null)[];
           arrayBorders.forEach((itemBorder, i) => {
-            if(itemBorder !== null && border === itemBorder) {
+            if (itemBorder !== null && border === itemBorder) {
               const control = ControlStore.getById(id);
               const [width, borderStyle] = itemBorder.split(' ');
               const newBorder = `${width} ${borderStyle} ${newColor}`;
@@ -169,7 +188,7 @@ export default class ColorsStore {
     }
     const key = isBackground ? screen.background : screen.statusBarColor;
     isBackground ? this.backgroundMap.delete(screen.id) : this.barColorsMap.delete(screen.id);
-    if (this.colorsMap.has(key)) {
+    if (this.colorsMap.has(key) && !this.backgroundMap.has(screen.id) && !this.barColorsMap.has(screen.id)) {
       const arr = this.colorsMap.get(key);
       const index = arr!.indexOf(screen.id);
       arr!.splice(index, 1);

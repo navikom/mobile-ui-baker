@@ -12,4 +12,7 @@ export interface ISettings {
   customEventsList?: string[];
   expressions?: string[];
   bucket: string;
+  x: number;
+  y: number;
+  onDrag: (x: number, y: number) => void;
 }
