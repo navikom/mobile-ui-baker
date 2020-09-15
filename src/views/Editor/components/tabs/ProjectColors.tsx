@@ -53,7 +53,7 @@ const ProjectColors: React.FC<ProjectColorsProps> = (
   const onColorChange = React.useCallback((hex: string) => {
     setColor && setColor(currentColor, hex);
     setCurrentColor(hex);
-  }, [currentColor]);
+  }, [currentColor, setColor]);
 
   const classes = useStyles();
   const onColor = React.useCallback((color: string) => () => {

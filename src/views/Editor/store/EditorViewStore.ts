@@ -1110,6 +1110,7 @@ class EditorViewStore extends DisplayViewStore {
     super.dispose();
     this.generatorMessageReactionDisposer && this.generatorMessageReactionDisposer();
     this.whenReactionDisposer && this.whenReactionDisposer();
+    this.clear();
   }
 }
 

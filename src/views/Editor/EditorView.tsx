@@ -506,9 +506,6 @@ function Editor(props: RouteComponentProps) {
       });
     }, 10);
 
-    // SharedControls.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
-    // SharedComponents.fetchItems().catch(err => console.log('Shared controls fetch error %s', err.message));
-
   }, [store, id]);
   useEffect(() => {
     return () => {
