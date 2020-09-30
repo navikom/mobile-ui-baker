@@ -239,7 +239,7 @@ const ContextComponent: React.FC<ContextComponentProps> = ({ store, header }) =>
         header && (
           <div className={container}>
             <Grid container>
-              <Grid item xs={12} sm={7} md={7} style={{overflow: 'auto'}}>
+              <Grid item xs={12} sm={7} md={7} style={{ overflow: 'auto' }}>
                 <DeviceContent store={store} />
               </Grid>
               <Grid item xs={12} sm={5} md={5}>
@@ -273,23 +273,25 @@ const ContextComponent: React.FC<ContextComponentProps> = ({ store, header }) =>
                         >
                           {Dictionary.defValue(DictionaryService.keys.openInEditor)}
                         </Button>
-                      ) : store.project.accessRead ? null : App.loggedIn ? (
-                        <Button
-                          color="primary"
-                          variant="outlined"
-                          onClick={openDialog}
-                        >
-                          {Dictionary.defValue(DictionaryService.keys.buy)}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="primary"
-                          variant="outlined"
-                          onClick={() => App.navigationHistory && App.navigationHistory.replace(ROUTE_LOGIN)}
-                        >
-                          {Dictionary.defValue(DictionaryService.keys.login)}
-                        </Button>
-                      )
+                      ) : store.project.accessRead ? null : App.loggedIn
+                        ? store.project.price > 0 ? (
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            onClick={openDialog}
+                          >
+                            {Dictionary.defValue(DictionaryService.keys.buy)}
+                          </Button>
+                        ) : null
+                        : (
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            onClick={() => App.navigationHistory && App.navigationHistory.replace(ROUTE_LOGIN)}
+                          >
+                            {Dictionary.defValue(DictionaryService.keys.login)}
+                          </Button>
+                        )
                     }
                   </CardFooter>
                 </Card>

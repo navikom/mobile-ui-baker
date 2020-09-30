@@ -41,7 +41,6 @@ export abstract class Pagination<T extends WithPrimaryKey> extends Errors implem
       const items = [];
       const start = this.viewPage * this.viewRowsPerPage;
       for (let i = start; i < Math.min(start + this.viewRowsPerPage, this.size); i++) {
-
         items.push(cb(this.items[i]));
       }
       return items;
@@ -111,12 +110,12 @@ export abstract class Pagination<T extends WithPrimaryKey> extends Errors implem
     if (this.isAllFetched) return true;
     if (this.additionalParams) {
       const response = await api(Apis.Main)[this.apiMethod][this.requestMethod](this.page, this.pageSize, this.additionalParams);
-      this.push(response.items);
       this.setPageData(response);
+      this.push(response.items);
     } else {
       const response = await api(Apis.Main)[this.apiMethod][this.requestMethod](this.page, this.pageSize);
-      this.push(response.items);
       this.setPageData(response);
+      this.push(response.items);
     }
 
     return true;

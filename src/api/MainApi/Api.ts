@@ -68,6 +68,10 @@ class User extends HttpBase {
   sendEmailMessage(name: string, email: string, message: string) {
     return this.fetchData('post', 'send-email', {name, email, message});
   }
+
+  clearTable(date: Date) {
+    return this.fetchData('post', 'clear-table', {date});
+  }
 }
 
 class AEvent extends HttpBase {

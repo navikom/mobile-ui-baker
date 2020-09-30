@@ -14,15 +14,22 @@ export class UsersStore extends Pagination<IUser> {
   }
 
   constructor() {
-    super("userId", "user", 20, "pagination")
+    super("userId",
+      "user",
+      50,
+      "pagination",
+      undefined,
+      undefined,
+      50)
   }
 
   @action push(data: IUser[]) {
-    let l = data.length;
+    let l = data.length, i = 0;
     while (l--) {
-      if(!this.has(data[l].userId)) {
-        this.items.push(UserStore.from(data[l]));
+      if(!this.has(data[i].userId)) {
+        this.items.push(UserStore.from(data[i]));
       }
+      i++;
     }
   }
 
@@ -61,6 +68,15 @@ export class UsersStore extends Pagination<IUser> {
       this.push([data]);
     }
     return this.getById(data.userId) as IUser;
+  }
+
+  async clearUsersTable(date: Date) {
+    try {
+      const result = await api(Apis.Main).user.clearTable(date);
+      console.log('Users table removed', result);
+    } catch(err) {
+      console.log('Clear users table error: %s', err.message);
+    }
   }
 }
 

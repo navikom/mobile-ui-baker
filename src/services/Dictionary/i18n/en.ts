@@ -674,4 +674,6 @@ export default {
   dataSavedSuccessfully: '$ saved successfully',
   dataSaveError: '%0 save error: %1',
   dataFetchError: '%0 fetch error: %1',
+  clearUsersTable: 'Clear users table',
+  perform: 'Perform'
 };

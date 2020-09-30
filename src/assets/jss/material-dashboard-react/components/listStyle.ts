@@ -48,6 +48,9 @@ export default makeStyles((theme: Theme) =>
     title: {
       opacity: 0.5,
       marginTop: theme.typography.pxToRem(10)
-    }
+    },
+    label: {
+      width: theme.typography.pxToRem(200)
+    },
   })
 );
