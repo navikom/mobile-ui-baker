@@ -15,7 +15,8 @@ import {
   HIST_DROP,
   HIST_DROP_INDEX,
   HIST_DROP_PARENT,
-  HIST_HANDLE_DROP_CANVAS, HIST_PROJECT_COLOR,
+  HIST_HANDLE_DROP_CANVAS,
+  HIST_PROJECT_COLOR,
   HIST_PROJECT_TITLE_CHANGE,
   HIST_SETTINGS
 } from 'views/Editor/store/EditorHistory';
@@ -23,9 +24,12 @@ import { ErrorHandler } from 'utils/ErrorHandler';
 import {
   ERROR_DATA_IS_INCOMPATIBLE,
   ERROR_ELEMENT_DOES_NOT_EXIST,
-  ERROR_USER_DID_NOT_LOGIN, MODE_DEVELOPMENT,
+  ERROR_USER_DID_NOT_LOGIN,
+  FIRST_CONTAINER,
+  MODE_DEVELOPMENT,
   ROUTE_EDITOR,
-  ROUTE_SCREENS
+  ROUTE_SCREENS,
+  SECOND_CONTAINER
 } from 'models/Constants';
 import ProjectsStore from 'models/Project/ProjectsStore';
 import ProjectStore from 'models/Project/ProjectStore';
@@ -456,11 +460,28 @@ class EditorViewStore extends DisplayViewStore {
   @action newProject() {
     this.clearLocalStorage();
     this.clear();
+
+    if(!this.firstContainerVisible) {
+      const firstContainer = document.getElementById(FIRST_CONTAINER);
+      const secondContainer = document.getElementById(SECOND_CONTAINER);
+      secondContainer!.style.setProperty('transition', 'initial');
+      secondContainer!.style.setProperty('left', '-1000px');
+      firstContainer!.style.setProperty('left', '0px');
+      firstContainer!.style.setProperty('transition', 'initial');
+      secondContainer!.style.setProperty('opacity', 'initial');
+      firstContainer!.style.setProperty('opacity', 'initial');
+      firstContainer!.style.setProperty('z-index', '1');
+      secondContainer!.style.setProperty('z-index', '-1');
+      this.firstContainerVisible = true;
+    }
+
     this.project = ProjectStore.createEmpty(ProjectEnum.PROJECT);
     this.screens = observable([CreateControl(ControlEnum.Screen)]);
     this.currentScreen = this.screens[0];
     this.placeContent(this.screens[0]);
     this.currentScreen.addChild(CreateControl(ControlEnum.Grid));
+    this.statusBarEnabled = true;
+    this.mode = Mode.WHITE;
     this.background = { backgroundColor: whiteColor };
     this.statusBarColor = whiteColor;
     App.navigationHistory && App.navigationHistory.replace(ROUTE_EDITOR);
@@ -814,7 +835,7 @@ class EditorViewStore extends DisplayViewStore {
     }
 
     if (source.instance) {
-      source = source.clone();
+      source = this.cloneWithActions(source);
     }
 
     const sParent = source.parentId ? ControlStore.getById(source.parentId) : undefined;
@@ -1049,7 +1070,7 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   @action cloneScreen = (screen: IControl) => {
-    const clone = screen.clone();
+    const clone = this.cloneWithActions(screen);
     const undo = { control: clone.id };
     const index = this.screens.indexOf(screen);
     this.screens.splice(index + 1, 0, clone);
@@ -1058,7 +1079,7 @@ class EditorViewStore extends DisplayViewStore {
   };
 
   @action cloneControl = (control: IControl) => {
-    const clone = control.clone();
+    const clone = this.cloneWithActions(control);
     const undo = { control: clone.id };
     const redo = { control: clone.toJSON, parent: control.parentId, index: -1 };
     if (control.parentId) {
@@ -1069,6 +1090,13 @@ class EditorViewStore extends DisplayViewStore {
     }
     this.history.add([HIST_CLONE_CONTROL, undo, redo]);
   };
+
+  @action cloneWithActions(control: IControl) {
+    const clone = control.clone();
+    clone.cloneActions();
+    clone.deleteClonedId();
+    return clone;
+  }
 
   // ####### apply history end ######## //
 

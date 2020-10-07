@@ -43,7 +43,8 @@ class TextStore extends ControlStore implements IText {
   }
 
   @action clone(): IText {
-    const clone = CreateControl(ControlEnum.Text);
+    const clone = CreateControl(ControlEnum.Text) as IText;
+    clone.clonedId = this.id;
     this.children.forEach(child => clone.addChild(child.clone() as IControl));
     super.cloneProps(clone);
     return clone;

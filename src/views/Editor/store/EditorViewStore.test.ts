@@ -11,6 +11,7 @@ import users from '__mockData__/users';
 import projects from '__mockData__/projects';
 import components from '__mockData__/components';
 import controls from '__mockData__/controls';
+import { ACTION_TOGGLE_STYLE } from '../../../models/Constants';
 
 const fetchMock = fetch as FetchMock;
 
@@ -230,15 +231,20 @@ describe('EditorViewStore', () => {
     const control = CreateControl(ControlEnum.Grid);
     screen.addChild(control);
     const text = CreateControl(ControlEnum.Text);
+    text.addCSSStyle();
+    control.addAction([ACTION_TOGGLE_STYLE, text.id, 'Style1']);
     control.addChild(text);
     expect(control.children[0].title).toBe('Text');
     expect(control.children.length).toBe(1);
+    expect(control.actions[0][1]).toBe(text.id);
 
     const title = 'Hello World';
     control.children[0].changeTitle(title);
     store.cloneControl(control);
     const index = screen.children.indexOf(control);
     const cloned = screen.children[index + 1];
+    expect(cloned.actions[0][1] === text.id).toBeFalsy();
+    expect(cloned.actions[0][1]).toBe(cloned.children[0].id);
     expect(cloned.children.length).toBe(1);
     expect(cloned.children[0].title).toBe(title);
     expect(cloned.children[0].parentId).toBe(cloned.id);

@@ -46,6 +46,7 @@ class GridStore extends ControlStore implements IGrid {
 
   @action clone(): IGrid {
     const clone = CreateControl(ControlEnum.Grid) as IGrid;
+    clone.clonedId = this.id;
     this.children.forEach(child => clone.addChild(child.clone() as IControl));
     super.cloneProps(clone);
     return clone;

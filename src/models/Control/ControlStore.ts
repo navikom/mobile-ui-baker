@@ -179,6 +179,7 @@ const styles = [
 class ControlStore extends Movable implements IControl {
   type: ControlEnum;
   id: string;
+  clonedId?: string;
   readonly allowChildren: boolean;
   static controls: IControl[] = [];
   static actions: string[] = ['onPress'];
@@ -564,6 +565,27 @@ class ControlStore extends Movable implements IControl {
       Array.from(clone.cssStyles.keys())
         .filter(k => k !== MAIN_CSS_STYLE).forEach(k => ControlStore.addClass(clone.id, k));
     }
+    clone.lockedChildren = this.lockedChildren;
+  }
+
+  @action cloneActions() {
+    const actions = this.actions;
+    if(actions.length) {
+      actions.forEach((action, i) => {
+        const control = ControlStore.getByClonedId(action[1]);
+        if(control) {
+          const updatedAction = action.slice();
+          updatedAction[1] = control.id;
+          actions[i][1] = control.id;
+        }
+      });
+    }
+    this.children.forEach(child => child.cloneActions());
+  }
+
+  deleteClonedId() {
+    this.clonedId = undefined;
+    this.children.forEach(child => child.deleteClonedId());
   }
 
   @action mergeStyles(props: Map<string, ICSSProperty[]>) {
@@ -686,6 +708,10 @@ class ControlStore extends Movable implements IControl {
 
   static getById(id: string) {
     return this.controls.find(c => c.id === id);
+  }
+
+  static getByClonedId(id: string) {
+    return this.controls.find(c => c.clonedId === id);
   }
 
   static addItem(control: IControl) {

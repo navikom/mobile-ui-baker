@@ -105,6 +105,7 @@ class ScreenStore extends ControlStore implements IScreen {
 
   @action clone() {
     const clone = CreateControl(ControlEnum.Screen) as IScreen;
+    clone.clonedId = this.id;
     clone.mode = this.mode;
     clone.background = this.background;
     clone.statusBarColor = this.statusBarColor;

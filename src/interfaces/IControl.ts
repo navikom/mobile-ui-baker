@@ -13,6 +13,7 @@ import { DeviceEnum } from '../enums/DeviceEnum';
 export default interface IControl extends IMovable {
   type: ControlEnum;
   id: string;
+  clonedId?: string;
   allowChildren: boolean;
   parentId?: string;
   cssStyles: Map<string, IObservableArray<ICSSProperty>>;
@@ -100,6 +101,10 @@ export default interface IControl extends IMovable {
 
   applyFoSelected(): void;
 
+  cloneActions(): void;
+
+  deleteClonedId(): void;
+
   /// property
   switchExpanded(key: string, propName: string): () => void;
 
@@ -134,4 +139,6 @@ export interface IScreen extends IControl {
   clone(): IScreen;
 }
 
-export type IText = IControl;
+export interface IText extends IControl {
+  clone(): IText;
+}
