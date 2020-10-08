@@ -9,7 +9,8 @@ import { OwnComponents } from './Project/OwnComponentsStore';
 import { SubscriptionPlanEnum } from 'enums/SubscriptionPlanEnum';
 import ProjectStore from './Project/ProjectStore';
 import { CreateForMenu } from './Control/ControlStores';
-import IControl from '../interfaces/IControl';
+import IControl, { IGrid } from '../interfaces/IControl';
+import ControlStore from './Control/ControlStore';
 
 interface IMuiConfig {
   autoSave?: boolean;
@@ -74,14 +75,7 @@ class PluginStore {
       }
     }
     return OwnComponents.items.map(instance => {
-      const item = CreateForMenu(instance);
-      const control = item.clone();
-      item.deleteSelf(true);
-      control.changeTitle(instance.title, true);
-      control.setInstance(instance);
-      control.cloneActions();
-      control.deleteClonedId();
-      return control;
+      return CreateForMenu(instance) as IGrid;
     });
   }
 

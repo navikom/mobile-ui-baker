@@ -3,7 +3,7 @@ import { ControlEnum } from 'enums/ControlEnum';
 import GridStore from 'models/Control/GridStore';
 import TextStore from 'models/Control/TextStore';
 import ScreenStore from 'models/Control//ScreenStore';
-import IControl from 'interfaces/IControl';
+import IControl, { IGrid } from 'interfaces/IControl';
 import ControlStore, { ModelCtor } from 'models/Control/ControlStore';
 import IProject from 'interfaces/IProject';
 
@@ -35,12 +35,25 @@ export function CloneControl(json: IControl) {
 }
 
 export function CreateForMenu(instance: IProject) {
-  const controlData = instance.version.data as IControl;
-  controlData.parentId = undefined;
+  const controlData = instance.version.data as IGrid;
+
+  if(ControlStore.has(controlData.id)) {
+    const control = ControlStore.getById(controlData.id) as IGrid;
+    const clone = control.clone(true);
+    clone.setParent();
+    clone.changeTitle(instance.title, true);
+    clone.setInstance(instance);
+    clone.cloneActions();
+    clone.deleteClonedId();
+    return clone;
+  }
+  controlData.parentId !== undefined && (controlData.parentId = undefined);
+
   const control = controlData.type ?
     CreateControl(controlData.type, controlData, true) :
     CreateControl(ControlEnum.Grid, undefined, true)
   ;
+
   control.changeTitle(instance.title, true);
   control.setInstance(instance);
   return control;

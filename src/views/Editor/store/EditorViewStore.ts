@@ -830,10 +830,11 @@ class EditorViewStore extends DisplayViewStore {
   //  4.3 dropAction === Below -> drop source inside parent.parent below parent / \  which equal parent.parent        /
   @action handleDropElement = (parent: IControl, source: IControl, dropAction: DropEnum) => {
     if (!ControlStore.has(source.id)) {
-      source = CreateControl(source.type);
-    }
-    if (source.instance) {
-      source = this.cloneWithActions(source);
+      source = source.instance ? this.cloneWithActions(source) : CreateControl(source.type);
+    } else {
+      if (source.instance) {
+        source = this.cloneWithActions(source);
+      }
     }
 
     const sParent = source.parentId ? ControlStore.getById(source.parentId) : undefined;

@@ -52,7 +52,7 @@ export default interface ICSSProperty {
 
   switchEnabled(control: IControl, styleName: string): void;
 
-  updateProperties(props: { [key: string]: string | number | boolean }, control: IControl, styleName: string): void;
+  updateProperties(props: { [key: string]: string | number | boolean }, control: IControl, styleName: string, isMenu?: boolean): void;
 
   setControlProps(props: { [key: string]: any }): void;
 

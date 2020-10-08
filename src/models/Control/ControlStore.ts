@@ -359,7 +359,7 @@ class ControlStore extends Movable implements IControl {
 
   @action applyFoSelected() {
     this.setOpened(true);
-    this.parentId !== undefined && ControlStore.getById(this.parentId)!.applyFoSelected();
+    this.parentId !== undefined && ControlStore.has(this.parentId) && ControlStore.getById(this.parentId)!.applyFoSelected();
   }
 
   @action setSaving(value: boolean): void {
@@ -554,14 +554,14 @@ class ControlStore extends Movable implements IControl {
     this.actions.splice(index, 0, observable(actions));
   }
 
-  @action cloneProps(clone: IControl) {
+  @action cloneProps(clone: IControl, isMenu?: boolean) {
     clone.title = this.title;
-    clone.mergeStyles(this.cssStyles);
+    clone.mergeStyles(this.cssStyles, isMenu);
     this.actions && clone.actions.replace(this.actions.map(actions => {
       return observable([actions[0], actions[1] === this.id ? clone.id : actions[1], actions[2]]);
     }));
     this.classes && clone.classes.replace(this.classes);
-    if (clone.cssStyles.size > 1) {
+    if (clone.cssStyles.size > 1 && !isMenu) {
       Array.from(clone.cssStyles.keys())
         .filter(k => k !== MAIN_CSS_STYLE).forEach(k => ControlStore.addClass(clone.id, k));
     }
@@ -588,16 +588,16 @@ class ControlStore extends Movable implements IControl {
     this.children.forEach(child => child.deleteClonedId());
   }
 
-  @action mergeStyles(props: Map<string, ICSSProperty[]>) {
+  @action mergeStyles(props: Map<string, ICSSProperty[]>, isMenu?: boolean) {
     const keys = Array.from(props.keys());
     let l = keys.length, i = 0;
     while (l--) {
       const key = keys[i++];
-      props.has(key) && this.merge(key, props.get(key) as ICSSProperty[]);
+      props.has(key) && this.merge(key, props.get(key) as ICSSProperty[], isMenu);
     }
   }
 
-  @action merge(key: string, props: ICSSProperty[]) {
+  @action merge(key: string, props: ICSSProperty[], isMenu?: boolean) {
     if (!this.cssStyles.has(key)) {
       this.cssStyles.set(key, observable(styles.map(style => style.clone())));
     }
@@ -610,11 +610,11 @@ class ControlStore extends Movable implements IControl {
       }
       const same = this.cssStyles.get(key)!.find(p => p.key === prop.key);
       if (same) {
-        same.updateProperties(prop as unknown as { [key: string]: string | number }, this, key);
+        same.updateProperties(prop as unknown as { [key: string]: string | number }, this, key, isMenu);
       } else {
         const property = prop instanceof CSSProperty ? prop.clone() : CSSProperty.fromJSON(prop);
         this.cssStyles.get(key)!.push(property);
-        CSSProperty.addColor(this, key, property);
+        !isMenu && CSSProperty.addColor(this, key, property);
       }
     }
   }
@@ -722,7 +722,7 @@ class ControlStore extends Movable implements IControl {
     let contr = this.getById(control.id);
     if (!contr) {
       contr = this.fromJSON(instance, control, isMenu);
-      this.addItem(contr);
+      !isMenu && this.addItem(contr);
     }
     return contr;
   }
@@ -740,7 +740,7 @@ class ControlStore extends Movable implements IControl {
     json.actions && control.actions.replace(json.actions.map(actions => observable(actions)));
     json.meta && (control.meta = json.meta);
     json.type === ControlEnum.Screen && (control as IScreen).setScreenProps(json as IScreen);
-    control.mergeStyles(new Map(json.cssStyles));
+    control.mergeStyles(new Map(json.cssStyles), isMenu);
     if(json.classes) {
       const keys = Array.from(control.cssStyles.keys());
       const classes = json.classes.filter(clazz => keys.includes(clazz));

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { action } from 'mobx';
-import IControl, { IGrid } from 'interfaces/IControl';
+import { IGrid } from 'interfaces/IControl';
 import { ControlEnum } from 'enums/ControlEnum';
 import CreateControl from 'models/Control/ControlStores';
 import CSSProperty from 'models/Control/CSSProperty';
@@ -44,11 +44,11 @@ class GridStore extends ControlStore implements IGrid {
     this.mergeStyles(new Map(keys.map((key: string) => [key, styles.map(style => style.clone())])));
   }
 
-  @action clone(): IGrid {
-    const clone = CreateControl(ControlEnum.Grid) as IGrid;
+  @action clone(isMenu?: boolean): IGrid {
+    const clone = CreateControl(ControlEnum.Grid, undefined, isMenu) as IGrid;
     clone.clonedId = this.id;
-    this.children.forEach(child => clone.addChild(child.clone() as IControl));
-    super.cloneProps(clone);
+    this.children.forEach(child => clone.addChild((child as IGrid).clone(isMenu)));
+    super.cloneProps(clone, isMenu);
     return clone;
   }
 

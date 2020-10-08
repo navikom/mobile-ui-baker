@@ -42,11 +42,11 @@ class TextStore extends ControlStore implements IText {
     this.mergeStyles(new Map(keys.map((key: string) => [key, styles.map(style => style.clone())])));
   }
 
-  @action clone(): IText {
-    const clone = CreateControl(ControlEnum.Text) as IText;
+  @action clone(isMenu?: boolean): IText {
+    const clone = CreateControl(ControlEnum.Text, undefined, isMenu) as IText;
     clone.clonedId = this.id;
-    this.children.forEach(child => clone.addChild(child.clone() as IControl));
-    super.cloneProps(clone);
+    this.children.forEach(child => clone.addChild((child as IText).clone(isMenu) as IControl));
+    super.cloneProps(clone, isMenu);
     return clone;
   }
 

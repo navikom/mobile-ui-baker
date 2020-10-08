@@ -57,7 +57,7 @@ export default interface IControl extends IMovable {
 
   clone(): IControl;
 
-  mergeStyles(props: Map<string, ICSSProperty[]>): void;
+  mergeStyles(props: Map<string, ICSSProperty[]>, isMenu?: boolean): void;
 
   switchLockChildren(): void;
 
@@ -116,7 +116,7 @@ export default interface IControl extends IMovable {
 }
 
 export interface IGrid extends IControl {
-  clone(): IGrid;
+  clone(isMenu?: boolean): IGrid;
 }
 
 export interface IScreen extends IControl {
@@ -140,5 +140,5 @@ export interface IScreen extends IControl {
 }
 
 export interface IText extends IControl {
-  clone(): IText;
+  clone(isMenu?: boolean): IText;
 }
