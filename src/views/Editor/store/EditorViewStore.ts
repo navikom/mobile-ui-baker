@@ -829,11 +829,9 @@ class EditorViewStore extends DisplayViewStore {
   //  4.2 dropAction === Above -> drop source inside parent.parent above parent \ / sort items inside the same parent \
   //  4.3 dropAction === Below -> drop source inside parent.parent below parent / \  which equal parent.parent        /
   @action handleDropElement = (parent: IControl, source: IControl, dropAction: DropEnum) => {
-
     if (!ControlStore.has(source.id)) {
       source = CreateControl(source.type);
     }
-
     if (source.instance) {
       source = this.cloneWithActions(source);
     }
@@ -1001,6 +999,7 @@ class EditorViewStore extends DisplayViewStore {
 
         pParent.spliceChild(newSourceIndex + 1, source);
       }
+      this.selectControl(source, undefined, true);
     }
 
     this.debug && console.log('document state', source.parentId, sParent && sParent.children.length, pParent && pParent.children.length);

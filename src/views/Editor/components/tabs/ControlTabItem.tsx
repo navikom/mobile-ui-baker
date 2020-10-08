@@ -71,26 +71,13 @@ const ControlTabItem: React.FC<ControlProps> = (
     preview(getEmptyImage(), { captureDraggingState: true })
   }, [preview]);
 
-  let style;
-  if(control && control.instance && control.instance.hasPreview) {
-    style = {
-      backgroundImage: `url(${control.instance.preview})`,
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "center",
-      backgroundSize: "90%",
-      color: "transparent",
-      ...control.instance.previewSize,
-      padding: 0
-    };
-  }
-
   return (
     <Tooltip placement="top" title={(control ? control.title : type) || ''}>
-      <Paper elevation={0} ref={drag} className={classes.container} onClick={handleMenu} style={style || {}}>
+      <Paper elevation={0} ref={drag} className={classes.container} onClick={handleMenu}>
         {(control && control.title) || type}
       </Paper>
     </Tooltip>
   )
 };
 
-export default ControlTabItem;
+export default React.memo(ControlTabItem);

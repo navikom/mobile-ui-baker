@@ -16,13 +16,11 @@ import { ROUTE_USERS_LIST } from 'models/Constants';
 
 // assets
 import useStyle from 'assets/jss/material-dashboard-react/components/listStyle';
-import CardFooter from '../../components/Card/CardFooter';
+import CardFooter from 'components/Card/CardFooter';
 import Typography from '@material-ui/core/Typography';
-import CustomInput from '../../components/CustomInput/CustomInput';
 import Grid from '@material-ui/core/Grid';
-import DateInput from '../../components/CustomInput/DateInput';
+import DateInput from 'components/CustomInput/DateInput';
 import { Button } from '@material-ui/core';
-import classNames from 'classnames';
 
 // core components
 const Table = lazy(() => import('components/Table/TablePagination'));

@@ -44,7 +44,7 @@ export default interface IEditorTabsProps {
   screen?: IScreen;
   loadAssetsEnabled?: boolean;
   switchLoadAssets?: () => void;
-  ownComponents?: IProject[];
+  ownComponents?: IControl[];
   setColor?: (oldColor: string, newColor: string) => void;
   setBorder?: (oldBorder: string, newBorder: string) => void;
 }

@@ -182,6 +182,7 @@ class DisplayViewStore extends Errors {
 
   @action fromJSON(data: IProjectData) {
     ControlStore.clear();
+    this.pluginStore.components.forEach(e => CreateControl(e.type, e));
     data.screens && this.screens.replace(data.screens.map((e) => CreateControl(ControlEnum.Screen, e)));
     this.currentScreen = this.screens[0];
     this.placeContent(this.screens[0]);

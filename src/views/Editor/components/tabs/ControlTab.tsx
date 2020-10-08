@@ -32,11 +32,9 @@ import DialogAlert from 'components/Dialog/DialogAlert';
 import { App } from 'models/App';
 import { blackOpacity, primaryOpacity } from 'assets/jss/material-dashboard-react';
 import { SharedControls } from 'models/Project/ControlsStore';
-import { CreateForMenu } from 'models/Control/ControlStores';
 import CustomSelect from 'components/CustomSelect/CustomSelect';
 import { ScreenMetaEnum } from 'enums/ScreenMetaEnum';
 import { TextMetaEnum } from 'enums/TextMetaEnum';
-import IProject from 'interfaces/IProject';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -96,7 +94,7 @@ const useStyles = makeStyles(theme => ({
 interface ControlInstanceProps {
   isAdmin: boolean;
   handleMenu: (control: IControl) => (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  items: IProject[];
+  items: IControl[];
 }
 
 const ControlInstance: React.FC<ControlInstanceProps> =
@@ -105,13 +103,12 @@ const ControlInstance: React.FC<ControlInstanceProps> =
 
     const handler = React.useCallback((control: IControl) => {
       return handleMenu(control);
-    }, []);
+    }, [handleMenu]);
 
     return (
       <div className={classes.container}>
         {
-          items.map((instance, i) => {
-            const control = CreateForMenu(instance);
+          items.map((control, i) => {
             return <ControlTabItem
               key={i.toString()}
               control={control}

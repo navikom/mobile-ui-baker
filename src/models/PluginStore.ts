@@ -8,6 +8,8 @@ import { App } from './App';
 import { OwnComponents } from './Project/OwnComponentsStore';
 import { SubscriptionPlanEnum } from 'enums/SubscriptionPlanEnum';
 import ProjectStore from './Project/ProjectStore';
+import { CreateForMenu } from './Control/ControlStores';
+import IControl from '../interfaces/IControl';
 
 interface IMuiConfig {
   autoSave?: boolean;
@@ -63,15 +65,24 @@ class PluginStore {
   @observable data: EditorData;
   @observable componentsList: IObservableArray<IProject> = observable([]);
 
-  @computed get components() {
+  @computed get components(): IControl[] {
     if(this.proMode) {
       if([SubscriptionPlanEnum.SILVER, SubscriptionPlanEnum.GOLD].includes(this.plan)) {
-        return this.componentsList;
+        return this.componentsList.map(instance => CreateForMenu(instance));
       } else {
         return []
       }
     }
-    return OwnComponents.items;
+    return OwnComponents.items.map(instance => {
+      const item = CreateForMenu(instance);
+      const control = item.clone();
+      item.deleteSelf(true);
+      control.changeTitle(instance.title, true);
+      control.setInstance(instance);
+      control.cloneActions();
+      control.deleteClonedId();
+      return control;
+    });
   }
 
   constructor(store: IMobileUIView, urlQuery: string) {
