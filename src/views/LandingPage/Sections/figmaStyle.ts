@@ -5,6 +5,7 @@ import { whiteColor } from 'assets/jss/material-dashboard-react';
 const animationTime = 20;
 
 const useStyles = makeStyles((theme: Theme) => ({
+
   laptopWrapper: {
     left: -51,
     [theme.breakpoints.down('md')]: {
