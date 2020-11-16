@@ -791,8 +791,7 @@ ${EXPORT_DEFAULT} ${name};`;
   }
 
   app2zip() {
-    let content = `import 'mobx-react-lite/batchingForReactNative';\n`;
-    content += IMPORT_REACT + ';\n';
+    let content = IMPORT_REACT + ';\n';
 
     content +=
       `import {NavigationContainer, DefaultTheme} from '@react-navigation/native';

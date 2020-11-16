@@ -10,7 +10,6 @@ import { SubscriptionPlanEnum } from 'enums/SubscriptionPlanEnum';
 import ProjectStore from './Project/ProjectStore';
 import { CreateForMenu } from './Control/ControlStores';
 import IControl, { IGrid } from '../interfaces/IControl';
-import ControlStore from './Control/ControlStore';
 
 interface IMuiConfig {
   autoSave?: boolean;

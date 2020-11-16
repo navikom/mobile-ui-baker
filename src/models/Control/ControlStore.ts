@@ -558,7 +558,7 @@ class ControlStore extends Movable implements IControl {
     clone.title = this.title;
     clone.mergeStyles(this.cssStyles, isMenu);
     this.actions && clone.actions.replace(this.actions.map(actions => {
-      return observable([actions[0], actions[1] === this.id ? clone.id : actions[1], actions[2]]);
+      return observable(actions.slice());
     }));
     this.classes && clone.classes.replace(this.classes);
     if (clone.cssStyles.size > 1 && !isMenu) {
