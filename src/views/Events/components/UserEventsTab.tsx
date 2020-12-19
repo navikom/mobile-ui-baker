@@ -60,8 +60,15 @@ type EventInfoType = {
 function EventInfo(props: EventInfoType) {
   return (
     <Grid container>
-      <InfoItem title={Dictionary.defValue(DictionaryService.keys.device)} data={props.data.device.plainData} />
-      <InfoItem title={Dictionary.defValue(DictionaryService.keys.region)} data={props.data.region.plainData} />
+      {
+        props.data.device &&
+        <InfoItem title={Dictionary.defValue(DictionaryService.keys.device)} data={props.data.device.plainData} />
+      }
+      {
+        props.data.region &&
+        <InfoItem title={Dictionary.defValue(DictionaryService.keys.region)} data={props.data.region.plainData} />
+      }
+
       {props.data.hasCustom && (
         <InfoItem
           title={Dictionary.defValue(DictionaryService.keys.custom)}
@@ -147,7 +154,7 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "absolute",
       borderLeft: "1px solid #efefef",
       top: theme.typography.pxToRem(25),
-      left: "11.58rem",
+      left: "11.14rem",
       height: "95%"
     }
   })
